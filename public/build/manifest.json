@@ -1,0 +1,265 @@
+{
+  "__commonjs-dynamic-modules-TDtrdbi3.js": {
+    "file": "assets/_commonjs-dynamic-modules-TDtrdbi3.js",
+    "name": "_commonjs-dynamic-modules"
+  },
+  "__commonjsHelpers-BosuxZz1.js": {
+    "file": "assets/_commonjsHelpers-BosuxZz1.js",
+    "name": "_commonjsHelpers"
+  },
+  "_jquery-Cl8nZsBv.js": {
+    "file": "assets/jquery-Cl8nZsBv.js",
+    "name": "jquery",
+    "imports": [
+      "__commonjsHelpers-BosuxZz1.js"
+    ]
+  },
+  "node_modules/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.css": {
+    "file": "assets/jquery-jvectormap-1.2-DTH2PtcQ.css",
+    "src": "node_modules/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.css",
+    "isEntry": true
+  },
+  "node_modules/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.min.js": {
+    "file": "assets/jquery-jvectormap-1.2.2.min-BnLV2a6l.js",
+    "name": "jquery-jvectormap-1.2.2.min",
+    "src": "node_modules/admin-resources/jquery.vectormap/jquery-jvectormap-1.2.2.min.js",
+    "isEntry": true
+  },
+  "node_modules/admin-resources/jquery.vectormap/maps/jquery-jvectormap-world-mill-en.js": {
+    "file": "assets/jquery-jvectormap-world-mill-en-W4izEADq.js",
+    "name": "jquery-jvectormap-world-mill-en",
+    "src": "node_modules/admin-resources/jquery.vectormap/maps/jquery-jvectormap-world-mill-en.js",
+    "isEntry": true
+  },
+  "node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css": {
+    "file": "assets/bootstrap-datepicker-BRCjbFjq.css",
+    "src": "node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css",
+    "isEntry": true
+  },
+  "node_modules/bootstrap-timepicker/css/bootstrap-timepicker.min.css": {
+    "file": "assets/bootstrap-timepicker-BclI4nmM.css",
+    "src": "node_modules/bootstrap-timepicker/css/bootstrap-timepicker.min.css",
+    "isEntry": true
+  },
+  "node_modules/bootstrap-timepicker/js/bootstrap-timepicker.min.js": {
+    "file": "assets/bootstrap-timepicker.min-BabWpL0I.js",
+    "name": "bootstrap-timepicker.min",
+    "src": "node_modules/bootstrap-timepicker/js/bootstrap-timepicker.min.js",
+    "isEntry": true
+  },
+  "node_modules/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.css": {
+    "file": "assets/jquery-Ms8hPV6t.css",
+    "src": "node_modules/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.css",
+    "isEntry": true
+  },
+  "node_modules/daterangepicker/daterangepicker.css": {
+    "file": "assets/daterangepicker-C26L77ka.css",
+    "src": "node_modules/daterangepicker/daterangepicker.css",
+    "isEntry": true
+  },
+  "node_modules/daterangepicker/moment.min.js?commonjs-entry": {
+    "file": "assets/moment.min-Dou-3mmJ.js",
+    "name": "moment.min",
+    "src": "node_modules/daterangepicker/moment.min.js?commonjs-entry",
+    "isEntry": true,
+    "imports": [
+      "__commonjsHelpers-BosuxZz1.js",
+      "__commonjs-dynamic-modules-TDtrdbi3.js"
+    ]
+  },
+  "node_modules/dragula/dist/dragula.min.js?commonjs-entry": {
+    "file": "assets/dragula.min-Dno-zw97.js",
+    "name": "dragula.min",
+    "src": "node_modules/dragula/dist/dragula.min.js?commonjs-entry",
+    "isEntry": true,
+    "imports": [
+      "__commonjsHelpers-BosuxZz1.js",
+      "__commonjs-dynamic-modules-TDtrdbi3.js"
+    ]
+  },
+  "node_modules/flatpickr/dist/flatpickr.min.css": {
+    "file": "assets/flatpickr-BArvkMiJ.css",
+    "src": "node_modules/flatpickr/dist/flatpickr.min.css",
+    "isEntry": true
+  },
+  "node_modules/fullcalendar/main.min.css": {
+    "file": "assets/main-B64hn1B1.css",
+    "src": "node_modules/fullcalendar/main.min.css",
+    "isEntry": true
+  },
+  "node_modules/jquery-mask-plugin/dist/jquery.mask.min.js?commonjs-entry": {
+    "file": "assets/jquery.mask.min-BXwBgnbD.js",
+    "name": "jquery.mask.min",
+    "src": "node_modules/jquery-mask-plugin/dist/jquery.mask.min.js?commonjs-entry",
+    "isEntry": true,
+    "imports": [
+      "__commonjsHelpers-BosuxZz1.js",
+      "_jquery-Cl8nZsBv.js"
+    ]
+  },
+  "node_modules/jquery-toast-plugin/dist/jquery.toast.min.css": {
+    "file": "assets/jquery.toast-DZ87MWyh.css",
+    "src": "node_modules/jquery-toast-plugin/dist/jquery.toast.min.css",
+    "isEntry": true
+  },
+  "node_modules/jquery-toast-plugin/dist/jquery.toast.min.js": {
+    "file": "assets/jquery.toast.min-DnTDIskf.js",
+    "name": "jquery.toast.min",
+    "src": "node_modules/jquery-toast-plugin/dist/jquery.toast.min.js",
+    "isEntry": true
+  },
+  "node_modules/jquery-toast-plugin/src/jquery.toast.js": {
+    "file": "assets/jquery.toast-DwOtPjTs.js",
+    "name": "jquery.toast",
+    "src": "node_modules/jquery-toast-plugin/src/jquery.toast.js",
+    "isEntry": true
+  },
+  "node_modules/jquery.rateit/scripts/jquery.rateit.min.js": {
+    "file": "assets/jquery.rateit.min-B13hd5qN.js",
+    "name": "jquery.rateit.min",
+    "src": "node_modules/jquery.rateit/scripts/jquery.rateit.min.js",
+    "isEntry": true
+  },
+  "node_modules/jquery/dist/jquery.js?commonjs-entry": {
+    "file": "assets/jquery-CGgKyhGQ.js",
+    "name": "jquery",
+    "src": "node_modules/jquery/dist/jquery.js?commonjs-entry",
+    "isEntry": true,
+    "imports": [
+      "__commonjsHelpers-BosuxZz1.js"
+    ]
+  },
+  "node_modules/quill/dist/quill.bubble.css": {
+    "file": "assets/quill-CAnTRXUp.css",
+    "src": "node_modules/quill/dist/quill.bubble.css",
+    "isEntry": true
+  },
+  "node_modules/quill/dist/quill.core.css": {
+    "file": "assets/quill-BjDruDbT.css",
+    "src": "node_modules/quill/dist/quill.core.css",
+    "isEntry": true
+  },
+  "node_modules/quill/dist/quill.snow.css": {
+    "file": "assets/quill-BvFojYd1.css",
+    "src": "node_modules/quill/dist/quill.snow.css",
+    "isEntry": true
+  },
+  "node_modules/select2/dist/css/select2.min.css": {
+    "file": "assets/select2-DV_F9tAu.css",
+    "src": "node_modules/select2/dist/css/select2.min.css",
+    "isEntry": true
+  },
+  "node_modules/select2/dist/js/select2.min.js?commonjs-entry": {
+    "file": "assets/select2.min-C260JgRp.js",
+    "name": "select2.min",
+    "src": "node_modules/select2/dist/js/select2.min.js?commonjs-entry",
+    "isEntry": true,
+    "imports": [
+      "_jquery-Cl8nZsBv.js",
+      "__commonjsHelpers-BosuxZz1.js"
+    ]
+  },
+  "node_modules/sweetalert2/dist/sweetalert2.js?commonjs-entry": {
+    "file": "assets/sweetalert2-CUChD5xC.js",
+    "name": "sweetalert2",
+    "src": "node_modules/sweetalert2/dist/sweetalert2.js?commonjs-entry",
+    "isEntry": true,
+    "imports": [
+      "__commonjsHelpers-BosuxZz1.js"
+    ]
+  },
+  "node_modules/sweetalert2/src/sweetalert2.scss": {
+    "file": "assets/sweetalert2-C40UlIWp.css",
+    "src": "node_modules/sweetalert2/src/sweetalert2.scss",
+    "isEntry": true
+  },
+  "node_modules/typeahead.js/dist/typeahead.bundle.js?commonjs-entry": {
+    "file": "assets/typeahead.bundle-BiXhUR64.js",
+    "name": "typeahead.bundle",
+    "src": "node_modules/typeahead.js/dist/typeahead.bundle.js?commonjs-entry",
+    "isEntry": true,
+    "imports": [
+      "__commonjsHelpers-BosuxZz1.js",
+      "_jquery-Cl8nZsBv.js"
+    ]
+  },
+  "node_modules/typeahead.js/dist/typeahead.bundle.min.js?commonjs-entry": {
+    "file": "assets/typeahead.bundle.min-DCaXFV7G.js",
+    "name": "typeahead.bundle.min",
+    "src": "node_modules/typeahead.js/dist/typeahead.bundle.min.js?commonjs-entry",
+    "isEntry": true,
+    "imports": [
+      "__commonjsHelpers-BosuxZz1.js",
+      "_jquery-Cl8nZsBv.js"
+    ]
+  },
+  "public/images/bg-auth.jpg": {
+    "file": "assets/bg-auth-CZRtsHoG.jpg",
+    "src": "public/images/bg-auth.jpg"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-DNcVFBDg.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/fonts/bootstrap-icons.woff": {
+    "file": "assets/bootstrap-icons-D8ioIzQS.woff",
+    "src": "resources/fonts/bootstrap-icons.woff"
+  },
+  "resources/fonts/bootstrap-icons.woff2": {
+    "file": "assets/bootstrap-icons-Drp84nVS.woff2",
+    "src": "resources/fonts/bootstrap-icons.woff2"
+  },
+  "resources/fonts/remixicon.eot": {
+    "file": "assets/remixicon-CsbJS0Nd.eot",
+    "src": "resources/fonts/remixicon.eot"
+  },
+  "resources/fonts/remixicon.svg": {
+    "file": "assets/remixicon-DV9onB9s.svg",
+    "src": "resources/fonts/remixicon.svg"
+  },
+  "resources/fonts/remixicon.ttf": {
+    "file": "assets/remixicon-DdzasgUs.ttf",
+    "src": "resources/fonts/remixicon.ttf"
+  },
+  "resources/fonts/remixicon.woff": {
+    "file": "assets/remixicon-2iUEOVAH.woff",
+    "src": "resources/fonts/remixicon.woff"
+  },
+  "resources/fonts/remixicon.woff2": {
+    "file": "assets/remixicon-BBTkVcFJ.woff2",
+    "src": "resources/fonts/remixicon.woff2"
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-B3UE8YLF.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "imports": [
+      "__commonjsHelpers-BosuxZz1.js",
+      "_jquery-Cl8nZsBv.js"
+    ]
+  },
+  "resources/js/head.js": {
+    "file": "assets/head-DoQpomps.js",
+    "name": "head",
+    "src": "resources/js/head.js",
+    "isEntry": true
+  },
+  "resources/js/layout.js": {
+    "file": "assets/layout-De5pXFvi.js",
+    "name": "layout",
+    "src": "resources/js/layout.js",
+    "isEntry": true
+  },
+  "resources/scss/app.scss": {
+    "file": "assets/app-CYpDMAZE.css",
+    "src": "resources/scss/app.scss",
+    "isEntry": true
+  },
+  "resources/scss/icons.scss": {
+    "file": "assets/icons-uStCfKcy.css",
+    "src": "resources/scss/icons.scss",
+    "isEntry": true
+  }
+}

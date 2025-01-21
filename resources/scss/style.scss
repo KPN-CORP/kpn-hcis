@@ -1,0 +1,31 @@
+.circle {
+    width: 40px;
+    height: 40px;
+    border: 1px solid;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5px;
+    position: relative;
+    z-index: 1;
+    font-size: 1.075rem;
+}
+.circle.active {
+    border: 2px solid $primary;
+    color: $primary;
+}
+.circle.completed {
+    border: 2px solid $primary;
+    background-color: $primary;
+    color: $white;
+}
+.label {
+    font-size: 14px;
+}
+.form-step {
+    display: none;
+}
+.form-step.active {
+    display: block;
+}

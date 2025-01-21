@@ -1,0 +1,70 @@
+APM
+- Layer 1
+01123070004
+haiman.saputra@kpn-corp.dummy
+12345678
+- Layer 2
+01122100006
+rolles@kpn-corp.dummy
+12345678
+- Layer 3
+01113090005
+testmailga@gmail.com
+- Layer 4
+01116110011
+testemailar@gmail.com
+12345678
+- Layer 5
+01123090014
+alfian.azis@kpn-corp.dummy
+12345678
+- Layer 6
+01119030002
+testmailcso@gmail.com
+12345678
+
+
+CG
+- Layer 1
+01123070004
+haiman.saputra@kpn-corp.dummy
+12345678
+- Layer 2
+01122100006
+rolles@kpn-corp.dummy
+12345678
+
+KPSN
+- Layer 1
+01123070004
+haiman.saputra@kpn-corp.dummy
+12345678
+- Layer 2
+01122100006
+rolles@kpn-corp.dummy
+12345678
+
+WKSM
+- Layer 1
+01123070004
+haiman.saputra@kpn-corp.dummy
+12345678
+- Layer 2
+01122100006
+rolles@kpn-corp.dummy
+12345678
+- Layer 3
+01113090005
+testmailga@gmail.com
+- Layer 4
+01116110011
+testemailar@gmail.com
+12345678
+- Layer 5
+01123090014
+alfian.azis@kpn-corp.dummy
+12345678
+- Layer 6
+01119030002
+testmailcso@gmail.com
+12345678

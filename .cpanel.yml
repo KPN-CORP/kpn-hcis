@@ -1,0 +1,26 @@
+---
+deployment:
+  tasks:
+    # - export DEPLOYPATH=/home/hcis2460/kpn-pm
+    - export DEPLOYPATH=/home/hcis8257/kpn-hcis
+
+    # Copy essential Laravel application directories to deployment path
+    - /bin/cp -r app bootstrap config database routes resources $DEPLOYPATH
+
+    - /bin/cp -r public/build $DEPLOYPATH/public
+
+    # Copy public assets to the public_html directory
+    # - /bin/cp -r public/assets public/css public/img public/images public/js public/scss public/vendor /home/hcis2460/public_html
+    - /bin/cp -r public/assets public/build public/css public/img public/images public/js public/scss public/vendor /home/hcis8257/public_html/apps
+
+    # Change directory to the deployment path
+    - cd $DEPLOYPATH
+
+    # Install production dependencies using Composer
+    # - composer install --no-dev --optimize-autoloader
+
+    # Run database migrations (for first deployment)
+    # - php artisan migrate --force
+
+    # Clear Laravel application cache
+    - php artisan optimize:clear
