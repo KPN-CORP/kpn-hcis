@@ -226,8 +226,8 @@
                                                         data-no="{{ $transaction->no_htl }}" 
                                                         data-sppd="{{ $transaction->no_sppd }}"
                                                         data-status="{{ $transaction->approval_status }}"
-                                                        data-manager-l1="{{ $managerL1Name ?? 'Unknown' }}" 
-                                                        data-manager-l2="{{ $managerL2Name ?? 'Unknown' }}">
+                                                        data-manager-l1="{{ $transaction->manager_l1_name ?? 'Unknown' }}" 
+                                                        data-manager-l2="{{ $transaction->manager_l2_name ?? 'Unknown' }}">
                                                         <i class="bi bi-list-check"></i>
                                                     </button>
                                                 </td>

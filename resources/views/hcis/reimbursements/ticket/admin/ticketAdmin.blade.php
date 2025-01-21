@@ -174,6 +174,7 @@
                                         <th>From/To</th>
                                         <th>Details</th>
                                         <th>Status</th>
+                                        <th>Approval</th>
                                         <th class="text-center">Actions</th>
                                     </tr>
                                 </thead>
@@ -263,8 +264,8 @@
                                                     data-no="{{ $transaction->no_tkt }}" 
                                                     data-sppd="{{ $transaction->no_sppd }}"
                                                     data-status="{{ $transaction->approval_status }}"
-                                                    data-manager-l1="{{ $managerL1Name ?? 'Unknown' }}" 
-                                                    data-manager-l2="{{ $managerL2Name ?? 'Unknown' }}">
+                                                    data-manager-l1="{{ $transaction->manager_l1_name }}" 
+                                                    data-manager-l2="{{ $transaction->manager_l2_name }}">
                                                     <i class="bi bi-list-check"></i>
                                                 </button>
                                             </td>

@@ -217,7 +217,7 @@
                         <label for="recipient-name" class="col-form-label">Approval Request : </label>
                         <div class="row">
                             <div class="col-md-12 mb-3 text-center" id="nameList"></div>
-                            <div class="col-md-12 mb-3 text-center" id="buttonList"></div>
+                            <div class="col-md-12 mb-3 text-right" id="buttonList"></div>
                         </div>
                     </div>
                     <div class="modal-footer">

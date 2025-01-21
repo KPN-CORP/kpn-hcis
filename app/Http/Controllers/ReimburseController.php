@@ -5045,9 +5045,6 @@ class ReimburseController extends Controller
         $ticketsGroups = $tickets->groupBy('no_tkt');
         $employeeName = Employee::pluck('fullname', 'employee_id');
 
-        $managerL1Name = 'Unknown';
-        $managerL2Name = 'Unknown';
-
         // Fetch employee data and manager names for transactions
         foreach ($transactions as $transaction) {
             // First check if manager IDs exist in the transaction (hotel db)
