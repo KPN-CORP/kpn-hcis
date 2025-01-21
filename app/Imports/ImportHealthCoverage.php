@@ -19,6 +19,12 @@ use Illuminate\Support\Facades\Log;
 class ImportHealthCoverage implements ToModel
 {
     private $batchRecords = [];
+    private $attachmentPath;
+
+    public function __construct($attachmentPath = null)
+    {
+        $this->attachmentPath = $attachmentPath ? json_encode([$attachmentPath]) : null;
+    }
 
     public function generateNoMedic()
     {
@@ -30,15 +36,13 @@ class ImportHealthCoverage implements ToModel
 
         // Determine the next no_medic number
         if ($lastCoverage && substr($lastCoverage->no_medic, 2, 2) == $currentYear) {
-            // Extract the last 6 digits (the sequence part) and increment it by 1
             $lastNumber = (int) substr($lastCoverage->no_medic, 4); // Extract the last 6 digits
             $nextNumber = $lastNumber + 1;
         } else {
-            // If no records for this year or no records at all, start from 000001
             $nextNumber = 1;
         }
 
-        // Format the next number as a 9-digit number starting with '6'
+        // Format the next number as a 9-digit number starting with 'MD'
         $newNoMedic = 'MD' . $currentYear . str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
 
         return $newNoMedic;
@@ -113,6 +117,7 @@ class ImportHealthCoverage implements ToModel
             'balance_verif' => $row[12],
             'status' => 'Done',
             'submission_type' => 'F',
+            'medical_proof' => $this->attachmentPath,
             'created_by' => $userId,
             'verif_by' => $employeeId->employee_id,
             'approved_by' => $employeeId->employee_id,
@@ -140,14 +145,13 @@ class ImportHealthCoverage implements ToModel
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-                
                 try {
                     Mail::to($email)->send(new MedicalNotification(
                         $records,
                         $base64Image,
-                    ));
+                    ));       
                 } catch (\Exception $e) {
-                    Log::error('Email tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email Record Medical tidak terkirim: ' . $e->getMessage());
                 }
             }
         }
@@ -160,7 +164,6 @@ class ImportHealthCoverage implements ToModel
     {
         $healthPlan = HealthPlan::where('employee_id', $healthCoverage->employee_id)
             ->where('medical_type', $healthCoverage->medical_type)
-            ->where('period', $healthCoverage->period)
             ->first();
 
         if ($healthPlan) {

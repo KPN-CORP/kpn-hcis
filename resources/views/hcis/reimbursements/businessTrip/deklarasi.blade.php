@@ -205,7 +205,7 @@
                                             </div>
                                         </div>
                                         <div class="row mb-2">
-                                            <div class="col-md-4 mb-2">
+                                            <div class="col-md-6 mb-2">
                                                 <label class="form-label">Total Cash Advanced</label>
                                                 <div class="input-group">
                                                     <div class="input-group-append">
@@ -217,7 +217,7 @@
                                                         readonly>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4 mb-2">
+                                            <div class="col-md-6 mb-2">
                                                 <label class="form-label">Total Cash Advanced Deklarasi</label>
                                                 <div class="input-group">
                                                     <div class="input-group-append">
@@ -274,16 +274,16 @@
                                                         class="file-icon" style="width: 50px; height: 50px;">
                                                     <div style="margin-top: 5px;"><u>View Proof</u></div>
                                                 </a>
-                                            {{-- @else
+                                                {{-- @else
                                                 <div class="text-danger">No proof uploaded</div> --}}
                                         @endif
 
                                         {{-- <input type="hidden" name="status" value="Declaration L1" id="status"> --}}
                                         <input type="hidden" name="no_id" value="{{ $ca->id ?? 0 }}">
                                         <input type="hidden" name="ca_id" value="{{ $ca->no_ca ?? 0 }}">
-                                        <input class="form-control" id="group_company" name="group_company" type="hidden"
-                                            value="{{ $employee_data->group_company }}" readonly>
-                                            <input class="form-control" id="perdiem" name="perdiem" type="hidden"
+                                        <input class="form-control" id="group_company" name="group_company"
+                                            type="hidden" value="{{ $employee_data->group_company }}" readonly>
+                                        <input class="form-control" id="perdiem" name="perdiem" type="hidden"
                                             value="{{ $perdiem->amount ?? 0 }}" readonly>
 
                                         <div class="d-flex justify-content-end mt-3">
@@ -837,7 +837,7 @@
                     const inputSummary = `
                         <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
                         <tr>
-                            <th style="width: 40%; text-align: left; padding: 8px;">Total {{$allowance}}</th>
+                            <th style="width: 40%; text-align: left; padding: 8px;">Total {{ $allowance }}</th>
                             <td style="width: 10%; text-align: right; padding: 8px;">:</td>
                             <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPerdiem}</strong></td>
                         </tr>

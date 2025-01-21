@@ -24,6 +24,9 @@ class BusinessTripNotification extends Mailable
     public $managerName;
     public $approvalLink;
     public $rejectionLink;
+    public $employeeName;
+    public $base64Image;
+    public $textNotification;
 
     /**
      * Create a new message instance.
@@ -37,6 +40,9 @@ class BusinessTripNotification extends Mailable
         $managerName = null,
         $approvalLink = null,
         $rejectionLink = null,
+        $employeeName = null,
+        $base64Image = null,
+        $textNotification = null,
     ) {
         $this->businessTrip = $businessTrip;
         $this->hotelDetails = $hotelDetails;
@@ -46,7 +52,9 @@ class BusinessTripNotification extends Mailable
         $this->managerName = $managerName;
         $this->approvalLink = $approvalLink;
         $this->rejectionLink = $rejectionLink;
-
+        $this->employeeName = $employeeName;
+        $this->base64Image = $base64Image;
+        $this->textNotification = $textNotification;
     }
 
     /**
@@ -64,6 +72,9 @@ class BusinessTripNotification extends Mailable
                 'managerName' => $this->managerName,
                 'approvalLink' => $this->approvalLink,
                 'rejectionLink' => $this->rejectionLink,
+                'employeeName' => $this->employeeName,
+                'base64Image' => $this->base64Image,
+                'textNotification' => $this->textNotification,
             ]);
     }
 

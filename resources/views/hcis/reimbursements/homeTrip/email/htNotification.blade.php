@@ -8,56 +8,66 @@
 </head>
 
 <body>
+    <div style="width: 100%; height: auto; text-align: center;">
+        <img src="{{ $base64Image }}" 
+             alt="Kop Surat" 
+             style="height: auto; margin-bottom: 20px; width: 5%;">
+    </div>   
     <h2>Home Trip Request Notification</h2>
     <p>Dear Sir/Madam: <b>{{ $managerName }}</b></p><br>
 
+    <p><b>{{ $employeeName }}</b> {{ $textNotification }}</p>
     <p><strong>Approval Status:</strong> {{ $approvalStatus }}</p>
 
-    <h3>Home Trip Ticket Details</h3>
-    <table style="border-collapse: collapse;">
-        <thead>
+    <table style="border-collapse: collapse; width: 70%; margin-top: 8px; font-size: 10px;">
+        <tr>
+            <th colspan="7" style="border: 1px solid #ddd; padding: 4px; background-color: #ab2f2b; color: #ffffff; font-size: 10px; font-weight: bold; white-space: nowrap; text-align: center;">
+                <b>Detail Home Trip Ticket :</b>
+            </th>
+        </tr>
+        <tr style="font-weight: bold; background-color: #f5f5f5;">
+            <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">No</td>
+            <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Ticket Number</td>
+            <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Passenger Name</td>
+            <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Departure</td>
+            <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Ticket Type</td>
+            <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Departure Date & Time</td>
+            <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Return Date & Time</td>
+        </tr>
+        @foreach ($noTktList as $index => $noTkt)
             <tr>
-                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">#</th>
-                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Ticket Number</th>
-                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Passenger Name</th>
-                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Departure</th>
-                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Ticket Type</th>
-                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Departure Date & Time</th>
-                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Return Date & Time</th>
+                <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">{{ $index + 1 }}</td>
+                <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">{{ $noTkt }}</td>
+                <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">{{ $namaPenumpang[$index] }}</td>
+                <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">{{ $dariTkt[$index] }} - {{ $keTkt[$index] }}</td>
+                <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">{{ $tipeTkt[$index] }}</td>
+                <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">
+                    {{ \Carbon\Carbon::parse($tglBrktTkt[$index])->format('d M Y') }} at
+                    {{ \Carbon\Carbon::parse($jamBrktTkt[$index])->format('H:i') }} WIB
+                </td>
+                <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">
+                    @if ($tipeTkt[$index] == 'Round Trip')
+                        {{ \Carbon\Carbon::parse($tglPlgTkt[$index])->format('d M Y') }} at
+                        {{ \Carbon\Carbon::parse($jamPlgTkt[$index])->format('H:i') }} WIB
+                    @else
+                        -
+                    @endif
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach ($noTktList as $index => $noTkt)
-                <tr>
-                    <td style="border: 1px solid #ddd; padding: 8px;">{{ $index + 1 }}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">{{ $noTkt }}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">{{ $namaPenumpang[$index] }}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">{{ $dariTkt[$index] }} - {{ $keTkt[$index] }}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">{{ $tipeTkt[$index] }}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">
-                        {{ \Carbon\Carbon::parse($tglBrktTkt[$index])->format('d M Y') }} at
-                        {{ \Carbon\Carbon::parse($jamBrktTkt[$index])->format('H:i') }} WIB
-                    </td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">
-                        @if ($tipeTkt[$index] == 'Round Trip')
-                            {{ \Carbon\Carbon::parse($tglPlgTkt[$index])->format('d M Y') }} at
-                            {{ \Carbon\Carbon::parse($jamPlgTkt[$index])->format('H:i') }} WIB
-                        @else
-                            -
-                        @endif
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
+        @endforeach
     </table>
-
 
     <hr>
     <p>For approval or rejection of the Home Trip Ticket, you can choose the following links:</p>
-    <p><a href="{{ $approvalLink }}">Approve</a> / <a href="{{ $rejectionLink }}">Reject</a></p>
+    <p>
+        <a href="{{ $approvalLink }}" style="font-size: 20px;">Approve</a>    /     
+        <a href="{{ $rejectionLink }}" style="font-size: 20px;">Reject</a>
+    </p>
 
-    <p>Thank you,</p>
-    <p>HC System</p>
+    <p>If you have any questions, please contact the respective business unit GA. </p>
+    <br>
+    <p><strong>----------------</strong></p>
+    <p>Human Capital - KPN Corp</p>
 </body>
 
 </html>

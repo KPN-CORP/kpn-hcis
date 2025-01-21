@@ -28,6 +28,9 @@ class TicketNotification extends Mailable
 
     public $approvalLink;
     public $rejectionLink;
+    public $base64Image;
+    public $textNotification;
+    public $employeeName;
 
     /**
      * Create a new message instance.
@@ -48,6 +51,9 @@ class TicketNotification extends Mailable
         $this->managerName = $data['managerName'];
         $this->approvalLink = $data['approvalLink'];
         $this->rejectionLink = $data['rejectionLink'];
+        $this->base64Image = $data['base64Image'];
+        $this->textNotification = $data['textNotification'];
+        $this->employeeName = $data['employeeName'];
     }
 
     public function build()

@@ -199,7 +199,7 @@
     @endphp
 
     @if ( $transactions->type_ca == 'dns' )
-        
+
         <table class="table-approve" style="width: 80%;">
             <tr>
                 <th colspan="5"><b>Detail Cash Advanced :</b></th>
@@ -318,7 +318,7 @@
                                 : '0'
                         }}
                     </span>  
-                </td>                
+                </td>
                 <td>
                     @if (array_sum(array_column($declareCA['detail_penginapan'], 'total_days')) <= 0)
                         -

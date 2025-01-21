@@ -29,4 +29,13 @@ class HotelApproval extends Model
     {
         return $this->belongsTo(Hotel::class, 'id', 'htl_id');
     }
+    public function employeeId()
+    {
+        return $this->belongsTo(Employee::class, 'employee_id', 'employee_id');
+    }
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'employee_id', 'employee_id');
+    }
 }

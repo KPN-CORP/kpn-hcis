@@ -11,12 +11,11 @@ class TiketApproval extends Model
 {
     use HasFactory, HasUuids;
     use SoftDeletes;
-    
+
     public function employeeId()
     {
         return $this->belongsTo(Employee::class, 'employee_id', 'employee_id');
     }
-
     protected $fillable = [
         'id',
         'tkt_id',
@@ -29,4 +28,9 @@ class TiketApproval extends Model
         'reject_info,',
     ];
     protected $table = 'tkt_approvals';
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'employee_id', 'employee_id');
+    }
 }

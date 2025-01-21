@@ -40,7 +40,7 @@ class MedicalController extends Controller
     public function medical()
     {
         $employee_id = Auth::user()->employee_id;
-        
+        $family = Dependents::orderBy('date_of_birth', 'asc')->where('employee_id', $employee_id)->get();
         $medical = HealthCoverage::orderBy('created_at', 'desc')->where('employee_id', $employee_id)->get();
         $medical_plan = HealthPlan::orderBy('period', 'desc')->where('employee_id', $employee_id)->get();
         $medicalGroup = HealthCoverage::select(
@@ -199,9 +199,6 @@ class MedicalController extends Controller
         $ym = $year.'-'.$month;
         $today = date('Y-m-d');
 
-        // $count = Dependents::where('employee_id', $employee_id)
-        //     ->where('updated_at', 'like', "$ym%")
-        //     ->count();
         $count = Dependents::where('employee_id', $employee_id)
             ->whereDate('updated_at', $today)
             ->count();
@@ -240,18 +237,18 @@ class MedicalController extends Controller
                                 ['array_id' => $dependent[2]],
                                 [
                                     'id' => Str::uuid(),
-                                    'employee_id' => $dependent[0], 
-                                    'name' => trim($dependent[3] .''. $dependent[4] . ' ' . $dependent[5]), 
-                                    'array_id' => $dependent[2], 
-                                    'first_name' => $dependent[3], 
-                                    'middle_name' => $dependent[4], 
-                                    'last_name' => $dependent[5], 
+                                    'employee_id' => $dependent[0],
+                                    'name' => trim($dependent[3] . '' . $dependent[4] . ' ' . $dependent[5]),
+                                    'array_id' => $dependent[2],
+                                    'first_name' => $dependent[3],
+                                    'middle_name' => $dependent[4],
+                                    'last_name' => $dependent[5],
                                     'relation_type' => ($dependent[6] == 'Son') ? 'Child' : $dependent[6],
                                     'contact_details' => $dependent[7],
-                                    'phone' => $dependent[8], 
-                                    'date_of_birth' => Carbon::createFromFormat('d-m-Y', $dependent[9])->format('Y-m-d'), 
+                                    'phone' => $dependent[8],
+                                    'date_of_birth' => Carbon::createFromFormat('d-m-Y', $dependent[9])->format('Y-m-d'),
                                     'nationality' => $dependent[14],
-                                    'updated_on' => Carbon::createFromFormat('d-m-Y', $dependent[15])->format('Y-m-d'), 
+                                    'updated_on' => Carbon::createFromFormat('d-m-Y', $dependent[15])->format('Y-m-d'),
                                     'jobs' => $dependent[16],
                                     'gender' => explode('/', $dependent[17])[0],
                                     'no_bpjs' => $dependent[18],
@@ -272,8 +269,8 @@ class MedicalController extends Controller
                 Log::error('Exception occurred in updateDependents method', ['error' => $e->getMessage()]);
                 // return response()->json(['message' => 'An error occurred: '.$e->getMessage()], 500);
             }
-        }        
-        
+        }
+
         $family = Dependents::orderBy('date_of_birth', 'asc')->where('employee_id', $employee_id)->get();
         $parentLink = 'Reimbursement';
         $link = 'Medical';
@@ -303,12 +300,12 @@ class MedicalController extends Controller
         // dd($isGlasses);
 
         $medicalBalances = HealthPlan::where('employee_id', $employee_id)
-            //->where('period', $currentYear)
+            // ->where('period', $currentYear)
             ->get();
         $balanceData = [];
         foreach ($medicalBalances as $balance) {
             // Assuming `medical_type` is a property of `HealthPlan`
-            $balanceData[$balance->medical_type][$balance->period]  = $balance->balance;
+            $balanceData[$balance->medical_type][$balance->period] = $balance->balance;
         }
         // dd($balanceData);
 
@@ -325,31 +322,57 @@ class MedicalController extends Controller
 
     public function medicalCreate(Request $request)
     {
+        $userId = Auth::id();
         $employee_id = Auth::user()->employee_id;
         $no_medic = $this->generateNoMedic();
 
         $contribution_level_code = Employee::where('employee_id', $employee_id)
-        ->pluck('contribution_level_code')
-        ->first();
+            ->pluck('contribution_level_code')
+            ->first();
 
         $statusValue = $request->has('action_draft') ? 'Draft' : 'Pending';
+        $employee_data = Employee::where('id', $userId)->first();
 
-        $medical_proof_path = null;
-        if ($request->hasFile('medical_proof')) {
-            $file = $request->file('medical_proof');
-            $filename = time() . '_' . $file->getClientOriginalName();
-
-            // Tentukan path penyimpanan relatif di disk 'public'
-            $upload_path = 'uploads/proofs/' . $employee_id;
-
-            // Simpan file ke storage/app/public menggunakan Laravel's storage disk
-            $file->storeAs($upload_path, $filename, 'public');
-
-            // Path yang akan disimpan ke database (URL yang bisa diakses)
-            $medical_proof_path = $upload_path . '/' . $filename;
+        if ($request->has('removed_medical_proof')) {
+            $removedFiles = json_decode($request->removed_medical_proof, true);
+            $existingFiles = $request->existing_medical_proof ? json_decode($request->existing_medical_proof, true) : [];
+        
+            // Hapus file yang ada di server
+            foreach ($removedFiles as $fileToRemove) {
+                if (in_array($fileToRemove, $existingFiles)) {
+                    $filePath = public_path($fileToRemove);
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                    $existingFiles = array_filter($existingFiles, fn($file) => $file !== $fileToRemove);
+                }
+            }
         } else {
-            $medical_proof_path = $request->existing_prove_declare;
+            $existingFiles = $request->existing_medical_proof ? json_decode($request->existing_medical_proof, true) : [];
         }
+        
+        // Proses file baru
+        if ($request->hasFile('medical_proof')) {
+            $request->validate([
+                'medical_proof.*' => 'required|mimes:jpeg,png,jpg,gif,pdf|max:2048',
+            ]);
+        
+            foreach ($request->file('medical_proof') as $file) {
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $upload_path = 'uploads/proofs/' . $employee_data->employee_id;
+                $full_path = public_path($upload_path);
+        
+                if (!is_dir($full_path)) {
+                    mkdir($full_path, 0755, true);
+                }
+        
+                $file->move($full_path, $filename);
+                $existingFiles[] = $upload_path . '/' . $filename;
+            }
+        }
+        
+        // Simpan semua file yang tersisa ke database
+        $medical_proof_path = json_encode(array_values($existingFiles));    
 
         $medical_costs = $request->input('medical_costs', []);
         $date = Carbon::parse($request->date);
@@ -428,6 +451,7 @@ class MedicalController extends Controller
             // Assuming `medical_type` is a property of `HealthPlan`
             $balanceData[$balance->medical_type][$balance->period] = $balance->balance;
         }
+        // dd($balanceData);
 
         // Find all records with the same no_medic (group of medical types)
         $medicGroup = HealthCoverage::where('no_medic', $medic->no_medic)
@@ -452,6 +476,7 @@ class MedicalController extends Controller
 
     public function medicalUpdate(Request $request, $id)
     {
+        $userId = Auth::id();
         $employee_id = Auth::user()->employee_id;
         $existingMedical = HealthCoverage::where('usage_id', $id)->first();
 
@@ -465,11 +490,55 @@ class MedicalController extends Controller
         $statusValue = $request->has('action_draft') ? 'Draft' : 'Pending';
 
         // Handle medical proof file upload
-        $medical_proof_path = null;
-        if ($request->hasFile('medical_proof')) {
-            $file = $request->file('medical_proof');
-            $medical_proof_path = $file->store('public/storage/proofs');
+        $employee_data = Employee::where('id', $userId)->first();
+
+        if ($request->has('removed_medical_proof')) {
+            $removedFiles = json_decode($request->removed_medical_proof, true) ?? [];
+            $existingFiles = $request->existing_medical_proof ? json_decode($request->existing_medical_proof, true) : [];
+
+            if (!is_array($removedFiles)) {
+                $removedFiles = [];
+            }
+            if (!is_array($existingFiles)) {
+                $existingFiles = [];
+            }
+        
+            // Hapus file yang ada di server
+            foreach ($removedFiles as $fileToRemove) {
+                if (in_array($fileToRemove, $existingFiles)) {
+                    $filePath = public_path($fileToRemove);
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                    $existingFiles = array_filter($existingFiles, fn($file) => $file !== $fileToRemove);
+                }
+            }
+        } else {
+            $existingFiles = $request->existing_medical_proof ? json_decode($request->existing_medical_proof, true) : [];
         }
+        
+        // Proses file baru
+        if ($request->hasFile('medical_proof')) {
+            $request->validate([
+                'medical_proof.*' => 'required|mimes:jpeg,png,jpg,gif,pdf|max:2048',
+            ]);
+        
+            foreach ($request->file('medical_proof') as $file) {
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $upload_path = 'uploads/proofs/' . $employee_data->employee_id;
+                $full_path = public_path($upload_path);
+        
+                if (!is_dir($full_path)) {
+                    mkdir($full_path, 0755, true);
+                }
+        
+                $file->move($full_path, $filename);
+                $existingFiles[] = $upload_path . '/' . $filename;
+            }
+        }
+        
+        // Simpan semua file yang tersisa ke database
+        $medical_proof_path = json_encode(array_values($existingFiles));    
 
         $medical_costs = $request->input('medical_costs', []);
         $date = Carbon::parse($request->date);
@@ -660,6 +729,7 @@ class MedicalController extends Controller
         // Update the medical proof and common fields (if needed)
         $commonUpdateData = [
             'medical_proof' => $medical_proof_path ?? $existingMedical->medical_proof,
+            'admin_notes' => $request->input('admin_notes', $existingMedical->admin_notes),
         ];
 
         HealthCoverage::where('no_medic', $no_medic)->update($commonUpdateData);
@@ -714,10 +784,11 @@ class MedicalController extends Controller
         return redirect()->route('medical.confirmation')->with('success', 'Medical verification data successfully updated.');
     }
 
+
     public function medicalAdminDelete($id)
     {
         $medical = HealthCoverage::findOrFail($id);
-
+        
         if($medical->status == 'Done'){
             // Ambil nilai yang diperlukan dari record
             $noMedic = $medical->no_medic;
@@ -750,11 +821,12 @@ class MedicalController extends Controller
         // Redirect back with a success message
         return redirect()->back()->with('success', 'Medical Deleted');
     }
+
     public function medicalReportAdminDelete($id)
     {
         // Ambil data HealthCoverage berdasarkan ID
         $medical = HealthCoverage::findOrFail($id);
-        
+
         if($medical->status == 'Done'){
             // Ambil nilai yang diperlukan dari record
             $noMedic = $medical->no_medic;
@@ -763,16 +835,16 @@ class MedicalController extends Controller
             $employeeId = $medical->employee_id;
             $period = $medical->period;
             $medicalType = $medical->medical_type;
-    
+
             // Hitung hasil pengurangan balance_verif dengan balance_uncoverage
             $adjustmentValue = $balanceVerif - $balanceUncoverage; // 999,999 - 277,768 = 722,231
-    
+
             // Cari data HealthPlan berdasarkan kriteria
             $healthPlan = HealthPlan::where('employee_id', $employeeId)
                 ->where('period', $period)
                 ->where('medical_type', $medicalType)
                 ->first();
-    
+
             if ($healthPlan) {
                 // Tambahkan hasil pengurangan ke balance HealthPlan
                 $healthPlan->balance += $adjustmentValue; // 60,000,000 + 722,231 = 60,722,231
@@ -922,7 +994,7 @@ class MedicalController extends Controller
             ->get();
 
         $medicalBalances = HealthPlan::where('employee_id', $medic->employee_id)
-            //->whereYear('period', $currentYear)
+            // ->whereYear('period', $currentYear)
             ->get();
 
         $balanceData = [];
@@ -930,7 +1002,7 @@ class MedicalController extends Controller
             // Assuming `medical_type` is a property of `HealthPlan`
             $balanceData[$balance->medical_type][$balance->period] = $balance->balance;
         }
-
+        // dd($balanceData);
         // Extract the medical types from medicGroup
         $selectedMedicalTypes = $medicGroup->pluck('medical_type')->unique();
         $balanceMapping = $medicGroup->pluck('balance_verif', 'medical_type');
@@ -987,7 +1059,7 @@ class MedicalController extends Controller
                 $balanceVerif = $coverage->balance_verif;
                 $employeeId = $coverage->employee_id;
                 $date = Carbon::parse($request->date);
-                $period = $medical->period;
+                $period = $date->year;
 
                 // Fetch the health plan for this employee and medical type
                 $healthPlan = HealthPlan::where('employee_id', $employeeId)
@@ -1130,7 +1202,7 @@ class MedicalController extends Controller
         $hasFilter = false;
         $medicalGroup = [];
 
-        $userRole = auth()->user()->roles->last();
+        $userRole = auth()->user()->roles->first();
         $roleRestriction = json_decode($userRole->restriction, true);
         $restrictedWorkAreas = $roleRestriction['work_area_code'] ?? [];
         $restrictedGroupCompanies = $roleRestriction['group_company'] ?? [];
@@ -1148,7 +1220,16 @@ class MedicalController extends Controller
             }
         }
 
-        $medicalGroup = $healthCoverageQuery->where('status', 'Done')->get()->groupBy('employee_id');
+        if (request()->get('statusMDC') == '') {
+        } else {
+            if ($request->has('statusMDC') && $request->input('statusMDC') !== '') {
+                $statusMDC = $request->input('statusMDC');
+                $healthCoverageQuery->where('status', $statusMDC);
+                $hasFilter = true;
+            }
+        }
+
+        $medicalGroup = $healthCoverageQuery->get()->groupBy('employee_id');
 
         $query = Employee::with(['employee', 'statusReqEmployee', 'statusSettEmployee']);
 
@@ -1241,7 +1322,7 @@ class MedicalController extends Controller
         $employee_id = decrypt($key);
 
         // Ambil data dependents, medical, dan medical_plan berdasarkan employee_id
-        // $family = Dependents::orderBy('date_of_birth', 'desc')->where('employee_id', $employee_id)->get();
+        $family = Dependents::orderBy('date_of_birth', 'desc')->where('employee_id', $employee_id)->get();
         $medical = HealthCoverage::orderBy('created_at', 'desc')->where('employee_id', $employee_id)->get();
         $medical_plan = HealthPlan::orderBy('period', 'desc')->where('employee_id', $employee_id)->get();
         $medicalGroup = HealthCoverage::select(
@@ -1323,7 +1404,7 @@ class MedicalController extends Controller
         foreach ($medical_plan as $plan) {
             $formatted_data[$plan->period][$plan->medical_type] = $plan->balance;
         }
-        
+
         $year = date('Y');
         $month = date('m');
         $ym = $year.'-'.$month;
@@ -1410,6 +1491,31 @@ class MedicalController extends Controller
         return view('hcis.reimbursements.medical.admin.medicalAdmin', compact('family', 'medical_plan', 'medical', 'parentLink','sublink', 'link', 'rejectMedic', 'employees', 'employee_id', 'master_medical', 'formatted_data', 'medicalGroup', 'gaFullname'));
     }
 
+    public function medicalAdminEditPlafon(Request $request, $period, $employee)
+    {
+        $employee_id = $employee;
+        $period = $period;
+
+        $medicalData = $request->except(['_token']);
+
+        // Loop melalui data medical untuk menyimpan atau memperbarui
+        foreach ($medicalData as $medicalType => $balance) {
+            HealthPlan::updateOrCreate(
+                [
+                    'employee_id' => $employee_id,
+                    'period' => $period,
+                    'medical_type' => $medicalType
+                ],
+                [
+                    'balance' => str_replace('.', '', $balance) // Hapus format angka sebelum disimpan
+                ]
+            );
+        }
+
+        // Kirim data ke view
+        return redirect()->back()->with('success', 'Plafon are edited');
+    }
+
     public function medicalAdminDetailForm($key)
     {
         // Gunakan findByRouteKey untuk mendekripsi $key
@@ -1445,16 +1551,59 @@ class MedicalController extends Controller
 
     public function medicalAdminDetailCreate(Request $request, $key)
     {
+        $userId = Auth::id();
         $employee_id = decrypt($key);
         $no_medic = $this->generateNoMedic();
 
         $statusValue = $request->has('action_draft') ? 'Draft' : 'Pending';
 
-        $medical_proof_path = null;
-        if ($request->hasFile('medical_proof')) {
-            $file = $request->file('medical_proof');
-            $medical_proof_path = $file->store('public/storage/proofs');
+        $contribution_level_code = Employee::where('employee_id', $employee_id)
+        ->pluck('contribution_level_code')
+        ->first();
+
+        // Handle medical proof file upload
+        $employee_data = Employee::where('id', $userId)->first();
+
+        if ($request->has('removed_medical_proof')) {
+            $removedFiles = json_decode($request->removed_medical_proof, true);
+            $existingFiles = $request->existing_medical_proof ? json_decode($request->existing_medical_proof, true) : [];
+        
+            // Hapus file yang ada di server
+            foreach ($removedFiles as $fileToRemove) {
+                if (in_array($fileToRemove, $existingFiles)) {
+                    $filePath = public_path($fileToRemove);
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                    $existingFiles = array_filter($existingFiles, fn($file) => $file !== $fileToRemove);
+                }
+            }
+        } else {
+            $existingFiles = $request->existing_medical_proof ? json_decode($request->existing_medical_proof, true) : [];
         }
+        
+        // Proses file baru
+        if ($request->hasFile('medical_proof')) {
+            $request->validate([
+                'medical_proof.*' => 'required|mimes:jpeg,png,jpg,gif,pdf|max:2048',
+            ]);
+        
+            foreach ($request->file('medical_proof') as $file) {
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $upload_path = 'uploads/proofs/' . $employee_data->employee_id;
+                $full_path = public_path($upload_path);
+        
+                if (!is_dir($full_path)) {
+                    mkdir($full_path, 0755, true);
+                }
+        
+                $file->move($full_path, $filename);
+                $existingFiles[] = $upload_path . '/' . $filename;
+            }
+        }
+        
+        // Simpan semua file yang tersisa ke database
+        $medical_proof_path = json_encode(array_values($existingFiles));    
 
         $medical_costs = $request->input('medical_costs', []);
         $date = Carbon::parse($request->date);
@@ -1475,6 +1624,7 @@ class MedicalController extends Controller
             HealthCoverage::create([
                 'usage_id' => (string) Str::uuid(),
                 'employee_id' => $employee_id,
+                'contribution_level_code' => $contribution_level_code,
                 'no_medic' => $no_medic,
                 'no_invoice' => $request->no_invoice,
                 'hospital_name' => $request->hospital_name,
@@ -1502,7 +1652,7 @@ class MedicalController extends Controller
         // Ambil data dependents, medical, dan medical_plan berdasarkan employee_id
         $family = Dependents::orderBy('date_of_birth', 'desc')->get();
         $medical = HealthCoverage::orderBy('created_at', 'desc')->get();
-        $userRole = auth()->user()->roles->last();
+        $userRole = auth()->user()->roles->first();
         $roleRestriction = json_decode($userRole->restriction, true);
 
         $restrictedWorkAreas = $roleRestriction['work_area_code'] ?? [];
@@ -1633,9 +1783,10 @@ class MedicalController extends Controller
         // Validate the uploaded file
         $request->validate([
             'file' => 'required|mimes:xlsx,xls',
+            'attachment' => 'nullable|mimes:pdf|max:3072', // Optional, max 3MB
         ]);
 
-        // Create instance of import class
+        // // Create instance of import class
         // $import = new ImportHealthCoverage();
 
         // // Import the data
@@ -1644,11 +1795,26 @@ class MedicalController extends Controller
         // // After import is complete, process the batched records and send emails
         // $import->afterImport();
 
-        // return redirect()->route('medical.report')->with('success', 'Transaction successfully added from Excel.');
+        // return redirect()->route('medical.admin')->with('success', 'Transaction successfully added from Excel.');
 
         try {
+            $attachmentPath = null;
+            if ($request->hasFile('imp_attachment')) {
+                $attachment = $request->file('imp_attachment');
+                $attachmentName = 'proof_' . time() . '_' . $attachment->getClientOriginalName();
+                $uploadPath = 'uploads/proofs/import_medical';
+                $fullPath = public_path($uploadPath);
+            
+                // Save file to storage
+                $attachmentPath = $attachment->storeAs($uploadPath, $attachmentName, 'public');
+            
+                // Move file to public path
+                $attachment->move($fullPath, $attachmentName);
+                $existingFiles[] = $uploadPath . '/' . $attachmentName;
+            }
+
             // Create instance of import class
-            $import = new ImportHealthCoverage();
+            $import = new ImportHealthCoverage($attachmentPath);
 
             // Import the data
             Excel::import($import, $request->file('file'));
@@ -1669,13 +1835,14 @@ class MedicalController extends Controller
 
     public function exportAdminExcel(Request $request)
     {
+        $statusMDC = $request->input('statusMDC');
         $stat = $request->input('stat');
         $customSearch = $request->input('customsearch');
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         $unit = $request->input('unit');
 
-        return Excel::download(new MedicalExport($stat, $customSearch, $startDate, $endDate, $unit), 'medical_report.xlsx');
+        return Excel::download(new MedicalExport($statusMDC, $stat, $customSearch, $startDate, $endDate, $unit), 'medical_report.xlsx');
     }
 
     public function exportDetailExcel($employee_id)

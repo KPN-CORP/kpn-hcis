@@ -39,31 +39,35 @@
                                     <div class="mb-2">
                                         <label class="form-label" for="start">Name</label>
                                         <input type="text" name="name" id="name"
-                                            value="{{ $employee_data->fullname }}" class="form-control bg-light" readonly>
+                                            value="{{ $employee_data->fullname }}"
+                                            class="form-control bg-light form-control-sm" readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-5">
                                     <div class="mb-2">
                                         <label class="form-label" for="start">Unit</label>
                                         <input type="text" name="unit" id="unit"
-                                            value="{{ $employee_data->unit }}" class="form-control bg-light" readonly>
+                                            value="{{ $employee_data->unit }}" class="form-control bg-light form-control-sm"
+                                            readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-2">
                                     <div class="mb-2">
                                         <label class="form-label" for="start">Grade</label>
                                         <input type="text" name="grade" id="grade"
-                                            value="{{ $employee_data->job_level }}" class="form-control bg-light" readonly>
+                                            value="{{ $employee_data->job_level }}"
+                                            class="form-control bg-light form-control-sm" readonly>
                                     </div>
                                 </div>
                             </div>
                             @include('hcis.reimbursements.businessTrip.modal')
                             <!-- Business Trip Number Selection -->
                             <div class="row">
-                                <div class="col-md-8">
+                                <div class="col-md-5">
                                     <div class="mb-2">
                                         <label class="form-label" for="bisnis_numb">Business Trip Number</label>
-                                        <select class="form-control select2" id="bisnis_numb" name="bisnis_numb" disabled>
+                                        <select class="form-control select2 form-select-sm" id="bisnis_numb"
+                                            name="bisnis_numb" disabled>
                                             <option value="-" {{ $ticket->no_sppd === '-' ? 'selected' : '' }}>No
                                                 Business
                                                 Trip</option>
@@ -76,11 +80,27 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-5">
+                                    <div class="mb-2">
+                                        <label class="form-label" for="contribution_level_code">Costing Company</label>
+                                        <select class="form-control select2 form-select-sm" id="contribution_level_code"
+                                            name="contribution_level_code" disabled>
+                                            <option value="" selected disabled>Select Costing Company</option>
+                                            @foreach ($companies as $company)
+                                                <option value="{{ $company->contribution_level_code }}"
+                                                    {{ $ticket->contribution_level_code == $company->contribution_level_code ? 'selected' : '' }}>
+                                                    {{ $company->contribution_level . ' (' . $company->contribution_level_code . ')' }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
                                     <div class="mb-2">
                                         <label class="form-label" for="jns_dinas_tkt">Service Type</label>
-                                        <input type="text" class="form-control bg-light" name="jns_dinas_tkt"
-                                            id="jns_dinas_tkt" value="{{ $ticket->jns_dinas_tkt }}" readonly>
+                                        <input type="text" class="form-control bg-light form-control-sm"
+                                            name="jns_dinas_tkt" id="jns_dinas_tkt" value="{{ $ticket->jns_dinas_tkt }}"
+                                            readonly>
                                     </div>
                                 </div>
                             </div>
@@ -165,16 +185,18 @@
                                                 <div class="col-md-4 mb-2">
                                                     <label class="form-label">From</label>
                                                     <div class="input-group">
-                                                        <input class="form-control form-control-sm bg-light" name="dari_tkt[]"
-                                                            type="text" placeholder="ex. Yogyakarta (YIA)"
+                                                        <input class="form-control form-control-sm bg-light"
+                                                            name="dari_tkt[]" type="text"
+                                                            placeholder="ex. Yogyakarta (YIA)"
                                                             value="{{ $ticket['dari_tkt'] ?? '' }}" readonly>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4 mb-2">
                                                     <label class="form-label">To</label>
                                                     <div class="input-group">
-                                                        <input class="form-control form-control-sm bg-light" name="ke_tkt[]"
-                                                            type="text" placeholder="ex. Jakarta (CGK)"
+                                                        <input class="form-control form-control-sm bg-light"
+                                                            name="ke_tkt[]" type="text"
+                                                            placeholder="ex. Jakarta (CGK)"
                                                             value="{{ $ticket['ke_tkt'] ?? '' }}" readonly>
                                                     </div>
                                                 </div>
@@ -183,7 +205,8 @@
                                                 <div class="col-md-6 mb-2">
                                                     <label class="form-label">Transportation Type</label>
                                                     <div class="input-group">
-                                                        <select class="form-select form-select-sm" name="jenis_tkt[]" disabled>
+                                                        <select class="form-select form-select-sm" name="jenis_tkt[]"
+                                                            disabled>
                                                             <option value="">Select Transportation Type</option>
                                                             <option value="Train"
                                                                 {{ $ticket && $ticket['jenis_tkt'] == 'Train' ? 'selected' : '' }}>
@@ -221,8 +244,9 @@
                                                 <div class="col-md-6 mb-2">
                                                     <label class="form-label">Date</label>
                                                     <div class="input-group">
-                                                        <input class="form-control form-control-sm bg-light" name="tgl_brkt_tkt[]"
-                                                            type="date" id="tgl_brkt_tkt_<?php echo $i; ?>"
+                                                        <input class="form-control form-control-sm bg-light"
+                                                            name="tgl_brkt_tkt[]" type="date"
+                                                            id="tgl_brkt_tkt_<?php echo $i; ?>"
                                                             value="{{ $ticket['tgl_brkt_tkt'] ?? '' }}"
                                                             onchange="validateDates(<?php echo $i; ?>)" readonly>
                                                     </div>
@@ -230,8 +254,9 @@
                                                 <div class="col-md-6 mb-2">
                                                     <label class="form-label">Time</label>
                                                     <div class="input-group">
-                                                        <input class="form-control form-control-sm bg-light" name="jam_brkt_tkt[]"
-                                                            type="time" id="jam_brkt_tkt_<?php echo $i; ?>"
+                                                        <input class="form-control form-control-sm bg-light"
+                                                            name="jam_brkt_tkt[]" type="time"
+                                                            id="jam_brkt_tkt_<?php echo $i; ?>"
                                                             value="{{ $ticket['jam_brkt_tkt'] ?? '' }}"
                                                             onchange="validateDates(<?php echo $i; ?>)" readonly>
                                                     </div>
@@ -286,13 +311,14 @@
                         <input type="hidden" id="no_sppd" value="{{ $ticket['no_tkt'] }}">
                         <!-- Approve Form -->
                         <form method="POST" action="{{ route('change.status.ticket', ['id' => $ticket['id']]) }}"
-                            style="display: inline-block; margin-right: 5px;" class="status-form" id="approve-form-{{ $ticket['id'] }}">
+                            style="display: inline-block; margin-right: 5px;" class="status-form"
+                            id="approve-form-{{ $ticket['id'] }}">
                             @csrf
                             @method('PUT')
                             <input type="hidden" name="status_approval"
                                 value="{{ Auth::user()->id == $ticketOwnerEmployee->manager_l1_id ? 'Pending L2' : 'Approved' }}">
-                            <button type="submit" class="btn btn-success rounded-pill approve-button" style="padding: 0.5rem 1rem;"
-                            data-id="{{ $ticket['id']}}" >
+                            <button type="submit" class="btn btn-success rounded-pill approve-button"
+                                style="padding: 0.5rem 1rem;" data-id="{{ $ticket['id'] }}">
                                 Approve
                             </button>
                         </form>

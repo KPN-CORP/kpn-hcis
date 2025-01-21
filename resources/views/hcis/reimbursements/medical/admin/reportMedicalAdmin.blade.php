@@ -83,19 +83,28 @@
                         <form action="{{ route('medical.report') }}" method="GET">
                             <div class="container-fluid p-2">
                                 <div class="row align-items-end g-1">
-                                    <div class="col-12 col-md-2">
+                                    <div class="col-12 col-md-1">
                                         <label class="form-label">Filter From :</label>
                                         <input type="date" class="form-control" id="start_date" name="start_date" placeholder="Start Date" value="{{ request()->get('start_date') }}" title="Start Date">
                                     </div>
 
-                                    <div class="col-12 col-md-2">
+                                    <div class="col-12 col-md-1">
                                         <label class="form-label">Until :</label>
                                         <input type="date" class="form-control" id="end_date" name="end_date" placeholder="End Date" value="{{ request()->get('end_date') }}" title="End Date">
                                     </div>
 
                                     <div class="col-12 col-md-2">
+                                        <label class="form-label">Status :</label>
+                                        <select class="form-select select2" aria-label="Status" id="statusMDC" name="statusMDC">
+                                            <option value="" {{ request()->get('statusMDC') == '-' ? 'selected' : '' }}>- All Status -</option>
+                                            <option value="Done" {{ request()->get('statusMDC') == 'Done' ? 'selected' : '' }}>Done</option>
+                                            <option value="Pending" {{ request()->get('statusMDC') == 'Pending' ? 'selected' : '' }}>Pending</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-12 col-md-2">
                                         <label class="form-label">Business Units :</label>
-                                        <select class="form-select select2" aria-label="Status" id="stat" name="stat">
+                                        <select class="form-select select2" aria-label="Unit" id="stat" name="stat">
                                             <option value="" {{ request()->get('stat') == '-' ? 'selected' : '' }}>- Select Bussiness Unit -</option>
                                             @foreach ($unit as $units)
                                                 <option value="{{ $units->nama_bisnis }}" {{ $units->nama_bisnis == request()->get('stat') ? 'selected' : '' }}>
@@ -107,7 +116,7 @@
 
                                     <div class="col-12 col-md-2">
                                         <label class="form-label">Unit Location:</label>
-                                        <select class="form-select select2" aria-label="Status" id="unit"
+                                        <select class="form-select select2" aria-label="Location" id="unit"
                                             name="unit">
                                             <option value="" {{ request()->get('unit') == '-' ? 'selected' : '' }}>All
                                                 Location</option>
@@ -131,7 +140,8 @@
                                     </div>
 
                                     <div class="col-12 col-md-1">
-                                        @if (isset($_GET['stat']) && $_GET['stat'] !== ''
+                                        @if (isset($_GET['statusMDC']) && $_GET['statusMDC'] !== ''
+                                            ||isset($_GET['stat']) && $_GET['stat'] !== ''
                                             || isset($_GET['customsearch']) && $_GET['customsearch'] !== ''
                                             || isset($_GET['unit']) && $_GET['unit'] !== ''
                                             || (isset($_GET['start_date']) && $_GET['start_date'] !== '' && isset($_GET['end_date']) && $_GET['end_date'] !== ''))
@@ -273,6 +283,7 @@
             const route = "{{ route('exportmed.excel') }}";
 
             // Ambil nilai dari input
+            const statusMDC = document.getElementById("statusMDC").value;
             const stat = document.getElementById("stat").value;
             const customSearch = document.getElementById("customsearch").value;
             const endDate = document.getElementById("end_date").value;
@@ -285,6 +296,11 @@
             form.action = route;
 
             // Tambahkan input tersembunyi untuk setiap parameter
+            const statusMDCInput = document.createElement("input");
+            statusMDCInput.type = "hidden";
+            statusMDCInput.name = "statusMDC";
+            statusMDCInput.value = statusMDC;
+
             const statInput = document.createElement("input");
             statInput.type = "hidden";
             statInput.name = "stat";
@@ -312,6 +328,7 @@
 
 
             // Tambahkan input ke form
+            form.appendChild(statusMDCInput);
             form.appendChild(statInput);
             form.appendChild(customSearchInput);
             form.appendChild(startDateInput);

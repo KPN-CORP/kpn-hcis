@@ -57,15 +57,32 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-12 mb-3">
-                                <div class="mb-2">
-                                    <label class="form-label" for="name">Business Trip Number</label>
-                                    <select class="form-select select2 form-select-sm" id="bisnis_numb" name="bisnis_numb">
-                                        <option value="-">No Business Trip</option>
-                                        @foreach ($no_sppds as $no_sppd)
-                                            <option value="{{ $no_sppd->no_sppd }}">{{ $no_sppd->no_sppd }}</option>
-                                        @endforeach
-                                    </select>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="mb-2">
+                                        <label class="form-label" for="name">Business Trip Number</label>
+                                        <select class="form-select select2 form-select-sm" id="bisnis_numb"
+                                            name="bisnis_numb">
+                                            <option value="-">No Business Trip</option>
+                                            @foreach ($no_sppds as $no_sppd)
+                                                <option value="{{ $no_sppd->no_sppd }}">{{ $no_sppd->no_sppd }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="mb-2">
+                                        <label class="form-label" for="contribution_level_code">Costing Company</label>
+                                        <select class="form-control select2 form-select-sm" id="contribution_level_code"
+                                            name="contribution_level_code" required>
+                                            <option value="" selected disabled>Select Costing Company</option>
+                                            @foreach ($companies as $company)
+                                                <option value="{{ $company->contribution_level_code }}">
+                                                    {{ $company->contribution_level . ' (' . $company->contribution_level_code . ')' }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
 
@@ -241,9 +258,15 @@
 
             // Calculate the total days if all validations pass
             if (checkInDate && checkOutDate) {
-                const diffTime = Math.abs(checkOutDate - checkInDate);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                totalDaysInput.value = diffDays;
+                // Check if same day
+                if (checkInDate.getTime() === checkOutDate.getTime()) {
+                    totalDaysInput.value = 1;
+                } else {
+                    // Calculate difference in days including both start and end dates
+                    const diffTime = checkOutDate - checkInDate;
+                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                    totalDaysInput.value = diffDays;
+                }
             } else {
                 totalDaysInput.value = "";
             }
