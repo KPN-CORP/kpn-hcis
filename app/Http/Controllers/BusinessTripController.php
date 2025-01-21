@@ -838,6 +838,9 @@ class BusinessTripController extends Controller
                     $model_approval->layer = $data_matrix_approval->layer;
                     $model_approval->approval_status = 'Pending';
 
+                        // Simpan data ke database
+                        $model_approval->save();
+                    }
                     $model_approval->save();
                 }
             }
@@ -2550,7 +2553,6 @@ class BusinessTripController extends Controller
             // Save the details
             $detail_ca = [
                 'detail_perdiem' => $detail_perdiem,
-                'detail_meals' => $detail_meals,
                 'detail_transport' => $detail_transport,
                 'detail_penginapan' => $detail_penginapan,
                 'detail_lainnya' => $detail_lainnya,
