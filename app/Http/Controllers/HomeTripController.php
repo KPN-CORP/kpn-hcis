@@ -11,6 +11,7 @@ use App\Models\HomeTrip;
 use App\Models\Location;
 use App\Models\Tiket;
 use App\Models\TiketApproval;
+use App\Models\Designation;
 use Exception;
 use Illuminate\Http\Request;
 use App\Models\Dependents;
@@ -24,6 +25,24 @@ use Illuminate\Support\Facades\Log;
 
 class HomeTripController extends Controller
 {
+    function findDepartmentHead($employee)
+    {
+        $manager = Employee::where('employee_id', $employee->manager_l1_id)->first();
+
+        if (!$manager) {
+            return null;
+        }
+
+        $designation = Designation::where('job_code', $manager->designation_code)->first();
+
+        if ($designation->dept_head_flag == 'T') {
+            return $manager;
+        } else {
+            return findDepartmentHead($manager);
+        }
+        return null;
+    }
+    
     public function homeTrip(Request $request)
     {
         // Get the filtered tickets
@@ -229,6 +248,13 @@ class HomeTripController extends Controller
         $employee = Employee::where('employee_id', $employee_id)->first();
 
         $employeeName = $employee->fullname;
+        $employee_data = Employee::where('id', $userId)->first();
+        $contribution_level_code = Employee::where('id', $userId)->pluck('contribution_level_code')->first();
+
+        $deptHeadManager = findDepartmentHead($employee_data);
+
+        $managerL1 = $deptHeadManager->employee_id;
+        $managerL2 = $deptHeadManager->manager_l1_id;
 
         $npTkt = array_values($request->np_tkt);
         $selectedName = $npTkt[0] ?? null;
@@ -345,6 +371,9 @@ class HomeTripController extends Controller
                 $userId = Auth::id();
                 $tiket->no_sppd = $request->bisnis_numb;
                 $tiket->user_id = $userId;
+                $tiket->manager_l1_id = $managerL1;
+                $tiket->manager_l2_id = $managerL2;
+                $tiket->contribution_level_code = $contribution_level_code;
                 $tiket->unit = $request->unit;
                 $tiket->jk_tkt = $gender;
                 $tiket->np_tkt = $ticketData['np_tkt'][$key];
@@ -520,6 +549,14 @@ class HomeTripController extends Controller
         $employeeName = $employee->fullname;
         $currentYear = now()->year;
 
+        $employee_data = Employee::where('id', $userId)->first();
+        $contribution_level_code = Employee::where('id', $userId)->pluck('contribution_level_code')->first();
+
+        $deptHeadManager = findDepartmentHead($employee_data);
+
+        $managerL1 = $deptHeadManager->employee_id;
+        $managerL2 = $deptHeadManager->manager_l1_id;
+
         $npTkt = array_values($request->np_tkt);
         $selectedName = $npTkt[0] ?? null;
         // dd($request->np_tkt, $selectedName);
@@ -609,6 +646,9 @@ class HomeTripController extends Controller
 
                 $ticketData = [
                     'user_id' => Auth::id(),
+                    'manager_l1_id' => $managerL1,
+                    'manager_l2_id' => $managerL2,
+                    'contribution_level_code' => $contribution_level_code,
                     'unit' => $request->unit,
                     'noktp_tkt' => $request->noktp_tkt[$key] ?? null,
                     'dari_tkt' => $request->dari_tkt[$key] ?? null,
