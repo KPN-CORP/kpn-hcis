@@ -74,7 +74,7 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-12 mb-2">
-                            <label class="form-label" for="booking_code">Booking Code</label>
+                            <label class="form-label" for="booking_codes">Booking Code</label>
                             <input name="booking_code" id="booking_code" class="form-control" placeholder="Write Booking Code ..." required>
                         </div>
                         <div class="col-md-12 mb-2">
@@ -264,14 +264,20 @@
             const button = event.relatedTarget;
             const noId = button.getAttribute('data-no-id');
             const noTkt = button.getAttribute('data-no-tkt');
+            const bookingCode = button.getAttribute('data-booking-code');
+            const tktPrice = button.getAttribute('data-tkt-price');
 
             // Isi form modal dengan nilai dari tombol
             const bookNoTktLabel = document.getElementById('book_no_tkt');
             const bookNoIdInput = document.getElementById('book_no_id');
             const bookingForm = document.getElementById('bookingForm');
+            const bookingCodeInput = document.getElementById('booking_code');
+            const bookingPriceInput = document.getElementById('booking_price');
 
             bookNoTktLabel.textContent = noTkt;
             bookNoIdInput.value = noId;
+            bookingCodeInput.value = bookingCode;
+            bookingPriceInput.value = tktPrice;
 
             // Set action form dengan ID yang dinamis
             bookingForm.action = `{{ url('/ticket/admin/booking') }}/${noId}`;

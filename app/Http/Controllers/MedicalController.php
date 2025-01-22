@@ -349,6 +349,7 @@ class MedicalController extends Controller
             }
         } else {
             $existingFiles = $request->existing_medical_proof ? json_decode($request->existing_medical_proof, true) : [];
+
         }
         
         // Proses file baru
@@ -358,19 +359,20 @@ class MedicalController extends Controller
             ]);
         
             foreach ($request->file('medical_proof') as $file) {
+                // Generate a unique filename
                 $filename = time() . '_' . $file->getClientOriginalName();
+            
+                // Define the upload path within storage (relative to storage/app/public)
                 $upload_path = 'uploads/proofs/' . $employee_data->employee_id;
-                $full_path = public_path($upload_path);
-        
-                if (!is_dir($full_path)) {
-                    mkdir($full_path, 0755, true);
-                }
-        
-                $file->move($full_path, $filename);
+            
+                // Save the file to storage/app/public/{upload_path}
+                $file->storeAs($upload_path, $filename, 'public');
+            
+                // Add the public URL path for the stored file
                 $existingFiles[] = $upload_path . '/' . $filename;
             }
         }
-        
+
         // Simpan semua file yang tersisa ke database
         $medical_proof_path = json_encode(array_values($existingFiles));    
 
