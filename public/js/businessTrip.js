@@ -79,22 +79,22 @@ function syncDateRequired(changedInput) {
     const newValue = changedInput.value;
 
     // Get both date_required fields
-    const dateRequired1 = document.getElementById("date_required_1");
+    // const dateRequired1 = document.getElementById("date_required_1");
     const dateRequired2 = document.getElementById("date_required_2");
 
     // Set both fields to the new value
-    dateRequired1.value = newValue;
+    // dateRequired1.value = newValue;
     dateRequired2.value = newValue;
 }
 
 function updateCAValue() {
-    const perdiemChecked = document.getElementById("perdiemCheckbox").checked;
+    // const perdiemChecked = document.getElementById("perdiemCheckbox").checked;
     const cashAdvancedChecked = document.getElementById(
         "cashAdvancedCheckbox"
     ).checked;
     const caField = document.getElementById("caHidden");
 
-    if (perdiemChecked || cashAdvancedChecked) {
+    if (cashAdvancedChecked) {
         caField.value = "Ya";
     } else {
         caField.value = "Tidak";
@@ -285,10 +285,14 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", function () {
     var jnsDinasSelect = document.getElementById("jns_dinas");
     var additionalFields = document.getElementById("additional-fields");
+    const hotelCheckbox = document.getElementById("hotelCheckbox");
+    const ticketCheckbox = document.getElementById("ticketCheckbox");
+    const taksiCheckbox = document.getElementById("taksiCheckbox");
 
     var checkboxes = [
-        "perdiemCheckbox",
+        // "perdiemCheckbox",
         "cashAdvancedCheckbox",
+        "caEntertainCheckbox",
         "ticketCheckbox",
         "hotelCheckbox",
         "taksiCheckbox",
@@ -296,8 +300,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Corresponding section divs to hide/reset
     var sections = [
-        "nav-perdiem",
+        // "nav-perdiem",
         "nav-cash-advanced",
+        "nav-cashAdvancedEntertain",
         "nav-ticket",
         "nav-hotel",
         "nav-taksi",
@@ -340,11 +345,16 @@ function toggleSection(checkboxId, navId, tabId) {
 }
 
 // Initialize toggling for each checkbox and tab
-toggleSection("perdiemCheckbox", "nav-perdiem", "pills-perdiem-tab");
+// toggleSection("perdiemCheckbox", "nav-perdiem", "pills-perdiem-tab");
 toggleSection(
     "cashAdvancedCheckbox",
     "nav-cash-advanced",
     "pills-cash-advanced-tab"
+);
+toggleSection(
+    "caEntertainCheckbox",
+    "nav-cashAdvancedEntertain",
+    "pills-cashAdvancedEntertain-tab"
 );
 toggleSection("ticketCheckbox", "nav-ticket", "pills-ticket-tab");
 toggleSection("hotelCheckbox", "nav-hotel", "pills-hotel-tab");
@@ -1030,7 +1040,7 @@ document.addEventListener("DOMContentLoaded", function () {
 function handleTaksiForms() {
     const taksiCheckbox = document.getElementById("taksiCheckbox");
     const taksiDiv = document.getElementById("taksi_div");
-    const formFields = taksiDiv.querySelectorAll("input");
+    const formFields = taksiDiv.querySelectorAll("input, textarea");
 
     // Function to toggle 'required' attribute and reset fields if unchecked
     function toggleRequiredAndReset() {
@@ -1065,9 +1075,10 @@ function handleTaksiForms() {
 //CA JS
 function handleCaForms() {
     const caCheckbox = document.getElementById("cashAdvancedCheckbox");
-    const perdiemCheckbox = document.getElementById("perdiemCheckbox");
+    // const perdiemCheckbox = document.getElementById("perdiemCheckbox");
+    const caEntertainCheckbox = document.getElementById("caEntertainCheckbox");
     const caDiv = document.getElementById("ca_bt");
-    const caPerdiem = document.getElementById("ca_perdiem");
+    const caEntr = document.getElementById("ca_entr");
 
     caCheckbox.addEventListener("change", function () {
         if (this.checked) {
@@ -1079,16 +1090,26 @@ function handleCaForms() {
             resetFields("ca_bt"); // Pass the container ID to reset the fields
         }
     });
-    perdiemCheckbox.addEventListener("change", function () {
+    caEntertainCheckbox.addEventListener("change", function () {
         if (this.checked) {
             // Show form when checked
-            caPerdiem.style.display = "block";
+            caEntr.style.display = "block";
         } else {
             // Hide form and reset all fields when unchecked
-            caPerdiem.style.display = "none";
-            resetFieldsPerdiem("ca_perdiem"); // Pass the container ID to reset the fields
+            caEntr.style.display = "none";
+            resetFieldsPerdiem("ca_entr"); // change this later
         }
     });
+    // perdiemCheckbox.addEventListener("change", function () {
+    //     if (this.checked) {
+    //         // Show form when checked
+    //         caPerdiem.style.display = "block";
+    //     } else {
+    //         // Hide form and reset all fields when unchecked
+    //         caPerdiem.style.display = "none";
+    //         resetFieldsPerdiem("ca_perdiem"); // Pass the container ID to reset the fields
+    //     }
+    // });
 }
 
 function resetFieldsPerdiem() {
@@ -1407,7 +1428,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const startDate = new Date(startDateInput.value);
         const endDate = new Date(endDateInput.value);
         const groupCompany = document.getElementById("group_company");
-        // console.log("proses calculate");
 
         if (startDate && endDate && !isNaN(startDate) && !isNaN(endDate)) {
             const timeDiff = endDate - startDate;

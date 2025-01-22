@@ -13,7 +13,7 @@
         <div class="col-md-12 mb-2">
             <label class="form-label">Detail Information</label>
             <textarea class="form-control form-control-sm" id="vt_detail" name="vt_detail" rows="3"
-                placeholder="Fill your need" required></textarea>
+                placeholder="Fill your need"></textarea>
         </div>
         {{-- <div class="col-md-6 mb-2">
             <label class="form-label">Voucher Nominal</label>

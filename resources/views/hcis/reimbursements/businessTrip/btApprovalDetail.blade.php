@@ -219,6 +219,7 @@
 
                                 // Check if any of Transport, Penginapan, or Lainnya has data
                                 $showCashAdvanced =
+                                    !empty($detailCA['detail_perdiem']) ||
                                     !empty($detailCA['detail_transport']) ||
                                     !empty($detailCA['detail_meals']) ||
                                     !empty($detailCA['detail_penginapan']) ||
@@ -234,7 +235,7 @@
                                 <div class="col-md-12">
                                     <label for="additional-fields-title" class="mb-3">Business Trip Needs</label>
                                     <div class="row">
-                                        <div class="col-md-2">
+                                        {{-- <div class="col-md-2">
                                             <div class="form-check">
                                                 <input type="hidden" name="ca" id="caHidden"
                                                     value="{{ $showPerdiem || $showCashAdvanced ? 'Ya' : 'Tidak' }}">
@@ -244,14 +245,23 @@
                                                 <label class="form-check-label"
                                                     for="perdiemCheckbox">{{ $allowance }}</label>
                                             </div>
-                                        </div>
-                                        <div class="col-md-3">
+                                        </div> --}}
+                                        <div class="col-md-2">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" id="cashAdvancedCheckbox"
                                                     value="Ya" onchange="updateCAValue()" @checked($showCashAdvanced)
                                                     disabled>
                                                 <label class="form-check-label" for="cashAdvancedCheckbox">Cash
                                                     Advanced</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input type="hidden" name="ca" id="caHidden"
+                                                    value="{{ $showCashAdvanced ? 'Ya' : 'Tidak' }}">
+                                                <input class="form-check-input" type="checkbox" id="caEntertainCheckbox"
+                                                    value="Ya" onchange="updateCAValue()" disabled>
+                                                <label class="form-check-label" for="caEntertainCheckbox">CA Entertain</label>
                                             </div>
                                         </div>
 
@@ -295,13 +305,13 @@
                                     <div class="row mt-3">
                                         <div class="col-md-12">
                                             <ul class="nav nav-tabs nav-pills mb-2" id="pills-tab" role="tablist">
-                                                <li class="nav-item" role="presentation" id="nav-perdiem"
+                                                {{-- <li class="nav-item" role="presentation" id="nav-perdiem"
                                                     style="display: {{ $showPerdiem ? 'block' : 'none' }};">
                                                     <button class="nav-link" id="pills-perdiem-tab" data-bs-toggle="pill"
                                                         data-bs-target="#pills-perdiem" type="button" role="tab"
                                                         aria-controls="pills-perdiem"
                                                         aria-selected="false">{{ $allowance }}</button>
-                                                </li>
+                                                </li> --}}
                                                 <li class="nav-item" role="presentation" id="nav-cashAdvanced"
                                                     style="display: {{ $showCashAdvanced ? 'block' : 'none' }};">
                                                     <button class="nav-link" id="pills-cashAdvanced-tab"
@@ -330,9 +340,8 @@
                                             </ul>
 
                                             <div class="tab-content" id="pills-tabContent">
-                                                <div class="tab-pane fade" id="pills-perdiem" role="tabpanel"
+                                                {{-- <div class="tab-pane fade" id="pills-perdiem" role="tabpanel"
                                                     aria-labelledby="pills-perdiem-tab">
-                                                    {{-- ca perdiem content --}}
                                                     <div class="row mb-2">
                                                         <div class="col-md-6 mb-2">
                                                             <label for="date_required" class="form-label">Date
@@ -354,7 +363,7 @@
                                                         </div>
                                                     </div>
                                                     @include('hcis.reimbursements.businessTrip.approval.caPerdiemApproval')
-                                                </div>
+                                                </div> --}}
                                                 <div class="tab-pane fade" id="pills-cashAdvanced" role="tabpanel"
                                                     aria-labelledby="pills-cashAdvanced-tab">
                                                     {{-- Cash Advanced content --}}

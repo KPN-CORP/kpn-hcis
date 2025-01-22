@@ -162,21 +162,31 @@
                                         @endif
                                     </label>
                                     <div class="row">
-                                        <div class="col-md-2">
+                                        {{-- <div class="col-md-2">
                                             <div class="form-check">
-                                                <input type="hidden" name="ca" id="caHidden" value="Tidak">
+
                                                 <input class="form-check-input" type="checkbox" id="perdiemCheckbox"
                                                     value="Ya" onchange="updateCAValue()">
                                                 <label class="form-check-label"
                                                     for="perdiemCheckbox">{{ $allowance }}</label>
                                             </div>
-                                        </div>
-                                        <div class="col-md-3">
+                                        </div> --}}
+                                        <div class="col-md-2">
                                             <div class="form-check">
+                                                <input type="hidden" name="ca" id="caHidden" value="Tidak">
                                                 <input class="form-check-input" type="checkbox" id="cashAdvancedCheckbox"
                                                     value="Ya" onchange="updateCAValue()">
                                                 <label class="form-check-label" for="cashAdvancedCheckbox">Cash
                                                     Advanced</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input type="hidden" name="ca" id="caHidden" value="Tidak">
+                                                <input class="form-check-input" type="checkbox" id="caEntertainCheckbox"
+                                                    value="Ya" onchange="updateCAValue()">
+                                                <label class="form-check-label" for="caEntertainCheckbox">CA
+                                                    Entertain</label>
                                             </div>
                                         </div>
 
@@ -217,19 +227,27 @@
                                     <div class="row mt-3">
                                         <div class="col-md-12">
                                             <ul class="nav nav-tabs nav-pills mb-2" id="pills-tab" role="tablist">
-                                                <li class="nav-item" role="presentation" id="nav-perdiem"
+                                                {{-- <li class="nav-item" role="presentation" id="nav-perdiem"
                                                     style="display: none;">
                                                     <button class="nav-link" id="pills-perdiem-tab" data-bs-toggle="pill"
                                                         data-bs-target="#pills-perdiem" type="button" role="tab"
                                                         aria-controls="pills-perdiem"
                                                         aria-selected="false">{{ $allowance }}</button>
-                                                </li>
+                                                </li> --}}
                                                 <li class="nav-item" role="presentation" id="nav-cashAdvanced"
                                                     style="display: none;">
                                                     <button class="nav-link" id="pills-cashAdvanced-tab"
                                                         data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced"
                                                         type="button" role="tab" aria-controls="pills-cashAdvanced"
                                                         aria-selected="false">Cash Advanced</button>
+                                                </li>
+                                                <li class="nav-item" role="presentation" id="nav-cashAdvancedEntertain"
+                                                    style="display:none;">
+                                                    <button class="nav-link" id="pills-cashAdvancedEntertain-tab"
+                                                        data-bs-toggle="pill"
+                                                        data-bs-target="#pills-cashAdvancedEntertain" type="button"
+                                                        role="tab" aria-controls="pills-cashAdvancedEntertain"
+                                                        aria-selected="false">CA Entertain</button>
                                                 </li>
                                                 <li class="nav-item" role="presentation" id="nav-ticket"
                                                     style="display: none;">
@@ -252,10 +270,10 @@
                                             </ul>
 
                                             <div class="tab-content" id="pills-tabContent">
-                                                <div class="tab-pane fade" id="pills-perdiem" role="tabpanel"
-                                                    aria-labelledby="pills-perdiem-tab">
-                                                    {{-- ca perdiem content --}}
-                                                    <div id="ca_perdiem">
+                                                {{-- <div class="tab-pane fade" id="pills-perdiem" role="tabpanel"
+                                                    aria-labelledby="pills-perdiem-tab"> --}}
+                                                {{-- ca perdiem content --}}
+                                                {{-- <div id="ca_perdiem">
                                                         <div class="row mb-2">
                                                             <div class="col-md-6 mb-2">
                                                                 <label for="date_required" class="form-label">Date
@@ -274,12 +292,17 @@
                                                             </div>
                                                         </div>
                                                         @include('hcis.reimbursements.businessTrip.caPerdiem')
-                                                    </div>
-                                                </div>
+                                                    </div> --}}
+                                                {{-- </div> --}}
                                                 <div class="tab-pane fade" id="pills-cashAdvanced" role="tabpanel"
                                                     aria-labelledby="pills-cashAdvanced-tab">
                                                     {{-- Cash Advanced content --}}
                                                     @include('hcis.reimbursements.businessTrip.form.btCa')
+                                                </div>
+                                                <div class="tab-pane fade" id="pills-cashAdvancedEntertain"
+                                                    role="tabpanel" aria-labelledby="pills-cashAdvancedEntertain-tab">
+                                                    {{-- Cash Advanced content --}}
+                                                    @include('hcis.reimbursements.businessTrip.form.ticket')
                                                 </div>
                                                 <div class="tab-pane fade" id="pills-ticket" role="tabpanel"
                                                     aria-labelledby="pills-ticket-tab">
@@ -492,7 +515,7 @@
                     }
 
                     // Retrieve the values from the input fields
-                    const dateReq = document.getElementById('date_required_1').value;
+                    // const dateReq = document.getElementById('date_required_1').value;
                     const dateReq2 = document.getElementById('date_required_2').value;
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
                     const totalBtMealsElement = document.getElementById('total_bt_meals');
@@ -504,19 +527,19 @@
                     const totalBtLainnya = document.getElementById('total_bt_lainnya').value;
                     const group_company = document.getElementById('group_company').value;
                     const caCheckbox = document.getElementById('cashAdvancedCheckbox').checked;
-                    const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
+                    // const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
                     const totalCa = document.getElementById('totalca').value;
 
-                    if (perdiemCheckbox && !dateReq) {
-                        Swal.fire({
-                            title: "Warning!",
-                            text: "Please select a Date Required.",
-                            icon: "warning",
-                            confirmButtonColor: "#AB2F2B",
-                            confirmButtonText: "OK",
-                        });
-                        return;
-                    }
+                    // if (perdiemCheckbox && !dateReq) {
+                    //     Swal.fire({
+                    //         title: "Warning!",
+                    //         text: "Please select a Date Required.",
+                    //         icon: "warning",
+                    //         confirmButtonColor: "#AB2F2B",
+                    //         confirmButtonText: "OK",
+                    //     });
+                    //     return;
+                    // }
 
                     if (caCheckbox && !dateReq2) {
                         Swal.fire({
@@ -529,39 +552,41 @@
                         return;
                     }
                     // Check if CA is checked and all fields are zero
-                    if (caCheckbox && totalBtPenginapan == 0 && totalBtTransport == 0 &&
+                    if (caCheckbox && totalBtPerdiem == 0 && totalBtPenginapan == 0 &&
+                        totalBtTransport == 0 &&
                         totalBtLainnya == 0) {
                         if (group_company == 'KPN Plantations' || group_company == 'Plantations') {
                             Swal.fire({
                                 title: "Warning!",
-                                text: "Cash Advanced fields (Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
-                                icon: "warning",
-                                confirmButtonColor: "#AB2F2B",
-                                confirmButtonText: "OK",
-                            });
-                            return; // Exit without showing the confirmation if all fields are zero
-                        } else if (totalBtMeals == 0) {
-                            Swal.fire({
-                                title: "Warning!",
-                                text: "Cash Advanced fields (Meals, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                text: "Cash Advanced fields (Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
                                 icon: "warning",
                                 confirmButtonColor: "#AB2F2B",
                                 confirmButtonText: "OK",
                             });
                             return; // Exit without showing the confirmation if all fields are zero
                         }
+                        // else if (totalBtMeals == 0) {
+                        //     Swal.fire({
+                        //         title: "Warning!",
+                        //         text: "Cash Advanced fields (Meals, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                        //         icon: "warning",
+                        //         confirmButtonColor: "#AB2F2B",
+                        //         confirmButtonText: "OK",
+                        //     });
+                        //     return; // Exit without showing the confirmation if all fields are zero
+                        // }
                     }
 
-                    if (perdiemCheckbox && totalBtPerdiem == 0) {
-                        Swal.fire({
-                            title: "Warning!",
-                            text: "Total {{ $allowance }} is 0. Please fill in the values.",
-                            icon: "warning",
-                            confirmButtonColor: "#AB2F2B",
-                            confirmButtonText: "OK",
-                        });
-                        return; // Exit without showing the confirmation if all fields are zero
-                    }
+                    // if (perdiemCheckbox && totalBtPerdiem == 0) {
+                    //     Swal.fire({
+                    //         title: "Warning!",
+                    //         text: "Total {{ $allowance }} is 0. Please fill in the values.",
+                    //         icon: "warning",
+                    //         confirmButtonColor: "#AB2F2B",
+                    //         confirmButtonText: "OK",
+                    //     });
+                    //     return; // Exit without showing the confirmation if all fields are zero
+                    // }
 
                     const caChecked = caCheckbox ? 'CA' : '';
                     const ticketChecked = document.getElementById('ticketCheckbox').checked ?
@@ -646,7 +671,7 @@
                     }
 
                     // Retrieve the values from the input fields
-                    const dateReq = document.getElementById('date_required_1').value;
+                    // const dateReq = document.getElementById('date_required_1').value;
                     const dateReq2 = document.getElementById('date_required_2').value;
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
 
@@ -659,19 +684,19 @@
                     const totalBtLainnya = document.getElementById('total_bt_lainnya').value;
                     const group_company = document.getElementById('group_company').value;
                     const caCheckbox = document.getElementById('cashAdvancedCheckbox').checked;
-                    const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
+                    // const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
                     const totalCa = document.getElementById('totalca').value;
 
-                    if (perdiemCheckbox && !dateReq) {
-                        Swal.fire({
-                            title: "Warning!",
-                            text: "Please select a Date Required.",
-                            icon: "warning",
-                            confirmButtonColor: "#AB2F2B",
-                            confirmButtonText: "OK",
-                        });
-                        return;
-                    }
+                    // if (perdiemCheckbox && !dateReq) {
+                    //     Swal.fire({
+                    //         title: "Warning!",
+                    //         text: "Please select a Date Required.",
+                    //         icon: "warning",
+                    //         confirmButtonColor: "#AB2F2B",
+                    //         confirmButtonText: "OK",
+                    //     });
+                    //     return;
+                    // }
 
                     if (caCheckbox && !dateReq2) {
                         Swal.fire({
@@ -684,7 +709,8 @@
                         return;
                     }
                     // Check if CA is checked and all fields are zero
-                    if (caCheckbox && totalBtPenginapan == 0 && totalBtTransport == 0 &&
+                    if (caCheckbox && totalBtPerdiem == 0 && totalBtPenginapan == 0 &&
+                        totalBtTransport == 0 &&
                         totalBtLainnya == 0) {
                         if (group_company == 'KPN Plantations' || group_company == 'Plantations') {
                             Swal.fire({
@@ -695,27 +721,28 @@
                                 confirmButtonText: "OK",
                             });
                             return; // Exit without showing the confirmation if all fields are zero
-                        } else if (totalBtMeals == 0) {
-                            Swal.fire({
-                                title: "Warning!",
-                                text: "Cash Advanced fields (Meals, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
-                                icon: "warning",
-                                confirmButtonColor: "#AB2F2B",
-                                confirmButtonText: "OK",
-                            });
-                            return; // Exit without showing the confirmation if all fields are zero
                         }
+                        // else if (totalBtMeals == 0) {
+                        //     Swal.fire({
+                        //         title: "Warning!",
+                        //         text: "Cash Advanced fields (Meals, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                        //         icon: "warning",
+                        //         confirmButtonColor: "#AB2F2B",
+                        //         confirmButtonText: "OK",
+                        //     });
+                        //     return; // Exit without showing the confirmation if all fields are zero
+                        // }
                     }
-                    if (perdiemCheckbox && totalBtPerdiem == 0) {
-                        Swal.fire({
-                            title: "Warning!",
-                            text: "Total {{ $allowance }} is 0. Please fill in the values.",
-                            icon: "warning",
-                            confirmButtonColor: "#AB2F2B",
-                            confirmButtonText: "OK",
-                        });
-                        return; // Exit without showing the confirmation if all fields are zero
-                    }
+                    // if (perdiemCheckbox && totalBtPerdiem == 0) {
+                    //     Swal.fire({
+                    //         title: "Warning!",
+                    //         text: "Total {{ $allowance }} is 0. Please fill in the values.",
+                    //         icon: "warning",
+                    //         confirmButtonColor: "#AB2F2B",
+                    //         confirmButtonText: "OK",
+                    //     });
+                    //     return; // Exit without showing the confirmation if all fields are zero
+                    // }
                     const input = document.createElement('input');
                     input.type =
                         'hidden'; // Hidden input so it doesn't show in the form
@@ -887,7 +914,6 @@
             const day = String(declarationEstimateDate.getDate()).padStart(2, '0');
 
             // Set the value of ca_decla
-            document.getElementById('ca_decla_1').value = `${year}-${month}-${day}`;
             document.getElementById('ca_decla_2').value = `${year}-${month}-${day}`;
         });
     </script>

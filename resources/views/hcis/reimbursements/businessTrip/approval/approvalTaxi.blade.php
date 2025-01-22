@@ -14,7 +14,7 @@
             <label class="form-label">Detail Information</label>
             <div class="input-group input-group-sm">
                 <textarea class="form-control form-control-sm bg-light" id="vt_detail" name="vt_detail" rows="3"
-                    placeholder="Fill your need" readonly>{{ $taksiData->vt_detail }}</textarea>
+                    placeholder="Fill your need" readonly>{{ $taksiData->vt_detail ?? '' }}</textarea>
             </div>
         </div>
         {{-- <div class="col-md-4 mb-2">

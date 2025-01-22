@@ -172,14 +172,13 @@ function clearFormPerdiem(index, event) {
 }
 
 function calculateTotalDaysPerdiem(input) {
-    console.log("proses calculate");
     const formGroup = input.closest(".row").parentElement;
     const startDateInput = formGroup.querySelector("input.start-perdiem");
     const endDateInput = formGroup.querySelector("input.end-perdiem");
     const totalDaysInput = formGroup.querySelector("input.total-days-perdiem");
     const perdiemInput = document.getElementById("perdiem");
     const groupCompany = document.getElementById("group_company");
-    
+
     const allowanceInput = formGroup.querySelector(
         'input[name="nominal_bt_perdiem[]"]'
     );
@@ -203,7 +202,7 @@ function calculateTotalDaysPerdiem(input) {
     if (startDateInput.value && endDateInput.value) {
         const startDate = new Date(startDateInput.value);
         const endDate = new Date(endDateInput.value);
-        
+
         // console.log("Group Company:", groupCompany.value);
 
         if (!isNaN(startDate) && !isNaN(endDate) && startDate <= endDate) {
