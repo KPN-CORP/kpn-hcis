@@ -62,9 +62,9 @@ function setupCheckboxListeners() {
 
 document.addEventListener("DOMContentLoaded", function () {
     // Check if any checkbox is already checked and activate its tab
-    if (document.getElementById("perdiemCheckbox").checked) {
-        activateTab("pills-perdiem-tab");
-    }
+    // if (document.getElementById("perdiemCheckbox").checked) {
+    //     activateTab("pills-perdiem-tab");
+    // }
     if (document.getElementById("cashAdvancedCheckbox").checked) {
         activateTab("pills-cashAdvanced-tab");
     }
@@ -179,22 +179,22 @@ function syncDateRequired(changedInput) {
     const newValue = changedInput.value;
 
     // Get both date_required fields
-    const dateRequired1 = document.getElementById("date_required_1");
+    // const dateRequired1 = document.getElementById("date_required_1");
     const dateRequired2 = document.getElementById("date_required_2");
 
     // Set both fields to the new value
-    dateRequired1.value = newValue;
+    // dateRequired1.value = newValue;
     dateRequired2.value = newValue;
 }
 
 function updateCAValue() {
-    const perdiemChecked = document.getElementById("perdiemCheckbox").checked;
+    // const perdiemChecked = document.getElementById("perdiemCheckbox").checked;
     const cashAdvancedChecked = document.getElementById(
         "cashAdvancedCheckbox"
     ).checked;
     const caField = document.getElementById("caHidden");
 
-    if (perdiemChecked || cashAdvancedChecked) {
+    if (cashAdvancedChecked) {
         caField.value = "Ya";
     } else {
         caField.value = "Tidak";
@@ -387,8 +387,9 @@ document.addEventListener("DOMContentLoaded", function () {
     var additionalFields = document.getElementById("additional-fields");
 
     var checkboxes = [
-        "perdiemCheckbox",
+        // "perdiemCheckbox",
         "cashAdvancedCheckbox",
+        "caEntertainCheckbox",
         "ticketCheckbox",
         "hotelCheckbox",
         "taksiCheckbox",
@@ -396,8 +397,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Corresponding section divs to hide/reset
     var sections = [
-        "nav-perdiem",
+        // "nav-perdiem",
         "nav-cash-advanced",
+        "nav-cashAdvancedEntertain",
         "nav-ticket",
         "nav-hotel",
         "nav-taksi",
@@ -441,11 +443,16 @@ function toggleSection(checkboxId, navId, tabId) {
 }
 
 // Initialize toggling for each checkbox and tab
-toggleSection("perdiemCheckbox", "nav-perdiem", "pills-perdiem-tab");
+// toggleSection("perdiemCheckbox", "nav-perdiem", "pills-perdiem-tab");
 toggleSection(
     "cashAdvancedCheckbox",
     "nav-cash-advanced",
     "pills-cash-advanced-tab"
+);
+toggleSection(
+    "caEntertainCheckbox",
+    "nav-cashAdvancedEntertain",
+    "pills-cashAdvancedEntertain-tab"
 );
 toggleSection("ticketCheckbox", "nav-ticket", "pills-ticket-tab");
 toggleSection("hotelCheckbox", "nav-hotel", "pills-hotel-tab");
@@ -792,9 +799,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 <select class="form-select form-select-sm" name="jenis_tkt[]" id="jenis_tkt_${formNumber}">
                                     <option value="">Select Transportation Type</option>
                                     <option value="Train">Train</option>
-                                    <option value="Bus">Bus</option>
                                     <option value="Airplane">Airplane</option>
-                                    <option value="Car">Car</option>
                                     <option value="Ferry">Ferry</option>
                                 </select>
                             </div>
@@ -1095,14 +1100,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         </div>
                         <div class="col-md-2 mb-2">
                             <label class="form-label">Bed Size</label>
-                            <select class="form-select form-select-sm" name="bed_htl[]">
-                                <option value="Single Bed">Single Bed</option>
+                            <select class="form-select form-select-sm select2" name="bed_htl[]">
+                                <option value="Double Bed">Double Bed</option>
                                 <option value="Twin Bed">Twin Bed</option>
-                                <option value="King Bed">King Bed</option>
-                                <option value="Super King Bed">Super King Bed</option>
-                                <option value="Extra Bed">Extra Bed</option>
-                                <option value="Baby Cot">Baby Cot</option>
-                                <option value="Sofa Bed">Sofa Bed</option>
                             </select>
                         </div>
                         <div class="col-md-2 mb-2">
@@ -1145,7 +1145,7 @@ document.addEventListener("DOMContentLoaded", function () {
 function handleTaksiForms() {
     const taksiCheckbox = document.getElementById("taksiCheckbox");
     const taksiDiv = document.getElementById("taksi_div");
-    const formFields = taksiDiv.querySelectorAll("input");
+    const formFields = taksiDiv.querySelectorAll("input, textarea");
 
     // Function to toggle 'required' attribute
     function toggleRequired() {
@@ -1194,7 +1194,7 @@ function handleTaksiForms() {
 //CA JS
 function handleCaForms() {
     const caCheckbox = document.getElementById("cashAdvancedCheckbox");
-    const perdiemCheckbox = document.getElementById("perdiemCheckbox");
+    // const perdiemCheckbox = document.getElementById("perdiemCheckbox");
     const caDiv = document.getElementById("ca_bt");
     const caPerdiem = document.getElementById("ca_perdiem");
 
@@ -1208,16 +1208,16 @@ function handleCaForms() {
             resetFields("ca_bt"); // Pass the container ID to reset the fields
         }
     });
-    perdiemCheckbox.addEventListener("change", function () {
-        if (this.checked) {
-            // Show form when checked
-            caPerdiem.style.display = "block";
-        } else {
-            // Hide form and reset all fields when unchecked
-            caPerdiem.style.display = "none";
-            resetFieldsPerdiem("ca_perdiem"); // Pass the container ID to reset the fields
-        }
-    });
+    // perdiemCheckbox.addEventListener("change", function () {
+    //     if (this.checked) {
+    //         // Show form when checked
+    //         caPerdiem.style.display = "block";
+    //     } else {
+    //         // Hide form and reset all fields when unchecked
+    //         caPerdiem.style.display = "none";
+    //         resetFieldsPerdiem("ca_perdiem"); // Pass the container ID to reset the fields
+    //     }
+    // });
 }
 
 function resetFieldsPerdiem() {

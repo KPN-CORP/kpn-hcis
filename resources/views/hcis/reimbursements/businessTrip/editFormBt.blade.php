@@ -69,7 +69,7 @@
                                         readonly>
                                 </div>
                                 <div class="col-md-6 mb-2">
-                                    <label for="divisi" class="form-label">Divison</label>
+                                    <label for="divisi" class="form-label">Unit</label>
                                     <input type="text" class="form-control form-control-sm bg-light" id="divisi"
                                         name="divisi" style="cursor:not-allowed;" value="{{ $employee_data->unit }}"
                                         readonly>
@@ -224,10 +224,11 @@
                             @php
                                 $detailCA = isset($ca) && $ca->detail_ca ? json_decode($ca->detail_ca, true) : [];
 
-                                $showPerdiem = !empty($detailCA['detail_perdiem']);
+                                // $showPerdiem = !empty($detailCA['detail_perdiem']);
 
                                 // Check if any of Transport, Penginapan, or Lainnya has data
                                 $showCashAdvanced =
+                                    !empty($detailCA['detail_perdiem']) ||
                                     !empty($detailCA['detail_transport']) ||
                                     !empty($detailCA['detail_meals']) ||
                                     !empty($detailCA['detail_penginapan']) ||
@@ -250,23 +251,35 @@
                                         @endif
                                     </label>
                                     <div class="row">
+                                        {{-- <div class="col-md-2">
+                                            <div class="form-check">
+                                                <input type="hidden" name="ca" id="caHidden"
+                                                    value="{{ $showCashAdvanced ? 'Ya' : 'Tidak' }}">
+                                                 <input class="form-check-input" type="checkbox" id="perdiemCheckbox"
+                                                    value="Ya" onchange="updateCAValue()"
+                                                    @checked($showPerdiem)>
+                                                <label class="form-check-label"
+                                                    for="perdiemCheckbox">{{ $allowance }}</label>
+                                            </div>
+                                        </div> --}}
                                         <div class="col-md-2">
                                             <div class="form-check">
                                                 <input type="hidden" name="ca" id="caHidden"
-                                                    value="{{ $showPerdiem || $showCashAdvanced ? 'Ya' : 'Tidak' }}">
-                                                <input class="form-check-input" type="checkbox" id="perdiemCheckbox"
-                                                    value="Ya" onchange="updateCAValue()"
-                                                    @checked($showPerdiem)>
-                                                <label class="form-check-label" for="perdiemCheckbox">{{$allowance}}</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-check">
+                                                    value="{{ $showCashAdvanced ? 'Ya' : 'Tidak' }}">
                                                 <input class="form-check-input" type="checkbox" id="cashAdvancedCheckbox"
                                                     value="Ya" onchange="updateCAValue()"
                                                     @checked($showCashAdvanced)>
                                                 <label class="form-check-label" for="cashAdvancedCheckbox">Cash
                                                     Advanced</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input type="hidden" name="ca" id="caHidden"
+                                                    value="{{ $showCashAdvanced ? 'Ya' : 'Tidak' }}">
+                                                <input class="form-check-input" type="checkbox" id="caEntertainCheckbox"
+                                                    value="Ya" onchange="updateCAValue()">
+                                                <label class="form-check-label" for="caEntertainCheckbox">CA Entertain</label>
                                             </div>
                                         </div>
                                         <div class="col-md-2">
@@ -309,19 +322,26 @@
                                     <div class="row mt-3">
                                         <div class="col-md-12">
                                             <ul class="nav nav-tabs nav-pills mb-2" id="pills-tab" role="tablist">
-                                                <li class="nav-item" role="presentation" id="nav-perdiem"
+                                                {{-- <li class="nav-item" role="presentation" id="nav-perdiem"
                                                     style="display: {{ $showPerdiem ? 'block' : 'none' }};">
                                                     <button class="nav-link" id="pills-perdiem-tab" data-bs-toggle="pill"
                                                         data-bs-target="#pills-perdiem" type="button" role="tab"
                                                         aria-controls="pills-perdiem"
                                                         aria-selected="false">{{ $allowance }}</button>
-                                                </li>
+                                                </li> --}}
                                                 <li class="nav-item" role="presentation" id="nav-cashAdvanced"
-                                                    style="display: {{ $showCashAdvanced ? 'block' : 'none' }};">
+                                                    style="display: <?= $n->ca == 'Ya' ? 'block' : 'none' ?>;">
                                                     <button class="nav-link" id="pills-cashAdvanced-tab"
                                                         data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced"
                                                         type="button" role="tab" aria-controls="pills-cashAdvanced"
                                                         aria-selected="false">Cash Advanced</button>
+                                                </li>
+                                                <li class="nav-item" role="presentation" id="nav-cashAdvancedEntertain"
+                                                    style="display:none">
+                                                    <button class="nav-link" id="pills-cashAdvancedEntertain-tab" data-bs-toggle="pill"
+                                                        data-bs-target="#pills-cashAdvancedEntertain" type="button" role="tab"
+                                                        aria-controls="pills-cashAdvancedEntertain"
+                                                        aria-selected="false">CA Entertain</button>
                                                 </li>
                                                 <li class="nav-item" role="presentation" id="nav-ticket"
                                                     style="display: <?= $n->tiket == 'Ya' ? 'block' : 'none' ?>;">
@@ -344,9 +364,9 @@
                                             </ul>
 
                                             <div class="tab-content" id="pills-tabContent">
-                                                <div class="tab-pane fade" id="pills-perdiem" role="tabpanel"
+                                                {{-- <div class="tab-pane fade" id="pills-perdiem" role="tabpanel"
                                                     aria-labelledby="pills-perdiem-tab">
-                                                    {{-- ca perdiem content --}}
+
                                                     <div id="ca_perdiem">
                                                         <div class="row mb-2">
                                                             <div class="col-md-6 mb-2">
@@ -369,11 +389,16 @@
                                                         </div>
                                                         @include('hcis.reimbursements.businessTrip.caPerdiem')
                                                     </div>
-                                                </div>
+                                                </div> --}}
                                                 <div class="tab-pane fade" id="pills-cashAdvanced" role="tabpanel"
                                                     aria-labelledby="pills-cashAdvanced-tab">
                                                     {{-- Cash Advanced content --}}
                                                     @include('hcis.reimbursements.businessTrip.editForm.btCaEdit')
+                                                </div>
+                                                <div class="tab-pane fade" id="pills-cashAdvancedEntertain" role="tabpanel"
+                                                    aria-labelledby="pills-cashAdvancedEntertain-tab">
+                                                    {{-- Cash Advanced content --}}
+                                                    @include('hcis.reimbursements.businessTrip.editForm.editTicket')
                                                 </div>
                                                 <div class="tab-pane fade" id="pills-ticket" role="tabpanel"
                                                     aria-labelledby="pills-ticket-tab">
@@ -418,13 +443,13 @@
     <script>
         var formCountMeals = 0;
 
-        window.addEventListener("DOMContentLoaded", function () {
+        window.addEventListener("DOMContentLoaded", function() {
             formCountMeals = document.querySelectorAll(
                 "#form-container-meals > div"
             ).length;
         });
 
-        $(".btn-warning").click(function (event) {
+        $(".btn-warning").click(function(event) {
             event.preventDefault();
             var index = $(this).closest(".card-body").index() + 1;
             removeFormMeals(index, event);
@@ -497,28 +522,27 @@
         function onNominalChange() {
             calculateTotalNominalBTMeals();
         }
-
     </script>
     <script>
         function calculateTotalDays(index) {
             const checkInInput = document.getElementById(`check-in-${index}`);
             const checkOutInput = document.getElementById(`check-out-${index}`);
             const totalDaysInput = document.getElementById(`total-days-${index}`);
-        
+
             // Get Start Date and End Date from the main form
             const mulaiInput = document.getElementById("mulai");
             const kembaliInput = document.getElementById("kembali");
-        
+
             if (!checkInInput || !checkOutInput || !mulaiInput || !kembaliInput) {
                 return; // Ensure elements are present before proceeding
             }
-        
+
             // Parse the dates
             const checkInDate = new Date(checkInInput.value);
             const checkOutDate = new Date(checkOutInput.value);
             const mulaiDate = new Date(mulaiInput.value);
             const kembaliDate = new Date(kembaliInput.value);
-        
+
             // Validate Check In Date
             if (checkInDate < mulaiDate) {
                 Swal.fire({
@@ -544,7 +568,7 @@
                 totalDaysInput.value = ""; // Clear total days
                 return;
             }
-        
+
             // Ensure Check Out Date is not earlier than Check In Date
             if (checkOutDate < checkInDate) {
                 Swal.fire({
@@ -558,7 +582,7 @@
                 totalDaysInput.value = ""; // Clear total days
                 return;
             }
-        
+
             // Calculate the total days if all validations pass
             if (checkInDate && checkOutDate) {
                 const diffTime = Math.abs(checkOutDate - checkInDate);
@@ -584,31 +608,33 @@
                     }
 
                     // Retrieve the values from the input fields
-                    const dateReq = document.getElementById('date_required_1').value;
+                    // const dateReq = document.getElementById('date_required_1').value;
                     const dateReq2 = document.getElementById('date_required_2').value;
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
-                    const totalBtMealsElement = document.getElementById('total_bt_meals');
-                    if (totalBtMealsElement) {
-                        const totalBtMeals = totalBtMealsElement.value;
-                    }
+                    const totalBtMeals = document.getElementById('total_bt_meals').value;
+                    // const totalBtMealsElement = document.getElementById('total_bt_meals');
+                    // if (totalBtMealsElement) {
+                    //     const totalBtMeals = totalBtMealsElement.value;
+                    // }
                     const totalBtPenginapan = document.getElementById('total_bt_penginapan').value;
                     const totalBtTransport = document.getElementById('total_bt_transport').value;
                     const totalBtLainnya = document.getElementById('total_bt_lainnya').value;
                     const group_company = document.getElementById('group_company').value;
                     const caCheckbox = document.getElementById('cashAdvancedCheckbox').checked;
-                    const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
+                    // const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
                     const totalCa = document.getElementById('totalca').value;
 
-                    if (perdiemCheckbox && !dateReq) {
-                        Swal.fire({
-                            title: "Warning!",
-                            text: "Please select a Date Required.",
-                            icon: "warning",
-                            confirmButtonColor: "#AB2F2B",
-                            confirmButtonText: "OK",
-                        });
-                        return;
-                    }
+                    console.log(group_company);
+                    // if (perdiemCheckbox && !dateReq) {
+                    //     Swal.fire({
+                    //         title: "Warning!",
+                    //         text: "Please select a Date Required.",
+                    //         icon: "warning",
+                    //         confirmButtonColor: "#AB2F2B",
+                    //         confirmButtonText: "OK",
+                    //     });
+                    //     return;
+                    // }
 
                     if (caCheckbox && !dateReq2) {
                         Swal.fire({
@@ -621,7 +647,9 @@
                         return;
                     }
                     // Check if CA is checked and all fields are zero
-                    if (caCheckbox && totalBtPenginapan == 0 && totalBtTransport == 0 && totalBtLainnya == 0) {
+                    if (caCheckbox && totalBtPerdiem && totalBtPenginapan == 0 &&
+                        totalBtTransport == 0 &&
+                        totalBtLainnya == 0) {
                         if (group_company == 'KPN Plantations' || group_company == 'Plantations') {
                             Swal.fire({
                                 title: "Warning!",
@@ -631,7 +659,7 @@
                                 confirmButtonText: "OK",
                             });
                             return; // Exit without showing the confirmation if all fields are zero
-                        }else if(totalBtMeals == 0){
+                        } else if (totalBtMeals == 0) {
                             Swal.fire({
                                 title: "Warning!",
                                 text: "Cash Advanced fields (Meals, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
@@ -642,16 +670,16 @@
                             return; // Exit without showing the confirmation if all fields are zero
                         }
                     }
-                    if (perdiemCheckbox && totalBtPerdiem == 0) {
-                        Swal.fire({
-                            title: "Warning!",
-                            text: "Total Perdiem is 0. Please fill in the values.",
-                            icon: "warning",
-                            confirmButtonColor: "#AB2F2B",
-                            confirmButtonText: "OK",
-                        });
-                        return; // Exit without showing the confirmation if all fields are zero
-                    }
+                    // if (perdiemCheckbox && totalBtPerdiem == 0) {
+                    //     Swal.fire({
+                    //         title: "Warning!",
+                    //         text: "Total Perdiem is 0. Please fill in the values.",
+                    //         icon: "warning",
+                    //         confirmButtonColor: "#AB2F2B",
+                    //         confirmButtonText: "OK",
+                    //     });
+                    //     return; // Exit without showing the confirmation if all fields are zero
+                    // }
 
                     const caChecked = caCheckbox ? 'CA' : '';
                     const ticketChecked = document.getElementById('ticketCheckbox').checked ?
@@ -662,13 +690,25 @@
                         'Taxi Voucher' : '';
 
                     // Create a message with the input values, each on a new line with bold titles
-                    const inputSummary = `
-                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                            <tr>
-                                <th style="width: 40%; text-align: left; padding: 8px;">Total Perdiem</th>
-                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPerdiem}</strong></td>
-                            </tr>
+                    let inputSummary = `
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                        <tr>
+                            <th style="width: 40%; text-align: left; padding: 8px;">Total Perdiem</th>
+                            <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                            <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPerdiem}</strong></td>
+                        </tr>`;
+
+                    // Conditionally add the "Total Meals" row
+                    if (group_company == 'KPN Plantations' || group_company == 'Plantations') {
+                        inputSummary += `
+                        <tr>
+                            <th style="width: 40%; text-align: left; padding: 8px;">Total Meals</th>
+                            <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                            <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtMeals}</strong></td>
+                        </tr>`;
+                    }
+
+                    inputSummary += `
                             <tr>
                                 <th style="width: 40%; text-align: left; padding: 8px;">Total Accommodation</th>
                                 <td style="width: 10%; text-align: right; padding: 8px;">:</td>
@@ -693,7 +733,7 @@
                                 <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalCa}</strong></td>
                             </tr>
                         </table>
-                                `;
+                    `;
 
                     // Show SweetAlert confirmation with the input summary
                     Swal.fire({
@@ -736,7 +776,7 @@
                     }
 
                     // Retrieve the values from the input fields
-                    const dateReq = document.getElementById('date_required_1').value;
+                    // const dateReq = document.getElementById('date_required_1').value;
                     const dateReq2 = document.getElementById('date_required_2').value;
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
                     const totalBtMealsElement = document.getElementById('total_bt_meals');
@@ -748,19 +788,19 @@
                     const totalBtLainnya = document.getElementById('total_bt_lainnya').value;
                     const group_company = document.getElementById('group_company').value;
                     const caCheckbox = document.getElementById('cashAdvancedCheckbox').checked;
-                    const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
+                    // const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
                     const totalCa = document.getElementById('totalca').value;
 
-                    if (perdiemCheckbox && !dateReq) {
-                        Swal.fire({
-                            title: "Warning!",
-                            text: "Please select a Date Required.",
-                            icon: "warning",
-                            confirmButtonColor: "#AB2F2B",
-                            confirmButtonText: "OK",
-                        });
-                        return;
-                    }
+                    // if (perdiemCheckbox && !dateReq) {
+                    //     Swal.fire({
+                    //         title: "Warning!",
+                    //         text: "Please select a Date Required.",
+                    //         icon: "warning",
+                    //         confirmButtonColor: "#AB2F2B",
+                    //         confirmButtonText: "OK",
+                    //     });
+                    //     return;
+                    // }
 
                     if (caCheckbox && !dateReq2) {
                         Swal.fire({
@@ -773,7 +813,8 @@
                         return;
                     }
                     // Check if CA is checked and all fields are zero
-                    if (caCheckbox && totalBtPenginapan == 0 && totalBtTransport == 0 && totalBtLainnya == 0) {
+                    if (caCheckbox && totalBtPenginapan == 0 && totalBtTransport == 0 &&
+                        totalBtLainnya == 0) {
                         if (group_company == 'KPN Plantations' || group_company == 'Plantations') {
                             Swal.fire({
                                 title: "Warning!",
@@ -783,27 +824,28 @@
                                 confirmButtonText: "OK",
                             });
                             return; // Exit without showing the confirmation if all fields are zero
-                        }else if(totalBtMeals == 0){
-                            Swal.fire({
-                                title: "Warning!",
-                                text: "Cash Advanced fields (Meals, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
-                                icon: "warning",
-                                confirmButtonColor: "#AB2F2B",
-                                confirmButtonText: "OK",
-                            });
-                            return; // Exit without showing the confirmation if all fields are zero
                         }
+                        // else if (totalBtMeals == 0) {
+                        //     Swal.fire({
+                        //         title: "Warning!",
+                        //         text: "Cash Advanced fields (Meals, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                        //         icon: "warning",
+                        //         confirmButtonColor: "#AB2F2B",
+                        //         confirmButtonText: "OK",
+                        //     });
+                        //     return; // Exit without showing the confirmation if all fields are zero
+                        // }
                     }
-                    if (perdiemCheckbox && totalBtPerdiem == 0) {
-                        Swal.fire({
-                            title: "Warning!",
-                            text: "Total Perdiem is 0. Please fill in the values.",
-                            icon: "warning",
-                            confirmButtonColor: "#AB2F2B",
-                            confirmButtonText: "OK",
-                        });
-                        return; // Exit without showing the confirmation if all fields are zero
-                    }
+                    // if (perdiemCheckbox && totalBtPerdiem == 0) {
+                    //     Swal.fire({
+                    //         title: "Warning!",
+                    //         text: "Total Perdiem is 0. Please fill in the values.",
+                    //         icon: "warning",
+                    //         confirmButtonColor: "#AB2F2B",
+                    //         confirmButtonText: "OK",
+                    //     });
+                    //     return; // Exit without showing the confirmation if all fields are zero
+                    // }
                     const input = document.createElement('input');
                     input.type =
                         'hidden'; // Hidden input so it doesn't show in the form
@@ -870,8 +912,8 @@
                 total += parseNumber(input.value);
             });
             document.querySelectorAll('input[name="total_bt_lainnya"]').forEach(input => {
-                    total += parseNumber(input.value);
-                });
+                total += parseNumber(input.value);
+            });
             document.querySelector('input[name="totalca"]').value = formatNumber(total);
         }
     </script>
@@ -981,7 +1023,7 @@
             const day = String(declarationEstimateDate.getDate()).padStart(2, '0');
 
             // Set the value of ca_decla
-            document.getElementById('ca_decla_1').value = `${year}-${month}-${day}`;
+            // document.getElementById('ca_decla_1').value = `${year}-${month}-${day}`;
             document.getElementById('ca_decla_2').value = `${year}-${month}-${day}`;
         }
 

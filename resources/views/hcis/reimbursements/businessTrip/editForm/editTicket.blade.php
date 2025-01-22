@@ -54,13 +54,9 @@
                                 <option value="">Select Transportation Type</option>
                                 <option value="Train"
                                     {{ $ticket && $ticket['jenis_tkt'] == 'Train' ? 'selected' : '' }}>Train</option>
-                                <option value="Bus" {{ $ticket && $ticket['jenis_tkt'] == 'Bus' ? 'selected' : '' }}>
-                                    Bus</option>
                                 <option value="Airplane"
                                     {{ $ticket && $ticket['jenis_tkt'] == 'Airplane' ? 'selected' : '' }}>Airplane
                                 </option>
-                                <option value="Car"
-                                    {{ $ticket && $ticket['jenis_tkt'] == 'Car' ? 'selected' : '' }}>Car</option>
                                 <option value="Ferry"
                                     {{ $ticket && $ticket['jenis_tkt'] == 'Ferry' ? 'selected' : '' }}>Ferry</option>
                             </select>
@@ -69,8 +65,8 @@
                     <div class="col-md-6 mb-2">
                         <label class="form-label">Ticket Type</label>
                         <select class="form-select form-select-sm" name="type_tkt[]">
-                            <option value="One Way"
-                                {{ $ticket && $ticket['type_tkt'] == 'One Way' ? 'selected' : '' }}>One Way</option>
+                            <option value="One Way" {{ $ticket && $ticket['type_tkt'] == 'One Way' ? 'selected' : '' }}>
+                                One Way</option>
                             <option value="Round Trip"
                                 {{ $ticket && $ticket['type_tkt'] == 'Round Trip' ? 'selected' : '' }}>Round Trip
                             </option>

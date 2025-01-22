@@ -186,12 +186,12 @@
                                                 <div class="tab-pane fade show" id="pills-meals" role="tabpanel"
                                                     aria-labelledby="pills-meals-tab">
                                                     {{-- ca meals content --}}
-                                                    @include('hcis.reimbursements.businessTrip.declaration.caMealsDeclare')
+                                                    @include('hcis.reimbursements.businessTrip.declaration-admin.caMealsDeclareAdmin')
                                                 </div>
                                                 <div class="tab-pane fade" id="pills-transport" role="tabpanel"
                                                     aria-labelledby="pills-transport-tab">
                                                     {{-- ca transport content --}}
-                                                    @include('hcis.reimbursements.businessTrip.declaration.caTransportDeclare')
+                                                    @include('hcis.reimbursements.businessTrip.declaration-admin.caTransportDeclareAdmin')
                                                 </div>
                                                 <div class="tab-pane fade" id="pills-accomodation" role="tabpanel"
                                                     aria-labelledby="pills-accomodation-tab">
@@ -200,7 +200,7 @@
                                                 <div class="tab-pane fade" id="pills-other" role="tabpanel"
                                                     aria-labelledby="pills-other-tab">
                                                     {{-- ca others content --}}
-                                                    @include('hcis.reimbursements.businessTrip.declaration.caOtherDeclare')
+                                                    @include('hcis.reimbursements.businessTrip.declaration-admin.caOtherDeclareAdmin')
                                                 </div>
                                             </div>
                                         </div>
@@ -241,6 +241,13 @@
                                                         readonly>
                                                 </div>
                                             </div>
+                                        </div>
+
+                                        {{-- CHANGE REASON --}}
+                                        <div class="mb-3">
+                                            <label class="form-label">Change Note</label>
+                                            <textarea class="form-control form-control-sm" id="ca_note" name="ca_note" rows="3"
+                                                placeholder="Add note if you do any changes"></textarea>
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Accept Status</label>
