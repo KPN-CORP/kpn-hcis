@@ -19,7 +19,7 @@
                 <div class="page-title-box">
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="{{ route('approval.cashadvancedDeklarasi') }}">{{ $parentLink }}</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('approval.cashadvanced') }}">{{ $parentLink }}</a></li>
                             <li class="breadcrumb-item active">{{ $link }}</li>
                         </ol>
                     </div>
@@ -34,7 +34,7 @@
                     <h4 class="modal-title fs-5 fs-md-4 fs-lg-3" id="viewFormEmployeeLabel">
                         Approval Deklarasi Cash Advance - <b>"{{ $transactions->no_ca }}"</b>
                     </h4>
-                    <a href="{{ route('approval.cashadvancedDeklarasi') }}" type="button" class="btn btn-close"></a>
+                    <a href="{{ route('approval.cashadvanced') }}" type="button" class="btn btn-close"></a>
                 </div>
                 <div class="card-body" @style('overflow-y: auto;')>
                     <div class="container-fluid">
@@ -800,7 +800,8 @@
                                     <div id="existing-file-preview" class="mt-2">
                                         @if ($transactions->prove_declare)
                                             @php
-                                                $existingFiles = json_decode($transactions->prove_declare, true);
+                                                //$existingFiles = json_decode($transactions->prove_declare, true);
+                                                $existingFiles = is_array($transactions->prove_declare) ? $transactions->prove_declare : [$transactions->prove_declare];
                                             @endphp
 
                                             @foreach ($existingFiles as $file)

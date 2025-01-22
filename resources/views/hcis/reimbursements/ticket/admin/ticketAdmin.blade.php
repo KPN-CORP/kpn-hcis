@@ -244,7 +244,9 @@
                                             <td class="text-center">
                                                 <button type="button" class="btn btn-sm btn-outline-success rounded-pill" data-bs-toggle="modal" data-bs-target="#bookingModal"
                                                         data-no-id="{{ $transaction->id }}"
-                                                        data-no-tkt="{{ $transaction->no_tkt }}">
+                                                        data-no-tkt="{{ $transaction->no_tkt }}"
+                                                        data-booking-code="{{ $transaction->booking_code }}"
+                                                        data-tkt-price="{{ $transaction->tkt_price }}">
                                                     <i class="bi bi-ticket-perforated"></i>
                                                 </button>
                                                 <a href="{{ route('ticket.export', ['id' => $transaction->id]) }}"
