@@ -122,29 +122,59 @@
                             @endphp
                             <div class="row mb-2">
                                 <div class="col-md-12 mt-2">
-                                    <label for="" class="form-label">Attachment</label>
                                     @if (isset($medic->medical_proof) && $medic->medical_proof)
-                                        <div class="file-preview text-left">
-                                            @php
-                                                // Get the file extension
-                                                $fileExtension = pathinfo($medic->medical_proof, PATHINFO_EXTENSION);
-                                                // Set the image based on the file type
-                                                $imageSrc = '';
-                                                if (in_array($fileExtension, ['pdf'])) {
-                                                    $imageSrc = 'https://img.icons8.com/color/48/000000/pdf.png'; // Replace with the path to your PDF icon
-                                                } elseif (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
-                                                    $imageSrc = Storage::url($medic->medical_proof); // Image files should display their own thumbnail
-                                                } else {
-                                                    $imageSrc = 'https://img.icons8.com/color/48/000000/pdf.png'; // Replace with the path to your default icon
-                                                }
-                                            @endphp
-
-                                            <a href="{{ Storage::url($medic->medical_proof) }}" target="_blank"
-                                                style="text-decoration: none;">
-                                                <img src="{{ $imageSrc }}" alt="{{ $fileExtension }} file"
-                                                    class="file-icon" style="width: 50px; height: 50px;">
-                                                <div style="margin-top: 5px;"><u>View Proof</u></div>
-                                            </a>
+                                        <div class="col-md-12 mb-2 mt-2">
+                                            <!-- Preview untuk file lama -->
+                                            <div id="existing-files-label" style="margin-bottom: 10px; font-weight: bold;">
+                                                @if ($medic->medical_proof)
+                                                    
+                                                    Attachment:
+                                                @endif
+                                            </div>
+                                            <div id="existing-file-preview" class="mt-2">
+                                                @if ($medic->medical_proof)
+                                                    @php
+                                                        $medicalProof = $medic->medical_proof;
+                                                    
+                                                        // Jika null, inisialisasi sebagai array kosong
+                                                        if (is_null($medicalProof)) {
+                                                            $existingFiles = [];
+                                                        } else {
+                                                            // Coba decode JSON
+                                                            $decoded = json_decode($medicalProof, true);
+                                                    
+                                                            if (json_last_error() === JSON_ERROR_NONE) {
+                                                                // Jika decoding berhasil, gunakan hasilnya
+                                                                $existingFiles = $decoded;
+                                                            } else {
+                                                                // Jika bukan JSON, asumsikan format lama (string biasa)
+                                                                $existingFiles = [$medicalProof];
+                                                            }
+                                                        }
+                                                    
+                                                        // Debug hasil akhir
+                                                    @endphp
+        
+                                                    
+                                                    @foreach ($existingFiles as $file)
+                                                        @php $extension = pathinfo($file, PATHINFO_EXTENSION); @endphp
+                                                        <div class="file-preview" data-file="{{ $file }}" style="position: relative; display: inline-block; margin: 10px;">
+                                                            @if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'PNG', 'JPG', 'JPEG']))
+                                                                <a href="{{ Storage::url($file) }}" target="_blank" rel="noopener noreferrer">
+                                                                    <img src="{{ Storage::url($file) }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
+                                                                </a>
+                                                            @elseif($extension === 'pdf')
+                                                                <a href="{{ Storage::url($file) }}" target="_blank" rel="noopener noreferrer">
+                                                                    <img src="{{ asset('images/pdf_icon.png') }}" alt="PDF File">
+                                                                    <p>Click to view PDF</p>
+                                                                </a>
+                                                            @else
+                                                                <p>File type not supported.</p>
+                                                            @endif
+                                                        </div>
+                                                    @endforeach
+                                                @endif
+                                            </div>
                                         </div>
                                     @else
                                         <div class="text-danger">No Attachment uploaded</div>

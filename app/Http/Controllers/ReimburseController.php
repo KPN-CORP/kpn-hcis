@@ -4494,7 +4494,7 @@ class ReimburseController extends Controller
             });
         }
 
-        $transactions = $transactions->select('id', 'no_tkt', 'dari_tkt', 'ke_tkt', 'approval_status', 'jns_dinas_tkt', 'user_id', 'no_sppd', 'manager_l1_id', 'manager_l2_id')
+        $transactions = $transactions->select('id', 'no_tkt', 'dari_tkt', 'ke_tkt', 'approval_status', 'jns_dinas_tkt', 'user_id', 'no_sppd', 'manager_l1_id', 'manager_l2_id', 'booking_code', 'tkt_price')
             ->get();
 
         // Get all tickets
