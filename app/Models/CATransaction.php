@@ -34,6 +34,7 @@ class CATransaction extends Model
         'total_days',
         'created_by',
         'caonly',
+        'ca_note',
         'by_admin',
     ];
     protected $table = 'ca_transactions';

@@ -688,12 +688,10 @@ document.addEventListener("DOMContentLoaded", function () {
                         <div class="col-md-6 mb-2">
                             <label class="form-label">Transportation Type</label>
                             <div class="input-group">
-                                <select class="form-select form-select-sm" name="jenis_tkt[]" id="jenis_tkt_${formNumber}">
+                                <select class="form-select form-select-sm select2" name="jenis_tkt[]" id="jenis_tkt_${formNumber}">
                                     <option value="">Select Transportation Type</option>
                                     <option value="Train">Train</option>
-                                    <option value="Bus">Bus</option>
                                     <option value="Airplane">Airplane</option>
-                                    <option value="Car">Car</option>
                                     <option value="Ferry">Ferry</option>
                                 </select>
                             </div>
@@ -987,14 +985,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         </div>
                         <div class="col-md-2 mb-2">
                             <label class="form-label">Bed Size</label>
-                            <select class="form-select form-select-sm" name="bed_htl[]">
-                                <option value="Single Bed">Single Bed</option>
+                            <select class="form-select form-select-sm select2" name="bed_htl[]">
+                                <option value="Double Bed">Double Bed</option>
                                 <option value="Twin Bed">Twin Bed</option>
-                                <option value="King Bed">King Bed</option>
-                                <option value="Super King Bed">Super King Bed</option>
-                                <option value="Extra Bed">Extra Bed</option>
-                                <option value="Baby Cot">Baby Cot</option>
-                                <option value="Sofa Bed">Sofa Bed</option>
                             </select>
                         </div>
                         <div class="col-md-2 mb-2">

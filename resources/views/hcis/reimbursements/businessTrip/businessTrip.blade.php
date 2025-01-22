@@ -287,7 +287,7 @@
                                                             'Total Voucher' => $taksi[$n->no_sppd]->no_vt . ' Voucher',
                                                             'No. SPPD' => $taksi[$n->no_sppd]->no_sppd,
                                                             'Unit' => $taksi[$n->no_sppd]->unit,
-                                                            'Nominal' => 'Rp ' . number_format($taksi[$n->no_sppd]->nominal_vt, 0, ',', '.'),
+                                                            'Details' => $taksi[$n->no_sppd]->vt_detail,
                                                         ]) }}"><u>Details<u></a>
                                                 @else
                                                     -

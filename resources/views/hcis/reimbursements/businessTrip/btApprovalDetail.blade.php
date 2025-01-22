@@ -64,7 +64,7 @@
                                         readonly>
                                 </div>
                                 <div class="col-md-6 mb-2">
-                                    <label for="divisi" class="form-label">Divison</label>
+                                    <label for="divisi" class="form-label">Unit</label>
                                     <input type="text" class="form-control form-control-sm bg-light" id="divisi"
                                         name="divisi" style="cursor:not-allowed;" value="{{ $employee_data->unit }}"
                                         readonly>
@@ -241,7 +241,8 @@
                                                 <input class="form-check-input" type="checkbox" id="perdiemCheckbox"
                                                     value="Ya" onchange="updateCAValue()" @checked($showPerdiem)
                                                     disabled>
-                                                <label class="form-check-label" for="perdiemCheckbox">{{$allowance}}</label>
+                                                <label class="form-check-label"
+                                                    for="perdiemCheckbox">{{ $allowance }}</label>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
@@ -299,7 +300,7 @@
                                                     <button class="nav-link" id="pills-perdiem-tab" data-bs-toggle="pill"
                                                         data-bs-target="#pills-perdiem" type="button" role="tab"
                                                         aria-controls="pills-perdiem"
-                                                        aria-selected="false">{{$allowance}}</button>
+                                                        aria-selected="false">{{ $allowance }}</button>
                                                 </li>
                                                 <li class="nav-item" role="presentation" id="nav-cashAdvanced"
                                                     style="display: {{ $showCashAdvanced ? 'block' : 'none' }};">
@@ -336,7 +337,8 @@
                                                         <div class="col-md-6 mb-2">
                                                             <label for="date_required" class="form-label">Date
                                                                 Required</label>
-                                                            <input type="date" class="form-control form-control-sm bg-light"
+                                                            <input type="date"
+                                                                class="form-control form-control-sm bg-light"
                                                                 id="date_required_1" name="date_required"
                                                                 placeholder="Date Required"
                                                                 onchange="syncDateRequired(this)"

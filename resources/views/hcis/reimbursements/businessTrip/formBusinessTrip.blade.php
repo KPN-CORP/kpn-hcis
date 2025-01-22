@@ -60,7 +60,7 @@
                                         readonly>
                                 </div>
                                 <div class="col-md-6 mb-1">
-                                    <label for="divisi" class="form-label">Divison</label>
+                                    <label for="divisi" class="form-label">Unit</label>
                                     <input type="text" class="form-control form-control-sm bg-light" id="divisi"
                                         name="divisi" style="cursor:not-allowed;" value="{{ $employee_data->unit }}"
                                         readonly>
@@ -327,13 +327,13 @@
     <script>
         var formCountMeals = 0;
 
-        window.addEventListener("DOMContentLoaded", function () {
+        window.addEventListener("DOMContentLoaded", function() {
             formCountMeals = document.querySelectorAll(
                 "#form-container-meals > div"
             ).length;
         });
 
-        $(".btn-warning").click(function (event) {
+        $(".btn-warning").click(function(event) {
             event.preventDefault();
             var index = $(this).closest(".card-body").index() + 1;
             removeFormMeals(index, event);
@@ -406,28 +406,27 @@
         function onNominalChange() {
             calculateTotalNominalBTMeals();
         }
-
     </script>
     <script>
         function calculateTotalDays(index) {
             const checkInInput = document.getElementById(`check-in-${index}`);
             const checkOutInput = document.getElementById(`check-out-${index}`);
             const totalDaysInput = document.getElementById(`total-days-${index}`);
-        
+
             // Get Start Date and End Date from the main form
             const mulaiInput = document.getElementById("mulai");
             const kembaliInput = document.getElementById("kembali");
-        
+
             if (!checkInInput || !checkOutInput || !mulaiInput || !kembaliInput) {
                 return; // Ensure elements are present before proceeding
             }
-        
+
             // Parse the dates
             const checkInDate = new Date(checkInInput.value);
             const checkOutDate = new Date(checkOutInput.value);
             const mulaiDate = new Date(mulaiInput.value);
             const kembaliDate = new Date(kembaliInput.value);
-        
+
             // Validate Check In Date
             if (checkInDate < mulaiDate) {
                 Swal.fire({
@@ -453,7 +452,7 @@
                 totalDaysInput.value = ""; // Clear total days
                 return;
             }
-        
+
             // Ensure Check Out Date is not earlier than Check In Date
             if (checkOutDate < checkInDate) {
                 Swal.fire({
@@ -467,7 +466,7 @@
                 totalDaysInput.value = ""; // Clear total days
                 return;
             }
-        
+
             // Calculate the total days if all validations pass
             if (checkInDate && checkOutDate) {
                 const diffTime = Math.abs(checkOutDate - checkInDate);
@@ -530,17 +529,18 @@
                         return;
                     }
                     // Check if CA is checked and all fields are zero
-                    if (caCheckbox && totalBtPenginapan == 0 && totalBtTransport == 0 && totalBtLainnya == 0) {
+                    if (caCheckbox && totalBtPenginapan == 0 && totalBtTransport == 0 &&
+                        totalBtLainnya == 0) {
                         if (group_company == 'KPN Plantations' || group_company == 'Plantations') {
-                        Swal.fire({
-                            title: "Warning!",
-                            text: "Cash Advanced fields (Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
-                            icon: "warning",
-                            confirmButtonColor: "#AB2F2B",
-                            confirmButtonText: "OK",
-                        });
-                        return; // Exit without showing the confirmation if all fields are zero
-                        }else if(totalBtMeals == 0){
+                            Swal.fire({
+                                title: "Warning!",
+                                text: "Cash Advanced fields (Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                icon: "warning",
+                                confirmButtonColor: "#AB2F2B",
+                                confirmButtonText: "OK",
+                            });
+                            return; // Exit without showing the confirmation if all fields are zero
+                        } else if (totalBtMeals == 0) {
                             Swal.fire({
                                 title: "Warning!",
                                 text: "Cash Advanced fields (Meals, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
@@ -649,7 +649,7 @@
                     const dateReq = document.getElementById('date_required_1').value;
                     const dateReq2 = document.getElementById('date_required_2').value;
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
-                    
+
                     const totalBtMealsElement = document.getElementById('total_bt_meals');
                     if (totalBtMealsElement) {
                         const totalBtMeals = totalBtMealsElement.value;
@@ -684,7 +684,8 @@
                         return;
                     }
                     // Check if CA is checked and all fields are zero
-                    if (caCheckbox && totalBtPenginapan == 0 && totalBtTransport == 0 && totalBtLainnya == 0) {
+                    if (caCheckbox && totalBtPenginapan == 0 && totalBtTransport == 0 &&
+                        totalBtLainnya == 0) {
                         if (group_company == 'KPN Plantations' || group_company == 'Plantations') {
                             Swal.fire({
                                 title: "Warning!",
@@ -694,7 +695,7 @@
                                 confirmButtonText: "OK",
                             });
                             return; // Exit without showing the confirmation if all fields are zero
-                        }else if(totalBtMeals == 0){
+                        } else if (totalBtMeals == 0) {
                             Swal.fire({
                                 title: "Warning!",
                                 text: "Cash Advanced fields (Meals, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
@@ -779,8 +780,8 @@
                 total += parseNumber(input.value);
             });
             document.querySelectorAll('input[name="total_bt_lainnya"]').forEach(input => {
-                    total += parseNumber(input.value);
-                });
+                total += parseNumber(input.value);
+            });
             document.querySelector('input[name="totalca"]').value = formatNumber(total);
         }
     </script>

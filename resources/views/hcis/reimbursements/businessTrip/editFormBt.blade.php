@@ -69,7 +69,7 @@
                                         readonly>
                                 </div>
                                 <div class="col-md-6 mb-2">
-                                    <label for="divisi" class="form-label">Divison</label>
+                                    <label for="divisi" class="form-label">Unit</label>
                                     <input type="text" class="form-control form-control-sm bg-light" id="divisi"
                                         name="divisi" style="cursor:not-allowed;" value="{{ $employee_data->unit }}"
                                         readonly>
@@ -504,21 +504,21 @@
             const checkInInput = document.getElementById(`check-in-${index}`);
             const checkOutInput = document.getElementById(`check-out-${index}`);
             const totalDaysInput = document.getElementById(`total-days-${index}`);
-        
+
             // Get Start Date and End Date from the main form
             const mulaiInput = document.getElementById("mulai");
             const kembaliInput = document.getElementById("kembali");
-        
+
             if (!checkInInput || !checkOutInput || !mulaiInput || !kembaliInput) {
                 return; // Ensure elements are present before proceeding
             }
-        
+
             // Parse the dates
             const checkInDate = new Date(checkInInput.value);
             const checkOutDate = new Date(checkOutInput.value);
             const mulaiDate = new Date(mulaiInput.value);
             const kembaliDate = new Date(kembaliInput.value);
-        
+
             // Validate Check In Date
             if (checkInDate < mulaiDate) {
                 Swal.fire({
@@ -544,7 +544,7 @@
                 totalDaysInput.value = ""; // Clear total days
                 return;
             }
-        
+
             // Ensure Check Out Date is not earlier than Check In Date
             if (checkOutDate < checkInDate) {
                 Swal.fire({
@@ -558,7 +558,7 @@
                 totalDaysInput.value = ""; // Clear total days
                 return;
             }
-        
+
             // Calculate the total days if all validations pass
             if (checkInDate && checkOutDate) {
                 const diffTime = Math.abs(checkOutDate - checkInDate);

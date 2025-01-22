@@ -30,8 +30,8 @@
                     <td>{{ \Carbon\Carbon::parse($n->kembali)->format('d-M-Y') }}</td>
                     <td style="text-align: center; align-content: center">
                         @if ($n->ca == 'Ya' && isset($caTransactions[$n->no_sppd]))
-                            <a class="text-info btn-detail" data-toggle="modal"
-                                data-target="#detailModal" style="cursor: pointer"
+                            <a class="text-info btn-detail" data-toggle="modal" data-target="#detailModal"
+                                style="cursor: pointer"
                                 data-ca="{{ json_encode([
                                     'No. CA' => $caTransactions[$n->no_sppd]->no_ca,
                                     'No. SPPD' => $caTransactions[$n->no_sppd]->no_sppd,
@@ -49,8 +49,8 @@
                     </td>
                     <td style="text-align: center; align-content: center">
                         @if ($n->tiket == 'Ya' && isset($tickets[$n->no_sppd]))
-                            <a class="text-info btn-detail" data-toggle="modal"
-                                data-target="#detailModal" style="cursor: pointer"
+                            <a class="text-info btn-detail" data-toggle="modal" data-target="#detailModal"
+                                style="cursor: pointer"
                                 data-tiket="{{ json_encode(
                                     $tickets[$n->no_sppd]->map(function ($ticket) {
                                         return [
@@ -80,8 +80,8 @@
                     </td>
                     <td style="text-align: center; align-content: center">
                         @if ($n->hotel == 'Ya' && isset($hotel[$n->no_sppd]))
-                            <a class="text-info btn-detail" data-toggle="modal"
-                                data-target="#detailModal" style="cursor: pointer"
+                            <a class="text-info btn-detail" data-toggle="modal" data-target="#detailModal"
+                                style="cursor: pointer"
                                 data-hotel="{{ json_encode(
                                     $hotel[$n->no_sppd]->map(function ($hotel) {
                                         return [
@@ -105,13 +105,13 @@
                     </td>
                     <td style="text-align: center; align-content: center">
                         @if ($n->taksi == 'Ya' && isset($taksi[$n->no_sppd]))
-                            <a class="text-info btn-detail" data-toggle="modal"
-                                data-target="#detailModal" style="cursor: pointer"
+                            <a class="text-info btn-detail" data-toggle="modal" data-target="#detailModal"
+                                style="cursor: pointer"
                                 data-taksi="{{ json_encode([
                                     'Total Voucher' => $taksi[$n->no_sppd]->no_vt . ' Voucher',
                                     'No. SPPD' => $taksi[$n->no_sppd]->no_sppd,
                                     'Unit' => $taksi[$n->no_sppd]->unit,
-                                    'Nominal' => 'Rp ' . number_format($taksi[$n->no_sppd]->nominal_vt, 0, ',', '.'),
+                                    'Details' => $taksi[$n->no_sppd]->vt_detail,
                                 ]) }}"><u>Details<u></a>
                         @else
                             -
