@@ -128,6 +128,8 @@ class Tiket extends Model
         'approval_status',
         'tkt_only',
         'jns_dinas_tkt',
+        'booking_code',
+        'tkt_price',
     ];
     protected $table = 'tkt_transactions';
 
