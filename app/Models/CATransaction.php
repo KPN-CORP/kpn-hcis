@@ -33,7 +33,8 @@ class CATransaction extends Model
         'approval_extend',
         'total_days',
         'created_by',
-        'caonly'
+        'caonly',
+        'by_admin',
     ];
     protected $table = 'ca_transactions';
 

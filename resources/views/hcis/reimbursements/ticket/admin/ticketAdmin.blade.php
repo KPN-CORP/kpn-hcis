@@ -96,33 +96,42 @@
                                     <div class="d-flex align-items-center mt-3">
                                         <label class="form-label me-2 mb-0" style="width: 80px;">Departure</label>
                                         <div class="input-group">
-                                            <input type="date" class="form-control ml-3" id="start_date" name="start_date" 
-                                                placeholder="Start Date" title="Start Date" value="{{ request()->get('start_date') }}">
+                                            <input type="date" class="form-control ml-3" id="start_date"
+                                                name="start_date" placeholder="Start Date" title="Start Date"
+                                                value="{{ request()->get('start_date') }}">
                                             <span class="px-2 mt-1">-</span>
-                                            <input type="date" class="form-control" id="end_date" name="end_date" 
-                                                placeholder="End Date" title="End Date" value="{{ request()->get('end_date') }}">
+                                            <input type="date" class="form-control" id="end_date" name="end_date"
+                                                placeholder="End Date" title="End Date"
+                                                value="{{ request()->get('end_date') }}">
                                         </div>
                                     </div>
                                 </div>
-                    
+
                                 <!-- Location Dropdown -->
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label for="tkt_type" class="form-label">Ticket Type</label>
-                                        <select class="form-select select2" aria-label="Ticket Type" id="tkt_type" name="tkt_type">
-                                            <option value="" {{ request()->get('tkt_type') == '-' ? 'selected' : '' }}>All Type</option>
-                                            <option value="Cuti" {{ request()->get('tkt_type') == 'Cuti' ? 'selected' : '' }}>Cuti</option>
-                                            <option value="Dinas" {{ request()->get('tkt_type') == 'Dinas' ? 'selected' : '' }}>Dinas</option>
+                                        <select class="form-select select2" aria-label="Ticket Type" id="tkt_type"
+                                            name="tkt_type">
+                                            <option value=""
+                                                {{ request()->get('tkt_type') == '-' ? 'selected' : '' }}>All Type</option>
+                                            <option value="Cuti"
+                                                {{ request()->get('tkt_type') == 'Cuti' ? 'selected' : '' }}>Cuti</option>
+                                            <option value="Dinas"
+                                                {{ request()->get('tkt_type') == 'Dinas' ? 'selected' : '' }}>Dinas</option>
                                         </select>
                                     </div>
                                 </div>
-                    
+
                                 <!-- Buttons -->
                                 <div class="col-md-2">
                                     <div class="d-flex gap-2" style="margin-top: 24px;">
                                         <button class="btn btn-primary btn-sm" type="submit">Filter</button>
-                                        @if (isset($_GET['start_date']) && $_GET['start_date'] !== '' || (isset($_GET['tkt_type']) && $_GET['tkt_type'] !== '-'))
-                                            <button class="btn btn-success btn-sm" type="button" onclick="redirectToExportExcel()">
+                                        @if (
+                                            (isset($_GET['start_date']) && $_GET['start_date'] !== '') ||
+                                                (isset($_GET['tkt_type']) && $_GET['tkt_type'] !== '-'))
+                                            <button class="btn btn-success btn-sm" type="button"
+                                                onclick="redirectToExportExcel()">
                                                 <i class="ri-file-excel-2-line"></i> Export
                                             </button>
                                         @endif
@@ -142,15 +151,18 @@
                             <h3 class="card-title">{{ $link }}</h3>
                             <div class="input-group" style="width: 30%;">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text bg-white w-border-dark-subtle"><i class="ri-search-line"></i></span>
+                                    <span class="input-group-text bg-white w-border-dark-subtle"><i
+                                            class="ri-search-line"></i></span>
                                 </div>
-                                <input type="text" name="customsearch" id="customsearch" class="form-control w-border-dark-subtle border-left-0" placeholder="Search.." aria-label="search" aria-describedby="search" >
+                                <input type="text" name="customsearch" id="customsearch"
+                                    class="form-control w-border-dark-subtle border-left-0" placeholder="Search.."
+                                    aria-label="search" aria-describedby="search">
                                 {{-- &nbsp;&nbsp;&nbsp; --}}
                             </div>
                         </div>
                         <div class="table-responsive">
-                            <table class="table table-sm table-hover dt-responsive nowrap mt-2" id="defaultTable" width="100%"
-                                cellspacing="0">
+                            <table class="table table-sm table-hover dt-responsive nowrap mt-2" id="defaultTable"
+                                width="100%" cellspacing="0">
                                 <thead class="thead-light">
                                     <tr class="text-center">
                                         <th>No</th>
@@ -162,6 +174,7 @@
                                         <th>From/To</th>
                                         <th>Details</th>
                                         <th>Status</th>
+                                        <th>Approval</th>
                                         <th class="text-center">Actions</th>
                                     </tr>
                                 </thead>
@@ -171,7 +184,7 @@
                                             <td style="text-align: center">{{ $loop->index + 1 }}</td>
                                             <td>{{ $transaction->no_sppd }}</td>
                                             <td>{{ $transaction->no_tkt }}</td>
-                                            <td>{{ $transaction->employee->fullname }}</td>
+                                            <td>{{ $transaction->employee->fullname ?? '-' }}</td>
                                             <td style="text-align: left">
                                                 {{ $ticketCounts[$transaction->no_tkt]['total'] ?? 1 }} Tickets</td>
                                             <td>{{ $transaction->jns_dinas_tkt }}</td>
@@ -242,15 +255,34 @@
                                                 </span>
                                             </td>
                                             <td class="text-center">
+
+                                                <button 
+                                                    type="button" 
+                                                    class="btn btn-sm btn-outline-success rounded-pill" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#approvalModal"
+                                                    data-id="{{ $transaction->id }}" 
+                                                    data-no="{{ $transaction->no_tkt }}" 
+                                                    data-sppd="{{ $transaction->no_sppd }}"
+                                                    data-status="{{ $transaction->approval_status }}"
+                                                    data-manager-l1="{{ $transaction->manager_l1_name }}" 
+                                                    data-manager-l2="{{ $transaction->manager_l2_name }}">
+                                                    <i class="bi bi-list-check"></i>
+                                                </button>
+                                            </td>
+                                            <td class="text-center">
+
                                                 <button type="button" class="btn btn-sm btn-outline-success rounded-pill" data-bs-toggle="modal" data-bs-target="#bookingModal"
                                                         data-no-id="{{ $transaction->id }}"
                                                         data-no-tkt="{{ $transaction->no_tkt }}"
                                                         data-booking-code="{{ $transaction->booking_code }}"
                                                         data-tkt-price="{{ $transaction->tkt_price }}">
+
                                                     <i class="bi bi-ticket-perforated"></i>
                                                 </button>
                                                 <a href="{{ route('ticket.export', ['id' => $transaction->id]) }}"
-                                                    class="btn btn-sm btn-outline-info rounded-pill" target="_blank">
+                                                    class="btn btn-sm btn-outline-info rounded-pill" target="_blank"
+                                                    title="Download PDF">
                                                     <i class="bi bi-download"></i>
                                                 </a>
                                                 <form
@@ -260,7 +292,8 @@
                                                     @csrf
                                                     <input type="hidden" id="no_sppd_{{ $transaction->no_tkt }}"
                                                         value="{{ $transaction->no_tkt }}">
-                                                    <button class="btn btn-sm rounded-pill btn-outline-danger delete-button"
+                                                    <button
+                                                        class="btn btn-sm rounded-pill btn-outline-danger delete-button"
                                                         title="Delete" data-id="{{ $transaction->no_tkt }}">
                                                         <i class="ri-delete-bin-line"></i>
                                                     </button>

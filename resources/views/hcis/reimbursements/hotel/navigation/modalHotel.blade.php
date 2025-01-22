@@ -101,6 +101,92 @@
     </div>
 </div>
 
+{{-- Booking Approval --}}
+<div class="modal fade" id="approvalModal" tabindex="-1" aria-labelledby="approvalModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="approvalModalLabel">Approval Business Trip Update - <span id="modalSPPD"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <form id="approveForm" action="{{ route('changeStatus.hotel.admin', ':id') }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Manager L1 -->
+                        <div class="col-md-12 mb-3">
+                            <div
+                                class="d-flex flex-column align-items-start p-2 mr-2">
+                                <label class="col-form-label mb-2 text-dark">Approval Request:</label>
+
+                                <!-- Manager L1 Name & Buttons -->
+                                <div class="mb-3 w-100">
+                                    <div>
+                                        <strong>Manager L1:</strong>
+                                        <span id="managerL1Name"></span>
+                                    </div>
+                                    <div class="mt-2 d-flex justify-content-start" id="l1ActionContainer">
+                                        <!-- Will be populated by JavaScript -->
+                                    </div>
+                                </div>
+
+                                <!-- Manager L2 Name & Buttons -->
+                                <div class="mb-3 w-100">
+                                    <div>
+                                        <strong>Manager L2:</strong>
+                                        <span id="managerL2Name"></span>
+                                    </div>
+                                    <div class="mt-2 d-flex justify-content-start" id="l2ActionContainer">
+                                        <!-- Will be populated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary rounded-pill"
+                        data-bs-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{-- Booking Reject --}}
+<div class="modal fade" id="rejectApprovalModal" tabindex="-1" aria-labelledby="rejectApprovalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-light border-bottom-0">
+                <h5 class="modal-title" id="rejectApprovalModalLabel" style="color: #333; font-weight: 600;">Rejection Reason - <span id="rejectionhtl"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="rejectApprovalForm" method="POST"
+                    action="{{ route('changeStatus.hotel.admin', ':id') }}">
+                    @csrf
+                    <input type="hidden" name="status_approval" value="Rejected">
+
+                    <div class="mb-3">
+                        <label for="reject_info" class="form-label" style="color: #555; font-weight: 500;">Please
+                            provide a reason for rejection:</label>
+                        <textarea class="form-control border-2" name="reject_info" id="reject_info" rows="4" required
+                            style="resize: vertical; min-height: 100px;"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="button" class="btn btn-outline-primary rounded-pill me-2"
+                            data-bs-dismiss="modal" style="min-width: 100px;">Cancel</button>
+                        <button type="submit" class="btn btn-primary rounded-pill"
+                            style="min-width: 100px;">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Success --}}
 @if (session('success'))
     <script>
@@ -209,5 +295,117 @@
     function removeFormatting(element) {
         element.value = element.value.replace(/\./g, '');
     }
+
+    document.addEventListener('DOMContentLoaded', function () {  
+        const approvalModal = document.getElementById('approvalModal');  
+        const form = document.getElementById('approveForm'); // Tambahkan baris ini  
+
+        if (approvalModal) {  
+            approvalModal.addEventListener('show.bs.modal', function (event) {  
+                // Ambil data dari tombol yang memicu modal  
+                const button = event.relatedTarget;  
+                const htlId = button.getAttribute('data-id');  
+                const htlNo = button.getAttribute('data-no');  
+                const status = button.getAttribute('data-status');  
+                const managerL1Name = button.getAttribute('data-manager-l1') || 'Unknown';  
+                const managerL2Name = button.getAttribute('data-manager-l2') || 'Unknown';  
+
+                // Update modal dengan data manager  
+                document.getElementById('modalSPPD').textContent = htlNo;  
+                document.getElementById('managerL1Name').textContent = managerL1Name;  
+                document.getElementById('managerL2Name').textContent = managerL2Name;  
+
+                // Ganti :id dengan htlId  
+                let action = form.getAttribute('action');  
+                form.setAttribute('action', action.replace(':id', htlId));  
+
+                // Kontainer untuk aksi dan data approval  
+                const l1Container = document.getElementById('l1ActionContainer');  
+                const l2Container = document.getElementById('l2ActionContainer');  
+
+                // Hapus konten sebelumnya  
+                l1Container.innerHTML = '';  
+                l2Container.innerHTML = '';  
+
+                // Fungsi untuk mengisi kontainer aksi  
+                function populateContainer(container, status, layer) {  
+                    if (status === `Pending ${layer}`) {  
+                        container.innerHTML = `  
+                            <button type="submit" class="btn btn-success btn-sm rounded-pill me-2">Approve</button>  
+                            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill"  
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#rejectApprovalModal"
+                                    data-id="${htlId}" 
+                                    data-no="${htlNo}">Reject</button>  
+                        `;  
+                    } else {  
+                        container.innerHTML = `<div id="approvalData${layer}" class="w-100"></div>`;  
+                    }  
+                }  
+
+                // Isi kontainer aksi untuk L1 dan L2  
+                populateContainer(l1Container, status, 'L1');  
+                populateContainer(l2Container, status, 'L2');  
+
+                // Ambil data approval dari server (Laravel Blade)  
+                const approvals = @json($approvalHotels) || [];  
+
+                // Filter data approval berdasarkan htlId  
+                const filteredApprovals = approvals.filter(approval => approval.htl_id === htlId);  
+
+                const approvalDataL1 = document.getElementById('approvalDataL1');  
+                if (approvalDataL1) {  
+                    const l1Approvals = filteredApprovals.filter(a => a.layer === 1);  
+                    if (l1Approvals.length > 0) {  
+                        approvalDataL1.innerHTML = l1Approvals.map(approval => `  
+                            <div class="border rounded p-2 mb-2">  
+                                <strong>Status:</strong> ${approval.approval_status}<br>  
+                                <strong>Approved By:</strong> ${approval.employee_id} ${approval.by_admin === 'T' ? '(Admin)' : ''}<br> 
+                                <strong>Approved At:</strong> ${moment(approval.approved_at).format('DD-MMM-YY')}
+                            </div>  
+                        `).join('');  
+                    } else {  
+                        approvalDataL1.innerHTML = '<p class="text-muted">No L1 Request found</p>';  
+                    }  
+                }  
+
+                const approvalDataL2 = document.getElementById('approvalDataL2');  
+                if (approvalDataL2) {  
+                    const l2Approvals = filteredApprovals.filter(a => a.layer === 2);  
+                    if (l2Approvals.length > 0) {  
+                        approvalDataL2.innerHTML = l2Approvals.map(approval => `  
+                            <div class="border rounded p-2 mb-2">  
+                                <strong>Status:</strong> ${approval.approval_status}<br>  
+                                <strong>Approved By:</strong> ${approval.employee_id} ${approval.by_admin === 'T' ? '(Admin)' : ''}<br> 
+                                <strong>Approved At:</strong> ${moment(approval.approved_at).format('DD-MMM-YY')}  
+                            </div>  
+                        `).join('');  
+                    } else {  
+                        approvalDataL2.innerHTML = '<p class="text-muted">No L2 Request found</p>';  
+                    }  
+                }  
+            });  
+        }  
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {  
+        const rejectApprovalModal = document.getElementById('rejectApprovalModal');  
+        const form = document.getElementById('rejectApprovalForm'); // Tambahkan baris ini  
+
+        if (rejectApprovalModal) {  
+            rejectApprovalModal.addEventListener('show.bs.modal', function (event) {  
+                // Ambil data dari tombol yang memicu modal  
+                const button = event.relatedTarget;  
+                const htlId = button.getAttribute('data-id');  
+                const htlNo = button.getAttribute('data-no');  
+
+                // Update modal dengan data manager  
+                document.getElementById('rejectionhtl').textContent = htlNo;  
+
+                let action = form.getAttribute('action');  
+                form.setAttribute('action', action.replace(':id', htlId));  
+            });  
+        }  
+    });
 
 </script>

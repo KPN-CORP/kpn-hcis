@@ -1139,6 +1139,12 @@ function resetFieldsPerdiem() {
 
 function resetFields() {
     // Transport-related fields
+    const tanggalBtMeals = document.getElementsByName("tanggal_bt_meals[]");
+    const nominalBtMeals = document.getElementsByName("nominal_bt_meals[]");
+    const keteranganBtMeals = document.getElementsByName(
+        "keterangan_bt_meals[]"
+    );
+    const totalBtMeals = document.getElementsByName("total_bt_meals");
     const transportDateFields = document.getElementsByName(
         "tanggal_bt_transport[]"
     );
@@ -1176,6 +1182,18 @@ function resetFields() {
     );
     const totalBtLainnya = document.getElementsByName("total_bt_lainnya");
 
+    tanggalBtMeals.forEach((field) => {
+        field.value = ""; // Reset to empty
+    });
+    nominalBtMeals.forEach((field) => {
+        field.value = ""; // Reset to empty
+    });
+    keteranganBtMeals.forEach((field) => {
+        field.value = ""; // Reset to empty
+    });
+    totalBtMeals.forEach((field) => {
+        field.value = 0; // Reset to 0
+    });
     // Reset transport date fields
     transportDateFields.forEach((field) => {
         field.value = ""; // Reset to empty
@@ -1257,10 +1275,10 @@ function formatInput(input) {
         input.value = formatNumber(0);
     }
     calculateTotalNominalBTPerdiem();
-    calculateTotalNominalBTMeals();
     calculateTotalNominalBTTransport();
     calculateTotalNominalBTPenginapan();
     calculateTotalNominalBTLainnya();
+    calculateTotalNominalBTMeals();
     calculateTotalNominalBTTotal();
 }
 
@@ -1268,11 +1286,6 @@ function calculateTotalNominalBTTotal() {
     let total = 0;
     document
         .querySelectorAll('input[name="total_bt_perdiem"]')
-        .forEach((input) => {
-            total += parseNumber(input.value);
-        });
-    document
-        .querySelectorAll('input[name="total_bt_meals"]')
         .forEach((input) => {
             total += parseNumber(input.value);
         });
@@ -1288,6 +1301,11 @@ function calculateTotalNominalBTTotal() {
         });
     document
         .querySelectorAll('input[name="total_bt_lainnya"]')
+        .forEach((input) => {
+            total += parseNumber(input.value);
+        });
+    document
+        .querySelectorAll('input[name="total_bt_meals"]')
         .forEach((input) => {
             total += parseNumber(input.value);
         });

@@ -26,6 +26,9 @@ class HomeTripNotification extends Mailable
 
     public $approvalLink;
     public $rejectionLink;
+    public $textNotification;
+    public $employeeName;
+    public $base64Image;
     public function __construct(array $data)
     {
         $this->noTktList = $data['noTkt'];
@@ -41,6 +44,9 @@ class HomeTripNotification extends Mailable
         $this->managerName = $data['managerName'];
         $this->approvalLink = $data['approvalLink'];
         $this->rejectionLink = $data['rejectionLink'];
+        $this->textNotification = $data['textNotification'];
+        $this->employeeName = $data['employeeName'];
+        $this->base64Image = $data['base64Image'];
     }
 
     /**

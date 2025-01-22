@@ -256,6 +256,12 @@ class BTApprovalController extends Controller
             $managerL2 = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('email')->first();
             // dd($managerL2, $status);
 
+            $imagePath = public_path('images/kop.jpg');
+            $imageContent = file_get_contents($imagePath);
+            $employeeName = Employee::where('id', $businessTrip->user_id)->pluck('fullname')->first();
+            $base64Image = "data:image/png;base64," . base64_encode($imageContent);
+            $textNotification = "requesting a Bussiness Trip and waiting for your Approval with the following details :";
+
             $managerName = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('fullname')->first();
 
             // dd($managerL2);
@@ -305,7 +311,7 @@ class BTApprovalController extends Controller
                 ]);
 
                 // Send an email with the detailed business trip information
-                try{
+                try {
                     Mail::to($managerL2)->send(new BusinessTripNotification(
                         $businessTrip,
                         $hotelDetails,  // Pass hotel details
@@ -314,10 +320,13 @@ class BTApprovalController extends Controller
                         $caDetails,
                         $managerName,
                         $approvalLink,
-                        $rejectionLink
-                    ));
+                        $rejectionLink,
+                        $employeeName,
+                        $base64Image,
+                        $textNotification,
+                    ));   
                 } catch (\Exception $e) {
-                	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                	Log::error('Link Email Approval Bussines Trip tidak terkirim: ' . $e->getMessage());
                 }
             }
 
@@ -583,7 +592,7 @@ class BTApprovalController extends Controller
                 ];
 
                 // Send email to the manager
-                try{
+                try {
                     Mail::to($managerL2)->send(new DeclarationNotification(
                         $businessTrip,
                         $caDetails,
@@ -593,7 +602,7 @@ class BTApprovalController extends Controller
                         $rejectionLink,
                     ));
                 } catch (\Exception $e) {
-                	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email Deklarasi Approval Bussines Trip tidak terkirim: ' . $e->getMessage());
                 }
             }
             // Handle CA approval for L1

@@ -157,8 +157,8 @@
                                     <label for="additional-fields-title" class="mb-3">
                                         Business Trip Needs <br>
                                         @if ($isAllowed)
-                                        <span class="text-info fst-italic">* Your job
-                                            level is above 8. No perdiem is required for your job level</span>
+                                            <span class="text-info fst-italic">* Your job
+                                                level is above 8. No perdiem is required for your job level</span>
                                         @endif
                                     </label>
                                     <div class="row">
@@ -167,7 +167,8 @@
                                                 <input type="hidden" name="ca" id="caHidden" value="Tidak">
                                                 <input class="form-check-input" type="checkbox" id="perdiemCheckbox"
                                                     value="Ya" onchange="updateCAValue()">
-                                                <label class="form-check-label" for="perdiemCheckbox">{{ $allowance }}</label>
+                                                <label class="form-check-label"
+                                                    for="perdiemCheckbox">{{ $allowance }}</label>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
@@ -531,14 +532,14 @@
                     // Check if CA is checked and all fields are zero
                     if (caCheckbox && totalBtPenginapan == 0 && totalBtTransport == 0 && totalBtLainnya == 0) {
                         if (group_company == 'KPN Plantations' || group_company == 'Plantations') {
-                            Swal.fire({
-                                title: "Warning!",
-                                text: "Cash Advanced fields (Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
-                                icon: "warning",
-                                confirmButtonColor: "#AB2F2B",
-                                confirmButtonText: "OK",
-                            });
-                            return; // Exit without showing the confirmation if all fields are zero
+                        Swal.fire({
+                            title: "Warning!",
+                            text: "Cash Advanced fields (Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                            icon: "warning",
+                            confirmButtonColor: "#AB2F2B",
+                            confirmButtonText: "OK",
+                        });
+                        return; // Exit without showing the confirmation if all fields are zero
                         }else if(totalBtMeals == 0){
                             Swal.fire({
                                 title: "Warning!",
@@ -554,7 +555,7 @@
                     if (perdiemCheckbox && totalBtPerdiem == 0) {
                         Swal.fire({
                             title: "Warning!",
-                            text: "Total {{$allowance}} is 0. Please fill in the values.",
+                            text: "Total {{ $allowance }} is 0. Please fill in the values.",
                             icon: "warning",
                             confirmButtonColor: "#AB2F2B",
                             confirmButtonText: "OK",
@@ -707,7 +708,7 @@
                     if (perdiemCheckbox && totalBtPerdiem == 0) {
                         Swal.fire({
                             title: "Warning!",
-                            text: "Total {{$allowance}} is 0. Please fill in the values.",
+                            text: "Total {{ $allowance }} is 0. Please fill in the values.",
                             icon: "warning",
                             confirmButtonColor: "#AB2F2B",
                             confirmButtonText: "OK",
@@ -778,8 +779,8 @@
                 total += parseNumber(input.value);
             });
             document.querySelectorAll('input[name="total_bt_lainnya"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
+                    total += parseNumber(input.value);
+                });
             document.querySelector('input[name="totalca"]').value = formatNumber(total);
         }
     </script>

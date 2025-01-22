@@ -109,9 +109,7 @@ class EmployeeController extends Controller
         // Data untuk request
         $data = [
             "api_key" => "46313f36ab8a8bc5aad64ff1c80c769a07716d9af8f07850f6ad2465a0c991b4d42e84414b5775ba151e7f2833223bfb1e0ecf49b89c7d6d0f6a6d39231666f8",
-            "datasetKey" => "11f8ded39d3f22e7c71900d90605c7bf8ef211ac94956b07cc2f8c340d61a4528342feb5afc4b9a9db0b980427007db0dd61db52ae857699d80d9c79a28078cc",
-            "limit" => 1800,
-            "start" => 1801,
+            "datasetKey" => "11f8ded39d3f22e7c71900d90605c7bf8ef211ac94956b07cc2f8c340d61a4528342feb5afc4b9a9db0b980427007db0dd61db52ae857699d80d9c79a28078cc"
         ];
 
         // Header
