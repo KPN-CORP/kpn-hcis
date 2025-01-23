@@ -27,11 +27,6 @@ function setupCheckboxListeners() {
                 document.getElementById(`pills-${section}-dalam-kota-tab`) ||
                 document.getElementById(`pills-${section}-tab`);
 
-            console.log("Checkbox:", checkbox);
-            console.log("Nav Item:", navItem);
-            console.log("Tab Button:", tabButton);
-            console.log("Tab Content:", tabContent);
-
             if (this.checked && navItem && tabButton && tabContent) {
                 navItem.style.display = "block";
                 tabButton.click(); // Activate this tab
