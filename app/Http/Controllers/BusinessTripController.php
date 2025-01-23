@@ -2330,7 +2330,7 @@ class BusinessTripController extends Controller
             'norek_krywn' => $request->norek_krywn,
             'nama_pemilik_rek' => $request->nama_pemilik_rek,
             'nama_bank' => $request->nama_bank,
-            'ca' => $request->ca,
+            'ca' => $request->ca === 'Tidak' ? $request->ent : $request->ca,
             'tiket' => $request->tiket,
             'hotel' => $request->hotel,
             'taksi' => $request->taksi,
@@ -2345,6 +2345,7 @@ class BusinessTripController extends Controller
             'approval_status' => $request->status,
 
         ]);
+        dd($businessTrip);
         if ($request->taksi === 'Ya') {
             $taksi = new Taksi();
             $taksi->id = (string) Str::uuid();
@@ -2690,6 +2691,185 @@ class BusinessTripController extends Controller
                     $model_approval->save();
                 }
                 $ca->save();
+            }
+        }
+
+        if ($request->ent === 'Ya') {
+            $ent = new CATransaction();
+            $businessTripStatus = $request->input('status');
+
+            // Generate new 'no_ca' code
+            $currentYear = date('Y');
+            $currentYearShort = date('y');
+            $prefix = 'CA';
+            $lastTransaction = CATransaction::whereYear('created_at', $currentYear)
+                ->orderBy('no_ca', 'desc')
+                ->first();
+
+            $lastNumber = $lastTransaction && preg_match('/CA' . $currentYearShort . '(\d{6})/', $lastTransaction->no_ca, $matches) ? intval($matches[1]) : 0;
+            $newNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
+            $newNoCa = "$prefix$currentYearShort$newNumber";
+
+            if ($statusValue === 'Draft') {
+                // Set CA status to Draft
+                $entStatus = $ent->approval_status = 'Draft';
+            } elseif ($statusValue === 'Pending L1') {
+                // Set CA status to Pending
+                $entStatus = $ent->approval_status = 'Pending';
+            }
+            $ent_id = (string) Str::uuid();
+            // Assign values to $ent model
+            $ent->id = $ent_id;
+            $ent->type_ca = 'entr';
+            $ent->no_ca = $newNoCa;
+            $ent->no_sppd = $noSppd;
+            $ent->user_id = $userId;
+            $ent->unit = $request->divisi;
+            $ent->contribution_level_code = $request->bb_perusahaan;
+            $ent->destination = $request->tujuan;
+            $ent->others_location = $request->others_location;
+            $ent->ca_needs = $request->keperluan;
+            $ent->start_date = $request->mulai;
+            $ent->end_date = $request->kembali;
+            $ent->date_required = $request->date_required;
+            // $ent->declare_estimate = Carbon::parse($request->kembali)->addDays(3);
+            $ent->declare_estimate = $request->ca_decla;
+            // dd($request->ca_decla);
+            $ent->total_days = Carbon::parse($request->mulai)->diffInDays(Carbon::parse($request->kembali));
+            $ent->total_ca = (int) str_replace('.', '', $request->total_ent_detail);
+            $ent->total_real = '0';
+            $ent->total_cost = (int) str_replace('.', '', $request->total_ent_detail);
+            $ent->approval_status = $entStatus;
+            $ent->approval_sett = $request->approval_sett ? $request->approval_sett : '';
+            $ent->approval_extend = $request->approval_extend ? $request->approval_extend : '';
+            $ent->created_by = $userId;
+
+            // Initialize arrays
+            $detail_e = [];
+            $relation_e = [];
+
+            if ($request->has('enter_type_e_detail')) {
+                foreach ($request->enter_type_e_detail as $key => $type) {
+                    $fee_detail = $request->enter_fee_e_detail[$key];
+                    $nominal = str_replace('.', '', $request->nominal_e_detail[$key]); // Menghapus titik dari nominal sebelum menyimpannya
+
+                    if (!empty($type) && !empty($nominal)) {
+                        $detail_e[] = [
+                            'type' => $type,
+                            'fee_detail' => $fee_detail,
+                            'nominal' => $nominal,
+                        ];
+                    }
+                }
+            }
+
+            // Mengumpulkan detail relation
+            if ($request->has('rname_e_relation')) {
+                foreach ($request->rname_e_relation as $key => $name) {
+                    $position = $request->rposition_e_relation[$key];
+                    $company = $request->rcompany_e_relation[$key];
+                    $purpose = $request->rpurpose_e_relation[$key];
+
+                    // Memastikan semua data yang diperlukan untuk relation terisi
+                    if (!empty($name) && !empty($position) && !empty($company) && !empty($purpose)) {
+                        $relation_e[] = [
+                            'name' => $name,
+                            'position' => $position,
+                            'company' => $company,
+                            'purpose' => $purpose,
+                            'relation_type' => array_filter([
+                                'Food' => !empty($request->food_e_relation[$key]) && $request->food_e_relation[$key] === 'food',
+                                'Transport' => !empty($request->transport_e_relation[$key]) && $request->transport_e_relation[$key] === 'transport',
+                                'Accommodation' => !empty($request->accommodation_e_relation[$key]) && $request->accommodation_e_relation[$key] === 'accommodation',
+                                'Gift' => !empty($request->gift_e_relation[$key]) && $request->gift_e_relation[$key] === 'gift',
+                                'Fund' => !empty($request->fund_e_relation[$key]) && $request->fund_e_relation[$key] === 'fund',
+                            ], fn($checked) => $checked),
+                        ];
+                    }
+                }
+            }
+
+            // Gabungkan detail entertain dan relation, lalu masukkan ke detail_ca
+            $detail_ca = [
+                'detail_e' => $detail_e,
+                'relation_e' => $relation_e,
+            ];
+            // dd($detail_ca);
+            $ent->detail_ca = json_encode($detail_ca);
+            $ent->declare_ca = json_encode($detail_ca);
+            $ent->save();
+
+            if ($statusValue !== 'Draft') {
+
+                $model = $ent;
+
+                $model->status_id = $managerL1;
+
+                $cek_director_id = Employee::select([
+                    'dsg.department_level2',
+                    'dsg2.director_flag',
+                    DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(dsg.department_level2, '(', -1), ')', 1) AS department_director"),
+                    'dsg2.designation_name',
+                    'dsg2.job_code',
+                    'emp.fullname',
+                    'emp.employee_id',
+                ])
+                    ->leftJoin('designations as dsg', 'dsg.job_code', '=', 'employees.designation_code')
+                    ->leftJoin('designations as dsg2', 'dsg2.department_code', '=', DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(dsg.department_level2, '(', -1), ')', 1)"))
+                    ->leftJoin('employees as emp', 'emp.designation_code', '=', 'dsg2.job_code')
+                    ->where('employees.designation_code', '=', $employee->designation_code)
+                    ->where('dsg2.director_flag', '=', 'F')
+                    ->get();
+
+                $director_id = "";
+
+                if ($cek_director_id->isNotEmpty()) {
+                    $director_id = $cek_director_id->first()->employee_id;
+                }
+                //cek matrix approval
+
+                $total_ca = str_replace('.', '', $request->total_ent_detail);
+                // dd($total_ca);
+                // dd($employee->group_company);
+                // dd($request->bb_perusahaan);
+                $data_matrix_approvals = MatrixApproval::where('modul', 'dns')
+                    ->where('group_company', 'like', '%' . $employee->group_company . '%')
+                    ->where('contribution_level_code', 'like', '%' . $request->bb_perusahaan . '%')
+                    ->whereRaw(
+                        '
+            ? BETWEEN
+            CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND
+            CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca]
+                    )
+                    ->get();
+                foreach ($data_matrix_approvals as $data_matrix_approval) {
+
+                    if ($data_matrix_approval->employee_id == "cek_L1") {
+                        $employee_id = $managerL1;
+                    } else if ($data_matrix_approval->employee_id == "cek_L2") {
+                        $employee_id = $managerL2;
+                    } else if ($data_matrix_approval->employee_id == "cek_director") {
+                        $employee_id = $director_id;
+                    } else {
+                        $employee_id = $data_matrix_approval->employee_id;
+                    }
+                    if ($employee_id != null) {
+                        $model_approval = new ca_approval;
+                        $model_approval->ca_id = $ent_id;
+                        $model_approval->role_name = $data_matrix_approval->desc;
+                        $model_approval->employee_id = $employee_id;
+                        $model_approval->layer = $data_matrix_approval->layer;
+                        $model_approval->approval_status = 'Pending';
+
+                        // Simpan data ke database
+                        $model_approval->save();
+                    }
+
+                    // Simpan data ke database
+                    $model_approval->save();
+                }
+                $ent->save();
             }
         }
 

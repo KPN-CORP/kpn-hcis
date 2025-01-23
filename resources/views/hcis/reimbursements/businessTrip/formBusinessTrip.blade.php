@@ -182,7 +182,7 @@
                                         </div>
                                         <div class="col-md-3">
                                             <div class="form-check">
-                                                <input type="hidden" name="ca" id="caHidden" value="Tidak">
+                                                <input type="hidden" name="ent" id="entHidden" value="Tidak">
                                                 <input class="form-check-input" type="checkbox" id="caEntertainCheckbox"
                                                     value="Ya" onchange="updateCAValue()">
                                                 <label class="form-check-label" for="caEntertainCheckbox">CA
@@ -381,6 +381,7 @@
                         document.querySelector('input[name="total_bt_meals"]').value =
                             formatNumber(total);
                         calculateTotalNominalBTTotal();
+                        calculateTotalNominalBTENTTotal();
                     }
                     $(`#form-container-bt-meals-${index}`).remove();
                     formCountMeals--;
@@ -414,6 +415,7 @@
             // Reset nilai untuk nominal BT Meals
             document.querySelector(`#nominal_bt_meals_${index}`).value = 0;
             calculateTotalNominalBTTotal();
+            calculateTotalNominalBTENTTotal();
         }
 
         function calculateTotalNominalBTMeals() {
@@ -527,6 +529,7 @@
                     const totalBtLainnya = document.getElementById('total_bt_lainnya').value;
                     const group_company = document.getElementById('group_company').value;
                     const caCheckbox = document.getElementById('cashAdvancedCheckbox').checked;
+                    const entCheckbox = document.getElementById('caEntertainCheckbox').checked;
                     // const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
                     const totalCa = document.getElementById('totalca').value;
 
@@ -589,6 +592,7 @@
                     // }
 
                     const caChecked = caCheckbox ? 'CA' : '';
+                    const entChecked = entCheckbox ? 'ENT' : '';
                     const ticketChecked = document.getElementById('ticketCheckbox').checked ?
                         'Ticket' : '';
                     const hotelChecked = document.getElementById('hotelCheckbox').checked ?
@@ -683,6 +687,7 @@
                     const totalBtTransport = document.getElementById('total_bt_transport').value;
                     const totalBtLainnya = document.getElementById('total_bt_lainnya').value;
                     const group_company = document.getElementById('group_company').value;
+                    const caCheckbox = document.getElementById('cashAdvancedCheckbox').checked;
                     const caCheckbox = document.getElementById('cashAdvancedCheckbox').checked;
                     // const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
                     const totalCa = document.getElementById('totalca').value;
@@ -790,6 +795,7 @@
             calculateTotalNominalBTPenginapan();
             calculateTotalNominalBTLainnya();
             calculateTotalNominalBTTotal();
+            calculateTotalNominalBTENTTotal();
         }
 
         function calculateTotalNominalBTTotal() {
@@ -810,6 +816,18 @@
                 total += parseNumber(input.value);
             });
             document.querySelector('input[name="totalca"]').value = formatNumber(total);
+        }
+
+        function calculateTotalNominalBTENTTotal() {
+            let total = 0;
+            document.querySelectorAll('input[name="totalca"]').forEach(input => {
+                total += parseNumber(input.value);
+            });
+            document.querySelectorAll('input[name="total_ent_detail"]').forEach(input => {
+                total += parseNumber(input.value);
+            });
+            document.querySelector('input[name="totalreq"]').value = formatNumber(total);
+            document.querySelector('input[name="totalreq2"]').value = formatNumber(total);
         }
     </script>
     <script>
@@ -915,6 +933,7 @@
 
             // Set the value of ca_decla
             document.getElementById('ca_decla_2').value = `${year}-${month}-${day}`;
+            document.getElementById('ca_decla_3').value = `${year}-${month}-${day}`;
         });
     </script>
 @endsection

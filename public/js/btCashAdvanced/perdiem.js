@@ -35,8 +35,8 @@ function calculateTotalNominalBTTotal() {
 // Run the function on page load
 document.addEventListener("DOMContentLoaded", function () {
     calculateTotalNominalBTTotal(); // Calculate the total immediately when the page loads
+    calculateTotalNominalBTENTTotal();
 });
-
 
 function isDateInRange(date, startDate, endDate) {
     const targetDate = new Date(date).setHours(0, 0, 0, 0);
@@ -89,6 +89,7 @@ function removeFormPerdiem(index, event) {
                 document.querySelector('input[name="total_bt_perdiem"]').value =
                     formatNumber(total);
                 calculateTotalNominalBTTotal();
+                calculateTotalNominalBTENTTotal();
             }
             formContainer.remove();
 
@@ -118,6 +119,7 @@ function clearFormPerdiem(index, event) {
                 formatNumber(total);
             nominalInput.value = 0;
             calculateTotalNominalBTTotal();
+            calculateTotalNominalBTENTTotal();
         }
 
         const formContainer = document.getElementById(
@@ -163,6 +165,7 @@ function clearFormPerdiem(index, event) {
             });
 
             calculateTotalNominalBTTotal();
+            calculateTotalNominalBTENTTotal();
         }
 
         perdiemData = perdiemData.filter(
@@ -220,11 +223,14 @@ function calculateTotalDaysPerdiem(input) {
                 'input[name="other_location_bt_perdiem[]"]'
             );
 
-            if (groupCompany.value !== "Plantations"){
+            if (groupCompany.value !== "Plantations") {
                 allowance *= 1;
-            }else if(locationSelect.value === "Others" || otherLocationInput.value.trim() !== ""){
+            } else if (
+                locationSelect.value === "Others" ||
+                otherLocationInput.value.trim() !== ""
+            ) {
                 allowance *= 1;
-            }else{
+            } else {
                 allowance *= 0.5;
             }
 
@@ -267,6 +273,7 @@ function calculateTotalNominalBTPerdiem() {
     document.querySelector('input[name="total_bt_perdiem"]').value =
         formatNumber(total);
     calculateTotalNominalBTTotal();
+    calculateTotalNominalBTENTTotal();
 }
 
 function onNominalChange() {

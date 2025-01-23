@@ -1,4 +1,4 @@
-<script src="{{ asset('/js/cashAdvanced/detail.js') }}"></script>
+<script src="{{ asset('/js/btCashAdvanced/detail.js') }}"></script>
 
 @if (!empty($detailCA['detail_e']) && $detailCA['detail_e'][0]['type'] !== null)
     <div id="form-container-detail">
@@ -114,18 +114,5 @@
 
     <div class="mt-3">
         <button class="btn btn-primary btn-sm" id="addMoreButtonDetail" onclick="addMoreFormDetailReq(event)">Add More</button>
-    </div>
-
-    <div class="mt-2">
-        <label class="form-label">Total Entertain</label>
-        <div class="input-group">
-            <div class="input-group-append">
-                <span class="input-group-text">Rp</span>
-            </div>
-            <input class="form-control bg-light"
-                name="total_e_detail" id="total_e_detail"
-                type="text" min="0" value="0"
-                readonly>
-        </div>
     </div>
 @endif
