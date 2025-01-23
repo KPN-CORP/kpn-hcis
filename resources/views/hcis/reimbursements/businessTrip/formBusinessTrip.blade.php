@@ -156,9 +156,9 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-check">
-                                            <input type="hidden" name="tiket" value="Tidak">
+                                            <input type="hidden" name="tiket_dalam_kota" value="Tidak">
                                             <input class="form-check-input" type="checkbox" id="ticketCheckboxDalamKota"
-                                                name="tiket" value="Ya">
+                                                name="tiket_dalam_kota" value="Ya">
                                             <label class="form-check-label" for="ticketCheckboxDalamKota">
                                                 Ticket
                                             </label>
@@ -167,9 +167,9 @@
 
                                     <div class="col-md-4">
                                         <div class="form-check">
-                                            <input type="hidden" name="hotel" value="Tidak">
+                                            <input type="hidden" name="hotel_dalam_kota" value="Tidak">
                                             <input class="form-check-input" type="checkbox" id="hotelCheckboxDalamKota"
-                                                name="hotel" value="Ya">
+                                                name="hotel_dalam_kota" value="Ya">
                                             <label class="form-check-label" for="hotelCheckboxDalamKota">
                                                 Hotel
                                             </label>
@@ -178,9 +178,9 @@
 
                                     <div class="col-md-4">
                                         <div class="form-check">
-                                            <input type="hidden" name="taksi" value="Tidak">
+                                            <input type="hidden" name="taksi_dalam_kota" value="Tidak">
                                             <input class="form-check-input" type="checkbox" id="taksiCheckboxDalamKota"
-                                                name="taksi" value="Ya">
+                                                name="taksi_dalam_kota" value="Ya">
                                             <label class="form-check-label" for="taksiCheckboxDalamKota">
                                                 Taxi Voucher
                                             </label>

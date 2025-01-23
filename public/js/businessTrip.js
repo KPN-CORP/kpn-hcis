@@ -1136,6 +1136,7 @@ function handleTaksiForms() {
         "taksiCheckboxDalamKota"
     );
     const taksiDiv = document.getElementById("taksi_div");
+    const taksiDivDalamKota = document.getElementById("taksi_div_dalam_kota");
     const formFields = taksiDiv.querySelectorAll("input, textarea");
 
     // Function to toggle 'required' attribute and reset fields if unchecked
@@ -1166,9 +1167,9 @@ function handleTaksiForms() {
     });
     taksiCheckboxDalamKota.addEventListener("change", function () {
         if (this.checked) {
-            taksiDiv.style.display = "block";
+            taksiDivDalamKota.style.display = "block";
         } else {
-            taksiDiv.style.display = "none";
+            taksiDivDalamKota.style.display = "none";
             toggleRequiredAndReset(); // Reset values when checkbox is unchecked
         }
         toggleRequiredAndReset(); // Toggle required based on visibility

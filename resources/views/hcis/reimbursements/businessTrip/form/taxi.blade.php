@@ -15,14 +15,6 @@
             <textarea class="form-control form-control-sm" id="vt_detail" name="vt_detail" rows="3"
                 placeholder="Fill your need"></textarea>
         </div>
-        {{-- <div class="col-md-6 mb-2">
-            <label class="form-label">Voucher Nominal</label>
-            <div class="input-group input-group-sm">
-                    <span class="input-group-text">Rp</span>
-                <input class="form-control" name="nominal_vt" id="nominal_vt" type="text" placeholder="ex. 12.000"
-                    oninput="formatCurrency(this)">
-            </div>
-        </div> --}}
     </div>
 </div>
 </div>

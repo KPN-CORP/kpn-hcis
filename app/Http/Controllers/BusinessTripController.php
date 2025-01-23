@@ -2309,6 +2309,16 @@ class BusinessTripController extends Controller
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
 
+        if ($request->jns_dinas == 'dalam kota') {
+            $tktDalam = $request->tiket_dalam_kota;
+            $htlDalam = $request->hotel_dalam_kota;
+            $vtDalam = $request->taksi_dalam_kota;
+        } else {
+            $tktDalam = $request->tiket;
+            $htlDalam = $request->hotel;
+            $vtDalam = $request->taksi;
+        }
+
         $businessTrip = BusinessTrip::create([
             'id' => $bt->id,
             'user_id' => $userId,
@@ -2331,9 +2341,9 @@ class BusinessTripController extends Controller
             'nama_pemilik_rek' => $request->nama_pemilik_rek,
             'nama_bank' => $request->nama_bank,
             'ca' => $request->ca,
-            'tiket' => $request->tiket,
-            'hotel' => $request->hotel,
-            'taksi' => $request->taksi,
+            'tiket' => $tktDalam,
+            'hotel' => $htlDalam,
+            'taksi' => $vtDalam,
             'status' => $statusValue,
             // dd($statusValue),
             'manager_l1_id' => $managerL1,
@@ -2345,23 +2355,31 @@ class BusinessTripController extends Controller
             'approval_status' => $request->status,
 
         ]);
-        if ($request->taksi === 'Ya') {
+        if ($vtDalam === 'Ya') {
             $taksi = new Taksi();
             $taksi->id = (string) Str::uuid();
-            $taksi->no_vt = $request->no_vt;
+            if ($request->jns_dinas === 'dalam kota') {
+                $noVt = $request->input('no_vt_dalam_kota');
+                $vtDetail = $request->input('vt_detail_dalam_kota');
+            } else if ($request->jns_dinas === 'luar kota') {
+                $noVt = $request->input('no_vt');
+                $vtDetail = $request->input('vt_detail');
+            }
+            // dd($noVt, $vtDetail);
+            $taksi->no_vt = $noVt;
+            $taksi->vt_detail = $vtDetail;
             $taksi->no_sppd = $noSppd;
             $taksi->user_id = $userId;
             $taksi->unit = $request->divisi;
-            $taksi->vt_detail = $request->vt_detail;
             // $taksi->nominal_vt = (int) str_replace('.', '', $request->nominal_vt);
             $taksi->approval_status = $statusValue;
 
             $taksi->save();
         }
 
-        if ($request->hotel === 'Ya') {
+        if ($htlDalam === 'Ya') {
             $hotelData = [
-                'no_htl' => $noSppdTkt,
+                'no_htl' => $noSppdHtl,
                 'nama_htl' => $request->nama_htl,
                 'lokasi_htl' => $request->lokasi_htl,
                 'jmlkmr_htl' => $request->jmlkmr_htl,
@@ -2394,7 +2412,7 @@ class BusinessTripController extends Controller
             }
         }
 
-        if ($request->tiket === 'Ya') {
+        if ($tktDalam === 'Ya') {
             $ticketData = [
                 'noktp_tkt' => $request->noktp_tkt,
                 'dari_tkt' => $request->dari_tkt,
@@ -2447,7 +2465,7 @@ class BusinessTripController extends Controller
             }
         }
 
-
+        // dd($request->all());
         if ($request->ca === 'Ya') {
             $ca = new CATransaction();
             $businessTripStatus = $request->input('status');
