@@ -5,7 +5,26 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/dist/css/bootstrap-datepicker.min.css"
         rel="stylesheet">
 @endsection
+<style>
+    .nav-link {
+        color: black;
+        border-bottom: 2px solid transparent;
+        transition: color 0.3s ease, border-bottom 0.3s ease;
+    }
 
+    .nav-link.active {
+        color: #AB2F2B;
+        /* Primary color */
+        border-bottom: 2px solid #AB2F2B;
+        font-weight: bold;
+        /* Underline with primary color */
+    }
+
+    .nav-link:hover {
+        color: #AB2F2B;
+        /* Change color on hover */
+    }
+</style>
 @section('content')
     <div class="container-fluid">
         <div class="row">
@@ -142,180 +161,231 @@
                                 <div class="row mt-2" id="ca_div">
                                     <div class="col-md-12">
                                         <div class="d-flex flex-column gap-2">
-                                            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                            <ul class="nav nav-tabs nav-pills mb-2" id="pills-tab" role="tablist">
                                                 <li class="nav-item" role="presentation">
-                                                    <button class="nav-link active" id="pills-perdiem-tab"
-                                                        data-bs-toggle="pill" data-bs-target="#pills-perdiem" type="button"
-                                                        role="tab" aria-controls="pills-perdiem"
-                                                        aria-selected="true">{{ $allowance }}</button>
+                                                    <button class="nav-link active" id="pills-cashAdvanced-tab"
+                                                        data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced"
+                                                        type="button" role="tab" aria-controls="pills-cashAdvanced"
+                                                        aria-selected="true">Cash Advanced</button>
                                                 </li>
-                                                @if ($group_company != 'KPN Plantations')
-                                                    <li class="nav-item" role="presentation">
-                                                        <button class="nav-link" id="pills-meals-tab" data-bs-toggle="pill"
-                                                            data-bs-target="#pills-meals" type="button" role="tab"
-                                                            aria-controls="pills-meals" aria-selected="false">Meals</button>
-                                                    </li>
-                                                @endif
                                                 <li class="nav-item" role="presentation">
-                                                    <button class="nav-link" id="pills-transport-tab" data-bs-toggle="pill"
-                                                        data-bs-target="#pills-transport" type="button" role="tab"
-                                                        aria-controls="pills-transport"
-                                                        aria-selected="false">Transport</button>
-                                                </li>
-
-                                                <li class="nav-item" role="presentation">
-                                                    <button class="nav-link" id="pills-accomodation-tab"
-                                                        data-bs-toggle="pill" data-bs-target="#pills-accomodation"
-                                                        type="button" role="tab" aria-controls="pills-accomodation"
-                                                        aria-selected="false">Accommodation</button>
-                                                </li>
-
-                                                <li class="nav-item" role="presentation">
-                                                    <button class="nav-link" id="pills-other-tab" data-bs-toggle="pill"
-                                                        data-bs-target="#pills-other" type="button" role="tab"
-                                                        aria-controls="pills-other" aria-selected="false">Other</button>
+                                                    <button class="nav-link" id="pills-caEntertain-tab"
+                                                        data-bs-toggle="pill" data-bs-target="#pills-caEntertain"
+                                                        type="button" role="tab" aria-controls="pills-caEntertain"
+                                                        aria-selected="false">CA Entertain</button>
                                                 </li>
                                             </ul>
-                                            {{-- <div class="card"> --}}
+
+
                                             <div class="tab-content" id="pills-tabContent">
-                                                <div class="tab-pane fade show active" id="pills-perdiem" role="tabpanel"
-                                                    aria-labelledby="pills-perdiem-tab">
-                                                    {{-- ca perdiem content --}}
-                                                    @include('hcis.reimbursements.businessTrip.declaration.caPerdiemDeclare')
-                                                </div>
-                                                <div class="tab-pane fade show" id="pills-meals" role="tabpanel"
-                                                    aria-labelledby="pills-meals-tab">
-                                                    {{-- ca meals content --}}
-                                                    @include('hcis.reimbursements.businessTrip.declaration-admin.caMealsDeclareAdmin')
-                                                </div>
-                                                <div class="tab-pane fade" id="pills-transport" role="tabpanel"
-                                                    aria-labelledby="pills-transport-tab">
-                                                    {{-- ca transport content --}}
-                                                    @include('hcis.reimbursements.businessTrip.declaration-admin.caTransportDeclareAdmin')
-                                                </div>
-                                                <div class="tab-pane fade" id="pills-accomodation" role="tabpanel"
-                                                    aria-labelledby="pills-accomodation-tab">
-                                                    {{-- ca accommodatioon content --}}
-                                                    @include('hcis.reimbursements.businessTrip.declaration.caAccommodationDeclare')</div>
-                                                <div class="tab-pane fade" id="pills-other" role="tabpanel"
-                                                    aria-labelledby="pills-other-tab">
-                                                    {{-- ca others content --}}
-                                                    @include('hcis.reimbursements.businessTrip.declaration-admin.caOtherDeclareAdmin')
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-2">
-                                            <div class="col-md-6 mb-2">
-                                                <label class="form-label">Total Cash Advanced</label>
-                                                <div class="input-group">
-                                                    <div class="input-group-append">
-                                                        <span class="input-group-text">Rp</span>
+                                                <!-- Cash Advance Content -->
+                                                <div class="tab-pane fade show active" id="pills-cashAdvanced"
+                                                    role="tabpanel" aria-labelledby="pills-cashAdvanced-tab">
+                                                    <ul class="nav mb-3" id="pills-tab-inner" role="tablist">
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link active" id="pills-perdiem-tab"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-perdiem"
+                                                                type="button" role="tab"
+                                                                aria-controls="pills-perdiem"
+                                                                aria-selected="true">{{ $allowance }}</button>
+                                                        </li>
+                                                        @if ($group_company != 'KPN Plantations')
+                                                            <li class="nav-item" role="presentation">
+                                                                <button class="nav-link" id="pills-meals-tab"
+                                                                    data-bs-toggle="pill" data-bs-target="#pills-meals"
+                                                                    type="button" role="tab"
+                                                                    aria-controls="pills-meals"
+                                                                    aria-selected="false">Meals</button>
+                                                            </li>
+                                                        @endif
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link" id="pills-transport-tab"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-transport"
+                                                                type="button" role="tab"
+                                                                aria-controls="pills-transport"
+                                                                aria-selected="false">Transport</button>
+                                                        </li>
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link" id="pills-accomodation-tab"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-accomodation"
+                                                                type="button" role="tab"
+                                                                aria-controls="pills-accomodation"
+                                                                aria-selected="false">Accommodation</button>
+                                                        </li>
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link" id="pills-other-tab"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-other"
+                                                                type="button" role="tab" aria-controls="pills-other"
+                                                                aria-selected="false">Other</button>
+                                                        </li>
+                                                    </ul>
+                                                    {{-- <div class="card"> --}}
+                                                    <div class="tab-content" id="pills-tabContent">
+                                                        <div class="tab-pane fade show active" id="pills-perdiem"
+                                                            role="tabpanel" aria-labelledby="pills-perdiem-tab">
+                                                            {{-- ca perdiem content --}}
+                                                            @include('hcis.reimbursements.businessTrip.declaration.caPerdiemDeclare')
+                                                        </div>
+                                                        <div class="tab-pane fade show" id="pills-meals" role="tabpanel"
+                                                            aria-labelledby="pills-meals-tab">
+                                                            {{-- ca meals content --}}
+                                                            @include('hcis.reimbursements.businessTrip.declaration-admin.caMealsDeclareAdmin')
+                                                        </div>
+                                                        <div class="tab-pane fade" id="pills-transport" role="tabpanel"
+                                                            aria-labelledby="pills-transport-tab">
+                                                            {{-- ca transport content --}}
+                                                            @include('hcis.reimbursements.businessTrip.declaration-admin.caTransportDeclareAdmin')
+                                                        </div>
+                                                        <div class="tab-pane fade" id="pills-accomodation"
+                                                            role="tabpanel" aria-labelledby="pills-accomodation-tab">
+                                                            {{-- ca accommodatioon content --}}
+                                                            @include('hcis.reimbursements.businessTrip.declaration.caAccommodationDeclare')</div>
+                                                        <div class="tab-pane fade" id="pills-other" role="tabpanel"
+                                                            aria-labelledby="pills-other-tab">
+                                                            {{-- ca others content --}}
+                                                            @include('hcis.reimbursements.businessTrip.declaration-admin.caOtherDeclareAdmin')
+                                                        </div>
                                                     </div>
-                                                    <input class="form-control bg-light" name="totalca_deklarasi"
-                                                        id="totalca_declarasi" type="text" min="0"
-                                                        value="{{ number_format($ca->total_ca ?? '0', 0, ',', '.') }}"
-                                                        readonly>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-6 mb-2">
-                                                <label class="form-label">Total Cash Advanced Deklarasi</label>
-                                                <div class="input-group">
-                                                    <div class="input-group-append">
-                                                        <span class="input-group-text">Rp</span>
+                                                <div class="tab-pane fade" id="pills-caEntertain" role="tabpanel"
+                                                    aria-labelledby="pills-caEntertain-tab">
+                                                    <!-- Duplicate content for now -->
+                                                    <ul class="nav mb-3" id="pills-tab-inner" role="tablist">
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link active" id="pills-other-tab"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-other"
+                                                                type="button" role="tab" aria-controls="pills-other"
+                                                                aria-selected="false">Other</button>
+                                                        </li>
+                                                    </ul>
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane fade show active" id="pills-other"
+                                                            role="tabpanel" aria-labelledby="pills-other-tab">
+                                                            @include('hcis.reimbursements.businessTrip.declaration-admin.caOtherDeclareAdmin')
+                                                        </div>
                                                     </div>
-                                                    <input class="form-control bg-light" name="totalca" id="totalca"
-                                                        type="text" min="0"
-                                                        value="{{ number_format($ca->total_real ?? '0', 0, ',', '.') }}"
-                                                        readonly>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-4 mb-2" style="display:none">
-                                                <label class="form-label">Total Cost</label>
-                                                <div class="input-group">
-                                                    <div class="input-group-append">
-                                                        <span class="input-group-text">Rp</span>
+                                                <div class="row mb-2">
+                                                    <div class="col-md-6 mb-2">
+                                                        <label class="form-label">Total Cash Advanced</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">Rp</span>
+                                                            </div>
+                                                            <input class="form-control bg-light" name="totalca_deklarasi"
+                                                                id="totalca_declarasi" type="text" min="0"
+                                                                value="{{ number_format($ca->total_ca ?? '0', 0, ',', '.') }}"
+                                                                readonly>
+                                                        </div>
                                                     </div>
-                                                    <input class="form-control bg-light" name="" id=""
-                                                        type="text" min="0"
-                                                        value="{{ number_format($ca->total_cost ?? '0', 0, ',', '.') }}"
-                                                        readonly>
+                                                    <div class="col-md-6 mb-2">
+                                                        <label class="form-label">Total Cash Advanced Deklarasi</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">Rp</span>
+                                                            </div>
+                                                            <input class="form-control bg-light" name="totalca"
+                                                                id="totalca" type="text" min="0"
+                                                                value="{{ number_format($ca->total_real ?? '0', 0, ',', '.') }}"
+                                                                readonly>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 mb-2" style="display:none">
+                                                        <label class="form-label">Total Cost</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">Rp</span>
+                                                            </div>
+                                                            <input class="form-control bg-light" name=""
+                                                                id="" type="text" min="0"
+                                                                value="{{ number_format($ca->total_cost ?? '0', 0, ',', '.') }}"
+                                                                readonly>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
 
-                                        {{-- CHANGE REASON --}}
-                                        <div class="mb-3">
-                                            <label class="form-label">Change Note</label>
-                                            <textarea class="form-control form-control-sm" id="ca_note" name="ca_note" rows="3"
-                                                placeholder="Add note if you do any changes"></textarea>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Accept Status</label>
-                                            <select class="form-select" name="accept_status" id="accept-status" required>
-                                                <option value="" disabled
-                                                    {{ !in_array($n->status, ['Verified', 'Doc Accepted', 'Return/Refund']) ? 'selected' : '' }}>
-                                                    --- Choose Acceptance Status ---</option>
-                                                <option value="Verified"
-                                                    {{ old('accept_status', $n->status) == 'Verified' ? 'selected' : '' }}>
-                                                    Verified
-                                                </option>
-                                                <option value="Doc Accepted"
-                                                    {{ old('accept_status', $n->status) == 'Doc Accepted' ? 'selected' : '' }}>
-                                                    Doc
-                                                    Accepted</option>
-                                                <option value="Return/Refund"
-                                                    {{ old('accept_status', $n->status) == 'Return/Refund' ? 'selected' : '' }}>
-                                                    Return/Refund</option>
-                                            </select>
-                                        </div>
-                                        @php
-                                            use Illuminate\Support\Facades\Storage;
-                                        @endphp
-                                        <label for="" class="form-label">Uploaded Proof</label>
-                                        @if (isset($ca->prove_declare) && $ca->prove_declare)
-                                            @php
-                                                // Get the file extension
-                                                $fileExtension = pathinfo($ca->prove_declare, PATHINFO_EXTENSION);
-                                                // Set the image based on the file type
-                                                $imageSrc = '';
-                                                if (in_array($fileExtension, ['pdf'])) {
-                                                    $imageSrc = 'https://img.icons8.com/color/48/000000/pdf.png'; // Replace with the path to your PDF icon
-                                                } elseif (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
-                                                    $imageSrc = Storage::url($ca->prove_declare); // Image files should display their own thumbnail
-                                                } else {
-                                                    $imageSrc = 'https://img.icons8.com/color/48/000000/file.png'; // Replace with the path to your default icon
-                                                }
-                                            @endphp
-                                            <div class="file-preview text-left">
-                                                <a href="{{ Storage::url($ca->prove_declare) }}" target="_blank"
-                                                    style="text-decoration: none;">
-                                                    <img src="{{ $imageSrc }}" alt="{{ $fileExtension }} file"
-                                                        class="file-icon" style="width: 50px; height: 50px;">
-                                                    <div style="margin-top: 5px;"><u>View Proof</u></div>
-                                                </a>
-                                            @else
-                                                <div class="text-danger">No proof uploaded</div>
-                                        @endif
+                                                {{-- CHANGE REASON --}}
+                                                <div class="mb-3">
+                                                    <label class="form-label">Change Note</label>
+                                                    <textarea class="form-control form-control-sm" id="ca_note" name="ca_note" rows="3"
+                                                        placeholder="Add note if you do any changes"></textarea>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Accept Status</label>
+                                                    <select class="form-select" name="accept_status" id="accept-status"
+                                                        required>
+                                                        <option value="" disabled
+                                                            {{ !in_array($n->status, ['Verified', 'Doc Accepted', 'Return/Refund']) ? 'selected' : '' }}>
+                                                            --- Choose Acceptance Status ---</option>
+                                                        <option value="Verified"
+                                                            {{ old('accept_status', $n->status) == 'Verified' ? 'selected' : '' }}>
+                                                            Verified
+                                                        </option>
+                                                        <option value="Doc Accepted"
+                                                            {{ old('accept_status', $n->status) == 'Doc Accepted' ? 'selected' : '' }}>
+                                                            Doc
+                                                            Accepted</option>
+                                                        <option value="Return/Refund"
+                                                            {{ old('accept_status', $n->status) == 'Return/Refund' ? 'selected' : '' }}>
+                                                            Return/Refund</option>
+                                                    </select>
+                                                </div>
+                                                @php
+                                                    use Illuminate\Support\Facades\Storage;
+                                                @endphp
+                                                <label for="" class="form-label">Uploaded Proof</label>
+                                                @if (isset($ca->prove_declare) && $ca->prove_declare)
+                                                    @php
+                                                        // Get the file extension
+                                                        $fileExtension = pathinfo(
+                                                            $ca->prove_declare,
+                                                            PATHINFO_EXTENSION,
+                                                        );
+                                                        // Set the image based on the file type
+                                                        $imageSrc = '';
+                                                        if (in_array($fileExtension, ['pdf'])) {
+                                                            $imageSrc =
+                                                                'https://img.icons8.com/color/48/000000/pdf.png'; // Replace with the path to your PDF icon
+                                                        } elseif (
+                                                            in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])
+                                                        ) {
+                                                            $imageSrc = Storage::url($ca->prove_declare); // Image files should display their own thumbnail
+                                                        } else {
+                                                            $imageSrc =
+                                                                'https://img.icons8.com/color/48/000000/file.png'; // Replace with the path to your default icon
+                                                        }
+                                                    @endphp
+                                                    <div class="file-preview text-left">
+                                                        <a href="{{ Storage::url($ca->prove_declare) }}" target="_blank"
+                                                            style="text-decoration: none;">
+                                                            <img src="{{ $imageSrc }}"
+                                                                alt="{{ $fileExtension }} file" class="file-icon"
+                                                                style="width: 50px; height: 50px;">
+                                                            <div style="margin-top: 5px;"><u>View Proof</u></div>
+                                                        </a>
+                                                    @else
+                                                        <div class="text-danger">No proof uploaded</div>
+                                                @endif
 
-                                        {{-- <input type="hidden" name="status" value="Declaration L1" id="status"> --}}
-                                        <input type="hidden" name="no_id" value="{{ $ca->id ?? 0 }}">
-                                        <input type="hidden" name="ca_id" value="{{ $ca->no_ca ?? 0 }}">
-                                        <input class="form-control" id="perdiem" name="perdiem" type="hidden"
-                                            value="{{ $perdiem->amount ?? 0 }}" readonly>
-                                        {{-- <input type="hidden" name="status" value="Declaration L1" id="status"> --}}
-                                        <div class="d-flex justify-content-end mt-3">
-                                            <button type="submit"
-                                                class="btn btn-primary rounded-pill submit-button">Submit</button>
-                                        </div>
-                                        <div class="" style="visibility: hidden">
-                                            <input class="form-select" id="bb_perusahaan" name="bb_perusahaan"
-                                                value="{{ $n->bb_perusahaan }}">
-                                            </input>
-                                        </div>
-                                        <input type="hidden" id="mulai" name="mulai"
-                                            value="{{ $n->mulai ?? 0 }}">
-                                        <input type="hidden" id="kembali" name="kembali"
-                                            value="{{ $n->kembali ?? 0 }}">
+                                                {{-- <input type="hidden" name="status" value="Declaration L1" id="status"> --}}
+                                                <input type="hidden" name="no_id" value="{{ $ca->id ?? 0 }}">
+                                                <input type="hidden" name="ca_id" value="{{ $ca->no_ca ?? 0 }}">
+                                                <input class="form-control" id="perdiem" name="perdiem" type="hidden"
+                                                    value="{{ $perdiem->amount ?? 0 }}" readonly>
+                                                {{-- <input type="hidden" name="status" value="Declaration L1" id="status"> --}}
+                                                <div class="d-flex justify-content-end mt-3">
+                                                    <button type="submit"
+                                                        class="btn btn-primary rounded-pill submit-button">Submit</button>
+                                                </div>
+                                                <div class="" style="visibility: hidden">
+                                                    <input class="form-select" id="bb_perusahaan" name="bb_perusahaan"
+                                                        value="{{ $n->bb_perusahaan }}">
+                                                    </input>
+                                                </div>
+                                                <input type="hidden" id="mulai" name="mulai"
+                                                    value="{{ $n->mulai ?? 0 }}">
+                                                <input type="hidden" id="kembali" name="kembali"
+                                                    value="{{ $n->kembali ?? 0 }}">
                         </form>
                     </div>
                 </div>
