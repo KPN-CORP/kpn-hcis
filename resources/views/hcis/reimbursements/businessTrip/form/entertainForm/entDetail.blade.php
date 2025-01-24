@@ -1,8 +1,8 @@
 <script src="{{ asset('/js/btCashAdvanced/detail.js') }}"></script>
 
-@if (!empty($detailCA['detail_e']) && $detailCA['detail_e'][0]['type'] !== null)
+@if (!empty($caDetail['detail_e']) && $caDetail['detail_e'][0]['type'] !== null)
     <div id="form-container-detail">
-        @foreach ($detailCA['detail_e'] as $detail)
+        @foreach ($caDetail['detail_e'] as $detail)
             <div id="form-container-e-detail-{{ $loop->index + 1 }}" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Entertainment {{ $loop->index + 1 }}</p>
                 <div id="form-container-e-detail-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3">
@@ -51,19 +51,6 @@
 
     <div class="mt-3">
         <button class="btn btn-primary btn-sm" id="addMoreButtonDetail" onclick="addMoreFormDetailReq(event)">Add More</button>
-    </div>
-
-    <div class="mt-2">
-        <label class="form-label">Total Entertain</label>
-        <div class="input-group">
-            <div class="input-group-append">
-                <span class="input-group-text">Rp</span>
-            </div>
-            <input class="form-control bg-light"
-                name="total_e_detail" id="total_e_detail"
-                type="text" min="0" value="0"
-                readonly>
-        </div>
     </div>
 @else
     <div id="form-container-detail">

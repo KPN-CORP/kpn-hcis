@@ -4,8 +4,8 @@
             <div class="row mb-2">
                 <div class="col-md-6 mb-2">
                     <label for="date_required" class="form-label">Date Required</label>
-                    <input type="date" class="form-control form-control-sm" id="date_required_1" name="date_required"
-                        placeholder="Date Required" onchange="syncDateRequired(this)">
+                    <input type="date" class="form-control form-control-sm" id="date_required_1" name="date_required_1"
+                        placeholder="Date Required" value="{{ $date->date_required ?? 0 }}" onchange="syncDateRequired(this)">
                 </div>
                 <div class="col-md-6 mb-2">
                     <label class="form-label" for="ca_decla">Declaration Estimate</label>

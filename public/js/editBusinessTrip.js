@@ -179,11 +179,11 @@ function syncDateRequired(changedInput) {
     const newValue = changedInput.value;
 
     // Get both date_required fields
-    // const dateRequired1 = document.getElementById("date_required_1");
+    const dateRequired1 = document.getElementById("date_required_1");
     const dateRequired2 = document.getElementById("date_required_2");
 
     // Set both fields to the new value
-    // dateRequired1.value = newValue;
+    dateRequired1.value = newValue;
     dateRequired2.value = newValue;
 }
 
@@ -1195,8 +1195,16 @@ function handleTaksiForms() {
 function handleCaForms() {
     const caCheckbox = document.getElementById("cashAdvancedCheckbox");
     // const perdiemCheckbox = document.getElementById("perdiemCheckbox");
+    const caEntertainCheckbox = document.getElementById("caEntertainCheckbox");
     const caDiv = document.getElementById("ca_bt");
-    const caPerdiem = document.getElementById("ca_perdiem");
+    const caEntr = document.getElementById("ca_entr");
+    const divBtEnt = document.getElementById("total_bt_ent"); // Elemen baru
+    const divBtEnt2 = document.getElementById("total_bt_ent_2"); // Elemen baru
+    const totalreq = document.getElementById("totalreq"); // Elemen baru
+    const totalreq2 = document.getElementById("totalreq2"); // Elemen baru
+    // const caPerdiem = document.getElementById("ca_perdiem");
+    console.log(caCheckbox.checked && caEntertainCheckbox.checked);
+    checkTotalBtEntVisibility();
 
     caCheckbox.addEventListener("change", function () {
         if (this.checked) {
@@ -1206,8 +1214,35 @@ function handleCaForms() {
             // Hide form and reset all fields when unchecked
             caDiv.style.display = "none";
             resetFields("ca_bt"); // Pass the container ID to reset the fields
+            checkTotalBtEntVisibility();
         }
     });
+    caEntertainCheckbox.addEventListener("change", function () {
+        if (this.checked) {
+            // Show form when checked
+            caEntr.style.display = "block";
+        } else {
+            // Hide form and reset all fields when unchecked
+            caEntr.style.display = "none";
+            resetFieldsEntertain("ca_entr"); // change this later
+            checkTotalBtEntVisibility();
+        }
+    });
+
+    function checkTotalBtEntVisibility() {
+        console.log(caEntertainCheckbox.checked); // Debug log
+        if (caCheckbox.checked && caEntertainCheckbox.checked) {
+            divBtEnt.style.display = "block";
+            divBtEnt2.style.display = "block";
+            totalreq.style.display = "block";
+            totalreq2.style.display = "block";
+        } else {
+            divBtEnt.style.display = "none";
+            divBtEnt2.style.display = "none";
+            totalreq.style.display = "none";
+            totalreq2.style.display = "none";
+        }
+    }
     // perdiemCheckbox.addEventListener("change", function () {
     //     if (this.checked) {
     //         // Show form when checked
@@ -1219,6 +1254,8 @@ function handleCaForms() {
     //     }
     // });
 }
+
+document.addEventListener("DOMContentLoaded", handleCaForms);
 
 function resetFieldsPerdiem() {
     // Per Diem-related fields
@@ -1259,8 +1296,80 @@ function resetFieldsPerdiem() {
     calculateTotalNominalBTTotal();
 }
 
+function resetFieldsEntertain() {
+    const selectEntFields = document.getElementsByName("enter_type_e_detail[]");
+    const nominalentFields = document.getElementsByName("nominal_e_detail[]");
+    const feeEntFields = document.getElementsByName("enter_fee_e_detail[]");
+    const nameEntFields = document.getElementsByName("rname_e_relation[]");
+    const positionEntFields = document.getElementsByName(
+        "rposition_e_relation[]"
+    );
+    const companyEntFields = document.getElementsByName(
+        "rcompany_e_relation[]"
+    );
+    const purposeEntFields = document.getElementsByName(
+        "rpurpose_e_relation[]"
+    );
+    const totalEntField = document.getElementsByName("total_ent_detail")[0];
+    const checkboxEntGroups = [
+        "accommodation_e_relation",
+        "food_e_relation",
+        "fund_e_relation",
+        "gift_e_relation",
+        "transport_e_relation",
+    ];
+
+    checkboxEntGroups.forEach((groupName) => {
+        const checkboxes = document.getElementsByName(`${groupName}[]`);
+        checkboxes.forEach((checkbox) => {
+            checkbox.checked = false; // Uncheck all checkboxes
+        });
+    });
+    if (totalEntField) {
+        totalEntField.value = "0"; // Reset total value
+    }
+    purposeEntFields.forEach((textarea) => {
+        textarea.value = ""; // Clear the textarea
+    });
+    companyEntFields.forEach((input) => {
+        input.value = ""; // Clear the input
+    });
+    positionEntFields.forEach((input) => {
+        input.value = ""; // Clear the input
+    });
+    nameEntFields.forEach((input) => {
+        input.value = ""; // Clear the input
+    });
+    selectEntFields.forEach((select) => {
+        select.value = ""; // Reset to default value
+    });
+    nominalentFields.forEach((input) => {
+        input.value = "0"; // Reset to default value
+    });
+    feeEntFields.forEach((textarea) => {
+        textarea.value = ""; // Clear the textarea
+    });
+    totalEntField.forEach((field) => (field.value = 0));
+    purposeEntFields.forEach((field) => (field.value = ""));
+    companyEntFields.forEach((field) => (field.value = ""));
+    positionEntFields.forEach((field) => (field.value = ""));
+    nameEntFields.forEach((field) => (field.value = ""));
+    selectEntFields.forEach((field) => (field.value = ""));
+    nominalentFields.forEach((field) => (field.value = 0));
+    feeEntFields.forEach((field) => (field.value = 0));
+
+    calculateTotalNominalBTTotal();
+    calculateTotalNominalBTENTTotal();
+}
+
 function resetFields() {
     // Transport-related fields
+    const tanggalBtMeals = document.getElementsByName("tanggal_bt_meals[]");
+    const nominalBtMeals = document.getElementsByName("nominal_bt_meals[]");
+    const keteranganBtMeals = document.getElementsByName(
+        "keterangan_bt_meals[]"
+    );
+    const totalBtMeals = document.getElementsByName("total_bt_meals");
     const transportDateFields = document.getElementsByName(
         "tanggal_bt_transport[]"
     );
@@ -1298,6 +1407,18 @@ function resetFields() {
     );
     const totalBtLainnya = document.getElementsByName("total_bt_lainnya");
 
+    tanggalBtMeals.forEach((field) => {
+        field.value = ""; // Reset to empty
+    });
+    nominalBtMeals.forEach((field) => {
+        field.value = ""; // Reset to empty
+    });
+    keteranganBtMeals.forEach((field) => {
+        field.value = ""; // Reset to empty
+    });
+    totalBtMeals.forEach((field) => {
+        field.value = 0; // Reset to 0
+    });
     // Reset transport date fields
     transportDateFields.forEach((field) => {
         field.value = ""; // Reset to empty
@@ -1348,6 +1469,7 @@ function resetFields() {
 
     // Recalculate the total CA after reset
     calculateTotalNominalBTTotal();
+    calculateTotalNominalBTENTTotal();
 }
 
 function cleanNumber(value) {
@@ -1384,6 +1506,7 @@ function formatInput(input) {
     calculateTotalNominalBTPenginapan();
     calculateTotalNominalBTLainnya();
     calculateTotalNominalBTTotal();
+    calculateTotalNominalBTENTTotal();
 }
 
 function calculateTotalNominalBTTotal() {
@@ -1414,6 +1537,22 @@ function calculateTotalNominalBTTotal() {
             total += parseNumber(input.value);
         });
     document.querySelector('input[name="totalca"]').value = formatNumber(total);
+}
+
+function calculateTotalNominalBTENTTotal() {
+    let total = 0;
+    document.querySelectorAll('input[name="totalca"]').forEach((input) => {
+        total += parseNumber(input.value);
+    });
+    document
+        .querySelectorAll('input[name="total_ent_detail"]')
+        .forEach((input) => {
+            total += parseNumber(input.value);
+        });
+    document.querySelector('input[name="totalreq2"]').value =
+        formatNumber(total);
+    document.querySelector('input[name="totalreq"]').value =
+        formatNumber(total);
 }
 
 function toggleDivs() {

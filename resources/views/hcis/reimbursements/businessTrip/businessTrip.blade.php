@@ -201,21 +201,27 @@
                                             <td>{{ $n->tujuan }}</td>
                                             <td>{{ \Carbon\Carbon::parse($n->mulai)->format('d-M-Y') }}</td>
                                             <td>{{ \Carbon\Carbon::parse($n->kembali)->format('d-M-Y') }}</td>
+                                            {{-- {{use App\Models\CATransaction;}} --}}
+                                            {{-- {{ dd($caTransactions->where('no_sppd', $n->no_sppd));}} --}}
                                             <td style="text-align: center">
                                                 @if ($n->ca == 'Ya' && isset($caTransactions[$n->no_sppd]))
                                                     <a class="text-info btn-detail" data-toggle="modal"
                                                         data-target="#detailModal" style="cursor: pointer"
-                                                        data-ca="{{ json_encode([
-                                                            'No. CA' => $caTransactions[$n->no_sppd]->no_ca,
-                                                            'No. SPPD' => $caTransactions[$n->no_sppd]->no_sppd,
-                                                            'Unit' => $caTransactions[$n->no_sppd]->unit,
-                                                            'Destination' => $sppd->where('no_sppd', $n->no_sppd)->first()->tujuan,
-                                                            'CA Total' => 'Rp ' . number_format($caTransactions[$n->no_sppd]->total_ca, 0, ',', '.'),
-                                                            'Total Real' => 'Rp ' . number_format($caTransactions[$n->no_sppd]->total_real, 0, ',', '.'),
-                                                            'Total Cost' => 'Rp ' . number_format($caTransactions[$n->no_sppd]->total_cost, 0, ',', '.'),
-                                                            'Start' => date('d-M-Y', strtotime($caTransactions[$n->no_sppd]->start_date)),
-                                                            'End' => date('d-M-Y', strtotime($caTransactions[$n->no_sppd]->end_date)),
-                                                        ]) }}"><u>Details</u></a>
+                                                        data-ca="{{ json_encode($caTransactions->get($n->no_sppd, collect())->map(function ($transaction) {
+                                                            return [
+                                                                'No. CA' => $transaction->no_ca,
+                                                                'No. SPPD' => $transaction->no_sppd,
+                                                                'Jenis' => $transaction->type_ca,
+                                                                'Unit' => $transaction->unit,
+                                                                'Destination' => $transaction->destination,
+                                                                'CA Total' => 'Rp ' . number_format($transaction->total_ca, 0, ',', '.'),
+                                                                'Total Real' => 'Rp ' . number_format($transaction->total_real, 0, ',', '.'),
+                                                                'Total Cost' => 'Rp ' . number_format($transaction->total_cost, 0, ',', '.'),
+                                                                'Start' => date('d-M-Y', strtotime($transaction->start_date)),
+                                                                'End' => date('d-M-Y', strtotime($transaction->end_date)),
+                                                            ];
+                                                        })->values()) }}"                                                        
+                                                        ><u>Details</u></a>
                                                 @else
                                                     -
                                                 @endif
@@ -591,25 +597,27 @@
                         var tiket = $(this).data('tiket');
                         var hotel = $(this).data('hotel');
                         var taksi = $(this).data('taksi');
+                        console.log(ca);
 
                         function createTableHtml(data, title) {
                             var tableHtml = '<h5>' + title + '</h5>';
-                            tableHtml +=
-                                '<div class="table-responsive"><table class="table table-sm nowrap"><thead><tr>';
+                            tableHtml += '<div class="table-responsive">' + // Added this for horizontal scrolling
+                                        '<table class="table table-sm table-bordered nowrap w-100" cellspacing="0">' + // Added w-100 and table-bordered
+                                        '<thead><tr>';
                             var isArray = Array.isArray(data) && data.length > 0;
 
                             // Assuming all objects in the data array have the same keys, use the first object to create headers
                             if (isArray) {
                                 for (var key in data[0]) {
                                     if (data[0].hasOwnProperty(key)) {
-                                        tableHtml += '<th>' + key + '</th>';
+                                        tableHtml += '<th class="text-nowrap">' + key + '</th>'; // Added text-nowrap to prevent header wrapping
                                     }
                                 }
                             } else if (typeof data === 'object') {
                                 // If data is a single object, create headers from its keys
                                 for (var key in data) {
                                     if (data.hasOwnProperty(key)) {
-                                        tableHtml += '<th>' + key + '</th>';
+                                        tableHtml += '<th class="text-nowrap">' + key + '</th>';
                                     }
                                 }
                             }

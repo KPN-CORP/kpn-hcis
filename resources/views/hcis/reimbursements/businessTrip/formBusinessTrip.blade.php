@@ -291,7 +291,7 @@
                                                                     placeholder="mm/dd/yyyy" readonly>
                                                             </div>
                                                         </div>
-                                                        @include('hcis.reimbursements.businessTrip.caPerdiem')
+                                                        @include('hcis.reimbursements.businessTrip.form.cashadvancedForm.caPerdiem')
                                                     </div> --}}
                                                 {{-- </div> --}}
                                                 <div class="tab-pane fade" id="pills-cashAdvanced" role="tabpanel"
@@ -517,7 +517,7 @@
                     }
 
                     // Retrieve the values from the input fields
-                    // const dateReq = document.getElementById('date_required_1').value;
+                    const dateReq = document.getElementById('date_required_1').value;
                     const dateReq2 = document.getElementById('date_required_2').value;
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
                     const totalBtMealsElement = document.getElementById('total_bt_meals');
@@ -544,7 +544,20 @@
                     //     return;
                     // }
 
-                    if (caCheckbox && !dateReq2) {
+                    if (entCheckbox && !dateReq) {
+                        console.log("Ini yg ent");
+                        
+                        Swal.fire({
+                            title: "Warning!",
+                            text: "Please select a Date Required.",
+                            icon: "warning",
+                            confirmButtonColor: "#AB2F2B",
+                            confirmButtonText: "OK",
+                        });
+                        return;
+                    }
+                    if (entCheckbox && !dateReq2) {
+                        console.log("Ini Yg CA");
                         Swal.fire({
                             title: "Warning!",
                             text: "Please select a Date Required.",

@@ -48,26 +48,26 @@
                     <div class="tab-pane fade show active" id="pills-perdiem" role="tabpanel"
                         aria-labelledby="pills-perdiem-tab">
                         {{-- ca perdiem content --}}
-                        @include('hcis.reimbursements.businessTrip.caPerdiem')
+                        @include('hcis.reimbursements.businessTrip.form.cashadvancedForm.caPerdiem')
                     </div>
                     @if ($group_company !== 'KPN Plantations' && $group_company !== 'Plantations')
                         <div class="tab-pane fade" id="pills-meals" role="tabpanel" aria-labelledby="pills-meals-tab">
                             {{-- ca transport content --}}
-                            @include('hcis.reimbursements.businessTrip.caMeals')
+                            @include('hcis.reimbursements.businessTrip.form.cashadvancedForm.caMeals')
                         </div>
                     @endif
                     <div class="tab-pane fade" id="pills-transport" role="tabpanel"
                         aria-labelledby="pills-transport-tab">
                         {{-- ca transport content --}}
-                        @include('hcis.reimbursements.businessTrip.caTransport')
+                        @include('hcis.reimbursements.businessTrip.form.cashadvancedForm.caTransport')
                     </div>
                     <div class="tab-pane fade" id="pills-accomodation" role="tabpanel"
                         aria-labelledby="pills-accomodation-tab">
                         {{-- ca accommodatioon content --}}
-                        @include('hcis.reimbursements.businessTrip.caAccommodation')</div>
+                        @include('hcis.reimbursements.businessTrip.form.cashadvancedForm.caAccommodation')</div>
                     <div class="tab-pane fade" id="pills-other" role="tabpanel" aria-labelledby="pills-other-tab">
                         {{-- ca others content --}}
-                        @include('hcis.reimbursements.businessTrip.caOther')
+                        @include('hcis.reimbursements.businessTrip.form.cashadvancedForm.caOther')
                     </div>
                 </div>
 

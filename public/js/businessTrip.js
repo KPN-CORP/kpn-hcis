@@ -1120,7 +1120,6 @@ function handleCaForms() {
             divBtEnt.style.display = "block"; // Tampilkan jika kedua checkbox dicentang
             divBtEnt2.style.display = "block"; // Tampilkan jika kedua checkbox dicentang
             totalreq.style.display = "block"; // Tampilkan totalreq jika kedua checkbox dicentang
-            console.log("KONTOL");
         } else {
             divBtEnt.style.display = "none"; // Sembunyikan jika salah satu tidak dicentang
             divBtEnt2.style.display = "none"; // Sembunyikan jika salah satu tidak dicentang
@@ -1432,6 +1431,8 @@ function calculateTotalNominalBTENTTotal() {
         .forEach((input) => {
             total += parseNumber(input.value);
         });
+    document.querySelector('input[name="totalreq2"]').value =
+        formatNumber(total);
     document.querySelector('input[name="totalreq"]').value =
         formatNumber(total);
 }
