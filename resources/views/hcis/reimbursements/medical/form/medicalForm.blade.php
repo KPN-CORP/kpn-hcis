@@ -158,9 +158,11 @@
                                 @endif
 
                                 <!-- Label untuk new file -->
+
                                 {{-- <div id="new-files-label" style="margin-top: 20px; margin-bottom: 10px; font-weight: bold;">
                                     New Document:
                                 </div> --}}
+
                                 <div id="new-file-preview" class="mt-2"></div>
 
                             </div>
@@ -523,6 +525,7 @@
             });
         });
     </script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             let selectedFiles = [];

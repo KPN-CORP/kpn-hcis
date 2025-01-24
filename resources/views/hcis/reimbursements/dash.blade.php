@@ -64,7 +64,7 @@
                     </div> <!-- end card-->
                 </a>
             </div> <!-- end col-->
-            <!--@if($access_ca=='Y')-->
+            @if($access_ca=='Y')
             <div class="col">
                 <a href="{{ route('cashadvanced') }}">
                     <div class="card" style="height: 200px">
@@ -75,7 +75,7 @@
                     </div> <!-- end card-->
                 </a>
             </div> <!-- end col-->
-            <!--@endif-->
+            @endif
             <div class="col">
                 <a href="{{ route('medical') }}">
                     <div class="card" style="height: 200px">

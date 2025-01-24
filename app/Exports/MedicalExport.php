@@ -22,14 +22,16 @@ use Maatwebsite\Excel\Events\AfterSheet;
 
 class MedicalExport implements FromCollection, WithHeadings, WithStyles, WithEvents
 {
+    protected $statusMDC;
     protected $stat;
     protected $customSearch;
     protected $startDate;
     protected $endDate;
     protected $unit;
 
-    public function __construct($stat, $customSearch, $startDate, $endDate, $unit)
+    public function __construct($statusMDC, $stat, $customSearch, $startDate, $endDate, $unit)
     {
+        $this->statusMDC = $statusMDC;
         $this->stat = $stat;
         $this->customSearch = $customSearch;
         $this->startDate = $startDate;
@@ -41,7 +43,7 @@ class MedicalExport implements FromCollection, WithHeadings, WithStyles, WithEve
     {
 
         $currentYear = date('Y');
-        $userRole = auth()->user()->roles->last();
+        $userRole = auth()->user()->roles->first();
         $roleRestriction = json_decode($userRole->restriction, true);
 
         $restrictedWorkAreas = $roleRestriction['work_area_code'] ?? [];
@@ -64,10 +66,6 @@ class MedicalExport implements FromCollection, WithHeadings, WithStyles, WithEve
         if (!empty($this->customSearch)) {
             $employeeQuery->where('fullname', 'like', '%' . $this->customSearch . '%');
         }
-        // if (!empty($this->startDate) && !empty($this->endDate)) {
-        //     $employeeQuery->whereBetween('created_at', [$this->startDate, $this->endDate]);
-        // }
-
         if (!empty($this->unit)) {
             $employeeQuery->where('work_area_code', $this->unit);
         }
@@ -76,15 +74,18 @@ class MedicalExport implements FromCollection, WithHeadings, WithStyles, WithEve
 
         // Query HealthCoverage berdasarkan Employee ID
         $employeeIds = $employees->pluck('employee_id');
-        $healthCoverage = HealthCoverage::whereIn('employee_id', $employeeIds)->where('status', '!=', 'Draft');
+        $healthCoverageQuery = HealthCoverage::whereIn('employee_id', $employeeIds)->where('status', '!=', 'Draft');
         if (!empty($this->startDate) && !empty($this->endDate)) {
             
             $startDate = $this->startDate . ' 00:00:00';
             $endDate = $this->endDate . ' 23:59:59';
         
-            $healthCoverage->whereBetween('created_at', [$startDate, $endDate]);
+            $healthCoverageQuery->whereBetween('created_at', [$startDate, $endDate]);
         }
-        $healthCoverages = $healthCoverage->orderBy('created_at', 'desc')->get();
+        if (!empty($this->statusMDC)) {
+            $healthCoverageQuery->where('status', $this->statusMDC);
+        }
+        $healthCoverages = $healthCoverageQuery->orderBy('created_at', 'desc')->get();
 
         $medical_plans = HealthPlan::where('period', $currentYear)->get();
         $balances = [];
@@ -124,7 +125,7 @@ class MedicalExport implements FromCollection, WithHeadings, WithStyles, WithEve
                         'JobLevel' => $employee->job_level,
                         'GroupCompany' => $employee->group_company,
                     ];
-                }
+                // }
             }
         }
 
@@ -140,8 +141,8 @@ class MedicalExport implements FromCollection, WithHeadings, WithStyles, WithEve
             'No Medical',
             'Employee ID',
             'Employee Name',
-            'Tanggal Transaksi',
-            'Tanggal Pengajuan',
+            'Transaction Date',
+            'Submission Date',
             'Patient Name',
             'Hospital Name',
             'Designation',

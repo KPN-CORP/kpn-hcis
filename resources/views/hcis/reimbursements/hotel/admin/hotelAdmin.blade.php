@@ -145,8 +145,7 @@
                                             <th style="text-align: left">Total Hotel</th>
                                             <th>Details</th>
                                             <th>Status</th>
-                                            {{-- <th>Start Date</th>
-                                        <th>End Date</th> --}}
+                                            <th>Approval</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -210,15 +209,28 @@
                                                             ($transaction->approval_status == 'Rejected' || $transaction->approval_status == 'Declaration Rejected') &&
                                                                 isset($hotelApprovals[$transaction->id])) onclick="showRejectInfo('{{ $transaction->id }}')"
                                                     title="Click to see rejection reason" @endif
-                                                        @if ($transaction->approval_status == 'Pending L1') title="L1 Manager: {{ $managerL1Name ?? 'Unknown' }}"
+                                                        @if ($transaction->approval_status == 'Pending L1') title="L1 Manager: {{ $transaction->manager_l1_name ?? 'Unknown' }}"
                                                     @elseif ($transaction->approval_status == 'Pending L2')
-                                                    title="L2 Manager: {{ $managerL2Name ?? 'Unknown' }}" @endif>
+                                                    title="L2 Manager: {{ $transaction->manager_l2_name ?? 'Unknown' }}" @endif>
                                                         {{ $transaction->approval_status == 'Approved' ? 'Approved' : $transaction->approval_status }}
                                                     </span>
 
                                                 </td>
-                                                {{-- <td>{{ \Carbon\Carbon::parse($transaction->tgl_masuk_htl)->format('d/m/Y') }}
-                                            <td>{{ \Carbon\Carbon::parse($transaction->tgl_keluar_htl)->format('d/m/Y') }} --}}
+                                                <td class="text-center">
+                                                    <button 
+                                                        type="button" 
+                                                        class="btn btn-sm btn-outline-success rounded-pill" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#approvalModal"
+                                                        data-id="{{ $transaction->id }}" 
+                                                        data-no="{{ $transaction->no_htl }}" 
+                                                        data-sppd="{{ $transaction->no_sppd }}"
+                                                        data-status="{{ $transaction->approval_status }}"
+                                                        data-manager-l1="{{ $transaction->manager_l1_name ?? 'Unknown' }}" 
+                                                        data-manager-l2="{{ $transaction->manager_l2_name ?? 'Unknown' }}">
+                                                        <i class="bi bi-list-check"></i>
+                                                    </button>
+                                                </td>
                                                 <td class="text-center">
                                                     <button type="button"
                                                         class="btn btn-sm btn-outline-success rounded-pill"

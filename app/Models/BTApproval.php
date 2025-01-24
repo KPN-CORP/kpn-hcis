@@ -42,6 +42,7 @@ class BTApproval extends Model
         'approval_status',
         'approved_at',
         'employee_id',
+        'by_admin',
 
     ];
     protected $table = 'bt_approval';

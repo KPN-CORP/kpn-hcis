@@ -4,12 +4,14 @@
             <div class="row mb-2">
                 <div class="col-md-6 mb-2">
                     <label for="date_required" class="form-label">Date Required</label>
-                    <input type="date" class="form-control form-control-sm bg-light" id="date_required_2" name="date_required"
-                        placeholder="Date Required" onchange="syncDateRequired(this)" value="{{ $ca->date_required ?? 0 }}" readonly>
+                    <input type="date" class="form-control form-control-sm bg-light" id="date_required_2"
+                        name="date_required" placeholder="Date Required" onchange="syncDateRequired(this)"
+                        value="{{ $ca->date_required ?? 0 }}" readonly>
                 </div>
                 <div class="col-md-6 mb-2">
                     <label class="form-label" for="ca_decla">Declaration Estimate</label>
-                    <input type="date" name="ca_decla" id="ca_decla_2" class="form-control form-control-sm bg-light" placeholder="mm/dd/yyyy" value="{{ $ca->declare_estimate ?? 0}}" readonly>
+                    <input type="date" name="ca_decla" id="ca_decla_2" class="form-control form-control-sm bg-light"
+                        placeholder="mm/dd/yyyy" value="{{ $ca->declare_estimate ?? 0 }}" readonly>
                 </div>
             </div>
             <div class="d-flex flex-column">
@@ -82,8 +84,10 @@
                         <div class="input-group-append">
                             <span class="input-group-text">Rp</span>
                         </div>
-                        <input class="form-control bg-light" name="totalca" id="totalca" type="text" min="0"
-                        value="{{ isset($ca) && $ca->total_cost ? number_format($ca->total_cost, 0, ',', '.') : '0' }}" readonly>
+                        <input class="form-control bg-light" name="totalca" id="totalca" type="text"
+                            min="0"
+                            value="{{ isset($ca) && $ca->total_cost ? number_format($ca->total_cost, 0, ',', '.') : '0' }}"
+                            readonly>
                     </div>
                 </div>
                 {{-- </div> --}}

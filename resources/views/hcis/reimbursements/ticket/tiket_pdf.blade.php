@@ -76,7 +76,7 @@
         <img src="{{ public_path('images/kop.jpg') }}" alt="Kop Surat">
     </div>
     <h5 class="center">TICKET FORM</h5>
-    <h5 class="center">No. {{ ($ticket->no_tkt) }}</h5>
+    <h5 class="center">No. {{ $ticket->no_tkt }}</h5>
 
     <table>
         <p>Please order tickets as follows:</p>
@@ -171,7 +171,7 @@
         <tr>
             <td class="label">Company</td>
             <td class="colon">:</td>
-            <td class="value">{{ $passenger->company_name }}</td>
+            <td class="value">{{ $ticket->contribution_level_code ?? '-' }}</td>
         </tr>
         <tr>
             <td class="label">Cost Center</td>
@@ -181,7 +181,7 @@
         <tr>
             <td class="label">Ticket Status</td>
             <td class="colon">:</td>
-            <td class="value"><b>{{ $ticket->approval_status ?? '-'}}</b></td>
+            <td class="value"><b>{{ $ticket->approval_status ?? '-' }}</b></td>
         </tr>
     </table>
     <table>

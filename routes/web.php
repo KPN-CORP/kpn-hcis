@@ -40,6 +40,8 @@ use App\Http\Controllers\ReimburseController;
 use App\Http\Controllers\HomeTripController;
 use App\Http\Controllers\BTApprovalController;
 use App\Http\Controllers\ApiEmployeeController;
+use App\Http\Controllers\ReminderController;
+use App\Http\Controllers\DocumentGeneratorController;
 use App\Models\Designation;
 use Faker\Provider\Medical;
 use Illuminate\Support\Facades\Route;
@@ -133,6 +135,8 @@ Route::post('/approval/cashadvancedExt/reject/email/{id}/{employeeId}', [Approva
     ->name('approval.email.ext');
 
 // DIRECT AFTER APPROVE OR REJECT HALAMAN KOSONG
+Route::get('/page/notification', [ReminderController::class, 'emailReminder'])->name('email.reminderDec');
+
 Route::get('/page/{key}', [ApprovalReimburseController::class, 'blankApproval'])->name('blank.page');
 
 Route::get('/page', [ApprovalReimburseController::class, 'blankApproval'])->name('blank.pageUn');
@@ -179,6 +183,13 @@ Route::middleware('auth')->group(function () {
     // My Menu
     Route::get('/reimbursements', [ReimburseController::class, 'reimbursements'])->name('reimbursements');
     Route::get('/travel', [ReimburseController::class, 'travel'])->name('travel');
+
+    Route::get('/generator', [DocumentGeneratorController::class, 'GeneratorDoc'])->name('docGenerator');
+    Route::get('/generator/edit/{id}', [DocumentGeneratorController::class, 'GeneratorEdit'])->name('docGenerator.edit');
+    Route::post('/generator/upload', [DocumentGeneratorController::class, 'GeneratorUpload'])->name('docGenerator.upload');
+    Route::post('/generator/preview', [DocumentGeneratorController::class, 'GeneratorPreview'])->name('docGenerator.preview');
+    Route::post('/generator/download', [DocumentGeneratorController::class, 'GeneratorDownload'])->name('docGenerator.download');
+    Route::delete('/doc-generator/{id}', [DocumentGeneratorController::class, 'GeneratorDelete'])->name('docGenerator.delete');
 
     // My Cash Advanced
     Route::get('/cashadvanced', [ReimburseController::class, 'cashadvanced'])->name('cashadvanced');
@@ -269,6 +280,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/hotel/excel', [ReimburseController::class, 'exportHotelAdminExcel'])->name('hotel.excel');
         Route::get('/hotel/report', [ReimburseController::class, 'hotelAdminReport'])->name('hotel.report');
         Route::post('/hotel/admin/delete/{id}', [ReimburseController::class, 'hotelDeleteAdmin'])->name('hotel.delete.admin');
+        Route::post('/hotelStatus/admin/change/{id}', [ReimburseController::class, 'updatestatusHotelAdmin'])->name('changeStatus.hotel.admin');
     });
 
     // My Ticket
@@ -287,13 +299,14 @@ Route::middleware('auth')->group(function () {
 
 
     //Ticket Admin
-    // Route::middleware(['permission:report_hcis_tkt'])->group(function () {
+    Route::middleware(['permission:report_hcis_tkt'])->group(function () {
         Route::get('/ticket/admin', [ReimburseController::class, 'ticketAdmin'])->name('ticket.admin');
         Route::post('/ticket/admin/booking/{id}', [ReimburseController::class, 'ticketBookingAdmin'])->name('ticket.admin-booking');
         Route::get('/ticket/excel', [ReimburseController::class, 'exportTicketAdminExcel'])->name('ticket.excel');
         Route::get('/ticket/report', [ReimburseController::class, 'ticketAdminReport'])->name('ticket.report');
         Route::post('/ticket/admin/delete/{id}', [ReimburseController::class, 'ticketDeleteAdmin'])->name('ticket.delete.admin');
-    // });
+        Route::post('/ticket/admin/statusChange/{id}', [ReimburseController::class, 'updateStatusTicketAdmin'])->name('changeStatus.ticket.admin');
+    });
 
     // My Goals
     Route::get('/goals', [MyGoalController::class, 'index'])->name('goals');
@@ -357,9 +370,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/medical/report', [MedicalController::class, 'medicalReportAdmin'])->name('medical.report');
         Route::get('/medical/confirmation', [MedicalController::class, 'medicalAdminConfirmation'])->name('medical.confirmation');
         Route::get('/medical/detail/{key}', [MedicalController::class, 'medicalAdminDetail'])->name('medical.detail');
+        Route::post('/medical/detail/editPlafon/{period}/{employee}', [MedicalController::class, 'medicalAdminEditPlafon'])->name('medical.edit.plafon');
         Route::get('/medical/detail/form-add-detail/{employee_id}', [MedicalController::class, 'medicalAdminDetailForm'])->name('medical-form.add-admin');
         Route::post('/medical/detail/form-add-detail/post/{employee_id}', [MedicalController::class, 'medicalAdminDetailCreate'])->name('medical-form.post-admin');
-
         Route::post('/medical/import-excel/', [MedicalController::class, 'importAdminExcel'])->name('import.medical');
         Route::get('/exportmed/excel', [MedicalController::class, 'exportAdminExcel'])->name('exportmed.excel');
         Route::get('/exportmed/detail/excel/{employee_id}', [MedicalController::class, 'exportDetailExcel'])->name('exportmed-detail.excel');
@@ -433,7 +446,9 @@ Route::middleware('auth')->group(function () {
     Route::put('businessTrip/status/confirm/declaration/{id}', [BusinessTripController::class, 'updateStatusDeklarasi'])->name('confirm.deklarasi');
     Route::put('businessTrip/status/change/{id}', [BusinessTripController::class, 'updatestatus'])->name('change.status');
 
-
+    //APPROVAL ADMIN BT
+    Route::put('businessTrip/status/approve/{id}', [BusinessTripController::class, 'adminApprove'])->name('admin.approve');
+    Route::put('businessTrip/status/reject/{id}', [BusinessTripController::class, 'adminReject'])->name('admin.reject');
 
     //PDF BT
     Route::get('/businessTrip/pdf/{id}', [BusinessTripController::class, 'pdfDownload'])->name('pdf');

@@ -10,7 +10,7 @@
                  alt="Kop Surat" 
                  style="height: auto; margin-bottom: 20px; width: 15%;">
         </div>               
-        <h5>Reimburse Cash Advanced Notification</h5>
+        <h2>Reimburse Cash Advanced Notification</h2>
         @if ($nextApproval)
         {{-- {{dd($nextApproval)}} --}}
             <p>Dear : Bapak/Ibu <strong>{{ $nextApproval->employee->fullname }}</strong></p>
@@ -27,42 +27,42 @@
         @if ($caTransaction)
             <table>
                 <tr>
-                    <td>No Dokumen</td>
+                    <td><b>No Dokumen</b></td>
                     <td>:</td>
                     <td>{{ $caTransaction->no_ca }}</td>
                 </tr>
                 <tr>
-                    <td>Name</td>
+                    <td><b>Name</b></td>
                     <td>:</td>
                     <td>{{ $caTransaction->employee->fullname }}</td>
                 </tr>
                 <tr>
-                    <td>Start Date</td>
+                    <td><b>Start Date</b></td>
                     <td>:</td>
                     <td>{{ $caTransaction->start_date }}</td>
                 </tr>
                 <tr>
-                    <td>End Date</td>
+                    <td><b>End Date</b></td>
                     <td>:</td>
                     <td>{{ $caTransaction->end_date }}</td>
                 </tr>
                 <tr>
-                    <td>Destination</td>
+                    <td><b>Destination</b></td>
                     <td>:</td>
                     <td>{{ $caTransaction->destination == 'Others' ? $caTransaction->others_location : $caTransaction->destination }}</td>
                 </tr>
                 <tr>
-                    <td>Purpose</td>
+                    <td><b>Purpose</b></td>
                     <td>:</td>
                     <td>{{ $caTransaction->ca_needs }}</td>
                 </tr>
                 <tr>
-                    <td>PT</td>
+                    <td><b>PT</b></td>
                     <td>:</td>
                     <td>{{ $caTransaction->companies->contribution_level }} ({{ $caTransaction->contribution_level_code }})</td>
                 </tr>
                 <tr>
-                    <td>CA Type</td>
+                    <td><b>CA Type</b></td>
                     <td>:</td>
                     <td>
                         @if($caTransaction->type_ca === 'entr')

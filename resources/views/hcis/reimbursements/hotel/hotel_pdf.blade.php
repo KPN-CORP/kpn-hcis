@@ -146,7 +146,7 @@
             <tr>
                 <td class="label">Hotel Status</td>
                 <td class="colon">:</td>
-                <td class="value"><b>{{ $hotel->approval_status ?? '-'}}</b></td>
+                <td class="value"><b>{{ $hotel->approval_status ?? '-' }}</b></td>
             </tr>
         </table>
     @endforeach
@@ -179,21 +179,43 @@
         <tr>
             <td colspan="3"><b>Approved By :</b></td>
         </tr>
-        <tr>
-            <td class="label">Manager Name 1</td>
-            <td class="colon">:</td>
-            <td class="value"> {{ $hotel->manager1_fullname ?? '-' }}</td>
-        </tr>
+        @if ($hotel->manager_l1_id == null)
+            {
+            <tr>
+                <td class="label">Manager Name 1</td>
+                <td class="colon">:</td>
+                <td class="value"> {{ $hotel->getManagerL1Fullname() ?? '-' }}</td>
+            </tr>
+            }
+        @else{
+            <tr>
+                <td class="label">Manager Name 1</td>
+                <td class="colon">:</td>
+                <td class="value"> {{ $hotel->latestApprovalL1Name->fullname ?? '-' }}</td>
+            </tr>
+            }
+        @endif
         <tr>
             <td class="label">Date</td>
             <td class="colon">:</td>
             <td class="value"> {{ $hotel->latestApprovalL1->approved_at ?? '-' }}</td>
         </tr>
-        <tr>
-            <td class="label">Manager Name 2</td>
-            <td class="colon">:</td>
-            <td class="value">{{ $hotel->manager2_fullname ?? '-' }}</td>
-        </tr>
+        @if ($hotel->manager_l2_id == null)
+            {
+            <tr>
+                <td class="label">Manager Name 2</td>
+                <td class="colon">:</td>
+                <td class="value"> {{ $hotel->getManagerL2Fullname() ?? '-' }}</td>
+            </tr>
+            }
+        @else{
+            <tr>
+                <td class="label">Manager Name 2</td>
+                <td class="colon">:</td>
+                <td class="value"> {{ $hotel->latestApprovalL2Name->fullname ?? '-' }}</td>
+            </tr>
+            }
+        @endif
         <tr>
             <td class="label">Date</td>
             <td class="colon">:</td>

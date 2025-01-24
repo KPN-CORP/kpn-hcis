@@ -40,7 +40,8 @@
                                 <div class="mb-2">
                                     <label class="form-label" for="name">Name</label>
                                     <input type="text" name="name" id="name"
-                                        value="{{ $employee_data->fullname }}" class="form-control bg-light form-control-sm" readonly>
+                                        value="{{ $employee_data->fullname }}" class="form-control bg-light form-control-sm"
+                                        readonly>
                                 </div>
                             </div>
                             <div class="col-md-5">
@@ -54,25 +55,44 @@
                                 <div class="mb-2">
                                     <label class="form-label" for="grade">Grade</label>
                                     <input type="text" name="grade" id="grade"
-                                        value="{{ $employee_data->job_level }}" class="form-control bg-light form-control-sm" readonly>
+                                        value="{{ $employee_data->job_level }}"
+                                        class="form-control bg-light form-control-sm" readonly>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Business Trip Info -->
-                        <div class="mb-3">
-                            <label class="form-label" for="bisnis_numb">Business Trip Number</label>
-                            <select class="form-select select2 form-select-sm" id="bisnis_numb" name="bisnis_numb" disabled>
-                                <option value="-" {{ $hotel->no_sppd === '-' ? 'selected' : '' }}>No
-                                    Business
-                                    Trip</option>
-                                @foreach ($no_sppds as $no_sppd)
-                                    <option value="{{ $no_sppd->no_sppd }}"
-                                        {{ $hotel->no_sppd == $no_sppd->no_sppd ? 'selected' : '' }}>
-                                        {{ $no_sppd->no_sppd }}
-                                    </option>
-                                @endforeach
-                            </select>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="form-label" for="bisnis_numb">Business Trip Number</label>
+                                <select class="form-select select2 form-select-sm" id="bisnis_numb" name="bisnis_numb"
+                                    disabled>
+                                    <option value="-" {{ $hotel->no_sppd === '-' ? 'selected' : '' }}>No
+                                        Business
+                                        Trip</option>
+                                    @foreach ($no_sppds as $no_sppd)
+                                        <option value="{{ $no_sppd->no_sppd }}"
+                                            {{ $hotel->no_sppd == $no_sppd->no_sppd ? 'selected' : '' }}>
+                                            {{ $no_sppd->no_sppd }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" for="contribution_level_code">Costing Company</label>
+                                    <select class="form-control select2 form-select-sm" id="contribution_level_code"
+                                        name="contribution_level_code" disabled>
+                                        <option value="" selected disabled>Select Costing Company</option>
+                                        @foreach ($companies as $company)
+                                            <option value="{{ $company->contribution_level_code }}"
+                                                {{ $hotel->contribution_level_code == $company->contribution_level_code ? 'selected' : '' }}>
+                                                {{ $company->contribution_level . ' (' . $company->contribution_level_code . ')' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Dynamic Hotel Forms Start -->
@@ -191,13 +211,14 @@
 
                         <!-- Approve Form -->
                         <form method="POST" action="{{ route('change.status.hotel', ['id' => $hotel['id']]) }}"
-                            style="display: inline-block; margin-right: 5px;" class="status-form" id="approve-form-{{ $hotel['id'] }}">
+                            style="display: inline-block; margin-right: 5px;" class="status-form"
+                            id="approve-form-{{ $hotel['id'] }}">
                             @csrf
                             @method('PUT')
                             <input type="hidden" name="status_approval"
                                 value="{{ Auth::user()->id == $hotelOwnerEmployee->manager_l1_id ? 'Pending L2' : 'Approved' }}">
-                            <button type="button" class="btn btn-success rounded-pill approve-button" style="padding: 0.5rem 1rem;"
-                            data-id="{{ $hotel['id']}}">
+                            <button type="button" class="btn btn-success rounded-pill approve-button"
+                                style="padding: 0.5rem 1rem;" data-id="{{ $hotel['id'] }}">
                                 Approve
                             </button>
                         </form>

@@ -126,6 +126,7 @@
                             @php
                                 use Illuminate\Support\Facades\Storage;
                             @endphp
+
                             <div class="col-md-12 mb-2 mt-2">
                                 <label for="medical_proof" class="form-label">Upload Document</label>
                                 <input type="file" id="medical_proof" name="medical_proof[]" accept="image/*, application/pdf" class="form-control mb-2" multiple onchange="previewFiles()">
@@ -137,6 +138,7 @@
                                     @if ($medic->medical_proof)
                                         
                                         Document on Draft:
+
                                     @endif
                                 </div>
                                 <div id="existing-file-preview" class="mt-2">
@@ -592,6 +594,7 @@
             });
         });
     </script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             let selectedFiles = [];

@@ -147,7 +147,7 @@
                                                     <button class="nav-link active" id="pills-perdiem-tab"
                                                         data-bs-toggle="pill" data-bs-target="#pills-perdiem" type="button"
                                                         role="tab" aria-controls="pills-perdiem"
-                                                        aria-selected="true">{{$allowance}}</button>
+                                                        aria-selected="true">{{ $allowance }}</button>
                                                 </li>
                                                 @if ($employee_data->group_company != 'Plantations')
                                                 <li class="nav-item" role="presentation">
@@ -206,7 +206,7 @@
                                             </div>
                                         </div>
                                         <div class="row mb-2">
-                                            <div class="col-md-4 mb-2">
+                                            <div class="col-md-6 mb-2">
                                                 <label class="form-label">Total Cash Advanced</label>
                                                 <div class="input-group">
                                                     <div class="input-group-append">
@@ -218,7 +218,7 @@
                                                         readonly>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4 mb-2">
+                                            <div class="col-md-6 mb-2">
                                                 <label class="form-label">Total Cash Advanced Deklarasi</label>
                                                 <div class="input-group">
                                                     <div class="input-group-append">
@@ -344,7 +344,7 @@
                     const inputSummary = `
                         <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
                         <tr>
-                            <th style="width: 40%; text-align: left; padding: 8px;">Total {{$allowance}}</th>
+                            <th style="width: 40%; text-align: left; padding: 8px;">Total {{ $allowance }}</th>
                             <td style="width: 10%; text-align: right; padding: 8px;">:</td>
                             <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPerdiem}</strong></td>
                         </tr>
