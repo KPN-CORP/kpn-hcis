@@ -2944,7 +2944,7 @@ class BusinessTripController extends Controller
         }
 
         if (!empty($permissionCompanies)) {
-            $query->whereIn('contribution_level_code', $permissionCompanies);
+            $query->whereIn('bb_perusahaan', $permissionCompanies);
         }
 
         if (!empty($permissionGroupCompanies)) {
@@ -4090,7 +4090,7 @@ class BusinessTripController extends Controller
             } else {
                 return redirect()->back()->with('error', 'Unauthorized action.');
             }
-            if ($businessTrip->ca == 'Ya') {
+            if ($businessTrip->ca == 'Ya' || $businessTrip->ca == 'Tidak') {
                 $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
                 if ($caTransaction && $caTransaction->caonly != 'Y') {
                     // Update rejection info for the current layer
@@ -4184,7 +4184,7 @@ class BusinessTripController extends Controller
                 }
             }
             // Handle CA approval for L1
-            if ($businessTrip->ca == 'Ya') {
+            if ($businessTrip->ca == 'Ya' || $businessTrip->ca == 'Tidak') {
                 $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
                 if ($caTransaction) {
                     // Update CA approval status for L1
@@ -4217,7 +4217,7 @@ class BusinessTripController extends Controller
             $layer = 2;
 
             // Handle CA approval for L2
-            if ($businessTrip->ca == 'Ya') {
+            if ($businessTrip->ca == 'Ya' || $businessTrip->ca == 'Tidak') {
                 $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
                 if ($caTransaction) {
                     // Update CA approval status for L2

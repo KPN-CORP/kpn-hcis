@@ -251,7 +251,7 @@
                     <span style="float: right;">{{ number_format(array_sum(array_column($declareCA['detail_perdiem'], 'nominal')), 0, ',', '.') }}</span>  
                 </td>
             </tr>
-            @if (isset($detailCA['detail_meals']) && !in_array($transactions->employee->group_company, ['KPN Plantations', 'Plantations']))
+            @if ((isset($detailCA['detail_meals']) || isset($declareCA['detail_meals'])) && !in_array($transactions->employee->group_company, ['KPN Plantations', 'Plantations']))
             <tr>
                 <td>Meals</td>
                 <td>
@@ -670,7 +670,7 @@
                     </tr>
                 </table>
             @endif
-            @if (isset($detailCA['detail_meals']) && count($declareCA['detail_meals']) > 0 && !empty($declareCA['detail_meals'][0]['keterangan']))
+            @if (isset($declareCA['detail_meals']))
                 <table class="table-approve">
                     <tr>
                         <th colspan="3"><b>Meals Plan Declaration :</b></th>
