@@ -9,44 +9,105 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function setupCheckboxListeners() {
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach((checkbox) => {
+    // Handle Dalam Kota checkboxes
+    const dalamKotaCheckboxes = document.querySelectorAll(
+        'input[id$="CheckboxDalamKota"]'
+    );
+    dalamKotaCheckboxes.forEach((checkbox) => {
         checkbox.addEventListener("change", function () {
-            // For Dalam Kota, extract section differently
-            const section = this.id.includes("DalamKota")
-                ? this.id.replace("Checkbox", "").replace("DalamKota", "")
-                : this.id.replace("Checkbox", "");
+            const section = this.id
+                .replace("CheckboxDalamKota", "")
+                .toLowerCase();
 
-            const navItem =
-                document.getElementById(`nav-${section}-dalam-kota`) ||
-                document.getElementById(`nav-${section}`);
+            const navItem = document.getElementById(
+                `nav-${section}-dalam-kota`
+            );
+            const tabContent = document.getElementById(
+                `pills-${section}-dalam-kota`
+            );
+            const tabButton = document.getElementById(
+                `pills-${section}-dalam-kota-tab`
+            );
 
-            const tabContent =
-                document.getElementById(`pills-${section}-dalam-kota`) ||
-                document.getElementById(`pills-${section}`);
+            handleTabVisibility(
+                this.checked,
+                navItem,
+                tabContent,
+                tabButton,
+                true
+            );
+        });
+    });
 
-            const tabButton =
-                document.getElementById(`pills-${section}-dalam-kota-tab`) ||
-                document.getElementById(`pills-${section}-tab`);
+    // Handle Luar Kota checkboxes
+    const luarKotaCheckboxes = document.querySelectorAll(
+        '#additional-fields input[type="checkbox"]:not([id$="DalamKota"])'
+    );
+    luarKotaCheckboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", function () {
+            const section = this.id.replace("Checkbox", "").toLowerCase();
 
-            if (this.checked && navItem && tabButton && tabContent) {
-                navItem.style.display = "block";
-                tabButton.click(); // Activate this tab
-                tabContent.classList.add("show", "active");
-            } else if (navItem && tabContent) {
-                navItem.style.display = "none";
-                tabContent.classList.remove("show", "active");
-            }
+            const navItem = document.getElementById(`nav-${section}`);
+            const tabContent = document.getElementById(`pills-${section}`);
+            const tabButton = document.getElementById(`pills-${section}-tab`);
+
+            handleTabVisibility(
+                this.checked,
+                navItem,
+                tabContent,
+                tabButton,
+                false
+            );
         });
     });
 }
 
-function findNextAvailableTab() {
-    const tabs = document.querySelectorAll(".nav-link");
+function handleTabVisibility(
+    isChecked,
+    navItem,
+    tabContent,
+    tabButton,
+    isDalamKota
+) {
+    if (isChecked && navItem && tabButton && tabContent) {
+        navItem.style.display = "block";
+        tabButton.click();
+        tabContent.classList.add("show", "active");
+    } else if (navItem && tabContent) {
+        navItem.style.display = "none";
+        tabContent.classList.remove("show", "active");
+
+        // Find and activate next available tab
+        const nextTab = findNextAvailableTab(isDalamKota);
+        if (nextTab) {
+            nextTab.click();
+        }
+    }
+}
+
+function findNextAvailableTab(isDalamKota) {
+    const tabsContainer = isDalamKota ? "dalam-kota-pills-tab" : "pills-tab";
+    const tabs = document.querySelectorAll(`#${tabsContainer} .nav-link`);
+
     for (let tab of tabs) {
-        const section = tab.id.replace("pills-", "").replace("-tab", "");
-        const checkbox = document.getElementById(`${section}Checkbox`);
-        if (checkbox && checkbox.checked) {
+        const tabId = tab.id;
+        const section = tabId
+            .replace("pills-", "")
+            .replace("-dalam-kota-tab", "")
+            .replace("-tab", "")
+            .toLowerCase();
+
+        const checkboxId = isDalamKota
+            ? `${section}CheckboxDalamKota`
+            : `${section}Checkbox`;
+
+        const checkbox = document.getElementById(checkboxId);
+
+        if (
+            checkbox &&
+            checkbox.checked &&
+            tab.closest(".nav-item").style.display !== "none"
+        ) {
             return tab;
         }
     }
