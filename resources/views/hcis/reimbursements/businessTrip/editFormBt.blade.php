@@ -282,7 +282,7 @@
                                         <ul class="nav nav-tabs nav-pills mb-2" id="dalam-kota-pills-tab" role="tablist">
                                             <!-- Ticket Tab -->
                                             <li class="nav-item" role="presentation" id="nav-ticket-dalam-kota"
-                                                style="display: none;">
+                                                style="display: <?= $n->jns_dinas === 'dalam kota' && $n->tiket == 'Ya' ? 'block' : 'none' ?>;">
                                                 <button class="nav-link" id="pills-ticket-dalam-kota-tab"
                                                     data-bs-toggle="pill" data-bs-target="#pills-ticket-dalam-kota"
                                                     type="button" role="tab" aria-controls="pills-ticket-dalam-kota"
@@ -291,7 +291,7 @@
 
                                             <!-- Hotel Tab -->
                                             <li class="nav-item" role="presentation" id="nav-hotel-dalam-kota"
-                                                style="display: none;">
+                                                style="display: <?= $n->jns_dinas === 'dalam kota' && $n->hotel == 'Ya' ? 'block' : 'none' ?>;">
                                                 <button class="nav-link" id="pills-hotel-dalam-kota-tab"
                                                     data-bs-toggle="pill" data-bs-target="#pills-hotel-dalam-kota"
                                                     type="button" role="tab" aria-controls="pills-hotel-dalam-kota"
@@ -300,7 +300,7 @@
 
                                             <!-- Taxi Tab -->
                                             <li class="nav-item" role="presentation" id="nav-taksi-dalam-kota"
-                                                style="display: none;">
+                                                style="display: <?= $n->jns_dinas === 'dalam kota' && $n->taksi == 'Ya' ? 'block' : 'none' ?>;">
                                                 <button class="nav-link" id="pills-taksi-dalam-kota-tab"
                                                     data-bs-toggle="pill" data-bs-target="#pills-taksi-dalam-kota"
                                                     type="button" role="tab" aria-controls="pills-taksi-dalam-kota"
@@ -443,21 +443,21 @@
                                                             aria-selected="false">CA Entertain</button>
                                                     </li>
                                                     <li class="nav-item" role="presentation" id="nav-ticket"
-                                                        style="display: <?= $n->tiket == 'Ya' ? 'block' : 'none' ?>;">
+                                                        style="display: <?= $n->jns_dinas === 'luar kota' && $n->tiket == 'Ya' ? 'block' : 'none' ?>;">
                                                         <button class="nav-link" id="pills-ticket-tab"
                                                             data-bs-toggle="pill" data-bs-target="#pills-ticket"
                                                             type="button" role="tab" aria-controls="pills-ticket"
                                                             aria-selected="false">Ticket</button>
                                                     </li>
                                                     <li class="nav-item" role="presentation" id="nav-hotel"
-                                                        style="display: <?= $n->hotel == 'Ya' ? 'block' : 'none' ?>;">
+                                                        style="display: <?= $n->jns_dinas === 'luar kota' && $n->hotel == 'Ya' ? 'block' : 'none' ?>;">
                                                         <button class="nav-link" id="pills-hotel-tab"
                                                             data-bs-toggle="pill" data-bs-target="#pills-hotel"
                                                             type="button" role="tab" aria-controls="pills-hotel"
                                                             aria-selected="false">Hotel</button>
                                                     </li>
                                                     <li class="nav-item" role="presentation" id="nav-taksi"
-                                                        style="display: <?= $n->taksi == 'Ya' ? 'block' : 'none' ?>;">
+                                                        style="display: <?= $n->jns_dinas === 'luar kota' && $n->taksi == 'Ya' ? 'block' : 'none' ?>;">
                                                         <button class="nav-link" id="pills-taksi-tab"
                                                             data-bs-toggle="pill" data-bs-target="#pills-taksi"
                                                             type="button" role="tab" aria-controls="pills-taksi"
