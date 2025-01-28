@@ -1,8 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
     setupCheckboxListeners();
-    // handleTicketForms();
-    // handleHotelForms();
-    DalamKotaInit();
+    LuarKotaTicketInit();
+    DalamKotaTicketInit();
+    LuarKotaHotelInit();
+    DalamKotaHotelInit();
     handleTaksiForms();
     handleCaForms();
 });
@@ -487,7 +488,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Ticket JS
-document.addEventListener("DOMContentLoaded", function () {
+function LuarKotaTicketInit() {
     let formTicketCount = 1;
     const maxTicketForms = 5;
     const ticketFormsContainer = document.getElementById(
@@ -904,9 +905,9 @@ document.addEventListener("DOMContentLoaded", function () {
     //     ticketFormsContainer.style.display = "none";
     //     updateAllFormsRequiredState(false);
     // }
-});
+}
 
-function DalamKotaInit() {
+function DalamKotaTicketInit() {
     let formTicketCountDalamKota = 1;
     const maxTicketFormsDalamKota = 5;
     const ticketFormsContainerDalamKota = document.getElementById(
@@ -1320,7 +1321,7 @@ function DalamKotaInit() {
 }
 
 //Hotel JS
-document.addEventListener("DOMContentLoaded", function () {
+function LuarKotaHotelInit() {
     let formHotelCount = 1;
     const maxHotelForms = 5;
     const hotelFormsContainer = document.getElementById(
@@ -1541,7 +1542,232 @@ document.addEventListener("DOMContentLoaded", function () {
     // Initial setup
     updateButtonVisibility();
     updateAllFormsRequiredState(hotelCheckbox.checked);
-});
+}
+
+function DalamKotaHotelInit() {
+    let formHotelCountDalamKota = 1;
+    const maxHotelForms = 5;
+    const hotelFormsContainer = document.getElementById(
+        "hotel_forms_container_dalam_kota"
+    );
+    const hotelCheckbox = document.getElementById("hotelCheckboxDalamKota");
+    const addHotelButton = document.querySelector(".add-hotel-btn-dalam-kota");
+
+    function updateFormNumbers() {
+        const forms = hotelFormsContainer.querySelectorAll(
+            '[id^="hotel-form-dalam-kota-"]'
+        );
+        forms.forEach((form, index) => {
+            const formNumber = index + 1;
+            form.querySelector(
+                ".h5.text-uppercase b"
+            ).textContent = `Hotel ${formNumber}`;
+            form.id = `hotel-form-dalam-kota-${formNumber}`;
+            form.querySelector(".remove-hotel-btn-dalam-kota").dataset.formId =
+                formNumber;
+
+            updateFormElementIds(form, formNumber);
+        });
+        formHotelCountDalamKota = forms.length;
+        updateButtonVisibility();
+    }
+
+    function updateFormElementIds(form, formNumber) {
+        const elements = form.querySelectorAll("[id],[name],[onchange]");
+        elements.forEach((element) => {
+            if (element.id) {
+                element.id = element.id.replace(/\d+$/, formNumber);
+            }
+            if (element.name) {
+                element.name = element.name.replace(
+                    /\[\d*\]/,
+                    `[${formNumber}]`
+                );
+            }
+            if (element.hasAttribute("onchange")) {
+                const onchangeValue = element.getAttribute("onchange");
+                const updatedOnchangeValue = onchangeValue.replace(
+                    /\d+/,
+                    formNumber
+                );
+                element.setAttribute("onchange", updatedOnchangeValue);
+            }
+        });
+    }
+
+    function updateButtonVisibility() {
+        addHotelButton.style.display =
+            formHotelCountDalamKota < maxHotelForms ? "inline-block" : "none";
+        const removeButtons = hotelFormsContainer.querySelectorAll(
+            ".remove-hotel-btn-dalam-kota"
+        );
+        removeButtons.forEach((button) => {
+            button.style.display =
+                formHotelCountDalamKota > 1 ? "inline-block" : "none";
+        });
+    }
+
+    function resetHotelFields(container) {
+        const inputs = container.querySelectorAll(
+            'input[type="text"], input[type="number"], input[type="date"], input[type="time"], textarea'
+        );
+        inputs.forEach((input) => {
+            input.value = "";
+            input.required = false;
+        });
+
+        const selects = container.querySelectorAll("select");
+        selects.forEach((select) => {
+            select.value = select.querySelector("option[selected]")
+                ? select.querySelector("option[selected]").value
+                : select.querySelector("option").value;
+        });
+    }
+
+    function resetAllHotelForms() {
+        const forms = hotelFormsContainer.querySelectorAll(
+            '[id^="hotel-form-dalam-kota-"]'
+        );
+        forms.forEach((form, index) => {
+            resetHotelFields(form);
+            toggleRequiredAttributes(form, false);
+            if (index === 0) {
+                form.style.display = "block";
+            } else {
+                form.remove();
+            }
+        });
+        formHotelCountDalamKota = 1;
+        updateButtonVisibility();
+    }
+
+    function toggleRequiredAttributes(form, isRequired) {
+        const fields = [
+            'input[name="nama_htl_dalam_kota[]"]',
+            'input[name="lokasi_htl_dalam_kota[]"]',
+            'select[name="bed_htl_dalam_kota[]"]',
+            'input[name="jmlkmr_htl_dalam_kota[]"]',
+            'input[name="tgl_masuk_htl_dalam_kota[]"]',
+            'input[name="tgl_keluar_htl_dalam_kota[]"]',
+        ];
+
+        fields.forEach((selector) => {
+            const field = form.querySelector(selector);
+            if (field) {
+                field.required = isRequired;
+            }
+        });
+    }
+
+    function updateAllFormsRequiredState(isRequired) {
+        document
+            .querySelectorAll('[id^="hotel-form-dalam-kota-"]')
+            .forEach((form) => {
+                toggleRequiredAttributes(form, isRequired);
+            });
+    }
+
+    function addNewHotelForm() {
+        if (formHotelCountDalamKota < maxHotelForms) {
+            formHotelCountDalamKota++;
+            const newHotelForm = createNewHotelForm(formHotelCountDalamKota);
+            hotelFormsContainer.insertAdjacentHTML("beforeend", newHotelForm);
+            const addedForm = hotelFormsContainer.lastElementChild;
+            toggleRequiredAttributes(addedForm, hotelCheckbox.checked);
+            updateFormNumbers();
+        } else {
+            Swal.fire({
+                title: "Warning!",
+                text: "You have reached the maximum number of hotels (5).",
+                icon: "error",
+                confirmButtonColor: "#AB2F2B",
+                confirmButtonText: "OK",
+            });
+        }
+    }
+
+    addHotelButton.addEventListener("click", addNewHotelForm);
+
+    hotelFormsContainer.addEventListener("click", function (e) {
+        if (e.target.classList.contains("remove-hotel-btn-dalam-kota")) {
+            const formId = e.target.dataset.formId;
+            document.getElementById(`hotel-form-dalam-kota-${formId}`).remove();
+            updateFormNumbers();
+        }
+    });
+
+    if (hotelCheckbox) {
+        hotelCheckbox.addEventListener("change", function () {
+            hotelFormsContainer.style.display = this.checked ? "block" : "none";
+            updateAllFormsRequiredState(this.checked);
+            if (!this.checked) {
+                resetAllHotelForms();
+            }
+        });
+    }
+
+    function createNewHotelForm(formNumber) {
+        return `
+            <div class="card bg-light shadow-none" id="hotel-form-dalam-kota-${formNumber}" style="display: block;">
+                <div class="card-body">
+                    <div class="h5 text-uppercase">
+                        <b>Hotel ${formNumber} (Dalam Kota)</b>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Hotel Name</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-sm" name="nama_htl_dalam_kota[]" type="text" placeholder="ex: Hyatt">
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Hotel Location</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-sm" name="lokasi_htl_dalam_kota[]" type="text" placeholder="ex: Jakarta">
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <label class="form-label">Bed Size</label>
+                            <select class="form-select form-select-sm select2" name="bed_htl_dalam_kota[]">
+                                <option value="Double Bed">Double Bed</option>
+                                <option value="Twin Bed">Twin Bed</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <label class="form-label">Total Room</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-sm" name="jmlkmr_htl_dalam_kota[]" type="number" min="1" placeholder="ex: 1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Check In Date</label>
+                            <input type="date" class="form-control form-control-sm" id="check-in-dalam-kota-${formNumber}" name="tgl_masuk_htl_dalam_kota[]"
+                                onchange="calculateTotalDaysDalamKota(${formNumber})">
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Check Out Date</label>
+                            <input type="date" class="form-control form-control-sm" id="check-out-dalam-kota-${formNumber}" name="tgl_keluar_htl_dalam_kota[]"
+                                onchange="calculateTotalDaysDalamKota(${formNumber})">
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Total Nights</label>
+                            <input type="number" class="form-control form-control-sm bg-light" id="total-days-dalam-kota-${formNumber}" name="total_hari_dalam_kota[]"
+                                readonly>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-hotel-btn-dalam-kota" data-form-id="${formNumber}">Remove Data</button>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    // Initial setup
+    updateButtonVisibility();
+    updateAllFormsRequiredState(hotelCheckbox.checked);
+}
 
 //Taksi JS
 function handleTaksiForms() {
