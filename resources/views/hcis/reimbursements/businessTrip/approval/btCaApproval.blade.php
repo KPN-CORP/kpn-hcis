@@ -6,12 +6,12 @@
                     <label for="date_required" class="form-label">Date Required</label>
                     <input type="date" class="form-control form-control-sm bg-light" id="date_required_2"
                         name="date_required" placeholder="Date Required" onchange="syncDateRequired(this)"
-                        value="{{ $ca->date_required ?? 0 }}" readonly>
+                        value="{{ $date->date_required ?? 0 }}" readonly>
                 </div>
                 <div class="col-md-6 mb-2">
                     <label class="form-label" for="ca_decla">Declaration Estimate</label>
                     <input type="date" name="ca_decla" id="ca_decla_2" class="form-control form-control-sm bg-light"
-                        placeholder="mm/dd/yyyy" value="{{ $ca->declare_estimate ?? 0 }}" readonly>
+                        placeholder="mm/dd/yyyy" value="{{ $date->declare_estimate ?? 0 }}" readonly>
                 </div>
             </div>
             <div class="d-flex flex-column">
@@ -72,7 +72,6 @@
                         @include('hcis.reimbursements.businessTrip.approval.caOtherApproval')
                     </div>
                 </div>
-
                 <br>
                 <div class="col-md-12 mb-2">
                     <label class="form-label">Total Cash
@@ -82,9 +81,18 @@
                             <span class="input-group-text">Rp</span>
                         </div>
                         <input class="form-control bg-light" name="totalca" id="totalca" type="text"
-                            min="0"
-                            value="{{ isset($ca) && $ca->total_cost ? number_format($ca->total_cost, 0, ',', '.') : '0' }}"
-                            readonly>
+                            min="0" value="0" readonly>
+                    </div>
+                </div>
+
+                <div class="col-md-12 mb-2" id="total_bt_ent" style="display:">
+                    <label class="form-label">Total Request</label>
+                    <div class="input-group">
+                        <div class="input-group-append">
+                            <span class="input-group-text">Rp</span>
+                        </div>
+                        <input class="form-control bg-light" name="totalreq" id="totalreq" type="text"
+                            min="0" value="0" readonly>
                     </div>
                 </div>
                 {{-- </div> --}}

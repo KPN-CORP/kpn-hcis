@@ -213,23 +213,27 @@
                             @endphp
 
                             @php
-                                $detailCA = isset($ca) && $ca->detail_ca ? json_decode($ca->detail_ca, true) : [];
+                                // $detailCA = isset($ca) && $ca->detail_ca ? json_decode($ca->detail_ca, true) : [];
 
-                                $showPerdiem = !empty($detailCA['detail_perdiem']);
+                                // $showPerdiem = !empty($detailCA['detail_perdiem']);
 
                                 // Check if any of Transport, Penginapan, or Lainnya has data
                                 $showCashAdvanced =
-                                    !empty($detailCA['detail_perdiem']) ||
-                                    !empty($detailCA['detail_transport']) ||
-                                    !empty($detailCA['detail_meals']) ||
-                                    !empty($detailCA['detail_penginapan']) ||
-                                    !empty($detailCA['detail_lainnya']);
+                                    !empty($caDetail['detail_perdiem']) ||
+                                    !empty($caDetail['detail_transport']) ||
+                                    !empty($caDetail['detail_meals']) ||
+                                    !empty($caDetail['detail_penginapan']) ||
+                                    !empty($caDetail['detail_lainnya']);
+
+                                $showEntertain =
+                                    !empty($caDetail['detail_e']) ||
+                                    !empty($caDetail['relation_e']);
 
                             @endphp
-                            <script>
+                            {{-- <script>
                                 // Pass the PHP array into a JavaScript variable
                                 const initialDetailCA = @json($detailCA);
-                            </script>
+                            </script> --}}
 
                             <div id="additional-fields" class="row mb-3" style="display: none;">
                                 <div class="col-md-12">
@@ -257,10 +261,11 @@
                                         </div>
                                         <div class="col-md-3">
                                             <div class="form-check">
-                                                <input type="hidden" name="ca" id="caHidden"
-                                                    value="{{ $showCashAdvanced ? 'Ya' : 'Tidak' }}">
+                                                <input type="hidden" name="ent" id="caEntertainCheckbox"
+                                                    value="{{ $showEntertain ? 'Ya' : 'Tidak' }}">
                                                 <input class="form-check-input" type="checkbox" id="caEntertainCheckbox"
-                                                    value="Ya" onchange="updateCAValue()" disabled>
+                                                    name="ent" value="Ya" onchange="updateCAValue()"
+                                                    @checked($showEntertain) disabled>
                                                 <label class="form-check-label" for="caEntertainCheckbox">CA Entertain</label>
                                             </div>
                                         </div>
@@ -319,6 +324,13 @@
                                                         type="button" role="tab" aria-controls="pills-cashAdvanced"
                                                         aria-selected="false">Cash Advanced</button>
                                                 </li>
+                                                <li class="nav-item" role="presentation" id="nav-cashAdvancedEntertain"
+                                                    style="display: {{ $showEntertain ? 'block' : 'none' }};">
+                                                    <button class="nav-link" id="pills-cashAdvancedEntertain-tab"
+                                                        data-bs-toggle="pill" data-bs-target="#pills-cashAdvancedEntertain"
+                                                        type="button" role="tab" aria-controls="pills-cashAdvancedEntertain"
+                                                        aria-selected="false">CA Entertain</button>
+                                                </li>
                                                 <li class="nav-item" role="presentation" id="nav-ticket"
                                                     style="display: <?= $n->tiket == 'Ya' ? 'block' : 'none' ?>;">
                                                     <button class="nav-link" id="pills-ticket-tab" data-bs-toggle="pill"
@@ -368,6 +380,11 @@
                                                     aria-labelledby="pills-cashAdvanced-tab">
                                                     {{-- Cash Advanced content --}}
                                                     @include('hcis.reimbursements.businessTrip.approval.btCaApproval')
+                                                </div>
+                                                <div class="tab-pane fade" id="pills-cashAdvancedEntertain" role="tabpanel"
+                                                    aria-labelledby="pills-cashAdvancedEntertain-tab">
+                                                    {{-- Cash Advanced content --}}
+                                                    @include('hcis.reimbursements.businessTrip.approval.btEntApproval')
                                                 </div>
                                                 <div class="tab-pane fade" id="pills-ticket" role="tabpanel"
                                                     aria-labelledby="pills-ticket-tab">

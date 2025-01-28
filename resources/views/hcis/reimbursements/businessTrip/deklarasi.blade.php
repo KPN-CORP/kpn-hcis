@@ -6,6 +6,26 @@
         rel="stylesheet">
 @endsection
 
+<style>
+    .nav-link {
+        color: black;
+        border-bottom: 2px solid transparent;
+        transition: color 0.3s ease, border-bottom 0.3s ease;
+    }
+
+    .nav-link.active {
+        color: #AB2F2B;
+        /* Primary color */
+        border-bottom: 2px solid #AB2F2B;
+        font-weight: bold;
+        /* Underline with primary color */
+    }
+
+    .nav-link:hover {
+        color: #AB2F2B;
+        /* Change color on hover */
+    }
+</style>
 @section('content')
     <div class="container-fluid">
         <div class="row">
@@ -85,13 +105,13 @@
                                         <tr>
                                             <th>Estimated Declaration</th>
                                             <td class="block">:</td>
-                                            <td>{{ isset($ca->declare_estimate) ? date('d M Y', strtotime($ca->declare_estimate)) : '-' }}
+                                            <td>{{ isset($date->declare_estimate) ? date('d M Y', strtotime($date->declare_estimate)) : '-' }}
                                             </td>
                                         </tr>
                                         <tr>
                                             <th>Date Required</th>
                                             <td class="block">:</td>
-                                            <td>{{ isset($ca->date_required) ? date('d M Y', strtotime($ca->date_required)) : '-' }}
+                                            <td>{{ isset($date->date_required) ? date('d M Y', strtotime($date->date_required)) : '-' }}
                                             </td>
                                         </tr>
 
@@ -124,83 +144,129 @@
                                         value="{{ $n->keperluan }}"></input>
                                 </div>
                                 @php
-                                    $detailCA = isset($ca) && $ca->detail_ca ? json_decode($ca->detail_ca, true) : [];
-                                    $declareCA =
-                                        isset($ca) && $ca->declare_ca ? json_decode($ca->declare_ca, true) : [];
+                                    // $detailCA = isset($ca) && $ca->detail_ca ? json_decode($ca->detail_ca, true) : [];
+                                    // $declareCA =
+                                    //     isset($ca) && $ca->declare_ca ? json_decode($ca->declare_ca, true) : [];
 
                                     // dd($detailCA);
                                     // dd($declareCA);
                                     // dd($declareCA['detail_transport']);
 
                                 @endphp
-                                <script>
-                                    // Pass the PHP array into a JavaScript variable
-                                    const initialDetailCA = @json($detailCA);
-                                    const initialDeclareCA = @json($declareCA);
-                                </script>
+                                
                                 <!-- 1st Form -->
                                 <div class="row mt-2" id="ca_div">
                                     <div class="col-md-12">
                                         <div class="d-flex flex-column gap-2">
-                                            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                            <ul class="nav nav-tabs nav-pills mb-2" id="pills-tab" role="tablist">
                                                 <li class="nav-item" role="presentation">
-                                                    <button class="nav-link active" id="pills-perdiem-tab"
-                                                        data-bs-toggle="pill" data-bs-target="#pills-perdiem" type="button"
-                                                        role="tab" aria-controls="pills-perdiem"
-                                                        aria-selected="true">{{ $allowance }}</button>
+                                                    <button class="nav-link active" id="pills-cashAdvanced-tab"
+                                                        data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced"
+                                                        type="button" role="tab" aria-controls="pills-cashAdvanced"
+                                                        aria-selected="true">Cash Advanced</button>
                                                 </li>
-                                                @if ($group_company != 'KPN Plantations')
-                                                    <li class="nav-item" role="presentation">
-                                                        <button class="nav-link" id="pills-meals-tab" data-bs-toggle="pill"
-                                                            data-bs-target="#pills-meals" type="button" role="tab"
-                                                            aria-controls="pills-meals" aria-selected="false">Meals</button>
-                                                    </li>
-                                                @endif
                                                 <li class="nav-item" role="presentation">
-                                                    <button class="nav-link" id="pills-transport-tab" data-bs-toggle="pill"
-                                                        data-bs-target="#pills-transport" type="button" role="tab"
-                                                        aria-controls="pills-transport"
-                                                        aria-selected="false">Transport</button>
-                                                </li>
-
-                                                <li class="nav-item" role="presentation">
-                                                    <button class="nav-link" id="pills-accomodation-tab"
-                                                        data-bs-toggle="pill" data-bs-target="#pills-accomodation"
-                                                        type="button" role="tab" aria-controls="pills-accomodation"
-                                                        aria-selected="false">Accommodation</button>
-                                                </li>
-
-                                                <li class="nav-item" role="presentation">
-                                                    <button class="nav-link" id="pills-other-tab" data-bs-toggle="pill"
-                                                        data-bs-target="#pills-other" type="button" role="tab"
-                                                        aria-controls="pills-other" aria-selected="false">Other</button>
+                                                    <button class="nav-link" id="pills-caEntertain-tab"
+                                                        data-bs-toggle="pill" data-bs-target="#pills-caEntertain"
+                                                        type="button" role="tab" aria-controls="pills-caEntertain"
+                                                        aria-selected="false">CA Entertain</button>
                                                 </li>
                                             </ul>
-                                            {{-- <div class="card"> --}}
+
                                             <div class="tab-content" id="pills-tabContent">
-                                                <div class="tab-pane fade show active" id="pills-perdiem" role="tabpanel"
-                                                    aria-labelledby="pills-perdiem-tab">
-                                                    {{-- ca perdiem content --}}
-                                                    @include('hcis.reimbursements.businessTrip.declaration.caPerdiemDeclare')
+                                                <!-- Cash Advance Content -->
+                                                <div class="tab-pane fade show active" id="pills-cashAdvanced"
+                                                    role="tabpanel" aria-labelledby="pills-cashAdvanced-tab">
+                                                    <ul class="nav mb-3" id="pills-tab-inner" role="tablist">
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link active" id="pills-perdiem-tab"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-perdiem"
+                                                                type="button" role="tab"
+                                                                aria-controls="pills-perdiem"
+                                                                aria-selected="true">{{ $allowance }}</button>
+                                                        </li>
+                                                        @if ($group_company != 'KPN Plantations')
+                                                            <li class="nav-item" role="presentation">
+                                                                <button class="nav-link" id="pills-meals-tab"
+                                                                    data-bs-toggle="pill" data-bs-target="#pills-meals"
+                                                                    type="button" role="tab"
+                                                                    aria-controls="pills-meals"
+                                                                    aria-selected="false">Meals</button>
+                                                            </li>
+                                                        @endif
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link" id="pills-transport-tab"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-transport"
+                                                                type="button" role="tab"
+                                                                aria-controls="pills-transport"
+                                                                aria-selected="false">Transport</button>
+                                                        </li>
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link" id="pills-accomodation-tab"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-accomodation"
+                                                                type="button" role="tab"
+                                                                aria-controls="pills-accomodation"
+                                                                aria-selected="false">Accommodation</button>
+                                                        </li>
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link" id="pills-other-tab"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-other"
+                                                                type="button" role="tab" aria-controls="pills-other"
+                                                                aria-selected="false">Other</button>
+                                                        </li>
+                                                    </ul>
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane fade show active" id="pills-perdiem"
+                                                            role="tabpanel" aria-labelledby="pills-perdiem-tab">
+                                                            @include('hcis.reimbursements.businessTrip.declaration.caPerdiemDeclare')
+                                                        </div>
+                                                        <div class="tab-pane fade" id="pills-meals" role="tabpanel"
+                                                            aria-labelledby="pills-meals-tab">
+                                                            @include('hcis.reimbursements.businessTrip.declaration.caMealsDeclare')
+                                                        </div>
+                                                        <div class="tab-pane fade" id="pills-transport" role="tabpanel"
+                                                            aria-labelledby="pills-transport-tab">
+                                                            @include('hcis.reimbursements.businessTrip.declaration.caTransportDeclare')
+                                                        </div>
+                                                        <div class="tab-pane fade" id="pills-accomodation"
+                                                            role="tabpanel" aria-labelledby="pills-accomodation-tab">
+                                                            @include('hcis.reimbursements.businessTrip.declaration.caAccommodationDeclare')
+                                                        </div>
+                                                        <div class="tab-pane fade" id="pills-other" role="tabpanel"
+                                                            aria-labelledby="pills-other-tab">
+                                                            @include('hcis.reimbursements.businessTrip.declaration.caOtherDeclare')
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="tab-pane fade show" id="pills-meals" role="tabpanel"
-                                                    aria-labelledby="pills-meals-tab">
-                                                    {{-- ca meals content --}}
-                                                    @include('hcis.reimbursements.businessTrip.declaration.caMealsDeclare')
-                                                </div>
-                                                <div class="tab-pane fade" id="pills-transport" role="tabpanel"
-                                                    aria-labelledby="pills-transport-tab">
-                                                    {{-- ca transport content --}}
-                                                    @include('hcis.reimbursements.businessTrip.declaration.caTransportDeclare')
-                                                </div>
-                                                <div class="tab-pane fade" id="pills-accomodation" role="tabpanel"
-                                                    aria-labelledby="pills-accomodation-tab">
-                                                    {{-- ca accommodatioon content --}}
-                                                    @include('hcis.reimbursements.businessTrip.declaration.caAccommodationDeclare')</div>
-                                                <div class="tab-pane fade" id="pills-other" role="tabpanel"
-                                                    aria-labelledby="pills-other-tab">
-                                                    {{-- ca others content --}}
-                                                    @include('hcis.reimbursements.businessTrip.declaration.caOtherDeclare')
+
+                                                <!-- CA Entertain Content -->
+                                                <div class="tab-pane fade" id="pills-caEntertain" role="tabpanel"
+                                                    aria-labelledby="pills-caEntertain-tab">
+                                                    <!-- Duplicate content for now -->
+                                                    <ul class="nav mb-3" id="pills-tab-inner" role="tablist">
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link active" id="pills-detail-tab" data-bs-toggle="pill"
+                                                                data-bs-target="#pills-detail" type="button" role="tab" aria-controls="pills-detail"
+                                                                aria-selected="true">Detail Entertain</button>
+                                                        </li>
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link" id="pills-relation-tab" data-bs-toggle="pill"
+                                                                data-bs-target="#pills-relation" type="button" role="tab"
+                                                                aria-controls="pills-relation" aria-selected="false">Relation Entertain</button>
+                                                        </li>
+                                                    </ul>
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane fade show active" id="pills-detail" role="tabpanel"
+                                                            aria-labelledby="pills-detail-tab">
+                                                            {{-- ca detail content --}}
+                                                            @include('hcis.reimbursements.businessTrip.declaration.entDetailDeclare')
+                                                        </div>
+                                                        <div class="tab-pane fade" id="pills-relation" role="tabpanel"
+                                                            aria-labelledby="pills-relation-tab">
+                                                            {{-- ca relation content --}}
+                                                            @include('hcis.reimbursements.businessTrip.declaration.entRelationDeclare')
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -213,11 +279,11 @@
                                                     </div>
                                                     <input class="form-control bg-light" name="totalca_deklarasi"
                                                         id="totalca_declarasi" type="text" min="0"
-                                                        value="{{ number_format($ca->total_ca ?? '0', 0, ',', '.') }}"
+                                                        value="{{ number_format($date->total_ca ?? '0', 0, ',', '.') }}"
                                                         readonly>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6 mb-2">
+                                            <div class="col-md-12 mb-2">
                                                 <label class="form-label">Total Cash Advanced Deklarasi</label>
                                                 <div class="input-group">
                                                     <div class="input-group-append">
@@ -225,7 +291,7 @@
                                                     </div>
                                                     <input class="form-control bg-light" name="totalca" id="totalca"
                                                         type="text" min="0"
-                                                        value="{{ number_format($ca->total_real ?? '0', 0, ',', '.') }}"
+                                                        {{-- value="{{ number_format($ca->total_real ?? '0', 0, ',', '.') }}" --}}
                                                         readonly>
                                                 </div>
                                             </div>
@@ -237,7 +303,6 @@
                                                     </div>
                                                     <input class="form-control bg-light" name="" id=""
                                                         type="text" min="0"
-                                                        value="{{ number_format($ca->total_cost ?? '0', 0, ',', '.') }}"
                                                         readonly>
                                                 </div>
                                             </div>
@@ -279,8 +344,8 @@
                                         @endif
 
                                         {{-- <input type="hidden" name="status" value="Declaration L1" id="status"> --}}
-                                        <input type="hidden" name="no_id" value="{{ $ca->id ?? 0 }}">
-                                        <input type="hidden" name="ca_id" value="{{ $ca->no_ca ?? 0 }}">
+                                        <input type="hidden" name="no_id" value="{{ $date->id ?? 0 }}">
+                                        <input type="hidden" name="ca_id" value="{{ $date->no_ca ?? 0 }}">
                                         <input class="form-control" id="group_company" name="group_company"
                                             type="hidden" value="{{ $employee_data->group_company }}" readonly>
                                         <input class="form-control" id="perdiem" name="perdiem" type="hidden"
@@ -317,8 +382,8 @@
             const perdiemCheckbox = document.getElementById("perdiemCheckbox");
             const caDiv = document.getElementById("ca_bt");
             const caPerdiem = document.getElementById("ca_perdiem");
-        
-            caCheckbox.addEventListener("change", function () {
+
+            caCheckbox.addEventListener("change", function() {
                 if (this.checked) {
                     // Show form when checked
                     caDiv.style.display = "block";
@@ -328,7 +393,7 @@
                     resetFields("ca_bt"); // Pass the container ID to reset the fields
                 }
             });
-            perdiemCheckbox.addEventListener("change", function () {
+            perdiemCheckbox.addEventListener("change", function() {
                 if (this.checked) {
                     // Show form when checked
                     caPerdiem.style.display = "block";
@@ -339,7 +404,7 @@
                 }
             });
         }
-        
+
         function resetFieldsPerdiem() {
             // Per Diem-related fields
             const companyBtPerdiemFields = document.getElementsByName(
@@ -361,7 +426,7 @@
                 "total_days_bt_perdiem[]"
             );
             const totalBtPerdiem = document.getElementsByName("total_bt_perdiem");
-        
+
             // Reset values to empty or default
             companyBtPerdiemFields.forEach((field) => {
                 field.selectedIndex = 0; // Set to first option (assuming it's the "Select Company..." option)
@@ -375,10 +440,10 @@
             endBtPerdiemFields.forEach((field) => (field.value = ""));
             totalDaysBtPerdiemFields.forEach((field) => (field.value = 0));
             totalBtPerdiem.forEach((field) => (field.value = 0));
-        
+
             calculateTotalNominalBTTotal();
         }
-        
+
         function resetFields() {
             // Transport-related fields
             const transportDateFields = document.getElementsByName(
@@ -392,7 +457,7 @@
                 "keterangan_bt_transport[]"
             );
             const totalBtTrans = document.getElementsByName("total_bt_transport");
-        
+
             // Accommodation-related fields
             const startDateFields = document.getElementsByName("start_bt_penginapan[]");
             const endDateFields = document.getElementsByName("end_bt_penginapan[]");
@@ -409,7 +474,7 @@
                 "nominal_bt_penginapan[]"
             );
             const totalPenginapan = document.getElementsByName("total_bt_penginapan");
-        
+
             // Others-related fields
             const tanggalBtLainnya = document.getElementsByName("tanggal_bt_lainnya[]");
             const nominalBtLainnya = document.getElementsByName("nominal_bt_lainnya[]");
@@ -417,32 +482,32 @@
                 "keterangan_bt_lainnya[]"
             );
             const totalBtLainnya = document.getElementsByName("total_bt_lainnya");
-        
+
             // Reset transport date fields
             transportDateFields.forEach((field) => {
                 field.value = ""; // Reset to empty
             });
-        
+
             // Reset company code fields (set to default "Select Company...")
             companyCodeFields.forEach((field) => {
                 field.selectedIndex = 0; // Set to first option (assuming it's the "Select Company..." option)
             });
-        
+
             // Reset nominal fields
             nominalFields.forEach((field) => {
                 field.value = ""; // Reset to empty
             });
-        
+
             // Reset information fields
             informationFields.forEach((field) => {
                 field.value = ""; // Reset to empty
             });
-        
+
             // Reset total fields for transport
             totalBtTrans.forEach((field) => {
                 field.value = 0; // Reset to 0
             });
-        
+
             // Reset accommodation-related fields
             startDateFields.forEach((field) => (field.value = ""));
             endDateFields.forEach((field) => (field.value = ""));
@@ -451,7 +516,7 @@
             companyPenginapanFields.forEach((field) => (field.selectedIndex = 0)); // Set to "Select Company..."
             nominalPenginapanFields.forEach((field) => (field.value = 0)); // Reset amount
             totalPenginapan.forEach((field) => (field.value = 0)); // Reset amount
-        
+
             // Reset others-related fields
             tanggalBtLainnya.forEach((field) => {
                 field.value = ""; // Reset to empty
@@ -465,31 +530,31 @@
             totalBtLainnya.forEach((field) => {
                 field.value = 0; // Reset to 0
             });
-        
+
             // Recalculate the total CA after reset
             calculateTotalNominalBTTotal();
         }
-        
+
         function cleanNumber(value) {
             return parseFloat(value.replace(/\./g, "").replace(/,/g, "")) || 0;
         }
-        
+
         function formatNumber(num) {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         }
-        
+
         function formatNumberPerdiem(num) {
             return num.toLocaleString("id-ID");
         }
-        
+
         function parseNumberPerdiem(value) {
             return parseFloat(value.replace(/\./g, "").replace(/,/g, "")) || 0;
         }
-        
+
         function parseNumber(value) {
             return parseFloat(value.replace(/\./g, "")) || 0;
         }
-        
+
         function formatInput(input) {
             let value = input.value.replace(/\./g, "");
             value = parseFloat(value);
@@ -505,7 +570,7 @@
             calculateTotalNominalBTLainnya();
             calculateTotalNominalBTTotal();
         }
-        
+
         function calculateTotalNominalBTTotal() {
             let total = 0;
             document
@@ -535,7 +600,7 @@
                 });
             document.querySelector('input[name="totalca"]').value = formatNumber(total);
         }
-        
+
         function toggleDivs() {
             // ca_type ca_nbt ca_e
             var ca_type = document.getElementById("ca_type");
@@ -545,7 +610,7 @@
             var div_bisnis_numb_ent = document.getElementById("div_bisnis_numb_ent");
             var bisnis_numb = document.getElementById("bisnis_numb");
             var div_allowance = document.getElementById("div_allowance");
-        
+
             if (ca_type.value === "dns") {
                 ca_bt.style.display = "block";
                 ca_nbt.style.display = "none";
@@ -576,12 +641,12 @@
                 bisnis_numb.style.value = "";
             }
         }
-        
+
         function toggleOthers() {
             // ca_type ca_nbt ca_e
             var locationFilter = document.getElementById("locationFilter");
             var others_location = document.getElementById("others_location");
-        
+
             if (locationFilter.value === "Others") {
                 others_location.style.display = "block";
             } else {
@@ -589,13 +654,13 @@
                 others_location.value = "";
             }
         }
-        
+
         function validateInput(input) {
             //input.value = input.value.replace(/[^0-9,]/g, '');
             input.value = input.value.replace(/[^0-9]/g, "");
         }
-        
-        document.addEventListener("DOMContentLoaded", function () {
+
+        document.addEventListener("DOMContentLoaded", function() {
             const startDateInput = document.getElementById("start_date");
             const endDateInput = document.getElementById("end_date");
             const totalDaysInput = document.getElementById("totaldays");
@@ -612,15 +677,15 @@
             const nominal_4Input = document.getElementById("nominal_4");
             const nominal_5Input = document.getElementById("nominal_5");
             const caTypeInput = document.getElementById("ca_type");
-        
+
             function formatNumber(num) {
                 return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
             }
-        
+
             function parseNumber(value) {
                 return parseFloat(value.replace(/\./g, "")) || 0;
             }
-        
+
             function formatInput(input) {
                 let value = input.value.replace(/\./g, "");
                 value = parseFloat(value);
@@ -630,25 +695,25 @@
                 } else {
                     input.value = formatNumber(0);
                 }
-        
+
                 calculateTotalCA();
             }
-        
+
             function calculateTotalDays() {
                 const startDate = new Date(startDateInput.value);
                 const endDate = new Date(endDateInput.value);
                 const groupCompany = document.getElementById("group_company");
                 // console.log("proses calculate");
-        
+
                 if (startDate && endDate && !isNaN(startDate) && !isNaN(endDate)) {
                     const timeDiff = endDate - startDate;
                     const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
                     const totalDays = daysDiff > 0 ? daysDiff + 1 : 0 + 1;
                     totalDaysInput.value = totalDays;
-        
+
                     const perdiem = parseFloat(perdiemInput.value) || 0;
                     let allowance = totalDays * perdiem;
-        
+
                     if (groupCompany.value !== "Plantations") {
                         allowance *= 1;
                     } else if (othersLocationInput.value.trim() !== "") {
@@ -656,7 +721,7 @@
                     } else {
                         allowance *= 0.5;
                     }
-        
+
                     allowanceInput.value = formatNumber(Math.floor(allowance));
                 } else {
                     totalDaysInput.value = 0;
@@ -664,7 +729,7 @@
                 }
                 calculateTotalCA();
             }
-        
+
             function calculateTotalCA() {
                 const allowance = parseNumber(allowanceInput.value);
                 const transport = parseNumber(transportInput.value);
@@ -675,10 +740,10 @@
                 const nominal_3 = parseNumber(nominal_3Input.value);
                 const nominal_4 = parseNumber(nominal_4Input.value);
                 const nominal_5 = parseNumber(nominal_5Input.value);
-        
+
                 // Perbaiki penulisan caTypeInput.value
                 const ca_type = caTypeInput.value;
-        
+
                 let totalca = 0;
                 if (ca_type === "dns") {
                     totalca = allowance + transport + accommodation + other;
@@ -689,11 +754,11 @@
                     totalca = nominal_1 + nominal_2 + nominal_3 + nominal_4 + nominal_5;
                     allowanceInput.value = 0;
                 }
-        
+
                 // totalcaInput.value = formatNumber(totalca.toFixed(2));
                 totalcaInput.value = formatNumber(Math.floor(totalca));
             }
-        
+
             startDateInput.addEventListener("change", calculateTotalDays);
             endDateInput.addEventListener("change", calculateTotalDays);
             othersLocationInput.addEventListener("input", calculateTotalDays);
@@ -712,32 +777,32 @@
                 input.addEventListener("input", () => formatInput(input));
             });
         });
-        
-        document.getElementById("end_date").addEventListener("change", function () {
+
+        document.getElementById("end_date").addEventListener("change", function() {
             const endDate = new Date(this.value);
             const declarationEstimateDate = new Date(endDate);
             declarationEstimateDate.setDate(declarationEstimateDate.getDate() + 3);
-        
+
             const year = declarationEstimateDate.getFullYear();
             const month = String(declarationEstimateDate.getMonth() + 1).padStart(
                 2,
                 "0"
             );
             const day = String(declarationEstimateDate.getDate()).padStart(2, "0");
-        
+
             document.getElementById("ca_decla").value = `${year}-${month}-${day}`;
         });
     </script>
     <script>
         var formCountMeals = 0;
 
-        window.addEventListener("DOMContentLoaded", function () {
+        window.addEventListener("DOMContentLoaded", function() {
             formCountMeals = document.querySelectorAll(
                 "#form-container-meals > div"
             ).length;
         });
 
-        $(".btn-warning").click(function (event) {
+        $(".btn-warning").click(function(event) {
             event.preventDefault();
             var index = $(this).closest(".card-body").index() + 1;
             removeFormMeals(index, event);
@@ -810,7 +875,6 @@
         function onNominalChange() {
             calculateTotalNominalBTMeals();
         }
-
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {

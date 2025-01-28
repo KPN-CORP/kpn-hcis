@@ -39,9 +39,9 @@
     }
 </script>
 
-@if (!empty($detailCA['detail_meals']) && $detailCA['detail_meals'][0]['start_date'] !== null)
+@if (!empty($caDetail['detail_meals']) && $caDetail['detail_meals'][0]['start_date'] !== null)
     <div id="form-container-meals">
-        @foreach ($detailCA['detail_meals'] as $meals)
+        @foreach ($caDetail['detail_meals'] as $meals)
             <div id="form-container-bt-meals-{{ $loop->index + 1 }}" class="card-body p-2 mb-3"
                 style="background-color: #f8f8f8">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Meals {{ $loop->index + 1 }}</p>
@@ -121,7 +121,7 @@
                 <span class="input-group-text">Rp</span>
             </div>
             <input class="form-control bg-light" name="total_bt_meals" id="total_bt_meals" type="text" min="0"
-                value="{{ number_format(array_sum(array_column($detailCA['detail_meals'], 'nominal')), 0, ',', '.') }}"
+                value="{{ number_format(array_sum(array_column($caDetail['detail_meals'], 'nominal')), 0, ',', '.') }}"
                 readonly>
         </div>
     </div>

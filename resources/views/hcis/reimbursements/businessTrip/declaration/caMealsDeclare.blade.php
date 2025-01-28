@@ -313,9 +313,9 @@
     }
 </script>
 
-@if (!empty($detailCA['detail_meals']) && $detailCA['detail_meals'][0]['start_date'] !== null)
+@if (!empty($caDetail['detail_meals']) && $caDetail['detail_meals'][0]['start_date'] !== null)
     <div id="form-container-meals">
-        @foreach ($detailCA['detail_meals'] as $index => $meals)
+        @foreach ($caDetail['detail_meals'] as $index => $meals)
             <div id="form-container-bt-meals-{{ $loop->index + 1 }}" class="p-2 mb-3 rounded-3"
                 style="background-color: #f8f8f8">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Meals {{ $loop->index + 1 }}</p>
@@ -381,9 +381,9 @@
                 </div>
                 <div id="form-container-bt-meals-dec-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3">
                     <p class="fs-5 text-primary" style="font-weight: bold; ">Meals Declaration</p>
-                    @if (isset($declareCA['detail_meals'][$index]))
+                    @if (isset($declareCa['detail_meals'][$index]))
                         @php
-                            $meals_dec = $declareCA['detail_meals'][$index];
+                            $meals_dec = $declareCa['detail_meals'][$index];
                         @endphp
                         <div class="row">
                             <!-- meals Date -->
@@ -425,8 +425,8 @@
                 </div>
             </div>
         @endforeach
-        @foreach ($declareCA['detail_meals'] as $index => $meals_dec)
-            @if (!isset($detailCA['detail_meals'][$index]))
+        @foreach ($declareCa['detail_meals'] as $index => $meals_dec)
+            @if (!isset($caDetail['detail_meals'][$index]))
                 <div id="form-container-bt-meals-{{ $loop->index + 1 }}" class="p-2 mb-3 rounded-3"
                     style="background-color: #f8f8f8">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Meals {{ $loop->index + 1 }}</p>
@@ -488,14 +488,14 @@
             </div>
             <input class="form-control bg-light" name="total_bt_meals" id="total_bt_meals" type="text"
                 min="0"
-                value="{{ number_format(array_sum(array_column($declareCA['detail_meals'], 'nominal')), 0, ',', '.') }}"
+                value="{{ number_format(array_sum(array_column($declareCa['detail_meals'], 'nominal')), 0, ',', '.') }}"
                 readonly>
         </div>
     </div>
-@elseif (!empty($declareCA['detail_meals']) && $declareCA['detail_meals'][0]['nominal'] !== null)
+@elseif (!empty($declareCa['detail_meals']) && $declareCa['detail_meals'][0]['nominal'] !== null)
     <div id="form-container-meals">
-        @foreach ($declareCA['detail_meals'] as $index => $meals_dec)
-            @if (!isset($detailCA['detail_meals'][$index]))
+        @foreach ($declareCa['detail_meals'] as $index => $meals_dec)
+            @if (!isset($caDetail['detail_meals'][$index]))
                 <div id="form-container-bt-meals-{{ $loop->index + 1 }}" class="card-body p-2 mb-3"
                     style="background-color: #f8f8f8">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Meals {{ $loop->index + 1 }}</p>
@@ -557,7 +557,7 @@
             </div>
             <input class="form-control bg-light" name="total_bt_meals" id="total_bt_meals" type="text"
                 min="0"
-                value="{{ number_format(array_sum(array_column($declareCA['detail_meals'], 'nominal')), 0, ',', '.') }}"
+                value="{{ number_format(array_sum(array_column($declareCa['detail_meals'], 'nominal')), 0, ',', '.') }}"
                 readonly>
         </div>
     </div>

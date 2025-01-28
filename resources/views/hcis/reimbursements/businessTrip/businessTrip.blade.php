@@ -211,7 +211,7 @@
                                                             return [
                                                                 'No. CA' => $transaction->no_ca,
                                                                 'No. SPPD' => $transaction->no_sppd,
-                                                                'Jenis' => $transaction->type_ca,
+                                                                'Jenis' => $transaction->type_ca === 'dns' ? 'Business Trip' : 'Entertain', // Conditional assignment  
                                                                 'Unit' => $transaction->unit,
                                                                 'Destination' => $transaction->destination,
                                                                 'CA Total' => 'Rp ' . number_format($transaction->total_ca, 0, ',', '.'),

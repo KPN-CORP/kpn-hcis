@@ -30,19 +30,23 @@
                     <td>{{ \Carbon\Carbon::parse($n->kembali)->format('d-M-Y') }}</td>
                     <td style="text-align: center; align-content: center">
                         @if ($n->ca == 'Ya' && isset($caTransactions[$n->no_sppd]))
-                            <a class="text-info btn-detail" data-toggle="modal" data-target="#detailModal"
-                                style="cursor: pointer"
-                                data-ca="{{ json_encode([
-                                    'No. CA' => $caTransactions[$n->no_sppd]->no_ca,
-                                    'No. SPPD' => $caTransactions[$n->no_sppd]->no_sppd,
-                                    'Unit' => $caTransactions[$n->no_sppd]->unit,
-                                    'Destination' => $bt_declaration->where('no_sppd', $n->no_sppd)->first()->tujuan,
-                                    'CA Total' => 'Rp ' . number_format($caTransactions[$n->no_sppd]->total_ca, 0, ',', '.'),
-                                    'Total Real' => 'Rp ' . number_format($caTransactions[$n->no_sppd]->total_real, 0, ',', '.'),
-                                    'Total Cost' => 'Rp ' . number_format($caTransactions[$n->no_sppd]->total_cost, 0, ',', '.'),
-                                    'Start' => date('d-M-Y', strtotime($caTransactions[$n->no_sppd]->start_date)),
-                                    'End' => date('d-M-Y', strtotime($caTransactions[$n->no_sppd]->end_date)),
-                                ]) }}"><u>Details</u></a>
+                            <a class="text-info btn-detail" data-toggle="modal"
+                                data-target="#detailModal" style="cursor: pointer"
+                                data-ca="{{ json_encode($caTransactions->get($n->no_sppd, collect())->map(function ($transaction) {
+                                    return [
+                                        'No. CA' => $transaction->no_ca,
+                                        'No. SPPD' => $transaction->no_sppd,
+                                        'Jenis' => $transaction->type_ca === 'dns' ? 'Business Trip' : 'Entertain', // Conditional assignment  
+                                        'Unit' => $transaction->unit,
+                                        'Destination' => $transaction->destination,
+                                        'CA Total' => 'Rp ' . number_format($transaction->total_ca, 0, ',', '.'),
+                                        'Total Real' => 'Rp ' . number_format($transaction->total_real, 0, ',', '.'),
+                                        'Total Cost' => 'Rp ' . number_format($transaction->total_cost, 0, ',', '.'),
+                                        'Start' => date('d-M-Y', strtotime($transaction->start_date)),
+                                        'End' => date('d-M-Y', strtotime($transaction->end_date)),
+                                    ];
+                                })->values()) }}"                                                        
+                                ><u>Details</u></a>
                         @else
                             -
                         @endif

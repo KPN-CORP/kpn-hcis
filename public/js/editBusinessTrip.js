@@ -1201,10 +1201,6 @@ function handleCaForms() {
     const divBtEnt = document.getElementById("total_bt_ent"); // Elemen baru
     const divBtEnt2 = document.getElementById("total_bt_ent_2"); // Elemen baru
     const totalreq = document.getElementById("totalreq"); // Elemen baru
-    const totalreq2 = document.getElementById("totalreq2"); // Elemen baru
-    // const caPerdiem = document.getElementById("ca_perdiem");
-    console.log(caCheckbox.checked && caEntertainCheckbox.checked);
-    checkTotalBtEntVisibility();
 
     caCheckbox.addEventListener("change", function () {
         if (this.checked) {
@@ -1214,8 +1210,8 @@ function handleCaForms() {
             // Hide form and reset all fields when unchecked
             caDiv.style.display = "none";
             resetFields("ca_bt"); // Pass the container ID to reset the fields
-            checkTotalBtEntVisibility();
         }
+        checkTotalBtEntVisibility(); // Cek status setiap kali checkbox ini berubah
     });
     caEntertainCheckbox.addEventListener("change", function () {
         if (this.checked) {
@@ -1225,22 +1221,18 @@ function handleCaForms() {
             // Hide form and reset all fields when unchecked
             caEntr.style.display = "none";
             resetFieldsEntertain("ca_entr"); // change this later
-            checkTotalBtEntVisibility();
         }
+        checkTotalBtEntVisibility(); // Cek status setiap kali checkbox ini berubah
     });
-
     function checkTotalBtEntVisibility() {
-        console.log(caEntertainCheckbox.checked); // Debug log
         if (caCheckbox.checked && caEntertainCheckbox.checked) {
-            divBtEnt.style.display = "block";
-            divBtEnt2.style.display = "block";
-            totalreq.style.display = "block";
-            totalreq2.style.display = "block";
+            divBtEnt.style.display = "block"; // Tampilkan jika kedua checkbox dicentang
+            divBtEnt2.style.display = "block"; // Tampilkan jika kedua checkbox dicentang
+            totalreq.style.display = "block"; // Tampilkan totalreq jika kedua checkbox dicentang
         } else {
-            divBtEnt.style.display = "none";
-            divBtEnt2.style.display = "none";
-            totalreq.style.display = "none";
-            totalreq2.style.display = "none";
+            divBtEnt.style.display = "none"; // Sembunyikan jika salah satu tidak dicentang
+            divBtEnt2.style.display = "none"; // Sembunyikan jika salah satu tidak dicentang
+            totalreq.style.display = "none"; // Sembunyikan totalreq jika salah satu tidak dicentang
         }
     }
     // perdiemCheckbox.addEventListener("change", function () {
