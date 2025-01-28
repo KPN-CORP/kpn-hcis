@@ -349,6 +349,107 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+function calculateTotalDaysDalamKota(index) {
+    const checkInInput = document.getElementById(
+        `check-in-dalam-kota-${index}`
+    );
+    const checkOutInput = document.getElementById(
+        `check-out-dalam-kota-${index}`
+    );
+    const totalDaysInput = document.getElementById(
+        `total-days-dalam-kota-${index}`
+    );
+
+    // Get Start Date and End Date from the main form
+    const mulaiInput = document.getElementById("mulai");
+    const kembaliInput = document.getElementById("kembali");
+
+    if (!checkInInput || !checkOutInput || !mulaiInput || !kembaliInput) {
+        return; // Ensure elements exist before proceeding
+    }
+
+    // Parse the dates
+    const checkInDate = new Date(checkInInput.value);
+    checkInDate.setHours(0, 0, 0, 0);
+    const checkOutDate = new Date(checkOutInput.value);
+    checkOutDate.setHours(0, 0, 0, 0);
+    const mulaiDate = new Date(mulaiInput.value);
+    mulaiDate.setHours(0, 0, 0, 0);
+    const kembaliDate = new Date(kembaliInput.value);
+    kembaliDate.setHours(0, 0, 0, 0);
+
+    // Validate Check-In Date
+    if (checkInDate < mulaiDate) {
+        Swal.fire({
+            title: "Warning!",
+            text: "Check-In date cannot be earlier than Start date.",
+            icon: "error",
+            confirmButtonColor: "#AB2F2B",
+            confirmButtonText: "OK",
+        });
+        checkInInput.value = ""; // Reset Check-In field
+        totalDaysInput.value = ""; // Clear total days
+        return;
+    }
+    if (checkInDate > kembaliDate) {
+        Swal.fire({
+            title: "Warning!",
+            text: "Check-In date cannot be after End date.",
+            icon: "error",
+            confirmButtonColor: "#AB2F2B",
+            confirmButtonText: "OK",
+        });
+        checkInInput.value = ""; // Reset Check-In field
+        totalDaysInput.value = ""; // Clear total days
+        return;
+    }
+
+    // Ensure Check-Out Date is not earlier than Check-In Date
+    if (checkOutDate < checkInDate) {
+        Swal.fire({
+            title: "Warning!",
+            text: "Check-Out date cannot be earlier than Check-In date.",
+            icon: "error",
+            confirmButtonColor: "#AB2F2B",
+            confirmButtonText: "OK",
+        });
+        checkOutInput.value = ""; // Reset Check-Out field
+        totalDaysInput.value = ""; // Clear total days
+        return;
+    }
+
+    // Calculate total days if all validations pass
+    if (checkInDate && checkOutDate) {
+        // Check if it's the same day
+        if (checkInDate.getTime() === checkOutDate.getTime()) {
+            totalDaysInput.value = 1;
+        } else {
+            // Calculate difference in days including both start and end dates
+            const diffTime = checkOutDate - checkInDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            totalDaysInput.value = diffDays;
+        }
+    } else {
+        totalDaysInput.value = "";
+    }
+}
+
+// Attach event listeners to the Dalam Kota hotel forms
+document.addEventListener("DOMContentLoaded", () => {
+    document
+        .querySelectorAll(".hotel-form-dalam-kota")
+        .forEach((form, index) => {
+            const i = index + 1; // Adjust for 1-based index
+
+            form.querySelector(
+                'input[name="tgl_masuk_htl_dalam_kota[]"]'
+            ).addEventListener("change", () => calculateTotalDaysDalamKota(i));
+            form.querySelector(
+                'input[name="tgl_keluar_htl_dalam_kota[]"]'
+            ).addEventListener("change", () => calculateTotalDaysDalamKota(i));
+        });
+});
+
 //RESET CHECKBOX FIELDS
 document.addEventListener("DOMContentLoaded", function () {
     const jnsDinasSelect = document.getElementById("jns_dinas");

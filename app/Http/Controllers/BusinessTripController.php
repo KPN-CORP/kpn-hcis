@@ -2378,17 +2378,29 @@ class BusinessTripController extends Controller
         }
 
         if ($htlDalam === 'Ya') {
-            $hotelData = [
-                'no_htl' => $noSppdHtl,
-                'nama_htl' => $request->nama_htl,
-                'lokasi_htl' => $request->lokasi_htl,
-                'jmlkmr_htl' => $request->jmlkmr_htl,
-                'bed_htl' => $request->bed_htl,
-                'tgl_masuk_htl' => $request->tgl_masuk_htl,
-                'tgl_keluar_htl' => $request->tgl_keluar_htl,
-                'total_hari' => $request->total_hari,
-                'approval_status' => $statusValue,
-            ];
+            if ($request->jns_dinas === 'dalam kota') {
+                $hotelData = [
+                    'nama_htl' => $request->nama_htl_dalam_kota,
+                    'lokasi_htl' => $request->lokasi_htl_dalam_kota,
+                    'jmlkmr_htl' => $request->jmlkmr_htl_dalam_kota,
+                    'bed_htl' => $request->bed_htl_dalam_kota,
+                    'tgl_masuk_htl' => $request->tgl_masuk_htl_dalam_kota,
+                    'tgl_keluar_htl' => $request->tgl_keluar_htl_dalam_kota,
+                    'total_hari' => $request->total_hari_dalam_kota,
+                    'approval_status' => $statusValue,
+                ];
+            } else {
+                $hotelData = [
+                    'nama_htl' => $request->nama_htl,
+                    'lokasi_htl' => $request->lokasi_htl,
+                    'jmlkmr_htl' => $request->jmlkmr_htl,
+                    'bed_htl' => $request->bed_htl,
+                    'tgl_masuk_htl' => $request->tgl_masuk_htl,
+                    'tgl_keluar_htl' => $request->tgl_keluar_htl,
+                    'total_hari' => $request->total_hari,
+                    'approval_status' => $statusValue,
+                ];
+            }
 
             foreach ($hotelData['nama_htl'] as $key => $value) {
                 if (!empty($value)) {
@@ -2412,25 +2424,38 @@ class BusinessTripController extends Controller
             }
         }
 
+
         if ($tktDalam === 'Ya') {
-            $ticketData = [
-                'noktp_tkt' => $request->noktp_tkt,
-                'dari_tkt' => $request->dari_tkt,
-                'ke_tkt' => $request->ke_tkt,
-                'tgl_brkt_tkt' => $request->tgl_brkt_tkt,
-                'tgl_plg_tkt' => $request->tgl_plg_tkt,
-                'jam_brkt_tkt' => $request->jam_brkt_tkt,
-                'jam_plg_tkt' => $request->jam_plg_tkt,
-                'jenis_tkt' => $request->jenis_tkt,
-                'type_tkt' => $request->type_tkt,
-                'ket_tkt' => $request->ket_tkt,
-                'approval_status' => $statusValue,
-                'jns_dinas_tkt' => "Dinas",
-            ];
-
-            // dd($ticketData);
-
-            // $jml_ktp = count($request->noktp_tkt);
+            if ($request->jns_dinas === 'dalam kota') {
+                $ticketData = [
+                    'noktp_tkt' => $request->noktp_tkt_dalam_kota,
+                    'dari_tkt' => $request->dari_tkt_dalam_kota,
+                    'ke_tkt' => $request->ke_tkt_dalam_kota,
+                    'tgl_brkt_tkt' => $request->tgl_brkt_tkt_dalam_kota,
+                    'tgl_plg_tkt' => $request->tgl_plg_tkt_dalam_kota,
+                    'jam_brkt_tkt' => $request->jam_brkt_tkt_dalam_kota,
+                    'jam_plg_tkt' => $request->jam_plg_tkt_dalam_kota,
+                    'jenis_tkt' => $request->jenis_tkt_dalam_kota,
+                    'type_tkt' => $request->type_tkt_dalam_kota,
+                    'ket_tkt' => $request->ket_tkt_dalam_kota,
+                    'approval_status' => $statusValue,
+                ];
+            } else {
+                $ticketData = [
+                    'noktp_tkt' => $request->noktp_tkt,
+                    'dari_tkt' => $request->dari_tkt,
+                    'ke_tkt' => $request->ke_tkt,
+                    'tgl_brkt_tkt' => $request->tgl_brkt_tkt,
+                    'tgl_plg_tkt' => $request->tgl_plg_tkt,
+                    'jam_brkt_tkt' => $request->jam_brkt_tkt,
+                    'jam_plg_tkt' => $request->jam_plg_tkt,
+                    'jenis_tkt' => $request->jenis_tkt,
+                    'type_tkt' => $request->type_tkt,
+                    'ket_tkt' => $request->ket_tkt,
+                    'approval_status' => $statusValue,
+                    'jns_dinas_tkt' => "Dinas",
+                ];
+            }
 
             foreach ($ticketData['noktp_tkt'] as $key => $value) {
                 if (!empty($value)) {
@@ -2464,6 +2489,7 @@ class BusinessTripController extends Controller
                 }
             }
         }
+
 
         // dd($request->all());
         if ($request->ca === 'Ya') {
