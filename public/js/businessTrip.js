@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     setupCheckboxListeners();
     // handleTicketForms();
     // handleHotelForms();
+    DalamKotaInit();
     handleTaksiForms();
     handleCaForms();
 });
@@ -904,6 +905,419 @@ document.addEventListener("DOMContentLoaded", function () {
     //     updateAllFormsRequiredState(false);
     // }
 });
+
+function DalamKotaInit() {
+    let formTicketCountDalamKota = 1;
+    const maxTicketFormsDalamKota = 5;
+    const ticketFormsContainerDalamKota = document.getElementById(
+        "ticket_forms_container_dalam_kota"
+    );
+    const ticketCheckboxDalamKota = document.getElementById(
+        "ticketCheckboxDalamKota"
+    );
+    const addTicketButtonDalamKota = document.getElementById(
+        "add-ticket-btn-dalam-kota"
+    );
+    console.log("Dalam Kota initialized");
+    function toggleRequiredAttributesDalamKota(form, isRequired) {
+        const fields = [
+            'select[name="noktp_tkt_dalam_kota[]"]',
+            'input[name="dari_tkt_dalam_kota[]"]',
+            'input[name="ke_tkt_dalam_kota[]"]',
+            'input[name="tgl_brkt_tkt_dalam_kota[]"]',
+            'input[name="jam_brkt_tkt_dalam_kota[]"]',
+            'select[name="jenis_tkt_dalam_kota[]"]',
+            'select[name="type_tkt_dalam_kota[]"]',
+        ];
+
+        fields.forEach((selector) => {
+            const field = form.querySelector(selector);
+            if (field) {
+                if (isRequired) {
+                    field.setAttribute("required", "");
+                } else {
+                    field.removeAttribute("required");
+                }
+            }
+        });
+
+        const typeSelect = form.querySelector(
+            'select[name="type_tkt_dalam_kota[]"]'
+        );
+        const returnDateField = form.querySelector(
+            'input[name="tgl_plg_tkt_dalam_kota[]"]'
+        );
+        const returnTimeField = form.querySelector(
+            'input[name="jam_plg_tkt_dalam_kota[]"]'
+        );
+
+        function updateReturnFieldsDalamKota() {
+            if (isRequired && typeSelect && typeSelect.value === "Round Trip") {
+                returnDateField.setAttribute("required", "");
+                returnTimeField.setAttribute("required", "");
+            } else {
+                if (returnDateField)
+                    returnDateField.removeAttribute("required");
+                if (returnTimeField)
+                    returnTimeField.removeAttribute("required");
+            }
+        }
+
+        if (typeSelect) {
+            typeSelect.addEventListener("change", updateReturnFieldsDalamKota);
+            updateReturnFieldsDalamKota();
+        }
+    }
+
+    function updateAllFormsRequiredStateDalamKota(isRequired) {
+        document
+            .querySelectorAll('[id^="ticket-form-dalam-kota-"]')
+            .forEach((form) => {
+                toggleRequiredAttributesDalamKota(form, isRequired);
+            });
+    }
+
+    function ensureAllFormsHaveRequiredStateDalamKota() {
+        const isRequired = ticketCheckboxDalamKota.checked;
+        document
+            .querySelectorAll('[id^="ticket-form-dalam-kota-"]')
+            .forEach((form) => {
+                toggleRequiredAttributesDalamKota(form, isRequired);
+            });
+    }
+
+    if (ticketCheckboxDalamKota) {
+        ticketCheckboxDalamKota.addEventListener("change", function () {
+            ticketFormsContainerDalamKota.style.display = this.checked
+                ? "block"
+                : "none";
+
+            if (this.checked) {
+                ensureAllFormsHaveRequiredStateDalamKota();
+            } else {
+                updateAllFormsRequiredStateDalamKota(false);
+                resetAllTicketFormsDalamKota();
+            }
+        });
+    }
+
+    function updateFormNumbersDalamKota() {
+        const forms = ticketFormsContainerDalamKota.querySelectorAll(
+            '[id^="ticket-form-dalam-kota-"]'
+        );
+        forms.forEach((form, index) => {
+            const formNumber = index + 1;
+            form.querySelector(
+                ".h5.text-uppercase b"
+            ).textContent = `TICKET ${formNumber}`;
+            form.id = `ticket-form-dalam-kota-${formNumber}`;
+            form.querySelector(".remove-ticket-btn-dalam-kota").dataset.formId =
+                formNumber;
+
+            updateFormElementIdsDalamKota(form, formNumber);
+        });
+        formTicketCountDalamKota = forms.length;
+        updateRemoveButtonsDalamKota();
+        updateAddButtonVisibilityDalamKota();
+    }
+
+    function updateAddButtonVisibilityDalamKota() {
+        addTicketButtonDalamKota.style.display =
+            formTicketCountDalamKota < maxTicketFormsDalamKota
+                ? "inline-block"
+                : "none";
+    }
+
+    function updateFormElementIdsDalamKota(form, formNumber) {
+        const elements = form.querySelectorAll("[id],[name],[onchange]");
+        elements.forEach((element) => {
+            if (element.id) {
+                element.id = element.id.replace(/\d+$/, formNumber);
+            }
+            if (element.name) {
+                element.name = element.name.replace(
+                    /\[\d*\]/,
+                    `[${formNumber}]`
+                );
+            }
+            if (element.hasAttribute("onchange")) {
+                const onchangeValue = element.getAttribute("onchange");
+                const updatedOnchangeValue = onchangeValue.replace(
+                    /\d+/,
+                    formNumber
+                );
+                element.setAttribute("onchange", updatedOnchangeValue);
+            }
+        });
+    }
+
+    function updateRemoveButtonsDalamKota() {
+        const removeButtons = document.querySelectorAll(
+            ".remove-ticket-btn-dalam-kota"
+        );
+        removeButtons.forEach((button) => {
+            button.style.display =
+                formTicketCountDalamKota > 1 ? "inline-block" : "none";
+        });
+    }
+
+    function resetTicketFieldsDalamKota(container) {
+        const inputs = container.querySelectorAll(
+            'input[type="text"], input[type="number"], input[type="date"], input[type="time"], textarea'
+        );
+        inputs.forEach((input) => {
+            input.value = "";
+            input.removeAttribute("required");
+        });
+
+        const selects = container.querySelectorAll("select");
+        selects.forEach((select) => {
+            if ($(select).data("select2")) {
+                $(select).val(null).trigger("change");
+            } else {
+                select.value = select.querySelector("option[selected]")
+                    ? select.querySelector("option[selected]").value
+                    : select.querySelector("option").value;
+            }
+            select.removeAttribute("required");
+        });
+        const roundTripOptions = container.querySelector(".round-trip-options");
+        if (roundTripOptions) {
+            roundTripOptions.style.display = "none";
+        }
+    }
+
+    function resetAllTicketFormsDalamKota() {
+        const forms = ticketFormsContainerDalamKota.querySelectorAll(
+            '[id^="ticket-form-dalam-kota-"]'
+        );
+        forms.forEach((form, index) => {
+            resetTicketFieldsDalamKota(form);
+            toggleRequiredAttributesDalamKota(form, false);
+            if (index === 0) {
+                form.style.display = "block";
+            } else {
+                form.remove();
+            }
+        });
+        formTicketCountDalamKota = 1;
+        updateFormNumbersDalamKota();
+    }
+
+    function addNewTicketFormDalamKota() {
+        if (formTicketCountDalamKota < maxTicketFormsDalamKota) {
+            formTicketCountDalamKota++;
+            const newTicketForm = createNewTicketFormDalamKota(
+                formTicketCountDalamKota
+            );
+            ticketFormsContainerDalamKota.insertAdjacentHTML(
+                "beforeend",
+                newTicketForm
+            );
+            const addedForm = ticketFormsContainerDalamKota.lastElementChild;
+            toggleRequiredAttributesDalamKota(
+                addedForm,
+                ticketCheckboxDalamKota.checked
+            );
+            updateFormNumbersDalamKota();
+            initializeAllSelect2DalamKota();
+        } else {
+            Swal.fire({
+                title: "Warning!",
+                text: "You have reached the maximum number of tickets (5).",
+                icon: "error",
+                confirmButtonColor: "#AB2F2B",
+                confirmButtonText: "OK",
+            });
+        }
+    }
+
+    document
+        .getElementById("add-ticket-btn-dalam-kota")
+        .addEventListener("click", addNewTicketFormDalamKota);
+
+    ticketFormsContainerDalamKota.addEventListener("click", function (e) {
+        if (e.target.classList.contains("remove-ticket-btn-dalam-kota")) {
+            const formId = e.target.dataset.formId;
+            document
+                .getElementById(`ticket-form-dalam-kota-${formId}`)
+                .remove();
+            updateFormNumbersDalamKota();
+        }
+    });
+
+    ticketFormsContainerDalamKota.addEventListener("change", function (e) {
+        if (e.target.name && e.target.name.startsWith("type_tkt_dalam_kota")) {
+            const roundTripOptions = e.target
+                .closest(".card-body")
+                .querySelector(".round-trip-options");
+            if (roundTripOptions) {
+                if (e.target.value === "Round Trip") {
+                    roundTripOptions.style.display = "block";
+                } else {
+                    roundTripOptions.style.display = "none";
+
+                    const inputs = roundTripOptions.querySelectorAll(
+                        "input, select, textarea"
+                    );
+                    inputs.forEach((input) => {
+                        if (
+                            input.type === "checkbox" ||
+                            input.type === "radio"
+                        ) {
+                            input.checked = false;
+                        } else {
+                            input.value = "";
+                        }
+                    });
+                }
+            }
+        }
+    });
+
+    function createNewTicketFormDalamKota(formNumber) {
+        return `
+            <div class="card bg-light shadow-none" id="ticket-form-dalam-kota-${formNumber}" style="display: block;">
+                <div class="card-body">
+                    <div class="h5 text-uppercase">
+                        <b>TICKET ${formNumber}</b>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Employee Name</label>
+                            <select class="form-select form-select-sm selection-dalam-kota2" id="noktp_tkt_dalam_kota_${formNumber}" name="noktp_tkt_dalam_kota[]">
+                               <option value="">Please Select</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">From</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-sm" name="dari_tkt_dalam_kota[]" type="text" placeholder="ex. Yogyakarta (YIA)">
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">To</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-sm" name="ke_tkt_dalam_kota[]" type="text" placeholder="ex. Jakarta (CGK)">
+                            </div>
+                        </div>
+                    </div>
+                     <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label">Transportation Type</label>
+                            <div class="input-group">
+                                <select class="form-select form-select-sm select2" name="jenis_tkt_dalam_kota[]" id="jenis_tkt_dalam_kota_${formNumber}">
+                                    <option value="">Select Transportation Type</option>
+                                    <option value="Train">Train</option>
+                                    <option value="Airplane">Airplane</option>
+                                    <option value="Ferry">Ferry</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label">Ticket Type</label>
+                            <select class="form-select form-select-sm" name="type_tkt_dalam_kota[]">
+                                <option value="One Way" selected>One Way</option>
+                                <option value="Round Trip">Round Trip</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label">Date</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-sm" id="tgl_brkt_tkt_dalam_kota_${formNumber}" name="tgl_brkt_tkt_dalam_kota[]" type="date" onchange="validateDatesDalamKota(${formNumber})">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label">Time</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-sm" id="jam_brkt_tkt_dalam_kota_${formNumber}" name="jam_brkt_tkt_dalam_kota[]" type="time" onchange="validateDatesDalamKota(${formNumber})">
+                            </div>
+                        </div>
+                    </div>
+                   <div class="round-trip-options" style="display: none;">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Return Date</label>
+                                <div class="input-group">
+                                    <input class="form-control form-control-sm" name="tgl_plg_tkt_dalam_kota[]" type="date" id="tgl_plg_tkt_dalam_kota_${formNumber}" onchange="validateDatesDalamKota(${formNumber})">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Return Time</label>
+                                <div class="input-group">
+                                    <input class="form-control form-control-sm" id="jam_plg_tkt_dalam_kota_${formNumber}" name="jam_plg_tkt_dalam_kota[]" type="time" onchange="validateDatesDalamKota(${formNumber})">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            <label class="form-label">Information</label>
+                            <textarea class="form-control" id="ket_tkt_dalam_kota_${formNumber}" name="ket_tkt_dalam_kota[]" rows="3" placeholder="This field is for adding ticket details, e.g., Citilink, Garuda Indonesia, etc."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="mt-2">
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-ticket-btn-dalam-kota" data-form-id="${formNumber}">Remove Data</button>
+                    </div>
+                </div>
+            </div>`;
+    }
+    function initializeAllSelect2DalamKota() {
+        $(".selection-dalam-kota2").each(function () {
+            const $select = $(this);
+            if (!$select.data("select2")) {
+                const config = {
+                    theme: "bootstrap-5",
+                    width: "100%",
+                    minimumInputLength: 0, // Allow searching without any input
+                    allowClear: true, // Adds an "x" to clear the selection
+                    placeholder: "Please Select", // Placeholder text
+                    ajax: {
+                        url: "/search/name",
+                        dataType: "json",
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                searchTerm: params.term || "", // Send empty string if no search term
+                                page: params.page || 1,
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: data.map(function (item) {
+                                    return {
+                                        id: item.ktp,
+                                        text: item.fullname + " - " + item.ktp,
+                                    };
+                                }),
+                                pagination: {
+                                    more: params.page * 30 < data.total_count,
+                                },
+                            };
+                        },
+                        cache: true,
+                    },
+                };
+
+                $select.select2(config);
+            }
+        });
+    }
+    // Initial setup
+    updateRemoveButtonsDalamKota();
+    initializeAllSelect2DalamKota();
+    if (ticketCheckboxDalamKota.checked) {
+        ticketFormsContainerDalamKota.style.display = "block";
+        ensureAllFormsHaveRequiredStateDalamKota();
+    } else {
+        ticketFormsContainerDalamKota.style.display = "none";
+        updateAllFormsRequiredStateDalamKota(false);
+    }
+}
 
 //Hotel JS
 document.addEventListener("DOMContentLoaded", function () {

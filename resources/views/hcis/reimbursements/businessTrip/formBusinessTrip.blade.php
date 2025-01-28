@@ -401,7 +401,7 @@
                                                     <div class="tab-pane fade" id="pills-cashAdvancedEntertain"
                                                         role="tabpanel" aria-labelledby="pills-cashAdvancedEntertain-tab">
                                                         {{-- Cash Advanced content --}}
-                                                        @include('hcis.reimbursements.businessTrip.form.ticket')
+                                                        {{-- @include('hcis.reimbursements.businessTrip.form.ticket') --}}
                                                     </div>
                                                     <div class="tab-pane fade" id="pills-ticket" role="tabpanel"
                                                         aria-labelledby="pills-ticket-tab">
