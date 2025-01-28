@@ -1,45 +1,113 @@
 document.addEventListener("DOMContentLoaded", function () {
     setupCheckboxListeners();
-    // handleTicketForms();
-    // handleHotelForms();
+    LuarKotaTicketInit();
+    DalamKotaTicketInit();
+    LuarKotaHotelInit();
+    DalamKotaHotelInit();
     handleTaksiForms();
     handleCaForms();
 });
 
 function setupCheckboxListeners() {
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach((checkbox) => {
+    // Handle Dalam Kota checkboxes
+    const dalamKotaCheckboxes = document.querySelectorAll(
+        'input[id$="CheckboxDalamKota"]'
+    );
+    dalamKotaCheckboxes.forEach((checkbox) => {
         checkbox.addEventListener("change", function () {
-            const section = this.id.replace("Checkbox", "");
+            const section = this.id
+                .replace("CheckboxDalamKota", "")
+                .toLowerCase();
+
+            const navItem = document.getElementById(
+                `nav-${section}-dalam-kota`
+            );
+            const tabContent = document.getElementById(
+                `pills-${section}-dalam-kota`
+            );
+            const tabButton = document.getElementById(
+                `pills-${section}-dalam-kota-tab`
+            );
+
+            handleTabVisibility(
+                this.checked,
+                navItem,
+                tabContent,
+                tabButton,
+                true
+            );
+        });
+    });
+
+    // Handle Luar Kota checkboxes
+    const luarKotaCheckboxes = document.querySelectorAll(
+        '#additional-fields input[type="checkbox"]:not([id$="DalamKota"])'
+    );
+    luarKotaCheckboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", function () {
+            const section = this.id.replace("Checkbox", "").toLowerCase();
+
             const navItem = document.getElementById(`nav-${section}`);
             const tabContent = document.getElementById(`pills-${section}`);
             const tabButton = document.getElementById(`pills-${section}-tab`);
 
-            if (this.checked) {
-                navItem.style.display = "block";
-                tabButton.click(); // Activate this tab
-                // Ensure the tab content shows
-                tabContent.classList.add("show", "active");
-            } else {
-                navItem.style.display = "none";
-                tabContent.classList.remove("show", "active");
-
-                // Find the next available tab to activate
-                const nextTab = findNextAvailableTab();
-                if (nextTab) {
-                    nextTab.click();
-                }
-            }
+            handleTabVisibility(
+                this.checked,
+                navItem,
+                tabContent,
+                tabButton,
+                false
+            );
         });
     });
 }
 
-function findNextAvailableTab() {
-    const tabs = document.querySelectorAll(".nav-link");
+function handleTabVisibility(
+    isChecked,
+    navItem,
+    tabContent,
+    tabButton,
+    isDalamKota
+) {
+    if (isChecked && navItem && tabButton && tabContent) {
+        navItem.style.display = "block";
+        tabButton.click();
+        tabContent.classList.add("show", "active");
+    } else if (navItem && tabContent) {
+        navItem.style.display = "none";
+        tabContent.classList.remove("show", "active");
+
+        // Find and activate next available tab
+        const nextTab = findNextAvailableTab(isDalamKota);
+        if (nextTab) {
+            nextTab.click();
+        }
+    }
+}
+
+function findNextAvailableTab(isDalamKota) {
+    const tabsContainer = isDalamKota ? "dalam-kota-pills-tab" : "pills-tab";
+    const tabs = document.querySelectorAll(`#${tabsContainer} .nav-link`);
+
     for (let tab of tabs) {
-        const section = tab.id.replace("pills-", "").replace("-tab", "");
-        const checkbox = document.getElementById(`${section}Checkbox`);
-        if (checkbox && checkbox.checked) {
+        const tabId = tab.id;
+        const section = tabId
+            .replace("pills-", "")
+            .replace("-dalam-kota-tab", "")
+            .replace("-tab", "")
+            .toLowerCase();
+
+        const checkboxId = isDalamKota
+            ? `${section}CheckboxDalamKota`
+            : `${section}Checkbox`;
+
+        const checkbox = document.getElementById(checkboxId);
+
+        if (
+            checkbox &&
+            checkbox.checked &&
+            tab.closest(".nav-item").style.display !== "none"
+        ) {
             return tab;
         }
     }
@@ -79,22 +147,22 @@ function syncDateRequired(changedInput) {
     const newValue = changedInput.value;
 
     // Get both date_required fields
-    const dateRequired1 = document.getElementById("date_required_1");
+    // const dateRequired1 = document.getElementById("date_required_1");
     const dateRequired2 = document.getElementById("date_required_2");
 
     // Set both fields to the new value
-    dateRequired1.value = newValue;
+    // dateRequired1.value = newValue;
     dateRequired2.value = newValue;
 }
 
 function updateCAValue() {
-    const perdiemChecked = document.getElementById("perdiemCheckbox").checked;
+    // const perdiemChecked = document.getElementById("perdiemCheckbox").checked;
     const cashAdvancedChecked = document.getElementById(
         "cashAdvancedCheckbox"
     ).checked;
     const caField = document.getElementById("caHidden");
 
-    if (perdiemChecked || cashAdvancedChecked) {
+    if (cashAdvancedChecked) {
         caField.value = "Ya";
     } else {
         caField.value = "Tidak";
@@ -201,9 +269,13 @@ function calculateTotalDays(index) {
 
     // Parse the dates
     const checkInDate = new Date(checkInInput.value);
+    checkInDate.setHours(0, 0, 0, 0);
     const checkOutDate = new Date(checkOutInput.value);
+    checkOutDate.setHours(0, 0, 0, 0);
     const mulaiDate = new Date(mulaiInput.value);
+    mulaiDate.setHours(0, 0, 0, 0);
     const kembaliDate = new Date(kembaliInput.value);
+    kembaliDate.setHours(0, 0, 0, 0);
 
     // Validate Check In Date
     if (checkInDate < mulaiDate) {
@@ -247,9 +319,15 @@ function calculateTotalDays(index) {
 
     // Calculate the total days if all validations pass
     if (checkInDate && checkOutDate) {
-        const diffTime = Math.abs(checkOutDate - checkInDate);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        totalDaysInput.value = diffDays;
+        // Check if same day
+        if (checkInDate.getTime() === checkOutDate.getTime()) {
+            totalDaysInput.value = 1;
+        } else {
+            // Calculate difference in days including both start and end dates
+            const diffTime = checkOutDate - checkInDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            totalDaysInput.value = diffDays;
+        }
     } else {
         totalDaysInput.value = "";
     }
@@ -273,72 +351,146 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //RESET CHECKBOX FIELDS
 document.addEventListener("DOMContentLoaded", function () {
-    var jnsDinasSelect = document.getElementById("jns_dinas");
-    var additionalFields = document.getElementById("additional-fields");
+    const jnsDinasSelect = document.getElementById("jns_dinas");
+    const additionalFields = document.getElementById("additional-fields");
+    const additionalFieldsDalamKota = document.getElementById(
+        "additional-fields-dalam"
+    );
 
-    var checkboxes = [
-        "perdiemCheckbox",
+    // Define checkboxes for Luar Kota and Dalam Kota
+    const checkboxesLuarKota = [
         "cashAdvancedCheckbox",
+        "caEntertainCheckbox",
         "ticketCheckbox",
         "hotelCheckbox",
         "taksiCheckbox",
     ];
 
-    // Corresponding section divs to hide/reset
-    var sections = [
-        "nav-perdiem",
-        "nav-cash-advanced",
-        "nav-ticket",
-        "nav-hotel",
-        "nav-taksi",
+    const checkboxesDalamKota = [
+        "ticketCheckboxDalamKota",
+        "hotelCheckboxDalamKota",
+        "taksiCheckboxDalamKota",
     ];
+
+    // Reset all checkboxes and tabs for a specific group
+    function resetSection(checkboxes, tabs) {
+        checkboxes.forEach((checkboxId) => {
+            const checkbox = document.getElementById(checkboxId);
+            if (checkbox) {
+                checkbox.checked = false; // Uncheck checkbox
+                checkbox.dispatchEvent(new Event("change")); // Trigger toggleSection logic
+            }
+        });
+
+        tabs.forEach((tabId) => {
+            const tab = document.getElementById(tabId);
+            if (tab) {
+                tab.style.display = "none"; // Hide navigation tab
+            }
+        });
+    }
 
     jnsDinasSelect.addEventListener("change", function () {
         if (this.value === "luar kota") {
+            // Show "Luar Kota" additional fields and reset "Dalam Kota"
             additionalFields.style.display = "block";
-        } else {
+            additionalFieldsDalamKota.style.display = "none";
+
+            resetSection(checkboxesDalamKota, [
+                "nav-ticket-dalam-kota",
+                "nav-hotel-dalam-kota",
+                "nav-taksi-dalam-kota",
+            ]);
+        } else if (this.value === "dalam kota") {
+            // Show "Dalam Kota" additional fields and reset "Luar Kota"
             additionalFields.style.display = "none";
+            additionalFieldsDalamKota.style.display = "block";
 
-            // Uncheck all the checkboxes and hide/reset related fields
-            checkboxes.forEach(function (checkboxId) {
-                var checkbox = document.getElementById(checkboxId);
-                if (checkbox.checked) {
-                    checkbox.checked = false; // Uncheck the checkbox
-                    // Trigger the change event to ensure corresponding sections are hidden
-                    checkbox.dispatchEvent(new Event("change"));
-                }
-            });
-        }
-    });
-});
-
-// Function to toggle the visibility of sections based on checkboxes
-function toggleSection(checkboxId, navId, tabId) {
-    const checkbox = document.getElementById(checkboxId);
-    const nav = document.getElementById(navId);
-    const tab = document.getElementById(tabId); // The tab button (anchor) for navigation
-
-    // console.log(checkbox);
-    checkbox.addEventListener("change", function () {
-        if (this.checked) {
-            nav.style.display = "block";
-            tab.click(); // Programmatically activate the tab
+            resetSection(checkboxesLuarKota, [
+                "nav-cash-advanced",
+                "nav-cashAdvancedEntertain",
+                "nav-ticket",
+                "nav-hotel",
+                "nav-taksi",
+            ]);
         } else {
-            nav.style.display = "none";
+            // Hide all additional fields if no valid selection
+            additionalFields.style.display = "none";
+            additionalFieldsDalamKota.style.display = "none";
+
+            resetSection(checkboxesLuarKota.concat(checkboxesDalamKota), [
+                "nav-cash-advanced",
+                "nav-cashAdvancedEntertain",
+                "nav-ticket",
+                "nav-hotel",
+                "nav-taksi",
+                "nav-ticket-dalam-kota",
+                "nav-hotel-dalam-kota",
+                "nav-taksi-dalam-kota",
+            ]);
         }
     });
-}
 
-// Initialize toggling for each checkbox and tab
-toggleSection("perdiemCheckbox", "nav-perdiem", "pills-perdiem-tab");
-toggleSection(
-    "cashAdvancedCheckbox",
-    "nav-cash-advanced",
-    "pills-cash-advanced-tab"
-);
-toggleSection("ticketCheckbox", "nav-ticket", "pills-ticket-tab");
-toggleSection("hotelCheckbox", "nav-hotel", "pills-hotel-tab");
-toggleSection("taksiCheckbox", "nav-taksi", "pills-taksi-tab");
+    // Toggle visibility of tabs and panes based on checkbox state
+    function toggleSection(checkboxId, navId, tabId, paneId) {
+        const checkbox = document.getElementById(checkboxId);
+        const nav = document.getElementById(navId);
+        const tab = document.getElementById(tabId);
+        const pane = document.getElementById(paneId);
+
+        checkbox.addEventListener("change", function () {
+            if (this.checked) {
+                // Show the navigation tab and activate the corresponding pane
+                nav.style.display = "block";
+                tab.click(); // Programmatically activate the tab
+                if (pane) {
+                    pane.classList.add("active", "show");
+                }
+            } else {
+                // Hide the navigation tab and deactivate the corresponding pane
+                nav.style.display = "none";
+                if (pane) {
+                    pane.classList.remove("active", "show");
+                }
+            }
+        });
+    }
+
+    // Initialize toggleSection for Luar Kota
+    toggleSection(
+        "cashAdvancedCheckbox",
+        "nav-cash-advanced",
+        "pills-cash-advanced-tab"
+    );
+    toggleSection(
+        "caEntertainCheckbox",
+        "nav-cashAdvancedEntertain",
+        "pills-cashAdvancedEntertain-tab"
+    );
+    toggleSection("ticketCheckbox", "nav-ticket", "pills-ticket-tab");
+    toggleSection("hotelCheckbox", "nav-hotel", "pills-hotel-tab");
+    toggleSection("taksiCheckbox", "nav-taksi", "pills-taksi-tab");
+
+    // Initialize toggleSection for Dalam Kota
+    toggleSection(
+        "ticketCheckboxDalamKota",
+        "nav-ticket-dalam-kota",
+        "pills-ticket-dalam-kota-tab",
+        "pills-ticket-dalam-kota"
+    );
+    toggleSection(
+        "hotelCheckboxDalamKota",
+        "nav-hotel-dalam-kota",
+        "pills-hotel-dalam-kota-tab",
+        "pills-hotel-dalam-kota"
+    );
+    toggleSection(
+        "taksiCheckboxDalamKota",
+        "nav-taksi-dalam-kota",
+        "pills-taksi-dalam-kota-tab",
+        "pills-taksi-dalam-kota"
+    );
+});
 
 document.addEventListener("DOMContentLoaded", function () {
     // Elements
@@ -397,13 +549,16 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //Ticket JS
-document.addEventListener("DOMContentLoaded", function () {
+function LuarKotaTicketInit() {
     let formTicketCount = 1;
     const maxTicketForms = 5;
     const ticketFormsContainer = document.getElementById(
         "ticket_forms_container"
     );
     const ticketCheckbox = document.getElementById("ticketCheckbox");
+    // const ticketCheckboxDalamKota = document.getElementById(
+    //     "ticketCheckboxDalamKota"
+    // );
     const addTicketButton = document.getElementById("add-ticket-btn");
 
     function toggleRequiredAttributes(form, isRequired) {
@@ -482,6 +637,20 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+    // else if (ticketCheckboxDalamKota) {
+    //     ticketCheckboxDalamKota.addEventListener("change", function () {
+    //         ticketFormsContainer.style.display = this.checked
+    //             ? "block"
+    //             : "none";
+
+    //         if (this.checked) {
+    //             ensureAllFormsHaveRequiredState();
+    //         } else {
+    //             updateAllFormsRequiredState(false);
+    //             resetAllTicketForms();
+    //         }
+    //     });
+    // }
 
     function updateFormNumbers() {
         const forms = ticketFormsContainer.querySelectorAll(
@@ -678,12 +847,10 @@ document.addEventListener("DOMContentLoaded", function () {
                         <div class="col-md-6 mb-2">
                             <label class="form-label">Transportation Type</label>
                             <div class="input-group">
-                                <select class="form-select form-select-sm" name="jenis_tkt[]" id="jenis_tkt_${formNumber}">
+                                <select class="form-select form-select-sm select2" name="jenis_tkt[]" id="jenis_tkt_${formNumber}">
                                     <option value="">Select Transportation Type</option>
                                     <option value="Train">Train</option>
-                                    <option value="Bus">Bus</option>
                                     <option value="Airplane">Airplane</option>
-                                    <option value="Car">Car</option>
                                     <option value="Ferry">Ferry</option>
                                 </select>
                             </div>
@@ -792,10 +959,430 @@ document.addEventListener("DOMContentLoaded", function () {
         ticketFormsContainer.style.display = "none";
         updateAllFormsRequiredState(false);
     }
-});
+    // if (ticketCheckboxDalamKota.checked) {
+    //     ticketFormsContainer.style.display = "block";
+    //     ensureAllFormsHaveRequiredState();
+    // } else {
+    //     ticketFormsContainer.style.display = "none";
+    //     updateAllFormsRequiredState(false);
+    // }
+}
+
+function DalamKotaTicketInit() {
+    let formTicketCountDalamKota = 1;
+    const maxTicketFormsDalamKota = 5;
+    const ticketFormsContainerDalamKota = document.getElementById(
+        "ticket_forms_container_dalam_kota"
+    );
+    const ticketCheckboxDalamKota = document.getElementById(
+        "ticketCheckboxDalamKota"
+    );
+    const addTicketButtonDalamKota = document.getElementById(
+        "add-ticket-btn-dalam-kota"
+    );
+    console.log("Dalam Kota initialized");
+    function toggleRequiredAttributesDalamKota(form, isRequired) {
+        const fields = [
+            'select[name="noktp_tkt_dalam_kota[]"]',
+            'input[name="dari_tkt_dalam_kota[]"]',
+            'input[name="ke_tkt_dalam_kota[]"]',
+            'input[name="tgl_brkt_tkt_dalam_kota[]"]',
+            'input[name="jam_brkt_tkt_dalam_kota[]"]',
+            'select[name="jenis_tkt_dalam_kota[]"]',
+            'select[name="type_tkt_dalam_kota[]"]',
+        ];
+
+        fields.forEach((selector) => {
+            const field = form.querySelector(selector);
+            if (field) {
+                if (isRequired) {
+                    field.setAttribute("required", "");
+                } else {
+                    field.removeAttribute("required");
+                }
+            }
+        });
+
+        const typeSelect = form.querySelector(
+            'select[name="type_tkt_dalam_kota[]"]'
+        );
+        const returnDateField = form.querySelector(
+            'input[name="tgl_plg_tkt_dalam_kota[]"]'
+        );
+        const returnTimeField = form.querySelector(
+            'input[name="jam_plg_tkt_dalam_kota[]"]'
+        );
+
+        function updateReturnFieldsDalamKota() {
+            if (isRequired && typeSelect && typeSelect.value === "Round Trip") {
+                returnDateField.setAttribute("required", "");
+                returnTimeField.setAttribute("required", "");
+            } else {
+                if (returnDateField)
+                    returnDateField.removeAttribute("required");
+                if (returnTimeField)
+                    returnTimeField.removeAttribute("required");
+            }
+        }
+
+        if (typeSelect) {
+            typeSelect.addEventListener("change", updateReturnFieldsDalamKota);
+            updateReturnFieldsDalamKota();
+        }
+    }
+
+    function updateAllFormsRequiredStateDalamKota(isRequired) {
+        document
+            .querySelectorAll('[id^="ticket-form-dalam-kota-"]')
+            .forEach((form) => {
+                toggleRequiredAttributesDalamKota(form, isRequired);
+            });
+    }
+
+    function ensureAllFormsHaveRequiredStateDalamKota() {
+        const isRequired = ticketCheckboxDalamKota.checked;
+        document
+            .querySelectorAll('[id^="ticket-form-dalam-kota-"]')
+            .forEach((form) => {
+                toggleRequiredAttributesDalamKota(form, isRequired);
+            });
+    }
+
+    if (ticketCheckboxDalamKota) {
+        ticketCheckboxDalamKota.addEventListener("change", function () {
+            ticketFormsContainerDalamKota.style.display = this.checked
+                ? "block"
+                : "none";
+
+            if (this.checked) {
+                ensureAllFormsHaveRequiredStateDalamKota();
+            } else {
+                updateAllFormsRequiredStateDalamKota(false);
+                resetAllTicketFormsDalamKota();
+            }
+        });
+    }
+
+    function updateFormNumbersDalamKota() {
+        const forms = ticketFormsContainerDalamKota.querySelectorAll(
+            '[id^="ticket-form-dalam-kota-"]'
+        );
+        forms.forEach((form, index) => {
+            const formNumber = index + 1;
+            form.querySelector(
+                ".h5.text-uppercase b"
+            ).textContent = `TICKET ${formNumber}`;
+            form.id = `ticket-form-dalam-kota-${formNumber}`;
+            form.querySelector(".remove-ticket-btn-dalam-kota").dataset.formId =
+                formNumber;
+
+            updateFormElementIdsDalamKota(form, formNumber);
+        });
+        formTicketCountDalamKota = forms.length;
+        updateRemoveButtonsDalamKota();
+        updateAddButtonVisibilityDalamKota();
+    }
+
+    function updateAddButtonVisibilityDalamKota() {
+        addTicketButtonDalamKota.style.display =
+            formTicketCountDalamKota < maxTicketFormsDalamKota
+                ? "inline-block"
+                : "none";
+    }
+
+    function updateFormElementIdsDalamKota(form, formNumber) {
+        const elements = form.querySelectorAll("[id],[name],[onchange]");
+        elements.forEach((element) => {
+            if (element.id) {
+                element.id = element.id.replace(/\d+$/, formNumber);
+            }
+            if (element.name) {
+                element.name = element.name.replace(
+                    /\[\d*\]/,
+                    `[${formNumber}]`
+                );
+            }
+            if (element.hasAttribute("onchange")) {
+                const onchangeValue = element.getAttribute("onchange");
+                const updatedOnchangeValue = onchangeValue.replace(
+                    /\d+/,
+                    formNumber
+                );
+                element.setAttribute("onchange", updatedOnchangeValue);
+            }
+        });
+    }
+
+    function updateRemoveButtonsDalamKota() {
+        const removeButtons = document.querySelectorAll(
+            ".remove-ticket-btn-dalam-kota"
+        );
+        removeButtons.forEach((button) => {
+            button.style.display =
+                formTicketCountDalamKota > 1 ? "inline-block" : "none";
+        });
+    }
+
+    function resetTicketFieldsDalamKota(container) {
+        const inputs = container.querySelectorAll(
+            'input[type="text"], input[type="number"], input[type="date"], input[type="time"], textarea'
+        );
+        inputs.forEach((input) => {
+            input.value = "";
+            input.removeAttribute("required");
+        });
+
+        const selects = container.querySelectorAll("select");
+        selects.forEach((select) => {
+            if ($(select).data("select2")) {
+                $(select).val(null).trigger("change");
+            } else {
+                select.value = select.querySelector("option[selected]")
+                    ? select.querySelector("option[selected]").value
+                    : select.querySelector("option").value;
+            }
+            select.removeAttribute("required");
+        });
+        const roundTripOptions = container.querySelector(".round-trip-options");
+        if (roundTripOptions) {
+            roundTripOptions.style.display = "none";
+        }
+    }
+
+    function resetAllTicketFormsDalamKota() {
+        const forms = ticketFormsContainerDalamKota.querySelectorAll(
+            '[id^="ticket-form-dalam-kota-"]'
+        );
+        forms.forEach((form, index) => {
+            resetTicketFieldsDalamKota(form);
+            toggleRequiredAttributesDalamKota(form, false);
+            if (index === 0) {
+                form.style.display = "block";
+            } else {
+                form.remove();
+            }
+        });
+        formTicketCountDalamKota = 1;
+        updateFormNumbersDalamKota();
+    }
+
+    function addNewTicketFormDalamKota() {
+        if (formTicketCountDalamKota < maxTicketFormsDalamKota) {
+            formTicketCountDalamKota++;
+            const newTicketForm = createNewTicketFormDalamKota(
+                formTicketCountDalamKota
+            );
+            ticketFormsContainerDalamKota.insertAdjacentHTML(
+                "beforeend",
+                newTicketForm
+            );
+            const addedForm = ticketFormsContainerDalamKota.lastElementChild;
+            toggleRequiredAttributesDalamKota(
+                addedForm,
+                ticketCheckboxDalamKota.checked
+            );
+            updateFormNumbersDalamKota();
+            initializeAllSelect2DalamKota();
+        } else {
+            Swal.fire({
+                title: "Warning!",
+                text: "You have reached the maximum number of tickets (5).",
+                icon: "error",
+                confirmButtonColor: "#AB2F2B",
+                confirmButtonText: "OK",
+            });
+        }
+    }
+
+    document
+        .getElementById("add-ticket-btn-dalam-kota")
+        .addEventListener("click", addNewTicketFormDalamKota);
+
+    ticketFormsContainerDalamKota.addEventListener("click", function (e) {
+        if (e.target.classList.contains("remove-ticket-btn-dalam-kota")) {
+            const formId = e.target.dataset.formId;
+            document
+                .getElementById(`ticket-form-dalam-kota-${formId}`)
+                .remove();
+            updateFormNumbersDalamKota();
+        }
+    });
+
+    ticketFormsContainerDalamKota.addEventListener("change", function (e) {
+        if (e.target.name && e.target.name.startsWith("type_tkt_dalam_kota")) {
+            const roundTripOptions = e.target
+                .closest(".card-body")
+                .querySelector(".round-trip-options");
+            if (roundTripOptions) {
+                if (e.target.value === "Round Trip") {
+                    roundTripOptions.style.display = "block";
+                } else {
+                    roundTripOptions.style.display = "none";
+
+                    const inputs = roundTripOptions.querySelectorAll(
+                        "input, select, textarea"
+                    );
+                    inputs.forEach((input) => {
+                        if (
+                            input.type === "checkbox" ||
+                            input.type === "radio"
+                        ) {
+                            input.checked = false;
+                        } else {
+                            input.value = "";
+                        }
+                    });
+                }
+            }
+        }
+    });
+
+    function createNewTicketFormDalamKota(formNumber) {
+        return `
+            <div class="card bg-light shadow-none" id="ticket-form-dalam-kota-${formNumber}" style="display: block;">
+                <div class="card-body">
+                    <div class="h5 text-uppercase">
+                        <b>TICKET ${formNumber}</b>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Employee Name</label>
+                            <select class="form-select form-select-sm selection-dalam-kota2" id="noktp_tkt_dalam_kota_${formNumber}" name="noktp_tkt_dalam_kota[]">
+                               <option value="">Please Select</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">From</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-sm" name="dari_tkt_dalam_kota[]" type="text" placeholder="ex. Yogyakarta (YIA)">
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">To</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-sm" name="ke_tkt_dalam_kota[]" type="text" placeholder="ex. Jakarta (CGK)">
+                            </div>
+                        </div>
+                    </div>
+                     <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label">Transportation Type</label>
+                            <div class="input-group">
+                                <select class="form-select form-select-sm select2" name="jenis_tkt_dalam_kota[]" id="jenis_tkt_dalam_kota_${formNumber}">
+                                    <option value="">Select Transportation Type</option>
+                                    <option value="Train">Train</option>
+                                    <option value="Airplane">Airplane</option>
+                                    <option value="Ferry">Ferry</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label">Ticket Type</label>
+                            <select class="form-select form-select-sm" name="type_tkt_dalam_kota[]">
+                                <option value="One Way" selected>One Way</option>
+                                <option value="Round Trip">Round Trip</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label">Date</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-sm" id="tgl_brkt_tkt_dalam_kota_${formNumber}" name="tgl_brkt_tkt_dalam_kota[]" type="date" onchange="validateDatesDalamKota(${formNumber})">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label">Time</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-sm" id="jam_brkt_tkt_dalam_kota_${formNumber}" name="jam_brkt_tkt_dalam_kota[]" type="time" onchange="validateDatesDalamKota(${formNumber})">
+                            </div>
+                        </div>
+                    </div>
+                   <div class="round-trip-options" style="display: none;">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Return Date</label>
+                                <div class="input-group">
+                                    <input class="form-control form-control-sm" name="tgl_plg_tkt_dalam_kota[]" type="date" id="tgl_plg_tkt_dalam_kota_${formNumber}" onchange="validateDatesDalamKota(${formNumber})">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Return Time</label>
+                                <div class="input-group">
+                                    <input class="form-control form-control-sm" id="jam_plg_tkt_dalam_kota_${formNumber}" name="jam_plg_tkt_dalam_kota[]" type="time" onchange="validateDatesDalamKota(${formNumber})">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            <label class="form-label">Information</label>
+                            <textarea class="form-control" id="ket_tkt_dalam_kota_${formNumber}" name="ket_tkt_dalam_kota[]" rows="3" placeholder="This field is for adding ticket details, e.g., Citilink, Garuda Indonesia, etc."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="mt-2">
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-ticket-btn-dalam-kota" data-form-id="${formNumber}">Remove Data</button>
+                    </div>
+                </div>
+            </div>`;
+    }
+    function initializeAllSelect2DalamKota() {
+        $(".selection-dalam-kota2").each(function () {
+            const $select = $(this);
+            if (!$select.data("select2")) {
+                const config = {
+                    theme: "bootstrap-5",
+                    width: "100%",
+                    minimumInputLength: 0, // Allow searching without any input
+                    allowClear: true, // Adds an "x" to clear the selection
+                    placeholder: "Please Select", // Placeholder text
+                    ajax: {
+                        url: "/search/name",
+                        dataType: "json",
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                searchTerm: params.term || "", // Send empty string if no search term
+                                page: params.page || 1,
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: data.map(function (item) {
+                                    return {
+                                        id: item.ktp,
+                                        text: item.fullname + " - " + item.ktp,
+                                    };
+                                }),
+                                pagination: {
+                                    more: params.page * 30 < data.total_count,
+                                },
+                            };
+                        },
+                        cache: true,
+                    },
+                };
+
+                $select.select2(config);
+            }
+        });
+    }
+    // Initial setup
+    updateRemoveButtonsDalamKota();
+    initializeAllSelect2DalamKota();
+    if (ticketCheckboxDalamKota.checked) {
+        ticketFormsContainerDalamKota.style.display = "block";
+        ensureAllFormsHaveRequiredStateDalamKota();
+    } else {
+        ticketFormsContainerDalamKota.style.display = "none";
+        updateAllFormsRequiredStateDalamKota(false);
+    }
+}
 
 //Hotel JS
-document.addEventListener("DOMContentLoaded", function () {
+function LuarKotaHotelInit() {
     let formHotelCount = 1;
     const maxHotelForms = 5;
     const hotelFormsContainer = document.getElementById(
@@ -977,14 +1564,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         </div>
                         <div class="col-md-2 mb-2">
                             <label class="form-label">Bed Size</label>
-                            <select class="form-select form-select-sm" name="bed_htl[]">
-                                <option value="Single Bed">Single Bed</option>
+                            <select class="form-select form-select-sm select2" name="bed_htl[]">
+                                <option value="Double Bed">Double Bed</option>
                                 <option value="Twin Bed">Twin Bed</option>
-                                <option value="King Bed">King Bed</option>
-                                <option value="Super King Bed">Super King Bed</option>
-                                <option value="Extra Bed">Extra Bed</option>
-                                <option value="Baby Cot">Baby Cot</option>
-                                <option value="Sofa Bed">Sofa Bed</option>
                             </select>
                         </div>
                         <div class="col-md-2 mb-2">
@@ -1021,13 +1603,242 @@ document.addEventListener("DOMContentLoaded", function () {
     // Initial setup
     updateButtonVisibility();
     updateAllFormsRequiredState(hotelCheckbox.checked);
-});
+}
+
+function DalamKotaHotelInit() {
+    let formHotelCountDalamKota = 1;
+    const maxHotelForms = 5;
+    const hotelFormsContainer = document.getElementById(
+        "hotel_forms_container_dalam_kota"
+    );
+    const hotelCheckbox = document.getElementById("hotelCheckboxDalamKota");
+    const addHotelButton = document.querySelector(".add-hotel-btn-dalam-kota");
+
+    function updateFormNumbers() {
+        const forms = hotelFormsContainer.querySelectorAll(
+            '[id^="hotel-form-dalam-kota-"]'
+        );
+        forms.forEach((form, index) => {
+            const formNumber = index + 1;
+            form.querySelector(
+                ".h5.text-uppercase b"
+            ).textContent = `Hotel ${formNumber}`;
+            form.id = `hotel-form-dalam-kota-${formNumber}`;
+            form.querySelector(".remove-hotel-btn-dalam-kota").dataset.formId =
+                formNumber;
+
+            updateFormElementIds(form, formNumber);
+        });
+        formHotelCountDalamKota = forms.length;
+        updateButtonVisibility();
+    }
+
+    function updateFormElementIds(form, formNumber) {
+        const elements = form.querySelectorAll("[id],[name],[onchange]");
+        elements.forEach((element) => {
+            if (element.id) {
+                element.id = element.id.replace(/\d+$/, formNumber);
+            }
+            if (element.name) {
+                element.name = element.name.replace(
+                    /\[\d*\]/,
+                    `[${formNumber}]`
+                );
+            }
+            if (element.hasAttribute("onchange")) {
+                const onchangeValue = element.getAttribute("onchange");
+                const updatedOnchangeValue = onchangeValue.replace(
+                    /\d+/,
+                    formNumber
+                );
+                element.setAttribute("onchange", updatedOnchangeValue);
+            }
+        });
+    }
+
+    function updateButtonVisibility() {
+        addHotelButton.style.display =
+            formHotelCountDalamKota < maxHotelForms ? "inline-block" : "none";
+        const removeButtons = hotelFormsContainer.querySelectorAll(
+            ".remove-hotel-btn-dalam-kota"
+        );
+        removeButtons.forEach((button) => {
+            button.style.display =
+                formHotelCountDalamKota > 1 ? "inline-block" : "none";
+        });
+    }
+
+    function resetHotelFields(container) {
+        const inputs = container.querySelectorAll(
+            'input[type="text"], input[type="number"], input[type="date"], input[type="time"], textarea'
+        );
+        inputs.forEach((input) => {
+            input.value = "";
+            input.required = false;
+        });
+
+        const selects = container.querySelectorAll("select");
+        selects.forEach((select) => {
+            select.value = select.querySelector("option[selected]")
+                ? select.querySelector("option[selected]").value
+                : select.querySelector("option").value;
+        });
+    }
+
+    function resetAllHotelForms() {
+        const forms = hotelFormsContainer.querySelectorAll(
+            '[id^="hotel-form-dalam-kota-"]'
+        );
+        forms.forEach((form, index) => {
+            resetHotelFields(form);
+            toggleRequiredAttributes(form, false);
+            if (index === 0) {
+                form.style.display = "block";
+            } else {
+                form.remove();
+            }
+        });
+        formHotelCountDalamKota = 1;
+        updateButtonVisibility();
+    }
+
+    function toggleRequiredAttributes(form, isRequired) {
+        const fields = [
+            'input[name="nama_htl_dalam_kota[]"]',
+            'input[name="lokasi_htl_dalam_kota[]"]',
+            'select[name="bed_htl_dalam_kota[]"]',
+            'input[name="jmlkmr_htl_dalam_kota[]"]',
+            'input[name="tgl_masuk_htl_dalam_kota[]"]',
+            'input[name="tgl_keluar_htl_dalam_kota[]"]',
+        ];
+
+        fields.forEach((selector) => {
+            const field = form.querySelector(selector);
+            if (field) {
+                field.required = isRequired;
+            }
+        });
+    }
+
+    function updateAllFormsRequiredState(isRequired) {
+        document
+            .querySelectorAll('[id^="hotel-form-dalam-kota-"]')
+            .forEach((form) => {
+                toggleRequiredAttributes(form, isRequired);
+            });
+    }
+
+    function addNewHotelForm() {
+        if (formHotelCountDalamKota < maxHotelForms) {
+            formHotelCountDalamKota++;
+            const newHotelForm = createNewHotelForm(formHotelCountDalamKota);
+            hotelFormsContainer.insertAdjacentHTML("beforeend", newHotelForm);
+            const addedForm = hotelFormsContainer.lastElementChild;
+            toggleRequiredAttributes(addedForm, hotelCheckbox.checked);
+            updateFormNumbers();
+        } else {
+            Swal.fire({
+                title: "Warning!",
+                text: "You have reached the maximum number of hotels (5).",
+                icon: "error",
+                confirmButtonColor: "#AB2F2B",
+                confirmButtonText: "OK",
+            });
+        }
+    }
+
+    addHotelButton.addEventListener("click", addNewHotelForm);
+
+    hotelFormsContainer.addEventListener("click", function (e) {
+        if (e.target.classList.contains("remove-hotel-btn-dalam-kota")) {
+            const formId = e.target.dataset.formId;
+            document.getElementById(`hotel-form-dalam-kota-${formId}`).remove();
+            updateFormNumbers();
+        }
+    });
+
+    if (hotelCheckbox) {
+        hotelCheckbox.addEventListener("change", function () {
+            hotelFormsContainer.style.display = this.checked ? "block" : "none";
+            updateAllFormsRequiredState(this.checked);
+            if (!this.checked) {
+                resetAllHotelForms();
+            }
+        });
+    }
+
+    function createNewHotelForm(formNumber) {
+        return `
+            <div class="card bg-light shadow-none" id="hotel-form-dalam-kota-${formNumber}" style="display: block;">
+                <div class="card-body">
+                    <div class="h5 text-uppercase">
+                        <b>Hotel ${formNumber} (Dalam Kota)</b>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Hotel Name</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-sm" name="nama_htl_dalam_kota[]" type="text" placeholder="ex: Hyatt">
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Hotel Location</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-sm" name="lokasi_htl_dalam_kota[]" type="text" placeholder="ex: Jakarta">
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <label class="form-label">Bed Size</label>
+                            <select class="form-select form-select-sm select2" name="bed_htl_dalam_kota[]">
+                                <option value="Double Bed">Double Bed</option>
+                                <option value="Twin Bed">Twin Bed</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <label class="form-label">Total Room</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-sm" name="jmlkmr_htl_dalam_kota[]" type="number" min="1" placeholder="ex: 1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Check In Date</label>
+                            <input type="date" class="form-control form-control-sm" id="check-in-dalam-kota-${formNumber}" name="tgl_masuk_htl_dalam_kota[]"
+                                onchange="calculateTotalDaysDalamKota(${formNumber})">
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Check Out Date</label>
+                            <input type="date" class="form-control form-control-sm" id="check-out-dalam-kota-${formNumber}" name="tgl_keluar_htl_dalam_kota[]"
+                                onchange="calculateTotalDaysDalamKota(${formNumber})">
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Total Nights</label>
+                            <input type="number" class="form-control form-control-sm bg-light" id="total-days-dalam-kota-${formNumber}" name="total_hari_dalam_kota[]"
+                                readonly>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-hotel-btn-dalam-kota" data-form-id="${formNumber}">Remove Data</button>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    // Initial setup
+    updateButtonVisibility();
+    updateAllFormsRequiredState(hotelCheckbox.checked);
+}
 
 //Taksi JS
 function handleTaksiForms() {
     const taksiCheckbox = document.getElementById("taksiCheckbox");
+    const taksiCheckboxDalamKota = document.getElementById(
+        "taksiCheckboxDalamKota"
+    );
     const taksiDiv = document.getElementById("taksi_div");
-    const formFields = taksiDiv.querySelectorAll("input");
+    const taksiDivDalamKota = document.getElementById("taksi_div_dalam_kota");
+    const formFields = taksiDiv.querySelectorAll("input, textarea");
 
     // Function to toggle 'required' attribute and reset fields if unchecked
     function toggleRequiredAndReset() {
@@ -1055,6 +1866,15 @@ function handleTaksiForms() {
         }
         toggleRequiredAndReset(); // Toggle required based on visibility
     });
+    taksiCheckboxDalamKota.addEventListener("change", function () {
+        if (this.checked) {
+            taksiDivDalamKota.style.display = "block";
+        } else {
+            taksiDivDalamKota.style.display = "none";
+            toggleRequiredAndReset(); // Reset values when checkbox is unchecked
+        }
+        toggleRequiredAndReset(); // Toggle required based on visibility
+    });
 
     toggleRequiredAndReset();
 }
@@ -1062,9 +1882,10 @@ function handleTaksiForms() {
 //CA JS
 function handleCaForms() {
     const caCheckbox = document.getElementById("cashAdvancedCheckbox");
-    const perdiemCheckbox = document.getElementById("perdiemCheckbox");
+    // const perdiemCheckbox = document.getElementById("perdiemCheckbox");
+    const caEntertainCheckbox = document.getElementById("caEntertainCheckbox");
     const caDiv = document.getElementById("ca_bt");
-    const caPerdiem = document.getElementById("ca_perdiem");
+    const caEntr = document.getElementById("ca_entr");
 
     caCheckbox.addEventListener("change", function () {
         if (this.checked) {
@@ -1076,16 +1897,26 @@ function handleCaForms() {
             resetFields("ca_bt"); // Pass the container ID to reset the fields
         }
     });
-    perdiemCheckbox.addEventListener("change", function () {
+    caEntertainCheckbox.addEventListener("change", function () {
         if (this.checked) {
             // Show form when checked
-            caPerdiem.style.display = "block";
+            caEntr.style.display = "block";
         } else {
             // Hide form and reset all fields when unchecked
-            caPerdiem.style.display = "none";
-            resetFieldsPerdiem("ca_perdiem"); // Pass the container ID to reset the fields
+            caEntr.style.display = "none";
+            resetFieldsPerdiem("ca_entr"); // change this later
         }
     });
+    // perdiemCheckbox.addEventListener("change", function () {
+    //     if (this.checked) {
+    //         // Show form when checked
+    //         caPerdiem.style.display = "block";
+    //     } else {
+    //         // Hide form and reset all fields when unchecked
+    //         caPerdiem.style.display = "none";
+    //         resetFieldsPerdiem("ca_perdiem"); // Pass the container ID to reset the fields
+    //     }
+    // });
 }
 
 function resetFieldsPerdiem() {
@@ -1129,6 +1960,12 @@ function resetFieldsPerdiem() {
 
 function resetFields() {
     // Transport-related fields
+    const tanggalBtMeals = document.getElementsByName("tanggal_bt_meals[]");
+    const nominalBtMeals = document.getElementsByName("nominal_bt_meals[]");
+    const keteranganBtMeals = document.getElementsByName(
+        "keterangan_bt_meals[]"
+    );
+    const totalBtMeals = document.getElementsByName("total_bt_meals");
     const transportDateFields = document.getElementsByName(
         "tanggal_bt_transport[]"
     );
@@ -1166,6 +2003,18 @@ function resetFields() {
     );
     const totalBtLainnya = document.getElementsByName("total_bt_lainnya");
 
+    tanggalBtMeals.forEach((field) => {
+        field.value = ""; // Reset to empty
+    });
+    nominalBtMeals.forEach((field) => {
+        field.value = ""; // Reset to empty
+    });
+    keteranganBtMeals.forEach((field) => {
+        field.value = ""; // Reset to empty
+    });
+    totalBtMeals.forEach((field) => {
+        field.value = 0; // Reset to 0
+    });
     // Reset transport date fields
     transportDateFields.forEach((field) => {
         field.value = ""; // Reset to empty
@@ -1250,6 +2099,7 @@ function formatInput(input) {
     calculateTotalNominalBTTransport();
     calculateTotalNominalBTPenginapan();
     calculateTotalNominalBTLainnya();
+    calculateTotalNominalBTMeals();
     calculateTotalNominalBTTotal();
 }
 
@@ -1272,6 +2122,11 @@ function calculateTotalNominalBTTotal() {
         });
     document
         .querySelectorAll('input[name="total_bt_lainnya"]')
+        .forEach((input) => {
+            total += parseNumber(input.value);
+        });
+    document
+        .querySelectorAll('input[name="total_bt_meals"]')
         .forEach((input) => {
             total += parseNumber(input.value);
         });
@@ -1380,7 +2235,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const startDate = new Date(startDateInput.value);
         const endDate = new Date(endDateInput.value);
         const groupCompany = document.getElementById("group_company");
-        // console.log("proses calculate");
 
         if (startDate && endDate && !isNaN(startDate) && !isNaN(endDate)) {
             const timeDiff = endDate - startDate;
@@ -1391,9 +2245,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const perdiem = parseFloat(perdiemInput.value) || 0;
             let allowance = totalDays * perdiem;
 
-            if (groupCompany.value !== "Plantations"){
+            if (groupCompany.value !== "Plantations") {
                 allowance *= 1;
-            }else if (othersLocationInput.value.trim() !== "") {
+            } else if (othersLocationInput.value.trim() !== "") {
                 allowance *= 1; // allowance * 50%
             } else {
                 allowance *= 0.5;
