@@ -740,7 +740,7 @@ document.addEventListener("DOMContentLoaded", function () {
     toggleSection(
         "cashAdvancedCheckbox",
         "nav-cashAdvanced",
-        "pills-cashAdvanced"
+        "pills-cashAdvanced-tab"
     );
     toggleSection(
         "caEntertainCheckbox",
