@@ -713,10 +713,8 @@
                     const dateReq2 = document.getElementById('date_required_2').value;
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
                     const totalBtMeals = document.getElementById('total_bt_meals').value;
-                    // const totalBtMealsElement = document.getElementById('total_bt_meals');
-                    // if (totalBtMealsElement) {
-                    //     const totalBtMeals = totalBtMealsElement.value;
-                    // }
+                    const totalBtMealsElement = document.getElementById('total_bt_meals');
+                    const totalBtMeals = totalBtMealsElement ? totalBtMealsElement.value || 0 : 0;
                     const totalBtPenginapan = document.getElementById('total_bt_penginapan').value;
                     const totalBtTransport = document.getElementById('total_bt_transport').value;
                     const totalBtLainnya = document.getElementById('total_bt_lainnya').value;
@@ -748,22 +746,24 @@
                         return;
                     }
                     // Check if CA is checked and all fields are zero
-                    if (caCheckbox && totalBtPerdiem && totalBtPenginapan == 0 &&
-                        totalBtTransport == 0 &&
-                        totalBtLainnya == 0) {
+                    if (caCheckbox && totalBtPerdiem == 0 && totalBtPenginapan == 0 &&
+                        totalBtTransport == 0 && totalBtLainnya == 0) {
+
                         if (group_company == 'KPN Plantations' || group_company == 'Plantations') {
+                            // Case 1: For KPN Plantations or Plantations, exclude "Meals" from the warning
                             Swal.fire({
                                 title: "Warning!",
-                                text: "Cash Advanced fields (Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                text: "Cash Advanced fields (Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
                                 icon: "warning",
                                 confirmButtonColor: "#AB2F2B",
                                 confirmButtonText: "OK",
                             });
                             return; // Exit without showing the confirmation if all fields are zero
                         } else if (totalBtMeals == 0) {
+                            // Case 2: For other group companies, include "Meals" in the warning
                             Swal.fire({
                                 title: "Warning!",
-                                text: "Cash Advanced fields (Meals, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                text: "Cash Advanced fields (Meals, Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
                                 icon: "warning",
                                 confirmButtonColor: "#AB2F2B",
                                 confirmButtonText: "OK",
@@ -881,9 +881,7 @@
                     const dateReq2 = document.getElementById('date_required_2').value;
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
                     const totalBtMealsElement = document.getElementById('total_bt_meals');
-                    if (totalBtMealsElement) {
-                        const totalBtMeals = totalBtMealsElement.value;
-                    }
+                    const totalBtMeals = totalBtMealsElement ? totalBtMealsElement.value || 0 : 0;
                     const totalBtPenginapan = document.getElementById('total_bt_penginapan').value;
                     const totalBtTransport = document.getElementById('total_bt_transport').value;
                     const totalBtLainnya = document.getElementById('total_bt_lainnya').value;
@@ -914,28 +912,30 @@
                         return;
                     }
                     // Check if CA is checked and all fields are zero
-                    if (caCheckbox && totalBtPenginapan == 0 && totalBtTransport == 0 &&
-                        totalBtLainnya == 0) {
+                    if (caCheckbox && totalBtPerdiem == 0 && totalBtPenginapan == 0 &&
+                        totalBtTransport == 0 && totalBtLainnya == 0) {
+
                         if (group_company == 'KPN Plantations' || group_company == 'Plantations') {
+                            // Case 1: For KPN Plantations or Plantations, exclude "Meals" from the warning
                             Swal.fire({
                                 title: "Warning!",
-                                text: "Cash Advanced fields (Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                text: "Cash Advanced fields (Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                icon: "warning",
+                                confirmButtonColor: "#AB2F2B",
+                                confirmButtonText: "OK",
+                            });
+                            return; // Exit without showing the confirmation if all fields are zero
+                        } else if (totalBtMeals == 0) {
+                            // Case 2: For other group companies, include "Meals" in the warning
+                            Swal.fire({
+                                title: "Warning!",
+                                text: "Cash Advanced fields (Meals, Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
                                 icon: "warning",
                                 confirmButtonColor: "#AB2F2B",
                                 confirmButtonText: "OK",
                             });
                             return; // Exit without showing the confirmation if all fields are zero
                         }
-                        // else if (totalBtMeals == 0) {
-                        //     Swal.fire({
-                        //         title: "Warning!",
-                        //         text: "Cash Advanced fields (Meals, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
-                        //         icon: "warning",
-                        //         confirmButtonColor: "#AB2F2B",
-                        //         confirmButtonText: "OK",
-                        //     });
-                        //     return; // Exit without showing the confirmation if all fields are zero
-                        // }
                     }
                     // if (perdiemCheckbox && totalBtPerdiem == 0) {
                     //     Swal.fire({
