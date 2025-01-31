@@ -165,8 +165,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for="jns_dinas" class="form-label">Type of Service</label>
-                                    <select class="form-select form-control-sm" id="jns_dinas" name="jns_dinas" required
-                                        onchange="toggleAdditionalFields()">
+                                    <select class="form-select form-control-sm" id="jns_dinas" name="jns_dinas" required>
                                         <option value="" selected disabled>-- Choose Type of Service --</option>
                                         <option value="dalam kota" {{ $n->jns_dinas == 'dalam kota' ? 'selected' : '' }}>
                                             Dinas
@@ -346,17 +345,6 @@
                                             @endif
                                         </label>
                                         <div class="row">
-                                            {{-- <div class="col-md-2">
-                                            <div class="form-check">
-                                                <input type="hidden" name="ca" id="caHidden"
-                                                    value="{{ $showCashAdvanced ? 'Ya' : 'Tidak' }}">
-                                                 <input class="form-check-input" type="checkbox" id="perdiemCheckbox"
-                                                    value="Ya" onchange="updateCAValue()"
-                                                    @checked($showPerdiem)>
-                                                <label class="form-check-label"
-                                                    for="perdiemCheckbox">{{ $allowance }}</label>
-                                            </div>
-                                        </div> --}}
                                             <input type="hidden" name="ca" id="caHidden"
                                                 value="{{ $showCashAdvanced ? 'Ya' : 'Tidak' }}">
                                             <div class="col-md-2">
@@ -417,13 +405,6 @@
                                         <div class="row mt-3">
                                             <div class="col-md-12">
                                                 <ul class="nav nav-tabs nav-pills mb-2" id="pills-tab" role="tablist">
-                                                    {{-- <li class="nav-item" role="presentation" id="nav-perdiem"
-                                                    style="display: {{ $showPerdiem ? 'block' : 'none' }};">
-                                                    <button class="nav-link" id="pills-perdiem-tab" data-bs-toggle="pill"
-                                                        data-bs-target="#pills-perdiem" type="button" role="tab"
-                                                        aria-controls="pills-perdiem"
-                                                        aria-selected="false">{{ $allowance }}</button>
-                                                </li> --}}
                                                     <li class="nav-item" role="presentation" id="nav-cashAdvanced"
                                                         style="display: <?= $n->ca == 'Ya' ? 'block' : 'none' ?>;">
                                                         <button class="nav-link" id="pills-cashAdvanced-tab"
@@ -464,32 +445,6 @@
                                                 </ul>
 
                                                 <div class="tab-content" id="pills-tabContent">
-                                                    {{-- <div class="tab-pane fade" id="pills-perdiem" role="tabpanel"
-                                                    aria-labelledby="pills-perdiem-tab">
-
-                                                    <div id="ca_perdiem">
-                                                        <div class="row mb-2">
-                                                            <div class="col-md-6 mb-2">
-                                                                <label for="date_required" class="form-label">Date
-                                                                    Required</label>
-                                                                <input type="date" class="form-control form-control-sm"
-                                                                    id="date_required_1" name="date_required"
-                                                                    placeholder="Date Required"
-                                                                    onchange="syncDateRequired(this)"
-                                                                    value="{{ $ca->date_required ?? 0 }}">
-                                                            </div>
-                                                            <div class="col-md-6 mb-2">
-                                                                <label class="form-label" for="ca_decla">Declaration
-                                                                    Estimate</label>
-                                                                <input type="date" name="ca_decla" id="ca_decla_1"
-                                                                    class="form-control form-control-sm bg-light"
-                                                                    placeholder="mm/dd/yyyy"
-                                                                    value="{{ $ca->declare_estimate ?? 0 }}" readonly>
-                                                            </div>
-                                                        </div>
-                                                        @include('hcis.reimbursements.businessTrip.caPerdiem')
-                                                    </div>
-                                                </div> --}}
                                                     <div class="tab-pane fade" id="pills-cashAdvanced" role="tabpanel"
                                                         aria-labelledby="pills-cashAdvanced-tab">
                                                         {{-- Cash Advanced content --}}

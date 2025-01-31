@@ -17,13 +17,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function showAdditionalFields() {
         if (jnsDinasSelect.value === "luar kota") {
-            additionalFieldsLuarKota.style.display = "block";
+            additionalFields.style.display = "block";
             additionalFieldsDalamKota.style.display = "none"; // Hide Dalam Kota fields
         } else if (jnsDinasSelect.value === "dalam kota") {
             additionalFieldsDalamKota.style.display = "block";
-            additionalFieldsLuarKota.style.display = "none"; // Hide Luar Kota fields
+            additionalFields.style.display = "none"; // Hide Luar Kota fields
         } else {
-            additionalFieldsLuarKota.style.display = "none";
+            additionalFields.style.display = "none";
             additionalFieldsDalamKota.style.display = "none";
         }
     }
@@ -2098,21 +2098,22 @@ function DalamKotaHotelInit() {
 //Taksi JS
 function handleTaksiForms() {
     const taksiCheckbox = document.getElementById("taksiCheckbox");
-    const taksiCheckboxDalamKota = document.getElementById(
-        "taksiCheckboxDalamKota"
-    );
+    const taksiCheckboxDalamKota = document.getElementById("taksiCheckboxDalamKota");
     const taksiDiv = document.getElementById("taksi_div");
     const taksiDivDalamKota = document.getElementById("taksi_div_dalam_kota");
-    const formFields = taksiDiv.querySelectorAll("input, textarea");
 
     // Function to toggle 'required' attribute and reset fields if unchecked
-    function toggleRequiredAndReset() {
-        if (taksiDiv.style.display === "block") {
-            // If form is visible, add 'required' attribute
+    function toggleRequiredAndReset(checkbox, formDiv) {
+        const formFields = formDiv.querySelectorAll("input, textarea");
+
+        if (checkbox.checked) {
+            formDiv.style.display = "block";
+            // Add 'required' attribute if form is visible
             formFields.forEach(function (field) {
                 field.setAttribute("required", "required");
             });
         } else {
+            formDiv.style.display = "none";
             // Remove 'required' attribute and reset values
             formFields.forEach(function (field) {
                 field.removeAttribute("required");
@@ -2121,27 +2122,25 @@ function handleTaksiForms() {
         }
     }
 
-    // Handle checkbox change event
-    taksiCheckbox.addEventListener("change", function () {
-        if (this.checked) {
-            taksiDiv.style.display = "block";
-        } else {
-            taksiDiv.style.display = "none";
-            toggleRequiredAndReset(); // Reset values when checkbox is unchecked
-        }
-        toggleRequiredAndReset(); // Toggle required based on visibility
-    });
-    taksiCheckboxDalamKota.addEventListener("change", function () {
-        if (this.checked) {
-            taksiDivDalamKota.style.display = "block";
-        } else {
-            taksiDivDalamKota.style.display = "none";
-            toggleRequiredAndReset(); // Reset values when checkbox is unchecked
-        }
-        toggleRequiredAndReset(); // Toggle required based on visibility
-    });
+    // Handle checkbox change event for "luar kota"
+    if (taksiCheckbox) {
+        taksiCheckbox.addEventListener("change", function () {
+            toggleRequiredAndReset(taksiCheckbox, taksiDiv);
+        });
 
-    toggleRequiredAndReset();
+        // Initialize form state on page load for "luar kota"
+        toggleRequiredAndReset(taksiCheckbox, taksiDiv);
+    }
+
+    // Handle checkbox change event for "dalam kota"
+    if (taksiCheckboxDalamKota) {
+        taksiCheckboxDalamKota.addEventListener("change", function () {
+            toggleRequiredAndReset(taksiCheckboxDalamKota, taksiDivDalamKota);
+        });
+
+        // Initialize form state on page load for "dalam kota"
+        toggleRequiredAndReset(taksiCheckboxDalamKota, taksiDivDalamKota);
+    }
 }
 
 //CA JS

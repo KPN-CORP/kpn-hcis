@@ -7,14 +7,14 @@
             <label class="form-label">Total Ticket</label>
             <div class="input-group input-group-sm">
                 <input class="form-control" name="no_vt" id="no_vt" type="number" min="0"
-                    placeholder="ex: 2" value="{{ $taksiData->no_vt ?? '' }}">
+                    placeholder="ex: 2" value="{{ $taksiLuarKota->no_vt ?? '' }}">
             </div>
         </div>
         <div class="col-md-12 mb-2">
             <label class="form-label">Detail Information</label>
             <div class="input-group input-group-sm">
                 <textarea class="form-control form-control-sm" id="vt_detail" name="vt_detail" rows="3"
-                    placeholder="Fill your need">{{ $taksiData->vt_detail ?? '' }}</textarea>
+                    placeholder="Fill your need">{{ $taksiLuarKota->vt_detail ?? '' }}</textarea>
             </div>
         </div>
     </div>

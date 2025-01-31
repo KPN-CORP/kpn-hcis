@@ -258,9 +258,6 @@ class BusinessTripController extends Controller
         // Initialize caDetail with an empty array if it's null
         $caDetail = $ca ? json_decode($ca->detail_ca, true) : [];
 
-        // Retrieve the taxi data for the specific BusinessTrip
-        $taksi = Taksi::where('no_sppd', $n->no_sppd)->first();
-
         // Retrieve all hotels for the specific BusinessTrip
         $hotels = Hotel::where('no_sppd', $n->no_sppd)->get();
         $perdiem = ListPerdiem::where('grade', $employee_data->job_level)
@@ -275,6 +272,19 @@ class BusinessTripController extends Controller
 
         $parentLink = 'Business Trip';
         $link = 'Business Trip Edit';
+
+        // Retrieve the taxi data for the specific BusinessTrip
+        $taksi = Taksi::where('no_sppd', $n->no_sppd)->first();
+        $taksiLuarKota = null;
+        $taksiDalamKota = null;
+
+        if ($n->jns_dinas === 'luar kota') {
+            $taksiLuarKota = $taksi;
+        } else if ($n->jns_dinas === 'dalam kota') {
+            $taksiDalamKota = $taksi;
+        }
+
+        // dd($taksiLuarKota->no_vt ?? 'No', $taksiDalamKota-> no_vt ?? 'No');
 
         // Prepare hotel data for the view
         $hotelData = [];
@@ -320,7 +330,9 @@ class BusinessTripController extends Controller
         return view('hcis.reimbursements.businessTrip.editFormBt', [
             'n' => $n,
             'hotelData' => $hotelData,
-            'taksiData' => $taksi, // Pass the taxi data
+            'taksiData' => $taksi,
+            'taksiLuarKota' => $taksiLuarKota,
+            'taksiDalamKota' => $taksiDalamKota,
             'ticketData' => $ticketData,
             'employee_data' => $employee_data,
             'employees' => $employees,
