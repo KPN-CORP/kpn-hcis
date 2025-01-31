@@ -387,10 +387,45 @@
                         @endphp
                         <div class="row">
                             <!-- meals Date -->
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Meals Start Plan</label>
+                                <input type="date" name="start_bt_meals[]"
+                                    id="start_bt_meals_{{ $loop->index + 1 }}" class="form-control start-meals"
+                                    value="{{ $meals_dec['start_date'] }}" placeholder="mm/dd/yyyy"
+                                    onchange="calculateTotalDaysPenginapan(this, document.getElementById('end_bt_meals_1'), document.querySelector('#total_days_bt_meals_1'))">
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Meals End Plan</label>
+                                <input type="date" name="end_bt_meals[]" id="end_bt_meals_{{ $loop->index + 1 }}"
+                                    class="form-control end-meals" value="{{ $meals_dec['end_date'] }}"
+                                    placeholder="mm/dd/yyyy"
+                                    onchange="calculateTotalDaysPenginapan(document.getElementById('start_bt_meals_{{ $loop->index + 1 }}'), this, document.querySelector('#total_days_bt_meals_1'))">
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Total Days</label>
+                                <div class="input-group">
+                                    <input class="form-control bg-light total-days-meals"
+                                        id="total_days_bt_meals_{{ $loop->index + 1 }}" name="total_days_bt_meals[]"
+                                        type="number" min="0" value="{{ $meals_dec['total_days'] }}"
+                                        readonly>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">days</span>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-md-6 mb-2">
-                                <label class="form-label">Date</label>
-                                <input type="date" name="tanggal_bt_meals[]" class="form-control"
-                                    value="{{ $meals_dec['start_date'] }}" placeholder="mm/dd/yyyy">
+                                <label class="form-label" for="company_bt_meals{{ $loop->index + 1 }}">Company
+                                    Code</label>
+                                <select class="form-control select2" id="company_bt_meals_{{ $loop->index + 1 }}"
+                                    name="company_bt_meals[]">
+                                    <option value="">Select Company...</option>
+                                    @foreach ($companies as $company)
+                                        <option value="{{ $company->contribution_level_code }}"
+                                            @if ($company->contribution_level_code == $meals_dec['company_code']) selected @endif>
+                                            {{ $company->contribution_level . ' (' . $company->contribution_level_code . ')' }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">Amount</label>
@@ -410,7 +445,7 @@
                             <div class="col-md-12 mb-2">
                                 <div class="mb-2">
                                     <label class="form-label">Information</label>
-                                    <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information ...">{{ $meals_dec['keterangan'] }}</textarea>
+                                    <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ...">{{ $meals_dec['keterangan'] }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -434,10 +469,45 @@
                         <p class="fs-5 text-primary" style="font-weight: bold; ">Meals Declaration</p>
                         <div class="row">
                             <!-- meals Date -->
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Meals Start Plan</label>
+                                <input type="date" name="start_bt_meals[]"
+                                    id="start_bt_meals_{{ $loop->index + 1 }}" class="form-control start-meals"
+                                    value="{{ $meals_dec['start_date'] }}" placeholder="mm/dd/yyyy"
+                                    onchange="calculateTotalDaysPenginapan(this, document.getElementById('end_bt_meals_1'), document.querySelector('#total_days_bt_meals_1'))">
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Meals End Plan</label>
+                                <input type="date" name="end_bt_meals[]" id="end_bt_meals_{{ $loop->index + 1 }}"
+                                    class="form-control end-meals" value="{{ $meals_dec['end_date'] }}"
+                                    placeholder="mm/dd/yyyy"
+                                    onchange="calculateTotalDaysPenginapan(document.getElementById('start_bt_meals_{{ $loop->index + 1 }}'), this, document.querySelector('#total_days_bt_meals_1'))">
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Total Days</label>
+                                <div class="input-group">
+                                    <input class="form-control bg-light total-days-meals"
+                                        id="total_days_bt_meals_{{ $loop->index + 1 }}" name="total_days_bt_meals[]"
+                                        type="number" min="0" value="{{ $meals_dec['total_days'] }}"
+                                        readonly>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">days</span>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-md-6 mb-2">
-                                <label class="form-label">Date</label>
-                                <input type="date" name="tanggal_bt_meals[]" class="form-control"
-                                    value="{{ $meals_dec['start_date'] }}" placeholder="mm/dd/yyyy">
+                                <label class="form-label" for="company_bt_meals{{ $loop->index + 1 }}">Company
+                                    Code</label>
+                                <select class="form-control select2" id="company_bt_meals_{{ $loop->index + 1 }}"
+                                    name="company_bt_meals[]">
+                                    <option value="">Select Company...</option>
+                                    @foreach ($companies as $company)
+                                        <option value="{{ $company->contribution_level_code }}"
+                                            @if ($company->contribution_level_code == $meals_dec['company_code']) selected @endif>
+                                            {{ $company->contribution_level . ' (' . $company->contribution_level_code . ')' }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">Amount</label>
@@ -457,7 +527,7 @@
                             <div class="col-md-12 mb-2">
                                 <div class="mb-2">
                                     <label class="form-label">Information</label>
-                                    <textarea name="keterangan_bt_meals[]" class="form-control">{{ $meals_dec['keterangan'] }}</textarea>
+                                    <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ...">{{ $meals_dec['keterangan'] }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -503,10 +573,45 @@
                         <p class="fs-5 text-primary" style="font-weight: bold;">Meals Declaration</p>
                         <div class="row">
                             <!-- meals Date -->
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Meals Start Plan</label>
+                                <input type="date" name="start_bt_meals[]"
+                                    id="start_bt_meals_{{ $loop->index + 1 }}" class="form-control start-meals"
+                                    value="{{ $meals_dec['start_date'] }}" placeholder="mm/dd/yyyy"
+                                    onchange="calculateTotalDaysPenginapan(this, document.getElementById('end_bt_meals_1'), document.querySelector('#total_days_bt_meals_1'))">
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Meals End Plan</label>
+                                <input type="date" name="end_bt_meals[]" id="end_bt_meals_{{ $loop->index + 1 }}"
+                                    class="form-control end-meals" value="{{ $meals_dec['end_date'] }}"
+                                    placeholder="mm/dd/yyyy"
+                                    onchange="calculateTotalDaysPenginapan(document.getElementById('start_bt_meals_{{ $loop->index + 1 }}'), this, document.querySelector('#total_days_bt_meals_1'))">
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Total Days</label>
+                                <div class="input-group">
+                                    <input class="form-control bg-light total-days-meals"
+                                        id="total_days_bt_meals_{{ $loop->index + 1 }}" name="total_days_bt_meals[]"
+                                        type="number" min="0" value="{{ $meals_dec['total_days'] }}"
+                                        readonly>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">days</span>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-md-6 mb-2">
-                                <label class="form-label">Date</label>
-                                <input type="date" name="tanggal_bt_meals[]" class="form-control"
-                                    value="{{ $meals_dec['start_date'] }}" placeholder="mm/dd/yyyy">
+                                <label class="form-label" for="company_bt_meals{{ $loop->index + 1 }}">Company
+                                    Code</label>
+                                <select class="form-control select2" id="company_bt_meals_{{ $loop->index + 1 }}"
+                                    name="company_bt_meals[]">
+                                    <option value="">Select Company...</option>
+                                    @foreach ($companies as $company)
+                                        <option value="{{ $company->contribution_level_code }}"
+                                            @if ($company->contribution_level_code == $meals_dec['company_code']) selected @endif>
+                                            {{ $company->contribution_level . ' (' . $company->contribution_level_code . ')' }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">Amount</label>
@@ -526,7 +631,7 @@
                             <div class="col-md-12 mb-2">
                                 <div class="mb-2">
                                     <label class="form-label">Information</label>
-                                    <textarea name="keterangan_bt_meals[]" class="form-control">{{ $meals_dec['keterangan'] }}</textarea>
+                                    <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ...">{{ $meals_dec['keterangan'] }}</textarea>
                                 </div>
                             </div>
                         </div>
