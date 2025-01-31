@@ -314,21 +314,21 @@
                                             <div class="tab-pane fade" id="pills-ticket-dalam-kota" role="tabpanel"
                                                 aria-labelledby="pills-ticket-dalam-kota-tab">
                                                 {{-- Ticket content --}}
-                                                @include('hcis.reimbursements.businessTrip.form.dalam-kota.ticketDalamKota')
+                                                @include('hcis.reimbursements.businessTrip.editForm.dalam-kota.editTicketDalamKota')
                                             </div>
 
                                             <!-- Hotel Content -->
                                             <div class="tab-pane fade" id="pills-hotel-dalam-kota" role="tabpanel"
                                                 aria-labelledby="pills-hotel-dalam-kota-tab">
                                                 {{-- Hotel content --}}
-                                                @include('hcis.reimbursements.businessTrip.form.dalam-kota.hotelDalamKota')
+                                                @include('hcis.reimbursements.businessTrip.editForm.dalam-kota.editHotelDalamKota')
                                             </div>
 
                                             <!-- Taxi Content -->
                                             <div class="tab-pane fade" id="pills-taksi-dalam-kota" role="tabpanel"
                                                 aria-labelledby="pills-taksi-dalam-kota-tab">
                                                 {{-- Taxi content --}}
-                                                @include('hcis.reimbursements.businessTrip.form.dalam-kota.taxiDalamKota')
+                                                @include('hcis.reimbursements.businessTrip.editForm.dalam-kota.editTaxiDalamKota')
                                             </div>
                                         </div>
 
