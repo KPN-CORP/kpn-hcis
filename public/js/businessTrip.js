@@ -160,9 +160,12 @@ function updateCAValue() {
     const cashAdvancedChecked = document.getElementById(
         "cashAdvancedCheckbox"
     ).checked;
+    const cashAdvancedEntertainChecked = document.getElementById(
+        "caEntertainCheckbox"
+    ).checked;
     const caField = document.getElementById("caHidden");
 
-    if (cashAdvancedChecked) {
+    if (cashAdvancedChecked || cashAdvancedEntertainChecked) {
         caField.value = "Ya";
     } else {
         caField.value = "Tidak";
@@ -211,6 +214,53 @@ function validateDates(index) {
     const returnDateInput = document.getElementById(`tgl_plg_tkt_${index}`);
     const departureTimeInput = document.getElementById(`jam_brkt_tkt_${index}`);
     const returnTimeInput = document.getElementById(`jam_plg_tkt_${index}`);
+
+    if (
+        departureDateInput &&
+        returnDateInput &&
+        departureTimeInput &&
+        returnTimeInput
+    ) {
+        const departureDate = new Date(departureDateInput.value);
+        const returnDate = new Date(returnDateInput.value);
+
+        // Check if return date is earlier than departure date
+        if (returnDate < departureDate) {
+            Swal.fire({
+                title: "Warning!",
+                text: "Return date cannot be earlier than the departure date.",
+                icon: "error",
+                confirmButtonColor: "#AB2F2B",
+                confirmButtonText: "OK",
+            });
+            returnDateInput.value = ""; // Reset the return date if it's invalid
+            return; // Stop further validation
+        }
+
+        // If the dates are the same, check the times
+        if (returnDate.getTime() === departureDate.getTime()) {
+            const departureTime = departureTimeInput.value;
+            const returnTime = returnTimeInput.value;
+
+            if (departureTime && returnTime && returnTime < departureTime) {
+                Swal.fire({
+                    title: "Warning!",
+                    text: "Return time cannot be earlier than the departure time.",
+                    icon: "error",
+                    confirmButtonColor: "#AB2F2B",
+                    confirmButtonText: "OK",
+                });
+                returnTimeInput.value = ""; // Reset the return time if it's invalid
+            }
+        }
+    }
+}
+//Ticket Dalam Kota Validation Date
+function validateDatesDalamKota(index) {
+    const departureDateInput = document.getElementById(`tgl_brkt_tkt_dalam_kota_${index}`);
+    const returnDateInput = document.getElementById(`tgl_plg_tkt_dalam_kota_${index}`);
+    const departureTimeInput = document.getElementById(`jam_brkt_tkt_dalam_kota_${index}`);
+    const returnTimeInput = document.getElementById(`jam_plg_tkt_dalam_kota_${index}`);
 
     if (
         departureDateInput &&
@@ -508,7 +558,7 @@ document.addEventListener("DOMContentLoaded", function () {
             additionalFieldsDalamKota.style.display = "block";
 
             resetSection(checkboxesLuarKota, [
-                "nav-cash-advanced",
+                "nav-cashAdvanced",
                 "nav-cashAdvancedEntertain",
                 "nav-ticket",
                 "nav-hotel",
@@ -520,7 +570,7 @@ document.addEventListener("DOMContentLoaded", function () {
             additionalFieldsDalamKota.style.display = "none";
 
             resetSection(checkboxesLuarKota.concat(checkboxesDalamKota), [
-                "nav-cash-advanced",
+                "nav-cashAdvanced",
                 "nav-cashAdvancedEntertain",
                 "nav-ticket",
                 "nav-hotel",
@@ -560,8 +610,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // Initialize toggleSection for Luar Kota
     toggleSection(
         "cashAdvancedCheckbox",
-        "nav-cash-advanced",
-        "pills-cash-advanced-tab"
+        "nav-cashAdvanced",
+        "pills-cashAdvanced-tab"
     );
     toggleSection(
         "caEntertainCheckbox",

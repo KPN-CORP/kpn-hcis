@@ -357,10 +357,10 @@
                                                     for="perdiemCheckbox">{{ $allowance }}</label>
                                             </div>
                                         </div> --}}
+                                            <input type="hidden" name="ca" id="caHidden"
+                                                value="{{ $showCashAdvanced ? 'Ya' : 'Tidak' }}">
                                             <div class="col-md-2">
                                                 <div class="form-check">
-                                                    <input type="hidden" name="ca" id="caHidden"
-                                                        value="{{ $showCashAdvanced ? 'Ya' : 'Tidak' }}">
                                                     <input class="form-check-input" type="checkbox"
                                                         id="cashAdvancedCheckbox" value="Ya"
                                                         onchange="updateCAValue()" @checked($showCashAdvanced)>
@@ -370,8 +370,6 @@
                                             </div>
                                             <div class="col-md-3">
                                                 <div class="form-check">
-                                                    <input type="hidden" name="ca" id="caHidden"
-                                                        value="{{ $showCashAdvanced ? 'Ya' : 'Tidak' }}">
                                                     <input class="form-check-input" type="checkbox"
                                                         id="caEntertainCheckbox" value="Ya"
                                                         onchange="updateCAValue()">
@@ -500,7 +498,7 @@
                                                     <div class="tab-pane fade" id="pills-cashAdvancedEntertain"
                                                         role="tabpanel" aria-labelledby="pills-cashAdvancedEntertain-tab">
                                                         {{-- Cash Advanced content --}}
-                                                        @include('hcis.reimbursements.businessTrip.editForm.editTicket')
+                                                        {{-- @include('hcis.reimbursements.businessTrip.editForm.editTicket') --}}
                                                     </div>
                                                     <div class="tab-pane fade" id="pills-ticket" role="tabpanel"
                                                         aria-labelledby="pills-ticket-tab">
