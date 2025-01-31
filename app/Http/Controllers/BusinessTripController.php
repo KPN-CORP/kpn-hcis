@@ -402,6 +402,18 @@ class BusinessTripController extends Controller
 
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
+        if ($request->jns_dinas == 'dalam kota') {
+            $tktDalam = $request->tiket_dalam_kota;
+            $htlDalam = $request->hotel_dalam_kota;
+            $vtDalam = $request->taksi_dalam_kota;
+        } else {
+            $tktDalam = $request->tiket;
+            $htlDalam = $request->hotel;
+            $vtDalam = $request->taksi;
+        }
+
+        // dd($request->jns_dinas, $tktDalam, $htlDalam, $vtDalam);
+        // dd($request->all());
         // Update business trip record
         $n->update([
             'nama' => $request->nama,
@@ -423,33 +435,40 @@ class BusinessTripController extends Controller
             'nama_pemilik_rek' => $request->nama_pemilik_rek,
             'nama_bank' => $request->nama_bank,
             'ca' => $request->ca,
-            'tiket' => $request->tiket,
-            'hotel' => $request->hotel,
-            'taksi' => $request->taksi,
+            'tiket' => $tktDalam,
+            'hotel' => $htlDalam,
+            'taksi' => $vtDalam,
             'status' => $statusValue,
             'manager_l1_id' => $managerL1,
             'manager_l2_id' => $managerL2,
             // 'id_ca' => $request->id_ca,
-            'id_tiket' => $request->id_tiket,
-            'id_hotel' => $request->id_hotel,
-            'id_taksi' => $request->id_taksi,
+            // 'id_tiket' => $request->id_tiket,
+            // 'id_hotel' => $request->id_hotel,
+            // 'id_taksi' => $request->id_taksi,
         ]);
 
         // Handle "Taksi" update
-        if ($request->taksi === 'Ya') {
+        if ($vtDalam === 'Ya') {
             // Fetch existing Taksi records
             $existingTaksi = Taksi::where('no_sppd', $oldNoSppd)->get()->keyBy('id');
 
-            // If no existing Taksi record, or need to update existing records
-            if (isset($request->no_vt)) {
+            if ($request->jns_dinas === 'dalam kota') {
+                $noVt = $request->input('no_vt_dalam_kota');
+                $vtDetail = $request->input('vt_detail_dalam_kota');
+            } else if ($request->jns_dinas === 'luar kota') {
+                $noVt = $request->input('no_vt');
+                $vtDetail = $request->input('vt_detail');
+            }
+
+            if (isset($noVt)) {
                 // Prepare the data for update
                 $taksiData = [
                     'id' => (string) Str::uuid(),
-                    'no_vt' => $request->no_vt,
+                    'no_vt' => $noVt,
+                    'vt_detail' => $vtDetail,
                     'user_id' => Auth::id(),
                     'unit' => $request->divisi,
                     'no_sppd' => $oldNoSppd,
-                    'vt_detail' => $request->vt_detail,
                     'approval_status' => $statusValue,
                     // 'nominal_vt' => (int) str_replace('.', '', $request->nominal_vt),
                     // 'keeper_vt' => (int) str_replace('.', '', $request->keeper_vt),
@@ -477,7 +496,7 @@ class BusinessTripController extends Controller
 
 
         // Handle "Hotel" update
-        if ($request->hotel === 'Ya') {
+        if ($htlDalam === 'Ya') {
             // Get all existing hotels for this business trip
             $existingHotels = Hotel::where('no_sppd', $oldNoSppd)->get()->keyBy('id');
             $newNoHtl = null;
@@ -490,9 +509,32 @@ class BusinessTripController extends Controller
 
             $processedHotelIds = [];
 
-            foreach ($request->nama_htl as $key => $value) {
+            if ($request->jns_dinas === 'dalam kota') {
+                $hotelData = [
+                    'nama_htl' => $request->nama_htl_dalam_kota,
+                    'lokasi_htl' => $request->lokasi_htl_dalam_kota,
+                    'jmlkmr_htl' => $request->jmlkmr_htl_dalam_kota,
+                    'bed_htl' => $request->bed_htl_dalam_kota,
+                    'tgl_masuk_htl' => $request->tgl_masuk_htl_dalam_kota,
+                    'tgl_keluar_htl' => $request->tgl_keluar_htl_dalam_kota,
+                    'total_hari' => $request->total_hari_dalam_kota,
+                    'approval_status' => $statusValue,
+                ];
+            } else {
+                $hotelData = [
+                    'nama_htl' => $request->nama_htl,
+                    'lokasi_htl' => $request->lokasi_htl,
+                    'jmlkmr_htl' => $request->jmlkmr_htl,
+                    'bed_htl' => $request->bed_htl,
+                    'tgl_masuk_htl' => $request->tgl_masuk_htl,
+                    'tgl_keluar_htl' => $request->tgl_keluar_htl,
+                    'total_hari' => $request->total_hari,
+                    'approval_status' => $statusValue,
+                ];
+            }
+
+            foreach ($hotelData['nama_htl'] as $key => $value) {
                 if (!empty($value)) {
-                    // Check if the hotel ID exists in the request
                     $hotelId = $request->hotel_id[$key] ?? null;
 
                     if ($hotelId && isset($existingHotels[$hotelId])) {
@@ -500,12 +542,12 @@ class BusinessTripController extends Controller
                         $hotel = $existingHotels[$hotelId];
                         $hotel->update([
                             'nama_htl' => $value,
-                            'lokasi_htl' => $request->lokasi_htl[$key],
-                            'jmlkmr_htl' => $request->jmlkmr_htl[$key],
-                            'bed_htl' => $request->bed_htl[$key],
-                            'tgl_masuk_htl' => $request->tgl_masuk_htl[$key],
-                            'tgl_keluar_htl' => $request->tgl_keluar_htl[$key],
-                            'total_hari' => $request->total_hari[$key],
+                            'lokasi_htl' => $hotelData['lokasi_htl'][$key],
+                            'jmlkmr_htl' => $hotelData['jmlkmr_htl'][$key],
+                            'bed_htl' => $hotelData['bed_htl'][$key],
+                            'tgl_masuk_htl' => $hotelData['tgl_masuk_htl'][$key],
+                            'tgl_keluar_htl' => $hotelData['tgl_keluar_htl'][$key],
+                            'total_hari' => $hotelData['total_hari'][$key],
                             'approval_status' => $statusValue,
                         ]);
 
@@ -518,19 +560,17 @@ class BusinessTripController extends Controller
 
                         $newHotel = Hotel::create([
                             'id' => (string) Str::uuid(),
-                            // 'no_htl' => $this->generateNoSppdHtl(),
                             'no_htl' => $newNoHtl,
-                            // dd($existingNoHtl),
                             'user_id' => Auth::id(),
                             'unit' => $request->divisi,
                             'no_sppd' => $oldNoSppd,
                             'nama_htl' => $value,
-                            'lokasi_htl' => $request->lokasi_htl[$key],
-                            'jmlkmr_htl' => $request->jmlkmr_htl[$key],
-                            'bed_htl' => $request->bed_htl[$key],
-                            'tgl_masuk_htl' => $request->tgl_masuk_htl[$key],
-                            'tgl_keluar_htl' => $request->tgl_keluar_htl[$key],
-                            'total_hari' => $request->total_hari[$key],
+                            'lokasi_htl' => $hotelData['lokasi_htl'][$key],
+                            'jmlkmr_htl' => $hotelData['jmlkmr_htl'][$key],
+                            'bed_htl' => $hotelData['bed_htl'][$key],
+                            'tgl_masuk_htl' => $hotelData['tgl_masuk_htl'][$key],
+                            'tgl_keluar_htl' => $hotelData['tgl_keluar_htl'][$key],
+                            'total_hari' => $hotelData['total_hari'][$key],
                             'approval_status' => $statusValue,
                         ]);
 
@@ -547,7 +587,7 @@ class BusinessTripController extends Controller
         }
 
         // Handle "Ticket" update
-        if ($request->tiket === 'Ya') {
+        if ($tktDalam === 'Ya') {
             // Get all existing tickets for this business trip
             $existingTickets = Tiket::where('no_sppd', $oldNoSppd)->get()->keyBy('noktp_tkt');
 
@@ -560,24 +600,55 @@ class BusinessTripController extends Controller
 
             $processedTicketIds = [];
 
-            foreach ($request->noktp_tkt as $key => $value) {
+            if ($request->jns_dinas === 'dalam kota') {
+                $ticketFields = [
+                    'noktp_tkt' => $request->noktp_tkt_dalam_kota,
+                    'dari_tkt' => $request->dari_tkt_dalam_kota,
+                    'ke_tkt' => $request->ke_tkt_dalam_kota,
+                    'tgl_brkt_tkt' => $request->tgl_brkt_tkt_dalam_kota,
+                    'tgl_plg_tkt' => $request->tgl_plg_tkt_dalam_kota,
+                    'jam_brkt_tkt' => $request->jam_brkt_tkt_dalam_kota,
+                    'jam_plg_tkt' => $request->jam_plg_tkt_dalam_kota,
+                    'jenis_tkt' => $request->jenis_tkt_dalam_kota,
+                    'type_tkt' => $request->type_tkt_dalam_kota,
+                    'ket_tkt' => $request->ket_tkt_dalam_kota,
+                ];
+            } else {
+                $ticketFields = [
+                    'noktp_tkt' => $request->noktp_tkt,
+                    'dari_tkt' => $request->dari_tkt,
+                    'ke_tkt' => $request->ke_tkt,
+                    'tgl_brkt_tkt' => $request->tgl_brkt_tkt,
+                    'tgl_plg_tkt' => $request->tgl_plg_tkt,
+                    'jam_brkt_tkt' => $request->jam_brkt_tkt,
+                    'jam_plg_tkt' => $request->jam_plg_tkt,
+                    'jenis_tkt' => $request->jenis_tkt,
+                    'type_tkt' => $request->type_tkt,
+                    'ket_tkt' => $request->ket_tkt,
+                ];
+            }
+
+            foreach ($ticketFields['noktp_tkt'] as $key => $value) {
                 if (!empty($value)) {
                     // Prepare ticket data
                     $ticketData = [
                         'no_sppd' => $oldNoSppd,
                         'user_id' => Auth::id(),
                         'unit' => $request->divisi,
-                        'dari_tkt' => $request->dari_tkt[$key] ?? null,
-                        'ke_tkt' => $request->ke_tkt[$key] ?? null,
-                        'tgl_brkt_tkt' => $request->tgl_brkt_tkt[$key] ?? null,
-                        'jam_brkt_tkt' => $request->jam_brkt_tkt[$key] ?? null,
-                        'jenis_tkt' => $request->jenis_tkt[$key] ?? null,
-                        'type_tkt' => $request->type_tkt[$key] ?? null,
-                        'tgl_plg_tkt' => $request->tgl_plg_tkt[$key] ?? null,
-                        'jam_plg_tkt' => $request->jam_plg_tkt[$key] ?? null,
-                        'ket_tkt' => $request->ket_tkt[$key] ?? null,
+                        'dari_tkt' => $ticketFields['dari_tkt'][$key] ?? null,
+                        'ke_tkt' => $ticketFields['ke_tkt'][$key] ?? null,
+                        'tgl_brkt_tkt' => $ticketFields['tgl_brkt_tkt'][$key] ?? null,
+                        'jam_brkt_tkt' => $ticketFields['jam_brkt_tkt'][$key] ?? null,
+                        'jenis_tkt' => $ticketFields['jenis_tkt'][$key] ?? null,
+                        'type_tkt' => $ticketFields['type_tkt'][$key] ?? null,
+                        'tgl_plg_tkt' => $ticketFields['tgl_plg_tkt'][$key] ?? null,
+                        'jam_plg_tkt' => $ticketFields['jam_plg_tkt'][$key] ?? null,
+                        'ket_tkt' => $ticketFields['ket_tkt'][$key] ?? null,
                         'approval_status' => $statusValue,
                         'jns_dinas_tkt' => 'Dinas',
+                        'jk_tkt' => $employee_data->gender ?? null,
+                        'np_tkt' => $employee_data->fullname ?? null,
+                        'tlp_tkt' => $employee_data->personal_mobile_number ?? null
                     ];
 
                     // Fetch employee data to get jk_tkt
