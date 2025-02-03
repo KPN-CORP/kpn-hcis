@@ -1139,7 +1139,6 @@ function DalamKotaTicketInit() {
     const addTicketButtonDalamKota = document.getElementById(
         "add-ticket-btn-dalam-kota"
     );
-    console.log("Dalam Kota initialized");
     function toggleRequiredAttributesDalamKota(form, isRequired) {
         const fields = [
             'select[name="noktp_tkt_dalam_kota[]"]',

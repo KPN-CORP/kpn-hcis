@@ -677,7 +677,6 @@ document.addEventListener("DOMContentLoaded", function () {
             ]);
         } else if (this.value === "dalam kota") {
             // Show "Dalam Kota" additional fields and reset "Luar Kota"
-            console.log("Showing Dalam Kota fields");
             additionalFields.style.display = "none";
             additionalFieldsDalamKota.style.display = "block";
 
@@ -1237,7 +1236,6 @@ function DalamKotaTicketInit() {
     const addTicketButtonDalamKota = document.getElementById(
         "add-ticket-btn-dalam-kota"
     );
-    console.log("Dalam Kota initialized");
     function toggleRequiredAttributesDalamKota(form, isRequired) {
         const fields = [
             'select[name="noktp_tkt_dalam_kota[]"]',
