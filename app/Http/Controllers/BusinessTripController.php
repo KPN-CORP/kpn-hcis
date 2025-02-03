@@ -3820,6 +3820,15 @@ class BusinessTripController extends Controller
 
         // Retrieve the taxi data for the specific BusinessTrip
         $taksi = Taksi::where('no_sppd', $n->no_sppd)->first();
+        $taksiLuarKota = null;
+        $taksiDalamKota = null;
+
+        if ($n->jns_dinas === 'luar kota') {
+            $taksiLuarKota = $taksi;
+        } else if ($n->jns_dinas === 'dalam kota') {
+            $taksiDalamKota = $taksi;
+        }
+
         $ca = CATransaction::where('no_sppd', $n->no_sppd)->first();
         // Initialize caDetail with an empty array if it's null
         $caDetail = $ca ? json_decode($ca->detail_ca, true) : [];
@@ -3895,6 +3904,8 @@ class BusinessTripController extends Controller
             'link' => $link,
             'perdiem' => $perdiem,
             'group_company' => $group_company,
+            'taksiLuarKota' => $taksiLuarKota,
+            'taksiDalamKota' => $taksiDalamKota,
         ]);
     }
 

@@ -23,21 +23,21 @@
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Hotel Name</label>
                         <div class="input-group">
-                            <input class="form-control form-control-sm" name="nama_htl_dalam_kota[]" type="text"
-                                placeholder="ex: Hyatt" value="{{ $hotel['nama_htl'] ?? '' }}">
+                            <input class="form-control form-control-sm bg-light" name="nama_htl_dalam_kota[]" type="text"
+                                placeholder="ex: Hyatt" value="{{ $hotel['nama_htl'] ?? '' }}" readonly>
                         </div>
                     </div>
 
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Hotel Location</label>
                         <div class="input-group">
-                            <input class="form-control form-control-sm" name="lokasi_htl_dalam_kota[]" type="text"
-                                placeholder="ex: Jakarta" value="{{ $hotel['lokasi_htl'] ?? '' }}">
+                            <input class="form-control form-control-sm bg-light" name="lokasi_htl_dalam_kota[]" type="text"
+                                placeholder="ex: Jakarta" value="{{ $hotel['lokasi_htl'] ?? '' }}" readonly>
                         </div>
                     </div>
                     <div class="col-md-2 mb-2">
                         <label class="form-label">Bed Size</label>
-                        <select class="form-select form-select-sm select2" name="bed_htl_dalam_kota[]">
+                        <select class="form-select form-select-sm select2" name="bed_htl_dalam_kota[]" disabled>
                             <option value="Double Bed"
                                 {{ isset($hotel['bed_htl']) && $hotel['bed_htl'] === 'Double Bed' ? 'selected' : '' }}>
                                 Double Bed</option>
@@ -49,40 +49,35 @@
                     <div class="col-md-2 mb-2">
                         <label class="form-label">Total Room</label>
                         <div class="input-group">
-                            <input class="form-control form-control-sm" name="jmlkmr_htl_dalam_kota[]" type="number"
-                                min="1" placeholder="ex: 1" value="{{ $hotel['jmlkmr_htl'] ?? '' }}">
+                            <input class="form-control form-control-sm bg-light" name="jmlkmr_htl_dalam_kota[]" type="number"
+                                min="1" placeholder="ex: 1" value="{{ $hotel['jmlkmr_htl'] ?? '' }}" readonly>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Check In Date</label>
-                        <input type="date" class="form-control form-control-sm" name="tgl_masuk_htl_dalam_kota[]"
+                        <input type="date" class="form-control form-control-sm bg-light" name="tgl_masuk_htl_dalam_kota[]"
                             id="check-in-dalam-kota-<?php echo $i; ?>"
                             value="{{ $hotel['tgl_masuk_htl'] ?? '' }}"
-                            onchange="calculateTotalDaysDalamKota(<?php echo $i; ?>)">
+                            onchange="calculateTotalDaysDalamKota(<?php echo $i; ?>)" readonly>
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Check Out Date</label>
-                        <input type="date" class="form-control form-control-sm" name="tgl_keluar_htl_dalam_kota[]"
+                        <input type="date" class="form-control form-control-sm bg-light" name="tgl_keluar_htl_dalam_kota[]"
                             id="check-out-dalam-kota-<?php echo $i; ?>"
                             value="{{ $hotel['tgl_keluar_htl'] ?? '' }}"
-                            onchange="calculateTotalDaysDalamKota(<?php echo $i; ?>)">
+                            onchange="calculateTotalDaysDalamKota(<?php echo $i; ?>)" readonly>
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Total Nights</label>
-                        <input type="number" class="form-control form-control-sm bg-light"
+                        <input type="number" class="form-control form-control-sm bg-light bg-light"
                             name="total_hari_dalam_kota[]" id="total-days-dalam-kota-<?php echo $i; ?>" readonly
                             value="{{ $hotel['total_hari'] ?? '' }}">
                     </div>
-                </div>
-                <div class="mt-2">
-                    <button type="button" class="btn btn-sm btn-outline-danger remove-hotel-btn-dalam-kota"
-                        data-form-id="<?php echo $i; ?>">Remove Data</button>
                 </div>
             </div>
         </div>
         <?php endfor; ?>
     </div>
-    <button type="button" class="btn btn-sm btn-outline-primary add-hotel-btn-dalam-kota">Add Hotel Data</button>
 </div>
