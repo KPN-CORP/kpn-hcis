@@ -127,679 +127,34 @@
                                     $detailPenginapan = $caDetail['detail_penginapan'] ?? [];
                                     $detailLainnya = $caDetail['detail_lainnya'] ?? [];
                                 @endphp
-                                <!-- PERDIEM TABLE -->
-                                <div class="bg-light p-3 mt-2 mb-2 rounded">
-                                    <h4 class="text-start text-primary mb-3">PERDIEM</h4>
-                                    <div class="row mt-2" id="ca_div">
-                                        <div class="col-md-6 mb-2">
-                                            <h5 class="bg-primary text-white text-center p-2" style="margin-bottom: 0;">
-                                                Perdiem Plan (Request):</h5>
-                                            <div class="table-responsive table-container bg-white"
-                                                style="height: 300px; overflow-y: auto;">
-                                                <table class="table table-hover table-sm nowrap"
-                                                    id="{{ isset($caDetail['detail_perdiem']) && is_array($caDetail['detail_perdiem']) ? (array_sum(array_column($caDetail['detail_perdiem'], 'nominal')) > 0 ? 'perdiemTable' : '') : '' }}"
-                                                    width="100%" cellspacing="0">
-                                                    <thead class="thead-light">
-                                                        {{-- <tr class="bg-primary">
-                                                            <th colspan="8" class="text-center text-white"><b>Perdiem
-                                                                    Plan:</b>
-                                                            </th>
-                                                        </tr> --}}
-                                                        <tr style="text-align-last: center;">
-                                                            <th></th>
-                                                            <th>No</th>
-                                                            <th>Start Date</th>
-                                                            <th>End Date</th>
-                                                            <th>Location</th>
-                                                            <th>Company Code</th>
-                                                            <th>Total Days</th>
-                                                            <th>Amount</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <?php
-                                                        $totalPerdiem = 0;
-                                                        $totalDays = 0;
-                                                        $hasData = isset($caDetail['detail_perdiem']) && is_array($caDetail['detail_perdiem']);
-                                                        $allNominalZero = true; // Flag to check if all nominal values are zero
-                                                        ?>
 
-                                                        @if ($hasData)
-                                                            @foreach ($caDetail['detail_perdiem'] as $perdiem)
-                                                                <?php
-                                                                $nominal = floatval($perdiem['nominal'] ?? '0');
-                                                                $totalPerdiem += $nominal;
-                                                                $totalDays += intval($perdiem['total_days'] ?? '0');
-
-                                                                // Check if any nominal value is not zero
-                                                                if ($nominal > 0) {
-                                                                    $allNominalZero = false;
-                                                                }
-                                                                ?>
-                                                            @endforeach
-
-                                                            @if ($allNominalZero)
-                                                                <tr>
-                                                                    <td colspan="8" class="text-center">No data available
-                                                                    </td>
-                                                                </tr>
-                                                            @else
-                                                                @foreach ($caDetail['detail_perdiem'] as $perdiem)
-                                                                    <tr class="text-center">
-                                                                        <td class="text-center"></td>
-                                                                        <td class="text-center">{{ $loop->index + 1 }}</td>
-                                                                        <td>{{ isset($perdiem['start_date']) ? \Carbon\Carbon::parse($perdiem['start_date'])->format('d-M-y') : '-' }}
-                                                                        </td>
-                                                                        <td>{{ isset($perdiem['end_date']) ? \Carbon\Carbon::parse($perdiem['end_date'])->format('d-M-y') : '-' }}
-                                                                        </td>
-                                                                        <td>
-                                                                            @if (isset($perdiem['location']) && $perdiem['location'] == 'Others')
-                                                                                {{ $perdiem['other_location'] ?? '-' }}
-                                                                            @else
-                                                                                {{ $perdiem['location'] ?? '-' }}
-                                                                            @endif
-                                                                        </td>
-                                                                        <td>{{ $perdiem['company_code'] ?? '-' }}</td>
-                                                                        <td>{{ $perdiem['total_days'] ?? '-' }} Days</td>
-                                                                        <td style="text-align: right">Rp.
-                                                                            {{ number_format($perdiem['nominal'] ?? '0', 0, ',', '.') }}
-                                                                        </td>
-                                                                    </tr>
-                                                                @endforeach
-                                                            @endif
-                                                        @else
-                                                            <tr>
-                                                                <td colspan="8" class="text-center">No data available
-                                                                </td>
-                                                            </tr>
-                                                        @endif
-                                                    </tbody>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td colspan="{{ $hasData && !$allNominalZero ? 4 : 6 }}"
-                                                                class="text-right"><b>Total</b></td>
-                                                            <td class="text-center"><b>{{ $totalDays }} Days</b></td>
-                                                            <td style="text-align: right"><b>Rp.
-                                                                    {{ number_format($totalPerdiem, 0, ',', '.') }}</b>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <h5 class="bg-primary text-white text-center p-2" style="margin-bottom: 0;">
-                                                Perdiem Plan (Declaration):</h5>
-                                            <div class="table-responsive table-container bg-white"
-                                                style="height: 300px; overflow-y: auto;">
-                                                <table class="table table-hover table-sm nowrap"
-                                                    id="{{ isset($declareCa['detail_perdiem']) && is_array($declareCa['detail_perdiem']) ? (array_sum(array_column($declareCa['detail_perdiem'], 'nominal')) > 0 ? 'perdiemTableDec' : '') : '' }}"
-                                                    width="100%" cellspacing="0">
-                                                    <thead class="thead-light">
-                                                        {{-- <tr class="bg-primary">
-                                                            <th colspan="8" class="text-center text-white"><b>Perdiem
-                                                                    Plan
-                                                                    (Declaration):</b></th>
-                                                        </tr> --}}
-                                                        <tr style="text-align-last: center;">
-                                                            <th></th>
-                                                            <th>No</th>
-                                                            <th>Start Date</th>
-                                                            <th>End Date</th>
-                                                            <th>Location</th>
-                                                            <th>Company Code</th>
-                                                            <th>Total Days</th>
-                                                            <th>Amount</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <?php
-                                                        $totalPerdiem = 0;
-                                                        $totalDays = 0;
-                                                        $hasData = isset($declareCa['detail_perdiem']) && is_array($declareCa['detail_perdiem']);
-                                                        $allNominalZero = true; // Flag to check if all nominal values are zero
-                                                        ?>
-
-                                                        @if ($hasData)
-                                                            @foreach ($declareCa['detail_perdiem'] as $perdiem)
-                                                                <?php
-                                                                $nominal = floatval($perdiem['nominal'] ?? '0');
-                                                                $totalPerdiem += $nominal;
-                                                                $totalDays += intval($perdiem['total_days'] ?? '0');
-
-                                                                // Check if any nominal value is not zero
-                                                                if ($nominal > 0) {
-                                                                    $allNominalZero = false;
-                                                                }
-                                                                ?>
-                                                            @endforeach
-
-                                                            @if ($allNominalZero)
-                                                                <tr>
-                                                                    <td colspan="8" class="text-center">No data available
-                                                                    </td>
-                                                                </tr>
-                                                            @else
-                                                                @foreach ($declareCa['detail_perdiem'] as $perdiem)
-                                                                    <tr class="text-center">
-                                                                        <td class="text-center"></td>
-                                                                        <td class="text-center">{{ $loop->index + 1 }}</td>
-                                                                        <td>{{ isset($perdiem['start_date']) ? \Carbon\Carbon::parse($perdiem['start_date'])->format('d-M-y') : '-' }}
-                                                                        </td>
-                                                                        <td>{{ isset($perdiem['end_date']) ? \Carbon\Carbon::parse($perdiem['end_date'])->format('d-M-y') : '-' }}
-                                                                        </td>
-                                                                        <td>
-                                                                            @if (isset($perdiem['location']) && $perdiem['location'] == 'Others')
-                                                                                {{ $perdiem['other_location'] ?? '-' }}
-                                                                            @else
-                                                                                {{ $perdiem['location'] ?? '-' }}
-                                                                            @endif
-                                                                        </td>
-                                                                        <td>{{ $perdiem['company_code'] ?? '-' }}</td>
-                                                                        <td>{{ $perdiem['total_days'] ?? '-' }} Days</td>
-                                                                        <td style="text-align: right">Rp.
-                                                                            {{ number_format($perdiem['nominal'] ?? '0', 0, ',', '.') }}
-                                                                        </td>
-                                                                    </tr>
-                                                                @endforeach
-                                                            @endif
-                                                        @else
-                                                            <tr>
-                                                                <td colspan="8" class="text-center">No data available
-                                                                </td>
-                                                            </tr>
-                                                        @endif
-                                                    </tbody>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td colspan="{{ $hasData && !$allNominalZero ? 4 : 6 }}"
-                                                                class="text-right"><b>Total</b></td>
-                                                            <td class="text-center"><b>{{ $totalDays }} Days</b></td>
-                                                            <td style="text-align: right"><b>Rp.
-                                                                    {{ number_format($totalPerdiem, 0, ',', '.') }}</b>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {{-- TRANSPORT TABLE --}}
-
-                                <div class="bg-light p-3 mt-2 mb-2 rounded">
-                                    <h4 class="text-start text-primary mb-3">TRANSPORT</h4>
-                                    <div class="row mb-2">
-                                        <div class="col-md-6 mb-2">
-                                            <h5 class="bg-primary text-white text-center p-2" style="margin-bottom: 0;">
-                                                Transport Plan (Request):</h5>
-                                            <div class="table-responsive table-container bg-white"
-                                                style="height: 300px; overflow-y: auto;">
-                                                <table class="table table-hover table-sm nowrap"
-                                                    id="{{ isset($caDetail['detail_transport']) && is_array($caDetail['detail_transport']) ? (array_sum(array_column($caDetail['detail_transport'], 'nominal')) > 0 ? 'transportTable' : '') : '' }}"
-                                                    width="100%" cellspacing="0">
-                                                    <thead class="thead-light">
-                                                        {{-- <tr class="bg-primary">
-                                                            <th colspan="5" class="text-center text-white">Transport
-                                                                Plan</th>
-                                                        </tr> --}}
-                                                        <tr style="text-align-last: center;">
-                                                            {{-- <th></th> --}}
-                                                            <th>No</th>
-                                                            <th>Date</th>
-                                                            <th>Information</th>
-                                                            <th>Company Code</th>
-                                                            <th>Amount</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-
-                                                        <?php $totalTransport = 0; ?>
-                                                        @if (isset($caDetail['detail_transport']) &&
-                                                                is_array($caDetail['detail_transport']) &&
-                                                                count($caDetail['detail_transport']) > 0)
-                                                            @foreach ($caDetail['detail_transport'] as $transport)
-                                                                <?php
-                                                                $totalTransport += floatval($transport['nominal'] ?? 0);
-                                                                ?>
-                                                            @endforeach
-
-                                                            @if ($totalTransport > 0)
-                                                                @foreach ($caDetail['detail_transport'] as $transport)
-                                                                    <tr class="text-center">
-                                                                        {{-- <td></td> --}}
-                                                                        <td class="text-center">{{ $loop->index + 1 }}
-                                                                        </td>
-                                                                        <td>
-                                                                            @if (isset($transport['tanggal']) && $transport['tanggal'])
-                                                                                {{ \Carbon\Carbon::parse($transport['tanggal'])->format('d-M-y') }}
-                                                                            @else
-                                                                                -
-                                                                            @endif
-                                                                        </td>
-                                                                        <td>{{ $transport['keterangan'] ?? '-' }}</td>
-                                                                        <td>{{ $transport['company_code'] ?? '-' }}</td>
-                                                                        <td style="text-align: right">
-                                                                            Rp.
-                                                                            {{ number_format(floatval($transport['nominal'] ?? 0), 0, ',', '.') }}
-                                                                        </td>
-                                                                    </tr>
-                                                                @endforeach
-                                                            @else
-                                                                <tr>
-                                                                    <td colspan="5" class="text-center">No data
-                                                                        available</td>
-                                                                </tr>
-                                                            @endif
-                                                        @else
-                                                            <tr>
-                                                                <td colspan="5" class="text-center">No data available
-                                                                </td>
-                                                            </tr>
-                                                        @endif
-                                                    </tbody>
-                                                    <tfoot>
-                                                        <tr>
-                                                            <td colspan="4" class="text-right"><strong>Total</strong>
-                                                            </td>
-                                                            <td style="text-align: right">
-                                                                <strong>Rp.
-                                                                    {{ number_format($totalTransport, 0, ',', '.') }}</strong>
-                                                            </td>
-                                                        </tr>
-                                                    </tfoot>
-                                                </table>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <h5 class="bg-primary text-white text-center p-2" style="margin-bottom: 0;">
-                                                Transport Plan (Declaration):</h5>
-                                            <div class="table-responsive table-container bg-white"
-                                                style="height: 300px; overflow-y: auto;">
-                                                <table class="table table-hover table-sm nowrap"
-                                                    id="{{ isset($declareCa['detail_transport']) && is_array($declareCa['detail_transport']) ? (array_sum(array_column($declareCa['detail_transport'], 'nominal')) > 0 ? 'transportTableDec' : '') : '' }}"
-                                                    width="100%" cellspacing="0">
-                                                    <thead class="thead-light">
-                                                        {{-- <tr class="bg-primary">
-                                                            <th colspan="5" class="text-center text-white">Transport
-                                                                Plan
-                                                                (Declaration):</th>
-                                                        </tr> --}}
-                                                        <tr style="text-align-last: center;">
-                                                            <th>No</th>
-                                                            <th>Date</th>
-                                                            <th>Information</th>
-                                                            <th>Company Code</th>
-                                                            <th>Amount</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <?php $totalTransport = 0; ?>
-                                                        @if (isset($declareCa['detail_transport']) &&
-                                                                is_array($declareCa['detail_transport']) &&
-                                                                count($declareCa['detail_transport']) > 0)
-                                                            @foreach ($declareCa['detail_transport'] as $transport)
-                                                                <?php
-                                                                $totalTransport += floatval($transport['nominal'] ?? 0);
-                                                                ?>
-                                                            @endforeach
-
-                                                            @if ($totalTransport > 0)
-                                                                @foreach ($declareCa['detail_transport'] as $transport)
-                                                                    <tr class="text-center">
-                                                                        <td class="text-center">{{ $loop->index + 1 }}
-                                                                        </td>
-                                                                        <td>
-                                                                            @if (isset($transport['tanggal']) && $transport['tanggal'])
-                                                                                {{ \Carbon\Carbon::parse($transport['tanggal'])->format('d-M-y') }}
-                                                                            @else
-                                                                                -
-                                                                            @endif
-                                                                        </td>
-                                                                        <td>{{ $transport['keterangan'] ?? '-' }}</td>
-                                                                        <td>{{ $transport['company_code'] ?? '-' }}</td>
-                                                                        <td style="text-align: right">
-                                                                            Rp.
-                                                                            {{ number_format(floatval($transport['nominal'] ?? 0), 0, ',', '.') }}
-                                                                        </td>
-                                                                    </tr>
-                                                                @endforeach
-                                                            @else
-                                                                <tr>
-                                                                    <td colspan="5" class="text-center">No data
-                                                                        available</td>
-                                                                </tr>
-                                                            @endif
-                                                        @else
-                                                            <tr>
-                                                                <td colspan="5" class="text-center">No data available
-                                                                </td>
-                                                            </tr>
-                                                        @endif
-                                                    </tbody>
-
-                                                    <tfoot>
-                                                        <tr>
-                                                            <td colspan="4" class="text-right"><strong>Total</strong>
-                                                            </td>
-                                                            <td style="text-align: right">
-                                                                <strong>Rp.
-                                                                    {{ number_format($totalTransport, 0, ',', '.') }}</strong>
-                                                            </td>
-                                                        </tr>
-                                                    </tfoot>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {{-- ACCOM TABLE --}}
-                                <div class="bg-light p-3 mt-2 mb-2 rounded">
-                                    <h4 class="text-start text-primary mb-3">ACCOMMODATION</h4>
-                                    <div class="row mb-2">
-                                        <div class="col-md-6 mb-2">
-                                            <h5 class="bg-primary text-white text-center p-2" style="margin-bottom: 0;">
-                                                Accommodation Plan (Request):</h5>
-                                            <div class="table-responsive table-container bg-white"
-                                                style="height: 300px; overflow-y: auto;">
-                                                <table class="table table-hover table-sm nowrap bg-white"
-                                                    id="{{ isset($caDetail['detail_penginapan']) && is_array($caDetail['detail_penginapan']) ? (array_sum(array_column($caDetail['detail_penginapan'], 'nominal')) > 0 ? 'penginapanTable' : '') : '' }}"
-                                                    width="100%" cellspacing="0">
-                                                    <thead class="thead-light">
-                                                        {{-- <tr class="bg-primary">
-                                                            <th colspan="7" class="text-center text-white">
-                                                                Accommodation
-                                                                Plan
-                                                            </th>
-                                                        </tr> --}}
-                                                        <tr style="text-align-last: center;">
-                                                            <th>No</th>
-                                                            <th>Start Date</th>
-                                                            <th>End Date</th>
-                                                            <th>Hotel Name</th>
-                                                            <th>Company Code</th>
-                                                            <th>Total Days</th>
-                                                            <th>Amount</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <?php $totalPenginapan = 0;
-                                                        $totalDays = 0; ?>
-                                                        @if (isset($caDetail['detail_penginapan']) &&
-                                                                is_array($caDetail['detail_penginapan']) &&
-                                                                count($caDetail['detail_penginapan']) > 0)
-                                                            @foreach ($caDetail['detail_penginapan'] as $penginapan)
-                                                                <?php
-                                                                $totalPenginapan += floatval($penginapan['nominal'] ?? 0);
-                                                                $totalDays += intval($penginapan['total_days'] ?? 0);
-                                                                ?>
-                                                            @endforeach
-
-                                                            @if ($totalPenginapan > 0)
-                                                                @foreach ($caDetail['detail_penginapan'] as $penginapan)
-                                                                    <tr style="text-align-last: center;">
-                                                                        <td>{{ $loop->index + 1 }}</td>
-                                                                        <td>{{ isset($penginapan['start_date']) ? \Carbon\Carbon::parse($penginapan['start_date'])->format('d-M-y') : '-' }}
-                                                                        </td>
-                                                                        <td>{{ isset($penginapan['end_date']) ? \Carbon\Carbon::parse($penginapan['end_date'])->format('d-M-y') : '-' }}
-                                                                        </td>
-                                                                        <td>{{ $penginapan['hotel_name'] ?? '-' }}</td>
-                                                                        <td>{{ $penginapan['company_code'] ?? '-' }}
-                                                                        </td>
-                                                                        <td>{{ $penginapan['total_days'] ?? '-' }} Days
-                                                                        </td>
-                                                                        <td>Rp.
-                                                                            {{ number_format(floatval($penginapan['nominal'] ?? 0), 0, ',', '.') }}
-                                                                        </td>
-                                                                    </tr>
-                                                                @endforeach
-                                                            @else
-                                                                <tr>
-                                                                    <td colspan="7" class="text-center">No data
-                                                                        available
-                                                                    </td>
-                                                                </tr>
-                                                            @endif
-                                                        @else
-                                                            <tr>
-                                                                <td colspan="7" class="text-center">No data
-                                                                    available</td>
-                                                            </tr>
-                                                        @endif
-                                                    <tfoot>
-                                                        <td colspan="5" class="text-right"><b>Total</b></td>
-                                                        <td class="text-center"><b>{{ $totalDays }} Days</b></td>
-                                                        <td class="text-center"><b>Rp.
-                                                                {{ number_format($totalPenginapan, 0, ',', '.') }}</b></td>
-                                                    </tfoot>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 mb-2">
-                                            <h5 class="bg-primary text-white text-center p-2" style="margin-bottom: 0;">
-                                                Accommodation Plan (Declaration):</h5>
-                                            <div class="table-responsive table-container bg-white"
-                                                style="height: 300px; overflow-y: auto;">
-
-                                                <table class="table table-hover table-sm nowrap"
-                                                    id="{{ isset($declareCa['detail_penginapan']) && is_array($declareCa['detail_penginapan']) ? (array_sum(array_column($declareCa['detail_penginapan'], 'nominal')) > 0 ? 'penginapanTableDec' : '') : '' }}"
-                                                    width="100%" cellspacing="0">
-
-                                                    <thead class="thead-light">
-                                                        {{-- <tr class="bg-primary">
-                                                            <th colspan="7" class="text-center text-white">
-                                                                Accommodation Plan
-                                                                (Declaration):</th>
-                                                        </tr> --}}
-                                                        <tr style="text-align-last: center;">
-                                                            <th>No</th>
-                                                            <th>Start Date</th>
-                                                            <th>End Date</th>
-                                                            <th>Hotel Name</th>
-                                                            <th>Company Code</th>
-                                                            <th>Total Days</th>
-                                                            <th>Amount</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <?php $totalPenginapan = 0;
-                                                        $totalDays = 0; ?>
-                                                        @if (isset($declareCa['detail_penginapan']) &&
-                                                                is_array($declareCa['detail_penginapan']) &&
-                                                                count($declareCa['detail_penginapan']) > 0)
-                                                            @foreach ($declareCa['detail_penginapan'] as $penginapan)
-                                                                <?php
-                                                                $totalPenginapan += floatval($penginapan['nominal'] ?? 0);
-                                                                $totalDays += intval($penginapan['total_days'] ?? 0);
-                                                                ?>
-                                                            @endforeach
-
-                                                            @if ($totalPenginapan > 0)
-                                                                @foreach ($declareCa['detail_penginapan'] as $penginapan)
-                                                                    <tr style="text-align-last: center;">
-                                                                        <td>{{ $loop->index + 1 }}</td>
-                                                                        <td>{{ isset($penginapan['start_date']) ? \Carbon\Carbon::parse($penginapan['start_date'])->format('d-M-y') : '-' }}
-                                                                        </td>
-                                                                        <td>{{ isset($penginapan['end_date']) ? \Carbon\Carbon::parse($penginapan['end_date'])->format('d-M-y') : '-' }}
-                                                                        </td>
-                                                                        <td>{{ $penginapan['hotel_name'] ?? '-' }}
-                                                                        </td>
-                                                                        <td>{{ $penginapan['company_code'] ?? '-' }}
-                                                                        </td>
-                                                                        <td>{{ $penginapan['total_days'] ?? '-' }}
-                                                                            Days
-                                                                        </td>
-                                                                        <td>Rp.
-                                                                            {{ number_format(floatval($penginapan['nominal'] ?? 0), 0, ',', '.') }}
-                                                                        </td>
-                                                                    </tr>
-                                                                @endforeach
-                                                            @else
-                                                                <tr>
-                                                                    <td colspan="7" class="text-center">No data
-                                                                        available</td>
-                                                                </tr>
-                                                            @endif
-                                                        @else
-                                                            <tr>
-                                                                <td colspan="7" class="text-center">No data
-                                                                    available
-                                                                </td>
-                                                            </tr>
-                                                        @endif
-                                                    <tfoot>
-                                                        <td colspan="5" class="text-right"><b>Total</b></td>
-                                                        <td class="text-center"><b>{{ $totalDays }} Days</b></td>
-                                                        <td class="text-center"><b>Rp.
-                                                                {{ number_format($totalPenginapan, 0, ',', '.') }}</b></td>
-                                                    </tfoot>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {{-- OTHERS TABLE --}}
-                                <div class="bg-light p-3 mt-2 mb-2 rounded">
-                                    <h4 class="text-start text-primary mb-3">OTHERS</h4>
-                                    <div class="row mb-2">
-                                        <div class="col-md-6 mb-2">
-                                            <h5 class="bg-primary text-white text-center p-2" style="margin-bottom: 0;">
-                                                Others Plan (Request):</h5>
-                                            <div class="table-responsive table-container bg-white"
-                                                style="height: 300px; overflow-y: auto;">
-                                                <table class="table table-hover table-sm nowrap"
-                                                    id="{{ isset($caDetail['detail_lainnya']) && is_array($caDetail['detail_lainnya']) ? (array_sum(array_column($caDetail['detail_lainnya'], 'nominal')) > 0 ? 'otherTable' : '') : '' }}"
-                                                    width="100%" cellspacing="0">
-                                                    <thead class="thead-light">
-                                                        {{-- <tr class="bg-primary">
-                                                            <th colspan="4" class="text-center text-white">Others
-                                                                Plan</th>
-                                                        </tr> --}}
-                                                        <tr style="text-align-last: center;">
-                                                            <th>No</th>
-                                                            <th>Date</th>
-                                                            <th>Information</th>
-                                                            <th>Amount</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <?php $totalLainnya = 0; ?>
-                                                        @if (isset($caDetail['detail_lainnya']) &&
-                                                                is_array($caDetail['detail_lainnya']) &&
-                                                                count($caDetail['detail_lainnya']) > 0)
-                                                            @foreach ($caDetail['detail_lainnya'] as $lainnya)
-                                                                <?php
-                                                                $totalLainnya += floatval($lainnya['nominal'] ?? 0);
-                                                                ?>
-                                                            @endforeach
-
-                                                            @if ($totalLainnya > 0)
-                                                                @foreach ($caDetail['detail_lainnya'] as $lainnya)
-                                                                    <tr style="text-align-last: center;">
-                                                                        <td>{{ $loop->index + 1 }}</td>
-                                                                        <td>{{ isset($lainnya['tanggal']) ? \Carbon\Carbon::parse($lainnya['tanggal'])->format('d-M-y') : '-' }}
-                                                                        </td>
-                                                                        <td>{{ $lainnya['keterangan'] ?? '-' }}</td>
-                                                                        <td style="text-align-last: right;">Rp.
-                                                                            {{ number_format(floatval($lainnya['nominal'] ?? 0), 0, ',', '.') }}
-                                                                        </td>
-                                                                    </tr>
-                                                                @endforeach
-                                                            @else
-                                                                <tr>
-                                                                    <td colspan="4" class="text-center">No data
-                                                                        available
-                                                                    </td>
-                                                                </tr>
-                                                            @endif
-                                                        @else
-                                                            <tr>
-                                                                <td colspan="4" class="text-center">No data
-                                                                    available</td>
-                                                            </tr>
-                                                        @endif
-                                                    <tfoot>
-                                                        <td colspan="3" class="text-right"><b>Total</b></td>
-                                                        <td style="text-align: right"><b>Rp.
-                                                                {{ number_format($totalLainnya, 0, ',', '.') }}</b></td>
-                                                    </tfoot>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <h5 class="bg-primary text-white text-center p-2" style="margin-bottom: 0;">
-                                                Others Plan (Declaration):</h5>
-                                            <div class="table-responsive table-container bg-white"
-                                                style="height: 300px; overflow-y: auto;">
-                                                <table class="table table-hover table-sm nowrap"
-                                                    id="{{ isset($declareCa['detail_lainnya']) && is_array($declareCa['detail_lainnya']) ? (array_sum(array_column($declareCa['detail_lainnya'], 'nominal')) > 0 ? 'otherTableDec' : '') : '' }}"
-                                                    width="100%" cellspacing="0">
-                                                    <thead class="thead-light">
-                                                        {{-- <tr class="bg-primary">
-                                                            <th colspan="4" class="text-center text-white">
-                                                                Others Plan
-                                                                (Declaration):</th>
-                                                        </tr> --}}
-                                                        <tr style="text-align-last: center;">
-                                                            <th>No</th>
-                                                            <th>Date</th>
-                                                            <th>Information</th>
-                                                            <th>Amount</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <?php $totalLainnya = 0; ?>
-                                                        @if (isset($declareCa['detail_lainnya']) &&
-                                                                is_array($declareCa['detail_lainnya']) &&
-                                                                count($declareCa['detail_lainnya']) > 0)
-                                                            @foreach ($declareCa['detail_lainnya'] as $lainnya)
-                                                                <?php
-                                                                $totalLainnya += floatval($lainnya['nominal'] ?? 0);
-                                                                ?>
-                                                            @endforeach
-
-                                                            @if ($totalLainnya > 0)
-                                                                @foreach ($declareCa['detail_lainnya'] as $lainnya)
-                                                                    <tr style="text-align-last: center;">
-                                                                        <td>{{ $loop->index + 1 }}</td>
-                                                                        <td>{{ isset($lainnya['tanggal']) ? \Carbon\Carbon::parse($lainnya['tanggal'])->format('d-M-y') : '-' }}
-                                                                        </td>
-                                                                        <td>{{ $lainnya['keterangan'] ?? '-' }}
-                                                                        </td>
-                                                                        <td style="text-align-last: right;">Rp.
-                                                                            {{ number_format(floatval($lainnya['nominal'] ?? 0), 0, ',', '.') }}
-                                                                        </td>
-                                                                    </tr>
-                                                                @endforeach
-                                                            @else
-                                                                <tr>
-                                                                    <td colspan="4" class="text-center">No
-                                                                        data
-                                                                        available</td>
-                                                                </tr>
-                                                            @endif
-                                                        @else
-                                                            <tr>
-                                                                <td colspan="4" class="text-center">No data
-                                                                    available
-                                                                </td>
-                                                            </tr>
-                                                        @endif
-                                                    <tfoot>
-                                                        <td colspan="3" class="text-right"><b>Total</b></td>
-                                                        <td style="text-align: right"><b>Rp.
-                                                                {{ number_format($totalLainnya, 0, ',', '.') }}</b>
-                                                        </td>
-                                                    </tfoot>
-                                                    </tbody>
-                                                </table>
-                                            </div>
+                                <div class="col-md-12 mt-2">
+                                    <div class="d-flex flex-column gap-2">
+                                        <ul class="nav nav-tabs nav-pills mb-2" id="pills-tab" role="tablist">
+                                            @if ($dnsTab == true)
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link active" id="pills-cashAdvanced-tab"
+                                                        data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced"
+                                                        type="button" role="tab" aria-controls="pills-cashAdvanced"
+                                                        aria-selected="true">Cash Advanced</button>
+                                                </li>
+                                            @endif
+                                            @if ($entrTab == true)
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="pills-caEntertain-tab"
+                                                        data-bs-toggle="pill" data-bs-target="#pills-caEntertain"
+                                                        type="button" role="tab" aria-controls="pills-caEntertain"
+                                                        aria-selected="false">CA Entertain</button>
+                                                </li>
+                                            @endif
+                                        </ul>
+    
+                                        <div class="tab-content" id="pills-tabContent">
+                                            <!-- Cash Advance Content -->
+                                            @include('hcis.reimbursements.businessTrip.approvalDec.btCaApprovalDec')
+    
+                                            <!-- CA Entertain Content -->
+                                            @include('hcis.reimbursements.businessTrip.approvalDec.btEntApprovalDec')
                                         </div>
                                     </div>
                                 </div>
@@ -810,83 +165,96 @@
                                 $detailTransport = $caDetail['detail_transport'] ?? [];
                                 $detailPenginapan = $caDetail['detail_penginapan'] ?? [];
                                 $detailLainnya = $caDetail['detail_lainnya'] ?? [];
-
-                                $formattedTotalCashAdvanced = number_format($ca->total_ca ?? 0, 0, ',', '.');
-                                $formattedTotalReal = number_format($ca->total_real ?? 0, 0, ',', '.');
-                                $formattedTotalCost = number_format($ca->total_cost ?? 0, 0, ',', '.');
-
+                                $entertainDetail = $caDetail['detail_e'] ?? [];
+                                $entertainRelation = $caDetail['relation_e'] ?? [];
                             @endphp
-                            <div class="row">
-                                <div class="col-md-4 mb-2">
-                                    <label class="form-label">Total Cash Advanced</label>
-                                    <div class="input-group">
-                                        <div class="input-group-append">
-                                            <span class="input-group-text">Rp</span>
-                                        </div>
-                                        <input class="form-control bg-light" name="totalca_deklarasi"
-                                            id="totalca_deklarasi" type="text" min="0"
-                                            value="{{ $formattedTotalCashAdvanced }}" readonly>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-2">
-                                    <label class="form-label">Total Declaration</label>
-                                    <div class="input-group">
-                                        <div class="input-group-append">
-                                            <span class="input-group-text">Rp</span>
-                                        </div>
-                                        <input class="form-control bg-light" name="totalca_deklarasi"
-                                            id="totalca_deklarasi" type="text" min="0"
-                                            value="{{ $formattedTotalReal }}" readonly>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-2">
-                                    <label class="form-label">Total Cost</label>
-                                    <div class="input-group">
-                                        <div class="input-group-append">
-                                            <span class="input-group-text">Rp</span>
-                                        </div>
-                                        <input class="form-control bg-light" name="totalca_deklarasi"
-                                            id="totalca_deklarasi" type="text" min="0"
-                                            value="{{ $formattedTotalCost }}" readonly>
-                                    </div>
-                                </div>
-                            </div>
                             <input type="hidden" id="no_sppd" value="{{ $n->no_sppd }}">
                             @php
                                 $detailPerdiem2 = $declareCa['detail_perdiem'] ?? [];
                                 $detailTransport2 = $declareCa['detail_transport'] ?? [];
                                 $detailPenginapan2 = $declareCa['detail_penginapan'] ?? [];
                                 $detailLainnya2 = $declareCa['detail_lainnya'] ?? [];
+                                $entertainDetail2 = $declareCa['detail_e'] ?? [];
+                                $entertainRelation2 = $declareCa['relation_e'] ?? [];
                             @endphp
                         </form>
                         @php
                             use Illuminate\Support\Facades\Storage;
                         @endphp
-                        <label for="" class="form-label">Uploaded Proof</label>
-                        @if (isset($ca->prove_declare) && $ca->prove_declare)
-                            @php
-                                // Get the file extension
-                                $fileExtension = pathinfo($ca->prove_declare, PATHINFO_EXTENSION);
-                                // Set the image based on the file type
-                                $imageSrc = '';
-                                if (in_array($fileExtension, ['pdf'])) {
-                                    $imageSrc = 'https://img.icons8.com/color/48/000000/pdf.png'; // Replace with the path to your PDF icon
-                                } elseif (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
-                                    $imageSrc = Storage::url($ca->prove_declare); // Image files should display their own thumbnail
-                                } else {
-                                    $imageSrc = 'https://img.icons8.com/color/48/000000/file.png'; // Replace with the path to your default icon
-                                }
-                            @endphp
-                            <div class="file-preview text-left">
-                                <a href="{{ Storage::url($ca->prove_declare) }}" target="_blank"
-                                    style="text-decoration: none;">
-                                    <img src="{{ $imageSrc }}" alt="{{ $fileExtension }} file" class="file-icon"
-                                        style="width: 50px; height: 50px;">
-                                    <div style="margin-top: 5px;"><u>View Proof</u></div>
-                                </a>
-                            @else
-                                <div class="text-danger">No proof uploaded</div>
-                        @endif
+                        <div class="col-md-12 mb-2 mt-2">
+                            @if ((isset($dns->prove_declare) && $dns->prove_declare) || (isset($entr->prove_declare) && $entr->prove_declare))
+                                <input type="hidden" name="existing_prove_declare" id="existing-prove-declare" value="{{ $dns->prove_declare }}">
+                                <input type="hidden" name="removed_prove_declare" id="removed-prove-declare" value="[]">
+
+                                <!-- Preview untuk file lama -->
+                                <div id="existing-files-label" style="margin-bottom: 10px; font-weight: bold;">
+                                    @if ($dns->prove_declare || $entr->prove_declare)
+                                        
+                                        Uploaded Proof:
+                                    @endif
+                                </div>
+                                <div id="existing-file-preview" class="mt-2">
+                                    @if ($dns->prove_declare || $entr->prove_declare)  
+                                        @php
+                                            $proveDeclare = $dns->prove_declare ? $dns->prove_declare : $entr->prove_declare;
+                                            
+                                            // Cek apakah data dalam format JSON atau masih string lama
+                                            if (!empty($proveDeclare)) {
+                                                $decodedData = json_decode($proveDeclare, true);
+                                                $existingFiles = is_array($decodedData) ? $decodedData : [$proveDeclare]; // Jika bukan array, ubah menjadi array
+                                            } else {
+                                                $existingFiles = [];
+                                            }
+                                        @endphp     
+
+                                        <div id="existing-file-preview" class="mt-2">
+                                            @if (count($existingFiles) > 1)
+                                                @foreach ($existingFiles as $file)
+                                                    @php $extension = pathinfo($file, PATHINFO_EXTENSION); @endphp
+                                                    <div class="file-preview" data-file="{{ $file }}" style="position: relative; display: inline-block; margin: 10px;">
+                                                        @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
+                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
+                                                                <img src="{{ asset($file) }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
+                                                            </a>
+                                                        @elseif ($extension === 'pdf')
+                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
+                                                                <img src="{{ asset('images/pdf_icon.png') }}" alt="PDF File">
+                                                                <p>Click to view PDF</p>
+                                                            </a>
+                                                        @else
+                                                            <p>File type not supported.</p>
+                                                        @endif
+                                                    </div>
+                                                @endforeach
+                                            @else  
+                                                @php
+                                                    $file = $existingFiles[0] ?? ''; // Ambil satu file jika hanya ada satu file
+                                                    $extension = pathinfo($file, PATHINFO_EXTENSION);
+                                                @endphp
+
+                                                @if (!empty($file))
+                                                    <div class="file-preview" data-file="{{ $file }}" style="position: relative; display: inline-block; margin: 10px;">
+                                                        @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
+                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
+                                                                <img src="{{ asset($file) }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
+                                                            </a>
+                                                        @elseif ($extension === 'pdf')
+                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
+                                                                <img src="{{ asset('images/pdf_icon.png') }}" alt="PDF File">
+                                                                <p>Click to view PDF</p>
+                                                            </a>
+                                                        @else
+                                                            <p>File type not supported.</p>
+                                                        @endif
+                                                    </div>
+                                                @endif
+                                            @endif                                                          
+                                        </div>
+                                    @endif
+
+                                </div>
+                            @endif
+                        </div>
                         <div class="d-flex justify-content-end mt-3">
                             <!-- Decline Form -->
                             <button type="button" class="btn btn-outline-primary rounded-pill" data-bs-toggle="modal"

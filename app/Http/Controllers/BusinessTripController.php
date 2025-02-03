@@ -1843,6 +1843,7 @@ class BusinessTripController extends Controller
                         $request->validate([
                             'prove_declare.*' => 'required|mimes:jpeg,png,jpg,gif,pdf|max:2048',
                         ]);
+
                     
                         $existingFiles = [];
                         foreach ($request->file('prove_declare') as $file) {
@@ -1862,6 +1863,7 @@ class BusinessTripController extends Controller
                             $file->move($full_path, $filename);
                             $existingFiles[] = $upload_path . '/' . $filename;
                         }
+                        
                     }
                     // Simpan semua file yang tersisa ke database
                     $ca->prove_declare = json_encode(array_values($existingFiles));    
@@ -5298,6 +5300,8 @@ class BusinessTripController extends Controller
     {
         $user = Auth::user();
         $employeeId = $user->employee_id;
+        // $roleName = Employee::where('employee_id' ,$employeeId)->pluck('role_name')->first();
+        // dd($roleName);
         $approval = new BTApproval();
         $approval->id = (string) Str::uuid();
 
@@ -5315,7 +5319,7 @@ class BusinessTripController extends Controller
             } else {
                 return redirect()->back()->with('error', 'Unauthorized action.');
             }
-            if ($businessTrip->ca == 'Ya') {
+            // if ($businessTrip->ca == 'Ya') {
                 $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
                 foreach ($caTransaction as $caTransactions) {
                     if ($caTransactions && $caTransactions->caonly != 'Y') {
@@ -5333,7 +5337,7 @@ class BusinessTripController extends Controller
                         $caTransactions->update(['approval_sett' => 'Rejected']);
                     }
                 }
-            }
+            // }
         } elseif ($employeeId == $businessTrip->manager_l1_id) {
             $statusValue = 'Declaration L2';
             $layer = 1;
@@ -5412,23 +5416,28 @@ class BusinessTripController extends Controller
             // Handle CA approval for L1
             // if ($businessTrip->ca == 'Ya') {
             $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+            // dd($caTransaction);
             foreach ($caTransaction as $caTransactions) {
-                if ($caTransactions) {
+                if ($caTransactions && $caTransactions->caonly != 'Y' || $caTransactions->caonly == null) {
                     // Update CA approval status for L1
-                    ca_sett_approval::where('ca_id', $caTransactions->id)
-                        ->where('employee_id', $employeeId)
-                        ->where('layer', $layer)
-                        ->where('approval_status', '!=', 'Rejected')  // Only update if status isn't "Declaration Rejected"
-                        ->updateOrCreate(
-                            ['ca_id' => $caTransactions->id, 'employee_id' => $employeeId, 'layer' => $layer],
-                            ['approval_status' => 'Approved', 'approved_at' => now()]
-                        );
-    
+                    $caApproval = ca_sett_approval::where([
+                        'ca_id' => $caTransactions->id,
+                        'layer' => $layer
+                    ])->where('approval_status', '!=', 'Rejected')
+                        ->first();
+
+                    if ($caApproval) {
+                        // Only update if the record exists
+                        $caApproval->update([
+                            'approval_status' => 'Approved',
+                            'approved_at' => now(),
+                        ]);
+                    }
                     // Find the next approver (Layer 2) from ca_approval
                     $nextApproval = ca_sett_approval::where('ca_id', $caTransactions->id)
                         ->where('layer', $layer + 1)
                         ->first();
-    
+
                     if ($nextApproval) {
                         $updateCa = CATransaction::where('id', $caTransactions->id)->first();
                         $updateCa->sett_id = $nextApproval->employee_id;
@@ -5448,22 +5457,26 @@ class BusinessTripController extends Controller
             // if ($businessTrip->ca == 'Ya') {
             $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
             foreach ($caTransaction as $caTransactions) {
-                if ($caTransactions) {
-                    // Update CA approval status for L2
-                    ca_sett_approval::where('ca_id', $caTransactions->id)
-                        ->where('employee_id', $employeeId)
-                        ->where('layer', $layer)
-                        ->where('approval_status', '!=', 'Rejected')  // Only update if status isn't "Declaration Rejected"
-                        ->updateOrCreate(
-                            ['ca_id' => $caTransactions->id, 'employee_id' => $employeeId, 'layer' => $layer],
-                            ['approval_status' => 'Approved', 'approved_at' => now()]
-                        );
-    
-                    // Find the next approver (Layer 3) explicitly
-                    $nextApproval = ca_sett_approval::where('ca_id', $caTransactions->id)
-                        ->where('layer', $layer + 1) // This will ensure it gets the immediate next layer (3)
+                if ($caTransactions && $caTransactions->caonly != 'Y' || $caTransactions->caonly == null) {
+                    // Update CA approval status for L1
+                    $caApproval = ca_sett_approval::where([
+                        'ca_id' => $caTransactions->id,
+                        'layer' => $layer
+                    ])->where('approval_status', '!=', 'Rejected')
                         ->first();
-    
+
+                    if ($caApproval) {
+                        // Only update if the record exists
+                        $caApproval->update([
+                            'approval_status' => 'Approved',
+                            'approved_at' => now(),
+                        ]);
+                    }
+                    // Find the next approver (Layer 2) from ca_approval
+                    $nextApproval = ca_sett_approval::where('ca_id', $caTransactions->id)
+                        ->where('layer', $layer + 1)
+                        ->first();
+
                     if ($nextApproval) {
                         $updateCa = CATransaction::where('id', $caTransactions->id)->first();
                         $updateCa->sett_id = $nextApproval->employee_id;
@@ -5504,11 +5517,29 @@ class BusinessTripController extends Controller
         $userId = Auth::id();
         $employee_data = Employee::where('id', $n->user_id)->first();
         // dd($employee_data);
-        $ca = CATransaction::where('no_sppd', $n->no_sppd)->first();
+        $ca = CATransaction::where('no_sppd', $n->no_sppd)->get();  
+        $dns = $ca->where('type_ca', 'dns')->first();  
+        $entr = $ca->where('type_ca', 'entr')->first();  
 
-        // Initialize caDetail with an empty array if it's null
-        $caDetail = $ca ? json_decode($ca->detail_ca, true) : [];
-        $declareCa = $ca ? json_decode($ca->declare_ca, true) : [];
+        // Cek apakah ada $ent dan jalankan kode jika ada  
+        $entrTab = $entr ? true : false;  
+        $dnsTab = $dns ? true : false;  
+
+        $caDetail = [];
+        $declareCa = [];
+        foreach ($ca as $cas) {
+            $currentDetail = json_decode($cas->detail_ca, true);
+            $currentDeclare = json_decode($cas->declare_ca, true);
+            if (is_array($currentDetail) || is_array($currentDeclare)) {
+                $caDetail = array_merge($caDetail, $currentDetail);
+                $declareCa = array_merge($declareCa, $currentDeclare);
+            }
+        }
+        // dd($caDetail);
+
+        // // Initialize caDetail with an empty array if it's null
+        // $caDetail = $ca ? json_decode($ca->detail_ca, true) : [];
+        // $declareCa = $ca ? json_decode($ca->declare_ca, true) : [];
 
         // Safely access nominalPerdiem with default '0' if caDetail is empty
         $nominalPerdiem = isset($caDetail['detail_perdiem'][0]['nominal']) ? $caDetail['detail_perdiem'][0]['nominal'] : '0';
@@ -5575,6 +5606,10 @@ class BusinessTripController extends Controller
             'caDetail' => $caDetail,
             'declareCa' => $declareCa,
             'ca' => $ca,
+            'dns' => $dns,
+            'entr' => $entr,
+            'entrTab' => $entrTab,
+            'dnsTab' => $dnsTab,
             'nominalPerdiem' => $nominalPerdiem,
             'nominalPerdiemDeclare' => $nominalPerdiemDeclare,
             'hasCaData' => $hasCaData,
