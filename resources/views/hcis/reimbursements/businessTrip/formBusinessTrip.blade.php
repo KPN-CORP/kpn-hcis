@@ -695,13 +695,25 @@
                         'Taxi Voucher' : '';
 
                     // Create a message with the input values, each on a new line with bold titles
-                    const inputSummary = `
-                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                            <tr>
-                                <th style="width: 40%; text-align: left; padding: 8px;">Total {{ $allowance }}</th>
-                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPerdiem}</strong></td>
-                            </tr>
+                    let inputSummary = `
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                        <tr>
+                            <th style="width: 40%; text-align: left; padding: 8px;">Total Perdiem</th>
+                            <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                            <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPerdiem}</strong></td>
+                        </tr>`;
+
+                    // Conditionally add the "Total Meals" row
+                    if (group_company != 'KPN Plantations' || group_company != 'Plantations') {
+                        inputSummary += `
+                        <tr>
+                            <th style="width: 40%; text-align: left; padding: 8px;">Total Meals</th>
+                            <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                            <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtMeals}</strong></td>
+                        </tr>`;
+                    }
+
+                    inputSummary += `
                             <tr>
                                 <th style="width: 40%; text-align: left; padding: 8px;">Total Accommodation</th>
                                 <td style="width: 10%; text-align: right; padding: 8px;">:</td>
@@ -726,7 +738,7 @@
                                 <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalCa}</strong></td>
                             </tr>
                         </table>
-                                `;
+                    `;
 
                     // Show SweetAlert confirmation with the input summary
                     Swal.fire({

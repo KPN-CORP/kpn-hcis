@@ -667,7 +667,6 @@
                     // const dateReq = document.getElementById('date_required_1').value;
                     const dateReq2 = document.getElementById('date_required_2').value;
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
-                    const totalBtMeals = document.getElementById('total_bt_meals').value;
                     const totalBtMealsElement = document.getElementById('total_bt_meals');
                     const totalBtMeals = totalBtMealsElement ? totalBtMealsElement.value || 0 : 0;
                     const totalBtPenginapan = document.getElementById('total_bt_penginapan').value;
@@ -678,7 +677,6 @@
                     // const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
                     const totalCa = document.getElementById('totalca').value;
 
-                    console.log(group_company);
                     // if (perdiemCheckbox && !dateReq) {
                     //     Swal.fire({
                     //         title: "Warning!",
@@ -726,10 +724,11 @@
                             return; // Exit without showing the confirmation if all fields are zero
                         }
                     }
+
                     // if (perdiemCheckbox && totalBtPerdiem == 0) {
                     //     Swal.fire({
                     //         title: "Warning!",
-                    //         text: "Total Perdiem is 0. Please fill in the values.",
+                    //         text: "Total {{ $allowance }} is 0. Please fill in the values.",
                     //         icon: "warning",
                     //         confirmButtonColor: "#AB2F2B",
                     //         confirmButtonText: "OK",
@@ -755,7 +754,7 @@
                         </tr>`;
 
                     // Conditionally add the "Total Meals" row
-                    if (group_company == 'KPN Plantations' || group_company == 'Plantations') {
+                    if (group_company != 'KPN Plantations' || group_company != 'Plantations') {
                         inputSummary += `
                         <tr>
                             <th style="width: 40%; text-align: left; padding: 8px;">Total Meals</th>
