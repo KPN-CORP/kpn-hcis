@@ -704,7 +704,7 @@
                         </tr>`;
 
                     // Conditionally add the "Total Meals" row
-                    if (group_company != 'KPN Plantations' || group_company != 'Plantations') {
+                    if (group_company != 'KPN Plantations' && group_company != 'Plantations') {
                         inputSummary += `
                         <tr>
                             <th style="width: 40%; text-align: left; padding: 8px;">Total Meals</th>

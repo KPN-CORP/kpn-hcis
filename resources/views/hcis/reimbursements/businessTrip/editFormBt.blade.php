@@ -673,6 +673,7 @@
                     const totalBtTransport = document.getElementById('total_bt_transport').value;
                     const totalBtLainnya = document.getElementById('total_bt_lainnya').value;
                     const group_company = document.getElementById('group_company').value;
+                    console.log(group_company);
                     const caCheckbox = document.getElementById('cashAdvancedCheckbox').checked;
                     // const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
                     const totalCa = document.getElementById('totalca').value;
@@ -754,7 +755,7 @@
                         </tr>`;
 
                     // Conditionally add the "Total Meals" row
-                    if (group_company != 'KPN Plantations' || group_company != 'Plantations') {
+                    if (group_company != 'KPN Plantations' && group_company != 'Plantations') {
                         inputSummary += `
                         <tr>
                             <th style="width: 40%; text-align: left; padding: 8px;">Total Meals</th>
