@@ -1,5 +1,6 @@
 <script src="{{ asset('/js/cashAdvanced/detail.js') }}"></script>
-
+{{-- {{dd($declareCa);}} --}}
+{{-- {{dd($caDetail);}} --}}
 @if (!empty($caDetail['detail_e']) && $caDetail['detail_e'][0]['type'] !== null)
     <div id="form-container-detail">
         @foreach ($caDetail['detail_e'] as $index => $detail)

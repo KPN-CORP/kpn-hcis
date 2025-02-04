@@ -562,6 +562,7 @@ class BusinessTripController extends Controller
                             'tgl_keluar_htl' => $hotelData['tgl_keluar_htl'][$key],
                             'total_hari' => $hotelData['total_hari'][$key],
                             'approval_status' => $statusValue,
+                            "contribution_level_code" => $request->bb_perusahaan,
                         ]);
 
                         $processedHotelIds[] = $hotelId;
@@ -585,6 +586,7 @@ class BusinessTripController extends Controller
                             'tgl_keluar_htl' => $hotelData['tgl_keluar_htl'][$key],
                             'total_hari' => $hotelData['total_hari'][$key],
                             'approval_status' => $statusValue,
+                            "contribution_level_code" => $request->bb_perusahaan,
                         ]);
 
                         $processedHotelIds[] = $newHotel->id;
@@ -661,7 +663,8 @@ class BusinessTripController extends Controller
                         'jns_dinas_tkt' => 'Dinas',
                         'jk_tkt' => $employee_data->gender ?? null,
                         'np_tkt' => $employee_data->fullname ?? null,
-                        'tlp_tkt' => $employee_data->personal_mobile_number ?? null
+                        'tlp_tkt' => $employee_data->personal_mobile_number ?? null,
+                        "contribution_level_code" => $request->bb_perusahaan,
                     ];
 
                     // Fetch employee data to get jk_tkt
@@ -1265,7 +1268,6 @@ class BusinessTripController extends Controller
 
         $entrTab = $entr ? true : false;
         $dnsTab = $dns ? true : false;
-        // dd($date->declare_estimate);
 
         $entrData = null;
         $dnsData = null;
@@ -1416,6 +1418,14 @@ class BusinessTripController extends Controller
 
         // Handle "CA Transaction" update
         $caRecords = CATransaction::where('no_sppd', $oldNoSppd)->get();
+        $dnsRecord = $caRecords->where('type_ca', 'dns')->first();
+        $entrRecord = $caRecords->where('type_ca', 'entr')->first();
+        // dd($caRecords->isEmpty());
+
+        // Cek apakah ada $ent dan jalankan kode jika ada
+        $entrTab = $entrRecord ? true : false;
+        $dnsTab = $dnsRecord ? true : false;
+
         $employee_data = Employee::where('id', $userId)->first();
 
         if ($request->has('removed_prove_declare')) {
@@ -1466,204 +1476,361 @@ class BusinessTripController extends Controller
             }
         }
 
-        if (!$caRecords) {
-            // Create a new CA transaction if it doesn't exist
-            $ca = new CATransaction();
-            // $ca_sett = new ca_sett_approval();
+        if ($caRecords->isEmpty()) {
+            if ($entrTab == false && $request->totalca > 0) {
+                // Create a new CA transaction if it doesn't exist
+                $ca = new CATransaction();
 
-            // Generate new 'no_ca' code
-            $currentYear = date('Y');
-            $currentYearShort = date('y');
-            $prefix = 'CA';
-            $lastTransaction = CATransaction::whereYear('created_at', $currentYear)
-                ->orderBy('no_ca', 'desc')
-                ->first();
+                // Generate new 'no_ca' code
+                $currentYear = date('Y');
+                $currentYearShort = date('y');
+                $prefix = 'CA';
+                $lastTransaction = CATransaction::whereYear('created_at', $currentYear)
+                    ->orderBy('no_ca', 'desc')
+                    ->first();
 
-            $lastNumber = $lastTransaction && preg_match('/CA' . $currentYearShort . '(\d{6})/', $lastTransaction->no_ca, $matches) ? intval($matches[1]) : 0;
-            $newNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
-            $newNoCa = "$prefix$currentYearShort$newNumber";
+                $lastNumber = $lastTransaction && preg_match('/CA' . $currentYearShort . '(\d{6})/', $lastTransaction->no_ca, $matches) ? intval($matches[1]) : 0;
+                $newNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
+                $newNoCa = "$prefix$currentYearShort$newNumber";
 
-            $caId = $ca->id = (string) Str::uuid();
-            $ca->no_ca = $newNoCa;
-            $ca->unit = $request->divisi;
-            $ca->contribution_level_code = $request->bb_perusahaan;
-            $ca->destination = $request->tujuan;
-            $ca->start_date = $request->mulai;
-            $ca->end_date = $request->kembali;
-            $ca->ca_needs = $request->keperluan;
-            $ca->type_ca = 'dns';
-            $ca->date_required = null;
-            $ca->declare_estimate = Carbon::parse($request->kembali)->addDays(3);
-            $ca->total_days = Carbon::parse($request->mulai)->diffInDays(Carbon::parse($request->kembali));
-            $ca->total_ca = '0';
-            $ca->total_real = (int) str_replace('.', '', $request->totalca);
-            $ca->total_cost = -1 * (int) str_replace('.', '', $ca->total_real);
+                $caId = $ca->id = (string) Str::uuid();
+                $ca->no_ca = $newNoCa;
+                $ca->no_sppd = $oldNoSppd;
+                $ca->unit = $request->divisi;
+                $ca->contribution_level_code = $request->bb_perusahaan;
+                $ca->user_id = $userId;
+                $ca->destination = $request->tujuan;
+                $ca->start_date = $request->mulai;
+                $ca->end_date = $request->kembali;
+                $ca->ca_needs = $request->keperluan;
+                $ca->type_ca = 'entr';
+                $ca->date_required = null;
+                $ca->declare_estimate = Carbon::parse($request->kembali)->addDays(3);
+                $ca->total_days = Carbon::parse($request->mulai)->diffInDays(Carbon::parse($request->kembali));
+                $ca->total_ca = '0';
+                $ca->total_real = (int) str_replace('.', '', $request->totalca);
+                $ca->total_cost = -1 * (int) str_replace('.', '', $ca->total_real);
 
-            // dd($ca->total_real, $ca->total_cost);
+                // dd($ca->total_real, $ca->total_cost);
 
-            if ($statusValue === 'Declaration Draft') {
-                // Set CA status to Draft
-                // dd($statusValue);
-                $caStatus = $ca->approval_sett = 'Draft';
-                // dd($caStatus);
+                if ($statusValue === 'Declaration Draft') {
+                    // Set CA status to Draft
+                    // dd($statusValue);
+                    $caStatus = $ca->approval_sett = 'Draft';
+                    // dd($caStatus);
 
-            } elseif ($statusValue === 'Declaration L1') {
-                // Set CA status to Pending
-                $caStatus = $ca->approval_sett = 'Pending';
-            }
+                } elseif ($statusValue === 'Declaration L1') {
+                    // Set CA status to Pending
+                    $caStatus = $ca->approval_sett = 'Pending';
+                }
 
-            $ca->approval_status = 'Approved';
-            $ca->approval_sett = $request->approval_sett;
-            $ca->approval_extend = $request->approval_extend;
-            $ca->created_by = $userId;
+                $ca->approval_status = 'Approved';
+                $ca->approval_sett = $request->approval_sett;
+                $ca->approval_extend = $request->approval_extend;
+                $ca->created_by = $userId;
 
 
-            if ($statusValue === 'Declaration L1') {
-                $ca->approval_sett = 'Pending';
-            } elseif ($statusValue === 'Declaration Draft') {
-                $ca->approval_sett = 'Draft';
-            } else {
-                $ca->approval_sett = $statusValue;
-            }
+                if ($statusValue === 'Declaration L1') {
+                    $ca->approval_sett = 'Pending';
+                } elseif ($statusValue === 'Declaration Draft') {
+                    $ca->approval_sett = 'Draft';
+                } else {
+                    $ca->approval_sett = $statusValue;
+                }
 
-            $ca->declaration_at = Carbon::now();
-            $total_real = (int) str_replace('.', '', $request->totalca);
-            // $total_ca = $ca->total_ca;
+                $ca->declaration_at = Carbon::now();
+                $total_real = (int) str_replace('.', '', $request->totalca);
+                // $total_ca = $ca->total_ca;
 
-            if ($total_real === 0) {
-                // Redirect back with a SweetAlert message
-                return redirect()->back()->with('error', 'CA Real cannot be zero.')->withInput();
-            }
+                if ($total_real === 0) {
+                    // Redirect back with a SweetAlert message
+                    return redirect()->back()->with('error', 'CA Real cannot be zero.')->withInput();
+                }
 
-            // Assign total_real and calculate total_cost
-            // $ca->total_real = $total_real;
-            // $ca->total_cost = $total_ca - $total_real;
+                // Assign total_real and calculate total_cost
+                // $ca->total_real = $total_real;
+                // $ca->total_cost = $total_ca - $total_real;
 
-            // Initialize arrays for details
-            $detail_perdiem = [];
-            $detail_meals = [];
-            $detail_transport = [];
-            $detail_penginapan = [];
-            $detail_lainnya = [];
+                // Initialize arrays for details
+                $detail_e = [];
+                $relation_e = [];
 
-            if ($request->has('start_bt_meals')) {
-                foreach ($request->start_bt_meals as $key => $startDate) {
-                    $endDate = $request->end_bt_meals[$key] ?? '';
-                    $totalDays = $request->total_days_bt_meals[$key] ?? '';
-                    $companyCode = $request->company_bt_meals[$key] ?? '';
-                    $nominal = str_replace('.', '', $request->nominal_bt_meals[$key] ?? '0');
-                    $keterangan = $request->keterangan_bt_meals[$key] ?? '';
+                if ($request->has('enter_type_e_detail')) {
+                    foreach ($request->enter_type_e_detail as $key => $type) {
+                        $fee_detail = $request->enter_fee_e_detail[$key];
+                        $nominal = str_replace('.', '', $request->nominal_e_detail[$key]); // Menghapus titik dari nominal sebelum menyimpannya
 
-                    if (!empty($startDate) && !empty($endDate) && !empty($totalDays) && !empty($companyCode) && !empty($nominal)) {
-                        $detail_meals[] = [
-                            'start_date' => $startDate,
-                            'end_date' => $endDate,
-                            'total_days' => $totalDays,
-                            'company_code' => $companyCode,
-                            'nominal' => $nominal,
-                            'keterangan' => $keterangan,
-                        ];
+                        if (!empty($type) && !empty($nominal)) {
+                            $detail_e[] = [
+                                'type' => $type,
+                                'fee_detail' => $fee_detail,
+                                'nominal' => $nominal,
+                            ];
+                        }
                     }
                 }
-            }
 
-            // Populate detail_perdiem
-            if ($request->has('start_bt_perdiem')) {
-                foreach ($request->start_bt_perdiem as $key => $startDate) {
-                    $endDate = $request->end_bt_perdiem[$key] ?? '';
-                    $totalDays = $request->total_days_bt_perdiem[$key] ?? '';
-                    $location = $request->location_bt_perdiem[$key] ?? '';
-                    $other_location = $request->other_location_bt_perdiem[$key] ?? '';
-                    $companyCode = $request->company_bt_perdiem[$key] ?? '';
-                    $nominal = str_replace('.', '', $request->nominal_bt_perdiem[$key] ?? '0');
+                // Mengumpulkan detail relation
+                if ($request->has('rname_e_relation')) {
+                    foreach ($request->rname_e_relation as $key => $name) {
+                        $position = $request->rposition_e_relation[$key];
+                        $company = $request->rcompany_e_relation[$key];
+                        $purpose = $request->rpurpose_e_relation[$key];
 
-                    if (!empty($startDate) && !empty($endDate) && !empty($companyCode) && !empty($nominal)) {
-                        $detail_perdiem[] = [
-                            'start_date' => $startDate,
-                            'end_date' => $endDate,
-                            'total_days' => $totalDays,
-                            'location' => $location,
-                            'other_location' => $other_location,
-                            'company_code' => $companyCode,
-                            'nominal' => $nominal,
-                        ];
+                        // Memastikan semua data yang diperlukan untuk relation terisi
+                        if (!empty($name) && !empty($position) && !empty($company) && !empty($purpose)) {
+                            $relation_e[] = [
+                                'name' => $name,
+                                'position' => $position,
+                                'company' => $company,
+                                'purpose' => $purpose,
+                                'relation_type' => array_filter([
+                                    'Food' => !empty($request->food_e_relation[$key]) && $request->food_e_relation[$key] === 'food',
+                                    'Transport' => !empty($request->transport_e_relation[$key]) && $request->transport_e_relation[$key] === 'transport',
+                                    'Accommodation' => !empty($request->accommodation_e_relation[$key]) && $request->accommodation_e_relation[$key] === 'accommodation',
+                                    'Gift' => !empty($request->gift_e_relation[$key]) && $request->gift_e_relation[$key] === 'gift',
+                                    'Fund' => !empty($request->fund_e_relation[$key]) && $request->fund_e_relation[$key] === 'fund',
+                                ], fn($checked) => $checked),
+                            ];
+                        }
                     }
                 }
+
+                // Gabungkan detail entertain dan relation, lalu masukkan ke detail_ca
+                $declare_ca = [
+                    'detail_e' => $detail_e,
+                    'relation_e' => $relation_e,
+                ];
+                $ca->prove_declare = json_encode(array_values($existingFiles));
+
+                $ca->detail_ca = '[{"detail_e":[],"relation_e":[]}]';
+                $ca->declare_ca = json_encode($declare_ca);
+                $model = $ca;
+
+                $model->sett_id = $managerL1;
+                // dd($ca);
             }
 
-            // Populate detail_transport
-            if ($request->has('tanggal_bt_transport')) {
-                foreach ($request->tanggal_bt_transport as $key => $tanggal) {
-                    $keterangan = $request->keterangan_bt_transport[$key] ?? '';
-                    $companyCode = $request->company_bt_transport[$key] ?? '';
-                    $nominal = str_replace('.', '', $request->nominal_bt_transport[$key] ?? '0');
+            if ($dnsTab == false && $request->totalca_ca_deklarasi > 0) {
+                // Create a new CA transaction if it doesn't exist
+                $ca = new CATransaction();
 
-                    if (!empty($tanggal) && !empty($companyCode) && !empty($nominal)) {
-                        $detail_transport[] = [
-                            'tanggal' => $tanggal,
-                            'keterangan' => $keterangan,
-                            'company_code' => $companyCode,
-                            'nominal' => $nominal,
-                        ];
+                // Generate new 'no_ca' code
+                $currentYear = date('Y');
+                $currentYearShort = date('y');
+                $prefix = 'CA';
+                $lastTransaction = CATransaction::whereYear('created_at', $currentYear)
+                    ->orderBy('no_ca', 'desc')
+                    ->first();
+
+                $lastNumber = $lastTransaction && preg_match('/CA' . $currentYearShort . '(\d{6})/', $lastTransaction->no_ca, $matches) ? intval($matches[1]) : 0;
+                $newNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
+                $newNoCa = "$prefix$currentYearShort$newNumber";
+
+                $caId = $ca->id = (string) Str::uuid();
+                $ca->no_ca = $newNoCa;
+                $ca->no_sppd = $oldNoSppd;
+                $ca->unit = $request->divisi;
+                $ca->contribution_level_code = $request->bb_perusahaan;
+                $ca->user_id = $userId;
+                $ca->destination = $request->tujuan;
+                $ca->start_date = $request->mulai;
+                $ca->end_date = $request->kembali;
+                $ca->ca_needs = $request->keperluan;
+                $ca->type_ca = 'dns';
+                $ca->date_required = null;
+                $ca->declare_estimate = Carbon::parse($request->kembali)->addDays(3);
+                $ca->total_days = Carbon::parse($request->mulai)->diffInDays(Carbon::parse($request->kembali));
+                $ca->total_ca = '0';
+                $ca->total_real = (int) str_replace('.', '', $request->totalca_ca_deklarasi);
+                $ca->total_cost = -1 * (int) str_replace('.', '', $ca->total_real);
+
+                // dd($ca->total_real, $ca->total_cost);
+
+                if ($statusValue === 'Declaration Draft') {
+                    // Set CA status to Draft
+                    // dd($statusValue);
+                    $caStatus = $ca->approval_sett = 'Draft';
+                    // dd($caStatus);
+
+                } elseif ($statusValue === 'Declaration L1') {
+                    // Set CA status to Pending
+                    $caStatus = $ca->approval_sett = 'Pending';
+                }
+
+                $ca->approval_status = 'Approved';
+                $ca->approval_sett = $request->approval_sett;
+                $ca->approval_extend = $request->approval_extend;
+                $ca->created_by = $userId;
+
+
+                if ($statusValue === 'Declaration L1') {
+                    $ca->approval_sett = 'Pending';
+                } elseif ($statusValue === 'Declaration Draft') {
+                    $ca->approval_sett = 'Draft';
+                } else {
+                    $ca->approval_sett = $statusValue;
+                }
+
+                $ca->declaration_at = Carbon::now();
+                $total_real = (int) str_replace('.', '', $request->totalca_ca_deklarasi);
+                // $total_ca = $ca->total_ca;
+
+                if ($total_real === 0) {
+                    // Redirect back with a SweetAlert message
+                    return redirect()->back()->with('error', 'CA Real cannot be zero.')->withInput();
+                }
+
+                // Assign total_real and calculate total_cost
+                // $ca->total_real = $total_real;
+                // $ca->total_cost = $total_ca - $total_real;
+
+                $detail_perdiem = [];
+                $detail_meals = [];
+                $detail_transport = [];
+                $detail_penginapan = [];
+                $detail_lainnya = [];
+
+                if ($request->has('start_bt_meals')) {
+                    foreach ($request->start_bt_meals as $key => $startDate) {
+                        $endDate = $request->end_bt_meals[$key] ?? '';
+                        $totalDays = $request->total_days_bt_meals[$key] ?? '';
+                        $companyCode = $request->company_bt_meals[$key] ?? '';
+                        $nominal = str_replace('.', '', $request->nominal_bt_meals[$key] ?? '0');
+                        $keterangan = $request->keterangan_bt_meals[$key] ?? '';
+    
+                        if (!empty($startDate) && !empty($endDate) && !empty($totalDays) && !empty($companyCode) && !empty($nominal)) {
+                            $detail_meals[] = [
+                                'start_date' => $startDate,
+                                'end_date' => $endDate,
+                                'total_days' => $totalDays,
+                                'company_code' => $companyCode,
+                                'nominal' => $nominal,
+                                'keterangan' => $keterangan,
+                            ];
+                        }
                     }
                 }
-            }
-            // Populate detail_penginapan
-            if ($request->has('start_bt_penginapan')) {
-                foreach ($request->start_bt_penginapan as $key => $startDate) {
-                    $endDate = $request->end_bt_penginapan[$key] ?? '';
-                    $totalDays = $request->total_days_bt_penginapan[$key] ?? '';
-                    $hotelName = $request->hotel_name_bt_penginapan[$key] ?? '';
-                    $companyCode = $request->company_bt_penginapan[$key] ?? '';
-                    $nominal = str_replace('.', '', $request->nominal_bt_penginapan[$key] ?? '0');
-
-                    if (!empty($startDate) && !empty($endDate) && !empty($totalDays) && !empty($hotelName) && !empty($companyCode) && !empty($nominal)) {
-                        $detail_penginapan[] = [
-                            'start_date' => $startDate,
-                            'end_date' => $endDate,
-                            'total_days' => $totalDays,
-                            'hotel_name' => $hotelName,
-                            'company_code' => $companyCode,
-                            'nominal' => $nominal,
-                        ];
+    
+                // Populate detail_perdiem
+                if ($request->has('start_bt_perdiem')) {
+                    foreach ($request->start_bt_perdiem as $key => $startDate) {
+                        $endDate = $request->end_bt_perdiem[$key] ?? '';
+                        $totalDays = $request->total_days_bt_perdiem[$key] ?? '';
+                        $location = $request->location_bt_perdiem[$key] ?? '';
+                        $other_location = $request->other_location_bt_perdiem[$key] ?? '';
+                        $companyCode = $request->company_bt_perdiem[$key] ?? '';
+                        $nominal = str_replace('.', '', $request->nominal_bt_perdiem[$key] ?? '0');
+    
+                        if (!empty($startDate) && !empty($endDate) && !empty($companyCode) && !empty($nominal)) {
+                            $detail_perdiem[] = [
+                                'start_date' => $startDate,
+                                'end_date' => $endDate,
+                                'total_days' => $totalDays,
+                                'location' => $location,
+                                'other_location' => $other_location,
+                                'company_code' => $companyCode,
+                                'nominal' => $nominal,
+                            ];
+                        }
                     }
                 }
-            }
-
-            // Populate detail_lainnya
-            if ($request->has('tanggal_bt_lainnya')) {
-                foreach ($request->tanggal_bt_lainnya as $key => $tanggal) {
-                    $keterangan = $request->keterangan_bt_lainnya[$key] ?? '';
-                    $nominal = str_replace('.', '', $request->nominal_bt_lainnya[$key] ?? '0');
-
-                    if (!empty($tanggal) && !empty($nominal)) {
-                        $detail_lainnya[] = [
-                            'tanggal' => $tanggal,
-                            'keterangan' => $keterangan,
-                            'nominal' => $nominal,
-                        ];
+    
+                // Populate detail_transport
+                if ($request->has('tanggal_bt_transport')) {
+                    foreach ($request->tanggal_bt_transport as $key => $tanggal) {
+                        $keterangan = $request->keterangan_bt_transport[$key] ?? '';
+                        $companyCode = $request->company_bt_transport[$key] ?? '';
+                        $nominal = str_replace('.', '', $request->nominal_bt_transport[$key] ?? '0');
+    
+    
+                        if (!empty($tanggal) && !empty($companyCode) && !empty($nominal)) {
+                            $detail_transport[] = [
+                                'tanggal' => $tanggal,
+                                'keterangan' => $keterangan,
+                                'company_code' => $companyCode,
+                                'nominal' => $nominal,
+                            ];
+                        }
                     }
                 }
+    
+                // Populate detail_penginapan
+                if ($request->has('start_bt_penginapan')) {
+                    foreach ($request->start_bt_penginapan as $key => $startDate) {
+                        $endDate = $request->end_bt_penginapan[$key] ?? '';
+                        $totalDays = $request->total_days_bt_penginapan[$key] ?? '';
+                        $hotelName = $request->hotel_name_bt_penginapan[$key] ?? '';
+                        $companyCode = $request->company_bt_penginapan[$key] ?? '';
+                        $nominal = str_replace('.', '', $request->nominal_bt_penginapan[$key] ?? '0');
+    
+    
+                        if (!empty($startDate) && !empty($endDate) && !empty($totalDays) && !empty($hotelName) && !empty($companyCode) && !empty($nominal)) {
+                            $detail_penginapan[] = [
+                                'start_date' => $startDate,
+                                'end_date' => $endDate,
+                                'total_days' => $totalDays,
+                                'hotel_name' => $hotelName,
+                                'company_code' => $companyCode,
+                                'nominal' => $nominal,
+                            ];
+                        }
+                    }
+                }
+    
+                // Populate detail_lainnya
+                if ($request->has('tanggal_bt_lainnya')) {
+                    foreach ($request->tanggal_bt_lainnya as $key => $tanggal) {
+                        $keterangan = $request->keterangan_bt_lainnya[$key] ?? '';
+                        $nominal = str_replace('.', '', $request->nominal_bt_lainnya[$key] ?? '0');
+    
+                        if (!empty($tanggal) && !empty($nominal)) {
+                            $detail_lainnya[] = [
+                                'tanggal' => $tanggal,
+                                'keterangan' => $keterangan,
+                                'nominal' => $nominal,
+                            ];
+                        }
+                    }
+                }
+                if ($request->has('start_bt_meals')) {
+                    foreach ($request->start_bt_meals as $key => $startDate) {
+                        $endDate = $request->end_bt_meals[$key] ?? '';
+                        $totalDays = $request->total_days_bt_meals[$key] ?? '';
+                        $companyCode = $request->company_bt_meals[$key] ?? '';
+                        $nominal = str_replace('.', '', $request->nominal_bt_meals[$key] ?? '0');
+                        $keterangan = $request->keterangan_bt_meals[$key] ?? '';
+    
+                        if (!empty($startDate) && !empty($endDate) && !empty($totalDays) && !empty($hotelName) && !empty($companyCode) && !empty($nominal)) {
+                            $detail_meals[] = [
+                                'start_date' => $startDate,
+                                'end_date' => $endDate,
+                                'total_days' => $totalDays,
+                                'company_code' => $companyCode,
+                                'nominal' => $nominal,
+                                'keterangan' => $keterangan,
+                            ];
+                        }
+                    }
+                }
+
+                // Gabungkan detail entertain dan relation, lalu masukkan ke detail_ca
+                $declare_ca = [
+                    'detail_perdiem' => $detail_perdiem,
+                    'detail_meals' => $detail_meals,
+                    'detail_transport' => $detail_transport,
+                    'detail_penginapan' => $detail_penginapan,
+                    'detail_lainnya' => $detail_lainnya,
+                ];
+                $ca->prove_declare = json_encode(array_values($existingFiles));
+
+                $ca->detail_ca = '[{"detail_perdiem":[],"detail_meals":[],"detail_transport":[],"detail_penginapan":[],"detail_lainnya":[]}]';
+                $ca->declare_ca = json_encode($declare_ca);
+                $model = $ca;
+
+                $model->sett_id = $managerL1;
+
             }
-
-            // Save the details
-            $declare_ca = [
-                'detail_perdiem' => $detail_perdiem,
-                'detail_meals' => $detail_meals,
-                'detail_transport' => $detail_transport,
-                'detail_penginapan' => $detail_penginapan,
-                'detail_lainnya' => $detail_lainnya,
-            ];
-            if ($request->hasFile('prove_declare')) {
-                $file = $request->file('prove_declare');
-                $path = $file->store('public/proofs'); // Store in 'public/proofs' directory
-                $ca->prove_declare = $path;
-            }
-
-            $ca->declare_ca = json_encode($declare_ca);
-            $model = $ca;
-
-            $model->sett_id = $managerL1;
 
         }
         if ($caRecords) {
@@ -1903,6 +2070,7 @@ class BusinessTripController extends Controller
                                     ], fn($checked) => $checked),
                                 ];
                             }
+                            // dd($relation_e);
                         }
                     }
 
@@ -1920,6 +2088,361 @@ class BusinessTripController extends Controller
                     $model = $ca;
 
                     $model->sett_id = $managerL1;
+                }
+
+                if ($entrTab == false && $request->totalca > 0) {
+                    // Create a new CA transaction if it doesn't exist
+                    $ca = new CATransaction();
+
+                    // Generate new 'no_ca' code
+                    $currentYear = date('Y');
+                    $currentYearShort = date('y');
+                    $prefix = 'CA';
+                    $lastTransaction = CATransaction::whereYear('created_at', $currentYear)
+                        ->orderBy('no_ca', 'desc')
+                        ->first();
+
+                    $lastNumber = $lastTransaction && preg_match('/CA' . $currentYearShort . '(\d{6})/', $lastTransaction->no_ca, $matches) ? intval($matches[1]) : 0;
+                    $newNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
+                    $newNoCa = "$prefix$currentYearShort$newNumber";
+
+                    $caId = $ca->id = (string) Str::uuid();
+                    $ca->no_ca = $newNoCa;
+                    $ca->no_sppd = $oldNoSppd;
+                    $ca->unit = $request->divisi;
+                    $ca->contribution_level_code = $request->bb_perusahaan;
+                    $ca->user_id = $userId;
+                    $ca->destination = $request->tujuan;
+                    $ca->start_date = $request->mulai;
+                    $ca->end_date = $request->kembali;
+                    $ca->ca_needs = $request->keperluan;
+                    $ca->type_ca = 'entr';
+                    $ca->date_required = $dnsRecord->date_required;
+                    $ca->declare_estimate = Carbon::parse($request->kembali)->addDays(3);
+                    $ca->total_days = Carbon::parse($request->mulai)->diffInDays(Carbon::parse($request->kembali));
+                    $ca->total_ca = '0';
+                    $ca->total_real = (int) str_replace('.', '', $request->totalca);
+                    $ca->total_cost = -1 * (int) str_replace('.', '', $ca->total_real);
+
+                    // dd($ca->total_real, $ca->total_cost);
+
+                    if ($statusValue === 'Declaration Draft') {
+                        // Set CA status to Draft
+                        // dd($statusValue);
+                        $caStatus = $ca->approval_sett = 'Draft';
+                        // dd($caStatus);
+
+                    } elseif ($statusValue === 'Declaration L1') {
+                        // Set CA status to Pending
+                        $caStatus = $ca->approval_sett = 'Pending';
+                    }
+
+                    $ca->approval_status = 'Approved';
+                    $ca->approval_sett = $request->approval_sett;
+                    $ca->approval_extend = $request->approval_extend;
+                    $ca->created_by = $userId;
+
+
+                    if ($statusValue === 'Declaration L1') {
+                        $ca->approval_sett = 'Pending';
+                    } elseif ($statusValue === 'Declaration Draft') {
+                        $ca->approval_sett = 'Draft';
+                    } else {
+                        $ca->approval_sett = $statusValue;
+                    }
+
+                    $ca->declaration_at = Carbon::now();
+                    $total_real = (int) str_replace('.', '', $request->totalca);
+                    // $total_ca = $ca->total_ca;
+
+                    if ($total_real === 0) {
+                        // Redirect back with a SweetAlert message
+                        return redirect()->back()->with('error', 'CA Real cannot be zero.')->withInput();
+                    }
+
+                    // Assign total_real and calculate total_cost
+                    // $ca->total_real = $total_real;
+                    // $ca->total_cost = $total_ca - $total_real;
+
+                    // Initialize arrays for details
+                    $detail_e = [];
+                    $relation_e = [];
+
+                    if ($request->has('enter_type_e_detail')) {
+                        foreach ($request->enter_type_e_detail as $key => $type) {
+                            $fee_detail = $request->enter_fee_e_detail[$key];
+                            $nominal = str_replace('.', '', $request->nominal_e_detail[$key]); // Menghapus titik dari nominal sebelum menyimpannya
+
+                            if (!empty($type) && !empty($nominal)) {
+                                $detail_e[] = [
+                                    'type' => $type,
+                                    'fee_detail' => $fee_detail,
+                                    'nominal' => $nominal,
+                                ];
+                            }
+                        }
+                    }
+
+                    // Mengumpulkan detail relation
+                    if ($request->has('rname_e_relation')) {
+                        foreach ($request->rname_e_relation as $key => $name) {
+                            $position = $request->rposition_e_relation[$key];
+                            $company = $request->rcompany_e_relation[$key];
+                            $purpose = $request->rpurpose_e_relation[$key];
+
+                            // Memastikan semua data yang diperlukan untuk relation terisi
+                            if (!empty($name) && !empty($position) && !empty($company) && !empty($purpose)) {
+                                $relation_e[] = [
+                                    'name' => $name,
+                                    'position' => $position,
+                                    'company' => $company,
+                                    'purpose' => $purpose,
+                                    'relation_type' => array_filter([
+                                        'Food' => !empty($request->food_e_relation[$key]) && $request->food_e_relation[$key] === 'food',
+                                        'Transport' => !empty($request->transport_e_relation[$key]) && $request->transport_e_relation[$key] === 'transport',
+                                        'Accommodation' => !empty($request->accommodation_e_relation[$key]) && $request->accommodation_e_relation[$key] === 'accommodation',
+                                        'Gift' => !empty($request->gift_e_relation[$key]) && $request->gift_e_relation[$key] === 'gift',
+                                        'Fund' => !empty($request->fund_e_relation[$key]) && $request->fund_e_relation[$key] === 'fund',
+                                    ], fn($checked) => $checked),
+                                ];
+                            }
+                        }
+                    }
+
+                    // Gabungkan detail entertain dan relation, lalu masukkan ke detail_ca
+                    $declare_ca = [
+                        'detail_e' => $detail_e,
+                        'relation_e' => $relation_e,
+                    ];
+                    $ca->prove_declare = json_encode(array_values($existingFiles));
+
+                    $ca->detail_ca = '[{"detail_e":[],"relation_e":[]}]';
+                    $ca->declare_ca = json_encode($declare_ca);
+                    $model = $ca;
+
+                    $model->sett_id = $managerL1;
+                    // dd($ca);
+                }
+
+                if ($dnsTab == false && $request->totalca_ca_deklarasi > 0) {
+                    // Create a new CA transaction if it doesn't exist
+                    $ca = new CATransaction();
+
+                    // Generate new 'no_ca' code
+                    $currentYear = date('Y');
+                    $currentYearShort = date('y');
+                    $prefix = 'CA';
+                    $lastTransaction = CATransaction::whereYear('created_at', $currentYear)
+                        ->orderBy('no_ca', 'desc')
+                        ->first();
+
+                    $lastNumber = $lastTransaction && preg_match('/CA' . $currentYearShort . '(\d{6})/', $lastTransaction->no_ca, $matches) ? intval($matches[1]) : 0;
+                    $newNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
+                    $newNoCa = "$prefix$currentYearShort$newNumber";
+
+                    $caId = $ca->id = (string) Str::uuid();
+                    $ca->no_ca = $newNoCa;
+                    $ca->no_sppd = $oldNoSppd;
+                    $ca->unit = $request->divisi;
+                    $ca->contribution_level_code = $request->bb_perusahaan;
+                    $ca->user_id = $userId;
+                    $ca->destination = $request->tujuan;
+                    $ca->start_date = $request->mulai;
+                    $ca->end_date = $request->kembali;
+                    $ca->ca_needs = $request->keperluan;
+                    $ca->type_ca = 'dns';
+                    $ca->date_required = $entrRecord->date_required;
+                    $ca->declare_estimate = Carbon::parse($request->kembali)->addDays(3);
+                    $ca->total_days = Carbon::parse($request->mulai)->diffInDays(Carbon::parse($request->kembali));
+                    $ca->total_ca = '0';
+                    $ca->total_real = (int) str_replace('.', '', $request->totalca_ca_deklarasi);
+                    $ca->total_cost = -1 * (int) str_replace('.', '', $ca->total_real);
+
+                    // dd($ca->total_real, $ca->total_cost);
+
+                    if ($statusValue === 'Declaration Draft') {
+                        // Set CA status to Draft
+                        // dd($statusValue);
+                        $caStatus = $ca->approval_sett = 'Draft';
+                        // dd($caStatus);
+
+                    } elseif ($statusValue === 'Declaration L1') {
+                        // Set CA status to Pending
+                        $caStatus = $ca->approval_sett = 'Pending';
+                    }
+
+                    $ca->approval_status = 'Approved';
+                    $ca->approval_sett = $request->approval_sett;
+                    $ca->approval_extend = $request->approval_extend;
+                    $ca->created_by = $userId;
+
+
+                    if ($statusValue === 'Declaration L1') {
+                        $ca->approval_sett = 'Pending';
+                    } elseif ($statusValue === 'Declaration Draft') {
+                        $ca->approval_sett = 'Draft';
+                    } else {
+                        $ca->approval_sett = $statusValue;
+                    }
+
+                    $ca->declaration_at = Carbon::now();
+                    $total_real = (int) str_replace('.', '', $request->totalca_ca_deklarasi);
+                    // $total_ca = $ca->total_ca;
+
+                    if ($total_real === 0) {
+                        // Redirect back with a SweetAlert message
+                        return redirect()->back()->with('error', 'CA Real cannot be zero.')->withInput();
+                    }
+
+                    // Assign total_real and calculate total_cost
+                    // $ca->total_real = $total_real;
+                    // $ca->total_cost = $total_ca - $total_real;
+
+                    $detail_perdiem = [];
+                    $detail_meals = [];
+                    $detail_transport = [];
+                    $detail_penginapan = [];
+                    $detail_lainnya = [];
+
+                    if ($request->has('start_bt_meals')) {
+                        foreach ($request->start_bt_meals as $key => $startDate) {
+                            $endDate = $request->end_bt_meals[$key] ?? '';
+                            $totalDays = $request->total_days_bt_meals[$key] ?? '';
+                            $companyCode = $request->company_bt_meals[$key] ?? '';
+                            $nominal = str_replace('.', '', $request->nominal_bt_meals[$key] ?? '0');
+                            $keterangan = $request->keterangan_bt_meals[$key] ?? '';
+        
+                            if (!empty($startDate) && !empty($endDate) && !empty($totalDays) && !empty($companyCode) && !empty($nominal)) {
+                                $detail_meals[] = [
+                                    'start_date' => $startDate,
+                                    'end_date' => $endDate,
+                                    'total_days' => $totalDays,
+                                    'company_code' => $companyCode,
+                                    'nominal' => $nominal,
+                                    'keterangan' => $keterangan,
+                                ];
+                            }
+                        }
+                    }
+        
+                    // Populate detail_perdiem
+                    if ($request->has('start_bt_perdiem')) {
+                        foreach ($request->start_bt_perdiem as $key => $startDate) {
+                            $endDate = $request->end_bt_perdiem[$key] ?? '';
+                            $totalDays = $request->total_days_bt_perdiem[$key] ?? '';
+                            $location = $request->location_bt_perdiem[$key] ?? '';
+                            $other_location = $request->other_location_bt_perdiem[$key] ?? '';
+                            $companyCode = $request->company_bt_perdiem[$key] ?? '';
+                            $nominal = str_replace('.', '', $request->nominal_bt_perdiem[$key] ?? '0');
+        
+                            if (!empty($startDate) && !empty($endDate) && !empty($companyCode) && !empty($nominal)) {
+                                $detail_perdiem[] = [
+                                    'start_date' => $startDate,
+                                    'end_date' => $endDate,
+                                    'total_days' => $totalDays,
+                                    'location' => $location,
+                                    'other_location' => $other_location,
+                                    'company_code' => $companyCode,
+                                    'nominal' => $nominal,
+                                ];
+                            }
+                        }
+                    }
+        
+                    // Populate detail_transport
+                    if ($request->has('tanggal_bt_transport')) {
+                        foreach ($request->tanggal_bt_transport as $key => $tanggal) {
+                            $keterangan = $request->keterangan_bt_transport[$key] ?? '';
+                            $companyCode = $request->company_bt_transport[$key] ?? '';
+                            $nominal = str_replace('.', '', $request->nominal_bt_transport[$key] ?? '0');
+        
+        
+                            if (!empty($tanggal) && !empty($companyCode) && !empty($nominal)) {
+                                $detail_transport[] = [
+                                    'tanggal' => $tanggal,
+                                    'keterangan' => $keterangan,
+                                    'company_code' => $companyCode,
+                                    'nominal' => $nominal,
+                                ];
+                            }
+                        }
+                    }
+        
+                    // Populate detail_penginapan
+                    if ($request->has('start_bt_penginapan')) {
+                        foreach ($request->start_bt_penginapan as $key => $startDate) {
+                            $endDate = $request->end_bt_penginapan[$key] ?? '';
+                            $totalDays = $request->total_days_bt_penginapan[$key] ?? '';
+                            $hotelName = $request->hotel_name_bt_penginapan[$key] ?? '';
+                            $companyCode = $request->company_bt_penginapan[$key] ?? '';
+                            $nominal = str_replace('.', '', $request->nominal_bt_penginapan[$key] ?? '0');
+        
+        
+                            if (!empty($startDate) && !empty($endDate) && !empty($totalDays) && !empty($hotelName) && !empty($companyCode) && !empty($nominal)) {
+                                $detail_penginapan[] = [
+                                    'start_date' => $startDate,
+                                    'end_date' => $endDate,
+                                    'total_days' => $totalDays,
+                                    'hotel_name' => $hotelName,
+                                    'company_code' => $companyCode,
+                                    'nominal' => $nominal,
+                                ];
+                            }
+                        }
+                    }
+        
+                    // Populate detail_lainnya
+                    if ($request->has('tanggal_bt_lainnya')) {
+                        foreach ($request->tanggal_bt_lainnya as $key => $tanggal) {
+                            $keterangan = $request->keterangan_bt_lainnya[$key] ?? '';
+                            $nominal = str_replace('.', '', $request->nominal_bt_lainnya[$key] ?? '0');
+        
+                            if (!empty($tanggal) && !empty($nominal)) {
+                                $detail_lainnya[] = [
+                                    'tanggal' => $tanggal,
+                                    'keterangan' => $keterangan,
+                                    'nominal' => $nominal,
+                                ];
+                            }
+                        }
+                    }
+                    if ($request->has('start_bt_meals')) {
+                        foreach ($request->start_bt_meals as $key => $startDate) {
+                            $endDate = $request->end_bt_meals[$key] ?? '';
+                            $totalDays = $request->total_days_bt_meals[$key] ?? '';
+                            $companyCode = $request->company_bt_meals[$key] ?? '';
+                            $nominal = str_replace('.', '', $request->nominal_bt_meals[$key] ?? '0');
+                            $keterangan = $request->keterangan_bt_meals[$key] ?? '';
+        
+                            if (!empty($startDate) && !empty($endDate) && !empty($totalDays) && !empty($hotelName) && !empty($companyCode) && !empty($nominal)) {
+                                $detail_meals[] = [
+                                    'start_date' => $startDate,
+                                    'end_date' => $endDate,
+                                    'total_days' => $totalDays,
+                                    'company_code' => $companyCode,
+                                    'nominal' => $nominal,
+                                    'keterangan' => $keterangan,
+                                ];
+                            }
+                        }
+                    }
+
+                    // Gabungkan detail entertain dan relation, lalu masukkan ke detail_ca
+                    $declare_ca = [
+                        'detail_perdiem' => $detail_perdiem,
+                        'detail_meals' => $detail_meals,
+                        'detail_transport' => $detail_transport,
+                        'detail_penginapan' => $detail_penginapan,
+                        'detail_lainnya' => $detail_lainnya,
+                    ];
+                    $ca->prove_declare = json_encode(array_values($existingFiles));
+
+                    $ca->detail_ca = '[{"detail_perdiem":[],"detail_meals":[],"detail_transport":[],"detail_penginapan":[],"detail_lainnya":[]}]';
+                    $ca->declare_ca = json_encode($declare_ca);
+                    $model = $ca;
+
+                    $model->sett_id = $managerL1;
+
                 }
                 $ca->save();
             }
@@ -1952,39 +2475,78 @@ class BusinessTripController extends Controller
                 $director_id = $cek_director_id->first()->employee_id;
             }
 
-            $total_ca = str_replace('.', '', $request->totalca);
-            $data_matrix_approvals = MatrixApproval::where('modul', 'dns')
-                ->where('group_company', 'like', '%' . $employee->group_company . '%')
-                ->where('contribution_level_code', 'like', '%' . $request->bb_perusahaan . '%')
-                ->whereRaw(
-                    '? BETWEEN CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
-                    [$total_ca]
-                )
-                ->get();
+            if ($dnsTab) {
+                $total_ca = str_replace('.', '', $request->totalca_ca_deklarasi);
+                $data_matrix_approvals = MatrixApproval::where('modul', 'dns')
+                    ->where('group_company', 'like', '%' . $employee->group_company . '%')
+                    ->where('contribution_level_code', 'like', '%' . $request->bb_perusahaan . '%')
+                    ->whereRaw(
+                        '? BETWEEN CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca]
+                    )
+                    ->get();
 
-            foreach ($data_matrix_approvals as $data_matrix_approval) {
-                if ($data_matrix_approval->employee_id == "cek_L1") {
-                    $employee_id = $managerL1;
-                } else if ($data_matrix_approval->employee_id == "cek_L2") {
-                    $employee_id = $managerL2;
-                } else if ($data_matrix_approval->employee_id == "cek_director") {
-                    $employee_id = $director_id;
-                } else {
-                    $employee_id = $data_matrix_approval->employee_id;
-                }
+                foreach ($data_matrix_approvals as $data_matrix_approval) {
+                    if ($data_matrix_approval->employee_id == "cek_L1") {
+                        $employee_id = $managerL1;
+                    } else if ($data_matrix_approval->employee_id == "cek_L2") {
+                        $employee_id = $managerL2;
+                    } else if ($data_matrix_approval->employee_id == "cek_director") {
+                        $employee_id = $director_id;
+                    } else {
+                        $employee_id = $data_matrix_approval->employee_id;
+                    }
 
-                if ($employee_id != null) {
-                    $model_approval = new ca_sett_approval;
-                    $model_approval->ca_id = $caId;
-                    $model_approval->role_name = $data_matrix_approval->desc;
-                    $model_approval->employee_id = $employee_id;
-                    $model_approval->layer = $data_matrix_approval->layer;
-                    $model_approval->approval_status = $caStatus;
+                    if ($employee_id != null) {
+                        $model_approval = new ca_sett_approval;
+                        $model_approval->ca_id = $dnsRecord->id;
+                        $model_approval->role_name = $data_matrix_approval->desc;
+                        $model_approval->employee_id = $employee_id;
+                        $model_approval->layer = $data_matrix_approval->layer;
+                        $model_approval->approval_status = $caStatus;
 
-                    // Simpan data ke database
+                        // Simpan data ke database
+                        $model_approval->save();
+                    }
                     $model_approval->save();
                 }
-                $model_approval->save();
+            }
+
+            if ($entrTab) {
+                $total_ca = str_replace('.', '', $request->totalca);
+                $data_matrix_approvals = MatrixApproval::where('modul', 'dns')
+                    ->where('group_company', 'like', '%' . $employee->group_company . '%')
+                    ->where('contribution_level_code', 'like', '%' . $request->bb_perusahaan . '%')
+                    ->whereRaw(
+                        '? BETWEEN CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca]
+                    )
+                    ->get();
+
+                foreach ($data_matrix_approvals as $data_matrix_approval) {
+                    if ($data_matrix_approval->employee_id == "cek_L1") {
+                        $employee_id = $managerL1;
+                    } else if ($data_matrix_approval->employee_id == "cek_L2") {
+                        $employee_id = $managerL2;
+                    } else if ($data_matrix_approval->employee_id == "cek_director") {
+                        $employee_id = $director_id;
+                    } else {
+                        $employee_id = $data_matrix_approval->employee_id;
+                    }
+
+                    if ($employee_id != null) {
+                        $model_approval = new ca_sett_approval;
+                        $model_approval->ca_id = $entrRecord->id;
+                        $model_approval->role_name = $data_matrix_approval->desc;
+                        $model_approval->employee_id = $employee_id;
+                        $model_approval->layer = $data_matrix_approval->layer;
+                        $model_approval->approval_status = $caStatus;
+
+                        // Simpan data ke database
+                        $model_approval->save();
+                    }
+                    $model_approval->save();
+                }
             }
             // $managerEmail = Employee::where('employee_id', $managerL1)->pluck('email')->first();
             $managerEmail = "eriton.dewa@kpn-corp.com";
@@ -2880,6 +3442,7 @@ class BusinessTripController extends Controller
                     $hotel->tgl_keluar_htl = $hotelData['tgl_keluar_htl'][$key];
                     $hotel->total_hari = $hotelData['total_hari'][$key];
                     $hotel->approval_status = $statusValue;
+                    $hotel->contribution_level_code = $request->bb_perusahaan;
 
                     $hotel->save();
                 }
@@ -2945,6 +3508,7 @@ class BusinessTripController extends Controller
                     $tiket->type_tkt = $ticketData['type_tkt'][$key] ?? null;
                     $tiket->ket_tkt = $ticketData['ket_tkt'][$key] ?? null;
                     $tiket->approval_status = $statusValue;
+                    $tiket->contribution_level_code = $request->bb_perusahaan;
                     $tiket->jns_dinas_tkt = 'Dinas';
 
                     $tiket->save();

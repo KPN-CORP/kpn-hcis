@@ -1,4 +1,4 @@
-<div class="tab-pane fade <?php echo ($dnsTab && !$entrTab) ? 'show active' : ''; ?>" id="pills-caEntertain" role="tabpanel"
+<div class="tab-pane fade <?php echo (!$dnsTab && $entrTab) ? 'show active' : ''; ?>" id="pills-caEntertain" role="tabpanel"
     aria-labelledby="pills-caEntertain-tab">
     <!-- Duplicate content for now -->
     <ul class="nav mb-3" id="pills-tab-inner" role="tablist">

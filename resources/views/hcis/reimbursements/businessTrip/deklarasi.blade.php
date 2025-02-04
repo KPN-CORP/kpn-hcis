@@ -179,22 +179,22 @@
                                     <div class="col-md-12">
                                         <div class="d-flex flex-column gap-2">
                                             <ul class="nav nav-tabs nav-pills mb-2" id="pills-tab" role="tablist">
-                                                @if ($dnsTab == true)
+                                                {{-- @if ($dnsTab == true) --}}
                                                     <li class="nav-item" role="presentation">
-                                                        <button class="nav-link active" id="pills-cashAdvanced-tab"
+                                                        <button class="nav-link <?php echo (!$entrTab && $dnsTab) ? 'active' : (($dnsTab && $entrTab) ? 'active' : ''); ?>" id="pills-cashAdvanced-tab"
                                                             data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced"
                                                             type="button" role="tab" aria-controls="pills-cashAdvanced"
                                                             aria-selected="true">Cash Advanced</button>
                                                     </li>
-                                                @endif
-                                                @if ($entrTab == true)
+                                                {{-- @endif
+                                                @if ($entrTab == true) --}}
                                                     <li class="nav-item" role="presentation">
-                                                        <button class="nav-link" id="pills-caEntertain-tab"
+                                                        <button class="nav-link <?php echo ($entrTab && !$dnsTab) ? 'active' : ''; ?>" id="pills-caEntertain-tab"
                                                             data-bs-toggle="pill" data-bs-target="#pills-caEntertain"
                                                             type="button" role="tab" aria-controls="pills-caEntertain"
                                                             aria-selected="false">CA Entertain</button>
                                                     </li>
-                                                @endif
+                                                {{-- @endif --}}
                                             </ul>
 
                                             <div class="tab-content" id="pills-tabContent">
@@ -205,6 +205,7 @@
                                                 @include('hcis.reimbursements.businessTrip.declaration.btEntDeclaration')
                                             </div>
                                         </div>
+                                        {{-- {{dd($entrTab)}} --}}
                                         {{-- <div class="row mb-2">
                                             <div class="col-md-12 mb-2">
                                                 <label class="form-label">Total Deklarasi</label>
@@ -227,28 +228,25 @@
                                             <label for="prove_declare" class="form-label">Upload Document</label>
                                             <input type="file" id="prove_declare" name="prove_declare[]" accept="image/*, application/pdf" class="form-control mb-2" multiple onchange="previewFiles()">
                                             @if ((isset($dnsData->prove_declare) && $dnsData->prove_declare) || (isset($entrData->prove_declare) && $entrData->prove_declare))
-                                                <input type="hidden" name="existing_prove_declare" id="existing-prove-declare" value="{{ $dnsData->prove_declare }}">
+                                            <input type="hidden" name="existing_prove_declare" id="existing-prove-declare" value="{{ $dnsData->prove_declare ?? $entrData->prove_declare }}">                                     
                                                 <input type="hidden" name="removed_prove_declare" id="removed-prove-declare" value="[]">
 
                                                 <!-- Preview untuk file lama -->
                                                 <div id="existing-files-label" style="margin-bottom: 10px; font-weight: bold;">
-                                                    @if ($dnsData->prove_declare || $entrData->prove_declare)
+                                                    @if ($dnsData->prove_declare ?? $entrData->prove_declare)
 
                                                         Document on Draft:
                                                     @endif
                                                 </div>
                                                 <div id="existing-file-preview" class="mt-2">
-                                                    @if ($dnsData->prove_declare || $entrData->prove_declare)
+                                                    @if ($dnsData->prove_declare ?? $entrData->prove_declare)
                                                         @php
-                                                            $proveDeclare = $dnsData->prove_declare ? $dnsData->prove_declare : $entrData->prove_declare;
-
-                                                            // Cek apakah data dalam format JSON atau masih string lama
-                                                            if (!empty($proveDeclare)) {
-                                                                $decodedData = json_decode($proveDeclare, true);
-                                                                $existingFiles = is_array($decodedData) ? $decodedData : [$proveDeclare]; // Jika bukan array, ubah menjadi array
-                                                            } else {
-                                                                $existingFiles = [];
-                                                            }
+                                                            // Ambil data dari dnsData atau entrData
+                                                            $proveDeclare = $dnsData->prove_declare ?? $entrData->prove_declare;
+                                                
+                                                            // Cek apakah data adalah JSON atau string biasa
+                                                            $decodedData = json_decode($proveDeclare, true);
+                                                            $existingFiles = is_array($decodedData) ? $decodedData : (!empty($proveDeclare) ? [$proveDeclare] : []);
                                                         @endphp
 
                                                         <div id="existing-file-preview" class="mt-2">
