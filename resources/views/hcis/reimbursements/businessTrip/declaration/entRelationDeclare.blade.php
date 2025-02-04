@@ -253,7 +253,7 @@
         @foreach ($declareCa['relation_e'] as $index => $relation_dec)
             @if (!isset($caDetail['relation_e'][$index]))
                 @php
-                    $initialCount = count($caDetail['relation_e']);
+                    $initialCount = count($declareCa['relation_e']);
                 @endphp
                 <div id="form-container-e-relation-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3"
                     style="border-radius: 1%;">
@@ -342,7 +342,7 @@
         let checkboxCount = {{ $initialCount }} - 1;
     </script>
 
-    <div class="mt-3">
+    <div class="mt-2 mb-3">
         <button class="btn btn-primary btn-sm" id="addMoreButtonRelation" onclick="addMoreFormRelationDec(event)">Add
             More</button>
     </div>
@@ -420,7 +420,7 @@
         let checkboxCount = 0;
     </script>
 
-    <div class="mt-2 mb-2">
+    <div class="mt-2 mb-3">
         <button class="btn btn-primary btn-sm" id="addMoreButtonRelation" onclick="addMoreFormRelationDec(event)">Add
             More</button>
     </div>

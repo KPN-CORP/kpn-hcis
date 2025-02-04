@@ -1831,7 +1831,7 @@ class BusinessTripController extends Controller
                 $model->sett_id = $managerL1;
 
             }
-
+            $ca->save();
         }
         if ($caRecords) {
             foreach ($caRecords as $ca) {
