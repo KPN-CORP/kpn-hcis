@@ -983,15 +983,20 @@
 
                     inputSummary += `
                         </table>
-                        <hr style="margin: 20px 0;">
-                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                            <tr>
-                                <th style="width: 45%; text-align: left; padding: 8px;">Total Declaration</th>
-                                <td style="width: 5%; text-align: right; padding: 8px;">:</td>
-                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${formatCurrency(totalDeclaration)}</strong></td>
-                            </tr>
-                        </table>
                     `;
+
+                    if ((parseFloat(totalBtCa) > 0) && (parseFloat(totalEntCa) > 0)) {
+                        inputSummary += `
+                            <hr style="margin: 20px 0;">
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                                <tr>
+                                    <th style="width: 45%; text-align: left; padding: 8px;">Total Declaration</th>
+                                    <td style="width: 5%; text-align: right; padding: 8px;">:</td>
+                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${formatCurrency(totalDeclaration)}</strong></td>
+                                </tr>
+                            </table>
+                        `;   
+                    }
 
                     // Show SweetAlert confirmation with the input summary
                     Swal.fire({

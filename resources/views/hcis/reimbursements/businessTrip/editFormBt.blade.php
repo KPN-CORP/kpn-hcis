@@ -709,6 +709,23 @@
                     // const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
                     const totalCa = document.getElementById('totalca').value;
 
+                    function parseCurrency(value) {
+                        // Hapus tanda titik dan ubah ke angka
+                        return parseFloat(value.replace(/\./g, '')) || 0;
+                    }
+
+                    // Konversi nilai ke angka
+                    const totalBtCaNum = parseCurrency(totalCa);
+                    const totalEntCaNum = parseCurrency(totalEnt);
+
+                    // Hitung total declaration
+                    const totalRequest = totalBtCaNum + totalEntCaNum;
+
+                    // Format angka ke format mata uang (opsional)
+                    function formatCurrency(value) {
+                        return value.toLocaleString('id-ID');
+                    }
+
                     // if (perdiemCheckbox && !dateReq) {
                     //     Swal.fire({
                     //         title: "Warning!",
@@ -780,68 +797,85 @@
                     let inputSummary = `
                         <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
                     `;
-                    if (parseFloat(totalCa) > 0) {
-                        inputSummary = `
-                                <tr>
-                                    <th style="width: 40%; text-align: left; padding: 8px;">Total Perdiem</th>
-                                    <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPerdiem}</strong></td>
-                                </tr>`;
-                    }
+                    if (totalCa) {
+                        inputSummary += `
+                            <tr>
+                                <th style="width: 40%; text-align: left; padding: 8px;">Total {{ $allowance }}</th>
+                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPerdiem}</strong></td>
+                            </tr>
+                            `;
 
-                    if (parseFloat(totalCa) > 0) {
+                        // Conditionally add the "Total Meals" row
                         if (group_company != 'KPN Plantations' && group_company != 'Plantations') {
                             inputSummary += `
-                                <tr>
-                                    <th style="width: 40%; text-align: left; padding: 8px;">Total Meals</th>
-                                    <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtMeals}</strong></td>
-                                </tr>`;
+                            <tr>
+                                <th style="width: 40%; text-align: left; padding: 8px;">Total Meals</th>
+                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtMeals}</strong></td>
+                            </tr>`;
                         }
+
+                        inputSummary += `
+                            <tr>
+                                <th style="width: 40%; text-align: left; padding: 8px;">Total Accommodation</th>
+                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPenginapan}</strong></td>
+                            </tr>
+                            <tr>
+                                <th style="width: 40%; text-align: left; padding: 8px;">Total Transport</th>
+                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtTransport}</strong></td>
+                            </tr>
+                            <tr>
+                                <th style="width: 40%; text-align: left; padding: 8px;">Total Others</th>
+                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtLainnya}</strong></td>
+                            </tr>
+                        `;
                     }
+
+                    inputSummary += `
+                        </table>
+                        <hr style="margin: 20px 0;">
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                    `;
 
                     if (parseFloat(totalCa) > 0) {
                         inputSummary += `
-                                <tr>
-                                    <th style="width: 40%; text-align: left; padding: 8px;">Total Accommodation</th>
-                                    <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPenginapan}</strong></td>
-                                </tr>
-                                <tr>
-                                    <th style="width: 40%; text-align: left; padding: 8px;">Total Transport</th>
-                                    <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtTransport}</strong></td>
-                                </tr>
-                                <tr>
-                                    <th style="width: 40%; text-align: left; padding: 8px;">Total Others</th>
-                                    <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtLainnya}</strong></td>
-                                </tr>
-                            </table>`;
-                    }
-
-                    if (parseFloat(totalCa) > 0) {
-                        inputSummary += `
-                            <hr style="margin: 20px 0;">
-                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                                <tr>
-                                    <th style="width: 40%; text-align: left; padding: 8px;">Total Cash Advanced</th>
-                                    <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalCa}</strong></td>
-                                </tr>
-                            </table>`;
+                            <tr>
+                                <th style="width: 40%; text-align: left; padding: 8px;">Total Cash Advanced</th>
+                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalCa}</strong></td>
+                            </tr>
+                        `;
                     }
 
                     if (parseFloat(totalEnt) > 0) {
                         inputSummary += `
+                            <tr>
+                                <th style="width: 40%; text-align: left; padding: 8px;">Total Entertain</th>
+                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalEnt}</strong></td>
+                            </tr>
+                        `;
+                    }
+
+                    inputSummary += `
+                        </table>
+                    `;
+
+                    if ((parseFloat(totalCa) > 0) && (parseFloat(totalEnt) > 0)) {
+                        inputSummary += `
                             <hr style="margin: 20px 0;">
                             <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
                                 <tr>
-                                    <th style="width: 40%; text-align: left; padding: 8px;">Total Entertain</th>
-                                    <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalEnt}</strong></td>
+                                    <th style="width: 45%; text-align: left; padding: 8px;">Total Request</th>
+                                    <td style="width: 5%; text-align: right; padding: 8px;">:</td>
+                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${formatCurrency(totalRequest)}</strong></td>
                                 </tr>
-                            </table>`;
+                            </table>
+                        `;   
                     }
 
                     // Show SweetAlert confirmation with the input summary

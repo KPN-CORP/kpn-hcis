@@ -3738,7 +3738,7 @@ class BusinessTripController extends Controller
         $caTransactions = ca_transaction::whereIn('no_sppd', $sppdNos)
             ->whereNull('deleted_at')
             ->get()
-            ->keyBy('no_sppd');
+            ->groupBy('no_sppd');
         $tickets = Tiket::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
         $hotel = Hotel::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
         $taksi = Taksi::whereIn('no_sppd', $sppdNos)->get()->keyBy('no_sppd');
