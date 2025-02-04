@@ -562,6 +562,7 @@ class BusinessTripController extends Controller
                             'tgl_keluar_htl' => $hotelData['tgl_keluar_htl'][$key],
                             'total_hari' => $hotelData['total_hari'][$key],
                             'approval_status' => $statusValue,
+                            'contribution_level_code' => $request->bb_perusahaan,
                         ]);
 
                         $processedHotelIds[] = $hotelId;
@@ -585,6 +586,7 @@ class BusinessTripController extends Controller
                             'tgl_keluar_htl' => $hotelData['tgl_keluar_htl'][$key],
                             'total_hari' => $hotelData['total_hari'][$key],
                             'approval_status' => $statusValue,
+                            'contribution_level_code' => $request->bb_perusahaan,
                         ]);
 
                         $processedHotelIds[] = $newHotel->id;
@@ -661,7 +663,8 @@ class BusinessTripController extends Controller
                         'jns_dinas_tkt' => 'Dinas',
                         'jk_tkt' => $employee_data->gender ?? null,
                         'np_tkt' => $employee_data->fullname ?? null,
-                        'tlp_tkt' => $employee_data->personal_mobile_number ?? null
+                        'tlp_tkt' => $employee_data->personal_mobile_number ?? null,
+                        'contribution_level_code' => $request->bb_perusahaan,
                     ];
 
                     // Fetch employee data to get jk_tkt
@@ -2880,6 +2883,7 @@ class BusinessTripController extends Controller
                     $hotel->tgl_keluar_htl = $hotelData['tgl_keluar_htl'][$key];
                     $hotel->total_hari = $hotelData['total_hari'][$key];
                     $hotel->approval_status = $statusValue;
+                    $hotel->contribution_level_code = $request->bb_perusahaan;
 
                     $hotel->save();
                 }
@@ -2945,6 +2949,7 @@ class BusinessTripController extends Controller
                     $tiket->type_tkt = $ticketData['type_tkt'][$key] ?? null;
                     $tiket->ket_tkt = $ticketData['ket_tkt'][$key] ?? null;
                     $tiket->approval_status = $statusValue;
+                    $tiket->contribution_level_code = $request->bb_perusahaan;
                     $tiket->jns_dinas_tkt = 'Dinas';
 
                     $tiket->save();
@@ -4392,8 +4397,6 @@ class BusinessTripController extends Controller
         // Initialize caDetail with an empty array if it's null
         $perdiem = ListPerdiem::where('grade', $employee_data->job_level)
             ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')->first();
-
-
 
         // Retrieve all hotels for the specific BusinessTrip
         $hotels = Hotel::where('no_sppd', $n->no_sppd)->get();

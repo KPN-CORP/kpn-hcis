@@ -84,7 +84,7 @@
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label">Entertainment Fee Detail</label>
-                                <textarea name="enter_fee_e_detail[]" class="form-control">{{ $detail_dec['fee_detail'] }}</textarea>
+                                <textarea name="enter_fee_e_detail[]" class="form-control" placeholder="Write more details ...">{{ $detail_dec['fee_detail'] }}</textarea>
                             </div>
                         </div>
                     @endif
@@ -139,7 +139,7 @@
                         </div>
                         <div class="col-md-12">
                             <label class="form-label">Entertainment Fee Detail</label>
-                            <textarea name="enter_fee_e_detail[]" class="form-control">{{ $detail_dec['fee_detail'] }}</textarea>
+                            <textarea name="enter_fee_e_detail[]" class="form-control" placeholder="Write more details ...">{{ $detail_dec['fee_detail'] }}</textarea>
                         </div>
                     </div>
                     <br>
@@ -213,7 +213,7 @@
                         </div>
                         <div class="col-md-12">
                             <label class="form-label">Entertainment Fee Detail</label>
-                            <textarea name="enter_fee_e_detail[]" class="form-control">{{ $detail_dec['fee_detail'] }}</textarea>
+                            <textarea name="enter_fee_e_detail[]" class="form-control" placeholder="Write more details ...">{{ $detail_dec['fee_detail'] }}</textarea>
                         </div>
                     </div>
                     <br>
@@ -277,7 +277,7 @@
                     </div>
                     <div class="col-md-12">
                         <label class="form-label">Entertainment Fee Detail</label>
-                        <textarea name="enter_fee_e_detail[]" class="form-control"></textarea>
+                        <textarea name="enter_fee_e_detail[]" class="form-control" placeholder="Write more details ..."></textarea>
                     </div>
                 </div>
                 <br>
