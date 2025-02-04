@@ -124,6 +124,7 @@
                                     // Provide default empty arrays if caDetail or sections are not set
                                     $detailPerdiem = $caDetail['detail_perdiem'] ?? [];
                                     $detailTransport = $caDetail['detail_transport'] ?? [];
+                                    $detailMeals = $caDetail['detail_meals'] ?? [];
                                     $detailPenginapan = $caDetail['detail_penginapan'] ?? [];
                                     $detailLainnya = $caDetail['detail_lainnya'] ?? [];
                                 @endphp
@@ -148,11 +149,11 @@
                                                 </li>
                                             @endif
                                         </ul>
-    
+
                                         <div class="tab-content" id="pills-tabContent">
                                             <!-- Cash Advance Content -->
                                             @include('hcis.reimbursements.businessTrip.approvalDec.btCaApprovalDec')
-    
+
                                             <!-- CA Entertain Content -->
                                             @include('hcis.reimbursements.businessTrip.approvalDec.btEntApprovalDec')
                                         </div>
@@ -163,6 +164,7 @@
                                 // Provide default empty arrays if any section is not set
                                 $detailPerdiem = $caDetail['detail_perdiem'] ?? [];
                                 $detailTransport = $caDetail['detail_transport'] ?? [];
+                                $detailMeals = $caDetail['detail_meals'] ?? [];
                                 $detailPenginapan = $caDetail['detail_penginapan'] ?? [];
                                 $detailLainnya = $caDetail['detail_lainnya'] ?? [];
                                 $entertainDetail = $caDetail['detail_e'] ?? [];
@@ -172,6 +174,7 @@
                             @php
                                 $detailPerdiem2 = $declareCa['detail_perdiem'] ?? [];
                                 $detailTransport2 = $declareCa['detail_transport'] ?? [];
+                                $detailMeals2 = $declareCa['detail_meals'] ?? [];
                                 $detailPenginapan2 = $declareCa['detail_penginapan'] ?? [];
                                 $detailLainnya2 = $declareCa['detail_lainnya'] ?? [];
                                 $entertainDetail2 = $declareCa['detail_e'] ?? [];
@@ -189,12 +192,12 @@
                                 <!-- Preview untuk file lama -->
                                 <div id="existing-files-label" style="margin-bottom: 10px; font-weight: bold;">
                                     @if ($dns->prove_declare ?? $entr->prove_declare)
-                                        
+
                                         Uploaded Proof:
                                     @endif
                                 </div>
                                 <div id="existing-file-preview" class="mt-2">
-                                    @if (optional($dns)->prove_declare ?? optional($entr)->prove_declare)  
+                                    @if (optional($dns)->prove_declare ?? optional($entr)->prove_declare)
                                         @php
                                             $proveDeclare = $dns->prove_declare ?? $entr->prove_declare; // Fix kondisi ternary yang salah
 
@@ -205,7 +208,7 @@
                                             } else {
                                                 $existingFiles = [];
                                             }
-                                        @endphp   
+                                        @endphp
 
                                         <div id="existing-file-preview" class="mt-2">
                                             @if (count($existingFiles) > 1)
@@ -226,7 +229,7 @@
                                                         @endif
                                                     </div>
                                                 @endforeach
-                                            @else  
+                                            @else
                                                 @php
                                                     $file = $existingFiles[0] ?? ''; // Ambil satu file jika hanya ada satu file
                                                     $extension = pathinfo($file, PATHINFO_EXTENSION);
@@ -248,7 +251,7 @@
                                                         @endif
                                                     </div>
                                                 @endif
-                                            @endif                                                          
+                                            @endif
                                         </div>
                                     @endif
 

@@ -54,7 +54,7 @@ function addMoreFormDetailDec(event) {
                     </div>
                     <div class="col-md-12 mb-2">
                         <label class="form-label">Entertainment Fee Detail</label>
-                        <textarea name="enter_fee_e_detail[]" class="form-control"></textarea>
+                        <textarea name="enter_fee_e_detail[]" class="form-control" placeholder="Write more details ..."></textarea>
                     </div>
                 </div>
                 <br>
@@ -132,7 +132,7 @@ function addMoreFormDetailReq(event) {
                     </div>
                     <div class="col-md-12 mb-2">
                         <label class="form-label">Entertainment Fee Detail</label>
-                        <textarea name="enter_fee_e_detail[]" class="form-control"></textarea>
+                        <textarea name="enter_fee_e_detail[]" class="form-control" placeholder="Write more details ..."></textarea>
                     </div>
                 </div>
                 <br>

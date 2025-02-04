@@ -121,23 +121,26 @@
                                 <label class="form-label" for="name">Name</label>
                                 <input type="text" name="rname_e_relation[]"
                                     id="rname_e_relation_{{ $loop->index + 1 }}" value="{{ $relation_dec['name'] }}"
-                                    class="form-control">
+                                    class="form-control" placeholder="ex: John Doe">
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label" for="position">Position</label>
                                 <input type="text" name="rposition_e_relation[]"
                                     id="rposition_e_relation_{{ $loop->index + 1 }}"
-                                    value="{{ $relation_dec['position'] }}" class="form-control">
+                                    value="{{ $relation_dec['position'] }}" class="form-control"
+                                    placeholder="ex: Head Manager">
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label" for="company">Company</label>
                                 <input type="text" name="rcompany_e_relation[]"
                                     id="rcompany_e_relation_{{ $loop->index + 1 }}"
-                                    value="{{ $relation_dec['company'] }}" class="form-control">
+                                    value="{{ $relation_dec['company'] }}" class="form-control"
+                                    placeholder="ex: Company XYZ">
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label" for="purpose">Purpose</label>
-                                <textarea name="rpurpose_e_relation[]" id="rpurpose_e_relation_{{ $loop->index + 1 }}" class="form-control">{{ $relation_dec['purpose'] }}</textarea>
+                                <textarea name="rpurpose_e_relation[]" id="rpurpose_e_relation_{{ $loop->index + 1 }}" class="form-control"
+                                    placeholder="Write your purpose ...">{{ $relation_dec['purpose'] }}</textarea>
                             </div>
                         </div>
                         <br>
@@ -203,21 +206,24 @@
                         <div class="col-md-4 mb-2">
                             <label class="form-label" for="name">Name</label>
                             <input type="text" name="rname_e_relation[]" id="rname_e_relation_1"
-                                value="{{ $relation_dec['name'] }}" class="form-control">
+                                value="{{ $relation_dec['name'] }}" class="form-control" placeholder="ex: John Doe">
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label" for="position">Position</label>
                             <input type="text" name="rposition_e_relation[]" id="rposition_e_relation_1"
-                                value="{{ $relation_dec['position'] }}" class="form-control">
+                                value="{{ $relation_dec['position'] }}" class="form-control"
+                                placeholder="ex: Head Manager">
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label" for="company">Company</label>
                             <input type="text" name="rcompany_e_relation[]" id="rcompany_e_relation_1"
-                                value="{{ $relation_dec['company'] }}" class="form-control">
+                                value="{{ $relation_dec['company'] }}" class="form-control"
+                                placeholder="ex: Company XYZ">
                         </div>
                         <div class="col-md-12">
                             <label class="form-label" for="purpose">Purpose</label>
-                            <textarea name="rpurpose_e_relation[]" id="rpurpose_e_relation_1" class="form-control">{{ $relation_dec['purpose'] }}</textarea>
+                            <textarea name="rpurpose_e_relation[]" id="rpurpose_e_relation_1" class="form-control"
+                                placeholder="Write your purpose ...">{{ $relation_dec['purpose'] }}</textarea>
                         </div>
                     </div>
                     <br>
@@ -298,21 +304,24 @@
                         <div class="col-md-4 mb-2">
                             <label class="form-label" for="name">Name</label>
                             <input type="text" name="rname_e_relation[]" id="rname_e_relation_1"
-                                value="{{ $relation_dec['name'] }}" class="form-control">
+                                value="{{ $relation_dec['name'] }}" class="form-control" placeholder="ex: John Doe">
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label" for="position">Position</label>
                             <input type="text" name="rposition_e_relation[]" id="rposition_e_relation_1"
-                                value="{{ $relation_dec['position'] }}" class="form-control">
+                                value="{{ $relation_dec['position'] }}" class="form-control"
+                                placeholder="ex: Head Manager">
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label" for="company">Company</label>
                             <input type="text" name="rcompany_e_relation[]" id="rcompany_e_relation_1"
-                                value="{{ $relation_dec['company'] }}" class="form-control">
+                                value="{{ $relation_dec['company'] }}" class="form-control"
+                                placeholder="ex: Company XYZ">
                         </div>
                         <div class="col-md-12">
                             <label class="form-label" for="purpose">Purpose</label>
-                            <textarea name="rpurpose_e_relation[]" id="rpurpose_e_relation_1" class="form-control">{{ $relation_dec['purpose'] }}</textarea>
+                            <textarea name="rpurpose_e_relation[]" id="rpurpose_e_relation_1" class="form-control"
+                                placeholder="Write your purpose ...">{{ $relation_dec['purpose'] }}</textarea>
                         </div>
                     </div>
                     <br>
@@ -375,22 +384,23 @@
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label" for="name">Name</label>
-                        <input type="text" name="rname_e_relation[]" id="rname_e_relation_1"
-                            class="form-control">
+                        <input type="text" name="rname_e_relation[]" id="rname_e_relation_1" class="form-control"
+                            placeholder="ex: John Doe">
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label" for="position">Position</label>
                         <input type="text" name="rposition_e_relation[]" id="rposition_e_relation_1"
-                            class="form-control">
+                            class="form-control" placeholder="ex: John Doe">
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label" for="company">Company</label>
                         <input type="text" name="rcompany_e_relation[]" id="rcompany_e_relation_1"
-                            class="form-control">
+                            class="form-control" placeholder="ex: John Doe">
                     </div>
                     <div class="col-md-12">
                         <label class="form-label" for="purpose">Purpose</label>
-                        <textarea name="rpurpose_e_relation[]" id="rpurpose_e_relation_1" class="form-control"></textarea>
+                        <textarea name="rpurpose_e_relation[]" id="rpurpose_e_relation_1" class="form-control"
+                            placeholder="Write your purpose ..."></textarea>
                     </div>
                 </div>
                 <br>
@@ -410,7 +420,7 @@
         let checkboxCount = 0;
     </script>
 
-    <div class="mt-3">
+    <div class="mt-2 mb-2">
         <button class="btn btn-primary btn-sm" id="addMoreButtonRelation" onclick="addMoreFormRelationDec(event)">Add
             More</button>
     </div>

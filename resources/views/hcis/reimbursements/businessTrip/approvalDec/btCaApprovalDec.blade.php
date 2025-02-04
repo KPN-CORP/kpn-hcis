@@ -1,5 +1,5 @@
-<div class="tab-pane fade <?php echo (!$entrTab && $dnsTab) ? 'show active' : (($dnsTab && $entrTab) ? 'show active' : ''); ?>" id="pills-cashAdvanced"
-    role="tabpanel" aria-labelledby="pills-cashAdvanced-tab">
+<div class="tab-pane fade <?php echo !$entrTab && $dnsTab ? 'show active' : ($dnsTab && $entrTab ? 'show active' : ''); ?>" id="pills-cashAdvanced" role="tabpanel"
+    aria-labelledby="pills-cashAdvanced-tab">
     @if ($dns == true)
         @php
             $formattedTotalCashAdvanced = number_format($dns->total_ca ?? 0, 0, ',', '.');
@@ -16,9 +16,11 @@
     {{-- PERDIEM TABLE --}}
     @include('hcis.reimbursements.businessTrip.approvalDec.bussinessTripTable.caPerdiemApprovalDec')
 
-    {{-- TRANSPORT TABLE --}}
-    @include('hcis.reimbursements.businessTrip.approvalDec.bussinessTripTable.caMealsApprovalDec')
-    
+    {{-- MEALS TABLE --}}
+    @if ($group_company !== 'KPN Plantations' && $group_company !== 'Plantations')
+        @include('hcis.reimbursements.businessTrip.approvalDec.bussinessTripTable.caMealsApprovalDec')
+    @endif
+
     {{-- TRANSPORT TABLE --}}
     @include('hcis.reimbursements.businessTrip.approvalDec.bussinessTripTable.caTransportApprovalDec')
 
@@ -27,7 +29,7 @@
 
     {{-- OTHERS TABLE --}}
     @include('hcis.reimbursements.businessTrip.approvalDec.bussinessTripTable.caOtherApprovalDec')
-    
+
 
     <div class="row mb-2">
         <div class="row">
@@ -37,9 +39,8 @@
                     <div class="input-group-append">
                         <span class="input-group-text">Rp</span>
                     </div>
-                    <input class="form-control bg-light" name="totalca_deklarasi"
-                        id="totalca_deklarasi" type="text" min="0"
-                        value="{{ $formattedTotalCashAdvanced }}" readonly>
+                    <input class="form-control bg-light" name="totalca_deklarasi" id="totalca_deklarasi" type="text"
+                        min="0" value="{{ $formattedTotalCashAdvanced }}" readonly>
                 </div>
             </div>
             <div class="col-md-4 mb-2">
@@ -48,9 +49,8 @@
                     <div class="input-group-append">
                         <span class="input-group-text">Rp</span>
                     </div>
-                    <input class="form-control bg-light" name="totalca_deklarasi"
-                        id="totalca_deklarasi" type="text" min="0"
-                        value="{{ $formattedTotalRealCashAdvanced }}" readonly>
+                    <input class="form-control bg-light" name="totalca_deklarasi" id="totalca_deklarasi" type="text"
+                        min="0" value="{{ $formattedTotalRealCashAdvanced }}" readonly>
                 </div>
             </div>
             <div class="col-md-4 mb-2">
@@ -59,9 +59,8 @@
                     <div class="input-group-append">
                         <span class="input-group-text">Rp</span>
                     </div>
-                    <input class="form-control bg-light" name="totalca_deklarasi"
-                        id="totalca_deklarasi" type="text" min="0"
-                        value="{{ $formattedTotalCostCashAdvanced }}" readonly>
+                    <input class="form-control bg-light" name="totalca_deklarasi" id="totalca_deklarasi" type="text"
+                        min="0" value="{{ $formattedTotalCostCashAdvanced }}" readonly>
                 </div>
             </div>
         </div>
