@@ -719,20 +719,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
         checkbox.addEventListener("change", function () {
             if (this.checked) {
-                // Show the navigation tab and activate the corresponding pane
                 nav.style.display = "block";
-                tab.click(); // Programmatically activate the tab
-                if (pane) {
-                    pane.classList.add("active", "show");
-                }
+                tab.click();
+                setTimeout(() => {
+                    if (pane) {
+                        pane.classList.add("active", "show");
+                    }
+                }, 50);
             } else {
-                // Hide the navigation tab and deactivate the corresponding pane
                 nav.style.display = "none";
                 if (pane) {
                     pane.classList.remove("active", "show");
                 }
             }
         });
+
+        if (checkbox.checked) {
+            setTimeout(() => {
+                tab.click();
+            }, 50);
+        }
     }
 
     // Initialize toggleSection for Luar Kota
@@ -2096,7 +2102,9 @@ function DalamKotaHotelInit() {
 //Taksi JS
 function handleTaksiForms() {
     const taksiCheckbox = document.getElementById("taksiCheckbox");
-    const taksiCheckboxDalamKota = document.getElementById("taksiCheckboxDalamKota");
+    const taksiCheckboxDalamKota = document.getElementById(
+        "taksiCheckboxDalamKota"
+    );
     const taksiDiv = document.getElementById("taksi_div");
     const taksiDivDalamKota = document.getElementById("taksi_div_dalam_kota");
 
