@@ -1,4 +1,4 @@
-<div class="tab-pane fade <?php echo ($dnsTab && !$entrTab) ? 'show active' : ''; ?>" id="pills-caEntertain"
+<div class="tab-pane fade <?php echo (!$dnsTab && $entrTab) ? 'show active' : ''; ?>" id="pills-caEntertain"
     role="tabpanel" aria-labelledby="pills-caEntertain-tab">
     @if ($entr == true)
         @php

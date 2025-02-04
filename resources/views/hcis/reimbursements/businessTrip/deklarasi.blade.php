@@ -159,18 +159,22 @@
                                     <div class="col-md-12">
                                         <div class="d-flex flex-column gap-2">
                                             <ul class="nav nav-tabs nav-pills mb-2" id="pills-tab" role="tablist">
-                                                <li class="nav-item" role="presentation">
-                                                    <button class="nav-link active" id="pills-cashAdvanced-tab"
-                                                        data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced"
-                                                        type="button" role="tab" aria-controls="pills-cashAdvanced"
-                                                        aria-selected="true">Cash Advanced</button>
-                                                </li>
-                                                <li class="nav-item" role="presentation">
-                                                    <button class="nav-link" id="pills-caEntertain-tab"
-                                                        data-bs-toggle="pill" data-bs-target="#pills-caEntertain"
-                                                        type="button" role="tab" aria-controls="pills-caEntertain"
-                                                        aria-selected="false">CA Entertain</button>
-                                                </li>
+                                                @if ($dnsTab == true)
+                                                    <li class="nav-item" role="presentation">
+                                                        <button class="nav-link active" id="pills-cashAdvanced-tab"
+                                                            data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced"
+                                                            type="button" role="tab" aria-controls="pills-cashAdvanced"
+                                                            aria-selected="true">Cash Advanced</button>
+                                                    </li>
+                                                @endif
+                                                @if ($entrTab == true)
+                                                    <li class="nav-item" role="presentation">
+                                                        <button class="nav-link" id="pills-caEntertain-tab"
+                                                            data-bs-toggle="pill" data-bs-target="#pills-caEntertain"
+                                                            type="button" role="tab" aria-controls="pills-caEntertain"
+                                                            aria-selected="false">CA Entertain</button>
+                                                    </li>
+                                                @endif
                                             </ul>
 
                                             <div class="tab-content" id="pills-tabContent">
@@ -897,11 +901,19 @@
                                 <td style="width: 10%; text-align: right; padding: 8px;">:</td>  
                                 <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPerdiem}</strong></td>  
                             </tr>  
-                            <tr>  
-                                <th style="width: 40%; text-align: left; padding: 8px;">Total Meals</th>  
-                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>  
-                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtMeals}</strong></td>  
-                            </tr>  
+                            `;
+
+                        // Conditionally add the "Total Meals" row
+                        if (group_company != 'KPN Plantations' || group_company != 'Plantations') {
+                            inputSummary += `
+                            <tr>
+                                <th style="width: 40%; text-align: left; padding: 8px;">Total Meals</th>
+                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtMeals}</strong></td>
+                            </tr>`;
+                        }
+
+                        inputSummary += `
                             <tr>  
                                 <th style="width: 40%; text-align: left; padding: 8px;">Total Accommodation</th>  
                                 <td style="width: 10%; text-align: right; padding: 8px;">:</td>  

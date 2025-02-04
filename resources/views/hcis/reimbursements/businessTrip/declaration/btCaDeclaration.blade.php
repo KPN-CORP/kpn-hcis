@@ -1,4 +1,4 @@
-<div class="tab-pane fade show active" id="pills-cashAdvanced"
+<div class="tab-pane fade <?php echo (!$entrTab && $dnsTab) ? 'show active' : (($dnsTab && $entrTab) ? 'show active' : ''); ?>" id="pills-cashAdvanced"
     role="tabpanel" aria-labelledby="pills-cashAdvanced-tab">
     <ul class="nav mb-3" id="pills-tab-inner" role="tablist">
         <li class="nav-item" role="presentation">

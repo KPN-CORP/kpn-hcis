@@ -7,7 +7,7 @@
             <div class="table-responsive table-container bg-white"
                 style="height: 300px; overflow-y: auto;">
                 <table class="table table-hover table-sm nowrap"
-                    id="{{ isset($caDetail['detail_e']) && is_array($caDetail['detail_e']) ? (array_sum(array_column($caDetail['detail_e'], 'nominal')) > 0 ? 'transportTable' : '') : '' }}"
+                    id="{{ isset($caDetail['detail_e']) && is_array($caDetail['detail_e']) ? (array_sum(array_column($caDetail['detail_e'], 'nominal')) > 0 ? 'detailTable' : '') : '' }}"
                     width="100%" cellspacing="0">
                     <thead class="thead-light">
                         <tr style="text-align-last: center;">
@@ -86,7 +86,7 @@
             <div class="table-responsive table-container bg-white"
                 style="height: 300px; overflow-y: auto;">
                 <table class="table table-hover table-sm nowrap"
-                    id="{{ isset($declareCa['detail_e']) && is_array($declareCa['detail_e']) ? (array_sum(array_column($declareCa['detail_e'], 'nominal')) > 0 ? 'transportTableDec' : '') : '' }}"
+                    id="{{ isset($declareCa['detail_e']) && is_array($declareCa['detail_e']) ? (array_sum(array_column($declareCa['detail_e'], 'nominal')) > 0 ? 'detailTableDec' : '') : '' }}"
                     width="100%" cellspacing="0">
                     <thead class="thead-light">
                         {{-- <tr class="bg-primary">

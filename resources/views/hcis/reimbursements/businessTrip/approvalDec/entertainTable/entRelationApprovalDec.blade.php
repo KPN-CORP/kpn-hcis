@@ -7,7 +7,7 @@
             <div class="table-responsive table-container bg-white"
                 style="height: 300px; overflow-y: auto;">
                 <table class="table table-hover table-sm nowrap"
-                    id="{{ isset($caDetail['relation_e']) && is_array($caDetail['relation_e']) ? (array_sum(array_column($caDetail['relation_e'], 'nominal')) > 0 ? 'transportTable' : '') : '' }}"
+                    id="{{ isset($caDetail['relation_e']) && is_array($caDetail['relation_e']) ? (array_sum(array_column($caDetail['relation_e'], 'nominal')) > 0 ? 'relationTable' : '') : '' }}"
                     width="100%" cellspacing="0">
                     <thead class="thead-light">
                         <tr style="text-align-last: center;">
@@ -70,7 +70,7 @@
             <div class="table-responsive table-container bg-white"
                 style="height: 300px; overflow-y: auto;">
                 <table class="table table-hover table-sm nowrap"
-                    id="{{ isset($declareCa['relation_e']) && is_array($declareCa['relation_e']) ? (array_sum(array_column($declareCa['relation_e'], 'nominal')) > 0 ? 'transportTableDec' : '') : '' }}"
+                    id="{{ isset($declareCa['relation_e']) && is_array($declareCa['relation_e']) ? (array_sum(array_column($declareCa['relation_e'], 'nominal')) > 0 ? 'relationTableDec' : '') : '' }}"
                     width="100%" cellspacing="0">
                     <thead class="thead-light">
                         {{-- <tr class="bg-primary">
@@ -94,7 +94,7 @@
                         @if (isset($declareCa['relation_e']) &&
                                 is_array($declareCa['relation_e']) &&
                                 count($declareCa['relation_e']) > 0)
-                            @foreach ($declareCA['relation_e'] as $relation)
+                            @foreach ($declareCa['relation_e'] as $relation)
                                 <tr style="text-align-last: center;">
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td>

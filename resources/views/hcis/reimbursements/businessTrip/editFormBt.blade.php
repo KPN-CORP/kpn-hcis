@@ -636,23 +636,20 @@
                     }
 
                     // Retrieve the values from the input fields
-                    const dateReq = document.getElementById('date_required_1').value;
+                    // const dateReq = document.getElementById('date_required_1').value;
                     const dateReq2 = document.getElementById('date_required_2').value;
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
-                    const totalBtMeals = document.getElementById('total_bt_meals').value;
-                    // const totalBtMealsElement = document.getElementById('total_bt_meals');
-                    // if (totalBtMealsElement) {
-                    //     const totalBtMeals = totalBtMealsElement.value;
-                    // }
+                    const totalBtMealsElement = document.getElementById('total_bt_meals');
+                    const totalBtMeals = totalBtMealsElement ? totalBtMealsElement.value || 0 : 0;
                     const totalBtPenginapan = document.getElementById('total_bt_penginapan').value;
                     const totalBtTransport = document.getElementById('total_bt_transport').value;
                     const totalBtLainnya = document.getElementById('total_bt_lainnya').value;
+                    const totalEnt = document.getElementById('total_ent_detail').value;
                     const group_company = document.getElementById('group_company').value;
                     const caCheckbox = document.getElementById('cashAdvancedCheckbox').checked;
                     // const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
                     const totalCa = document.getElementById('totalca').value;
 
-                    console.log(group_company);
                     // if (perdiemCheckbox && !dateReq) {
                     //     Swal.fire({
                     //         title: "Warning!",
@@ -675,22 +672,24 @@
                         return;
                     }
                     // Check if CA is checked and all fields are zero
-                    if (caCheckbox && totalBtPerdiem && totalBtPenginapan == 0 &&
-                        totalBtTransport == 0 &&
-                        totalBtLainnya == 0) {
+                    if (caCheckbox && totalBtPerdiem == 0 && totalBtPenginapan == 0 &&
+                        totalBtTransport == 0 && totalBtLainnya == 0) {
+
                         if (group_company == 'KPN Plantations' || group_company == 'Plantations') {
+                            // Case 1: For KPN Plantations or Plantations, exclude "Meals" from the warning
                             Swal.fire({
                                 title: "Warning!",
-                                text: "Cash Advanced fields (Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                text: "Cash Advanced fields (Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
                                 icon: "warning",
                                 confirmButtonColor: "#AB2F2B",
                                 confirmButtonText: "OK",
                             });
                             return; // Exit without showing the confirmation if all fields are zero
                         } else if (totalBtMeals == 0) {
+                            // Case 2: For other group companies, include "Meals" in the warning
                             Swal.fire({
                                 title: "Warning!",
-                                text: "Cash Advanced fields (Meals, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                text: "Cash Advanced fields (Meals, Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
                                 icon: "warning",
                                 confirmButtonColor: "#AB2F2B",
                                 confirmButtonText: "OK",
@@ -698,10 +697,11 @@
                             return; // Exit without showing the confirmation if all fields are zero
                         }
                     }
+
                     // if (perdiemCheckbox && totalBtPerdiem == 0) {
                     //     Swal.fire({
                     //         title: "Warning!",
-                    //         text: "Total Perdiem is 0. Please fill in the values.",
+                    //         text: "Total {{ $allowance }} is 0. Please fill in the values.",
                     //         icon: "warning",
                     //         confirmButtonColor: "#AB2F2B",
                     //         confirmButtonText: "OK",
@@ -718,55 +718,77 @@
                         'Taxi Voucher' : '';
 
                     // Create a message with the input values, each on a new line with bold titles
-                    let inputSummary = `
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                        <tr>
-                            <th style="width: 40%; text-align: left; padding: 8px;">Total Perdiem</th>
-                            <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                            <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPerdiem}</strong></td>
-                        </tr>`;
-
-                    // Conditionally add the "Total Meals" row
-                    if (group_company == 'KPN Plantations' || group_company == 'Plantations') {
-                        inputSummary += `
-                        <tr>
-                            <th style="width: 40%; text-align: left; padding: 8px;">Total Meals</th>
-                            <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                            <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtMeals}</strong></td>
-                        </tr>`;
+                    let inputSummary = `  
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">  
+                    `;  
+                    if (parseFloat(totalCa) > 0) {
+                        inputSummary = `
+                                <tr>
+                                    <th style="width: 40%; text-align: left; padding: 8px;">Total Perdiem</th>
+                                    <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPerdiem}</strong></td>
+                                </tr>`;
                     }
 
-                    inputSummary += `
-                            <tr>
-                                <th style="width: 40%; text-align: left; padding: 8px;">Total Accommodation</th>
-                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPenginapan}</strong></td>
-                            </tr>
-                            <tr>
-                                <th style="width: 40%; text-align: left; padding: 8px;">Total Transport</th>
-                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtTransport}</strong></td>
-                            </tr>
-                            <tr>
-                                <th style="width: 40%; text-align: left; padding: 8px;">Total Others</th>
-                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtLainnya}</strong></td>
-                            </tr>
-                        </table>
-                        <hr style="margin: 20px 0;">
-                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                            <tr>
-                                <th style="width: 40%; text-align: left; padding: 8px;">Total Cash Advanced</th>
-                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalCa}</strong></td>
-                            </tr>
-                        </table>
-                    `;
+                    if (parseFloat(totalCa) > 0) {
+                        if (group_company != 'KPN Plantations' && group_company != 'Plantations') {
+                            inputSummary += `
+                                <tr>
+                                    <th style="width: 40%; text-align: left; padding: 8px;">Total Meals</th>
+                                    <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtMeals}</strong></td>
+                                </tr>`;
+                        }
+                    }
+
+                    if (parseFloat(totalCa) > 0) {
+                        inputSummary += `
+                                <tr>
+                                    <th style="width: 40%; text-align: left; padding: 8px;">Total Accommodation</th>
+                                    <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPenginapan}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th style="width: 40%; text-align: left; padding: 8px;">Total Transport</th>
+                                    <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtTransport}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th style="width: 40%; text-align: left; padding: 8px;">Total Others</th>
+                                    <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtLainnya}</strong></td>
+                                </tr>
+                            </table>`;
+                    }
+
+                    if (parseFloat(totalCa) > 0) {
+                        inputSummary += `
+                            <hr style="margin: 20px 0;">
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                                <tr>
+                                    <th style="width: 40%; text-align: left; padding: 8px;">Total Cash Advanced</th>
+                                    <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalCa}</strong></td>
+                                </tr>
+                            </table>`;
+                    }
+
+                    if (parseFloat(totalEnt) > 0) {
+                        inputSummary += `
+                            <hr style="margin: 20px 0;">
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                                <tr>
+                                    <th style="width: 40%; text-align: left; padding: 8px;">Total Entertain</th>
+                                    <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalEnt}</strong></td>
+                                </tr>
+                            </table>`;
+                    }
 
                     // Show SweetAlert confirmation with the input summary
                     Swal.fire({
                         title: "Do you want to submit this request?",
-                        html: `You won't be able to revert this!<br><br>${inputSummary}`, // Use 'html' instead of 'text'
+                        html: `You won't be able to revert this!<br><br>${inputSummary}`, // Use 'html' instead of 'text
                         icon: "warning",
                         showCancelButton: true,
                         confirmButtonColor: "#AB2F2B",
@@ -808,9 +830,7 @@
                     const dateReq2 = document.getElementById('date_required_2').value;
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
                     const totalBtMealsElement = document.getElementById('total_bt_meals');
-                    if (totalBtMealsElement) {
-                        const totalBtMeals = totalBtMealsElement.value;
-                    }
+                    const totalBtMeals = totalBtMealsElement ? totalBtMealsElement.value || 0 : 0;
                     const totalBtPenginapan = document.getElementById('total_bt_penginapan').value;
                     const totalBtTransport = document.getElementById('total_bt_transport').value;
                     const totalBtLainnya = document.getElementById('total_bt_lainnya').value;
@@ -855,28 +875,30 @@
                         return;
                     }
                     // Check if CA is checked and all fields are zero
-                    if (caCheckbox && totalBtPenginapan == 0 && totalBtTransport == 0 &&
-                        totalBtLainnya == 0) {
+                    if (caCheckbox && totalBtPerdiem == 0 && totalBtPenginapan == 0 &&
+                        totalBtTransport == 0 && totalBtLainnya == 0) {
+
                         if (group_company == 'KPN Plantations' || group_company == 'Plantations') {
+                            // Case 1: For KPN Plantations or Plantations, exclude "Meals" from the warning
                             Swal.fire({
                                 title: "Warning!",
-                                text: "Cash Advanced fields (Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                text: "Cash Advanced fields (Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                icon: "warning",
+                                confirmButtonColor: "#AB2F2B",
+                                confirmButtonText: "OK",
+                            });
+                            return; // Exit without showing the confirmation if all fields are zero
+                        } else if (totalBtMeals == 0) {
+                            // Case 2: For other group companies, include "Meals" in the warning
+                            Swal.fire({
+                                title: "Warning!",
+                                text: "Cash Advanced fields (Meals, Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
                                 icon: "warning",
                                 confirmButtonColor: "#AB2F2B",
                                 confirmButtonText: "OK",
                             });
                             return; // Exit without showing the confirmation if all fields are zero
                         }
-                        // else if (totalBtMeals == 0) {
-                        //     Swal.fire({
-                        //         title: "Warning!",
-                        //         text: "Cash Advanced fields (Meals, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
-                        //         icon: "warning",
-                        //         confirmButtonColor: "#AB2F2B",
-                        //         confirmButtonText: "OK",
-                        //     });
-                        //     return; // Exit without showing the confirmation if all fields are zero
-                        // }
                     }
                     // if (perdiemCheckbox && totalBtPerdiem == 0) {
                     //     Swal.fire({

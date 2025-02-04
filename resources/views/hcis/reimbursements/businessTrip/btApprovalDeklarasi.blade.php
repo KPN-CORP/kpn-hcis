@@ -183,21 +183,21 @@
                         @endphp
                         <div class="col-md-12 mb-2 mt-2">
                             @if ((isset($dns->prove_declare) && $dns->prove_declare) || (isset($entr->prove_declare) && $entr->prove_declare))
-                                <input type="hidden" name="existing_prove_declare" id="existing-prove-declare" value="{{ $dns->prove_declare }}">
+                                <input type="hidden" name="existing_prove_declare" id="existing-prove-declare" value="{{ $entr->prove_declare ?? $dns->prove_declare }}">
                                 <input type="hidden" name="removed_prove_declare" id="removed-prove-declare" value="[]">
 
                                 <!-- Preview untuk file lama -->
                                 <div id="existing-files-label" style="margin-bottom: 10px; font-weight: bold;">
-                                    @if ($dns->prove_declare || $entr->prove_declare)
+                                    @if ($dns->prove_declare ?? $entr->prove_declare)
                                         
                                         Uploaded Proof:
                                     @endif
                                 </div>
                                 <div id="existing-file-preview" class="mt-2">
-                                    @if ($dns->prove_declare || $entr->prove_declare)  
+                                    @if (optional($dns)->prove_declare ?? optional($entr)->prove_declare)  
                                         @php
-                                            $proveDeclare = $dns->prove_declare ? $dns->prove_declare : $entr->prove_declare;
-                                            
+                                            $proveDeclare = $dns->prove_declare ?? $entr->prove_declare; // Fix kondisi ternary yang salah
+
                                             // Cek apakah data dalam format JSON atau masih string lama
                                             if (!empty($proveDeclare)) {
                                                 $decodedData = json_decode($proveDeclare, true);
@@ -205,7 +205,7 @@
                                             } else {
                                                 $existingFiles = [];
                                             }
-                                        @endphp     
+                                        @endphp   
 
                                         <div id="existing-file-preview" class="mt-2">
                                             @if (count($existingFiles) > 1)

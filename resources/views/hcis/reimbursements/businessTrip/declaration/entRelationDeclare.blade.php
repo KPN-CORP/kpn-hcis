@@ -1,10 +1,10 @@
 <script src="{{ asset('/js/cashAdvanced/relation.js') }}"></script>
 
-@if (!empty($detailCA['relation_e']) && $detailCA['relation_e'][0]['name'] !== null)
+@if (!empty($caDetail['relation_e']) && $caDetail['relation_e'][0]['name'] !== null)
     <div id="form-container-relation">
-        @foreach($detailCA['relation_e'] as $index => $relation)
+        @foreach($caDetail['relation_e'] as $index => $relation)
             @php
-                $initialCount = count($detailCA['relation_e']);
+                $initialCount = count($caDetail['relation_e']);
             @endphp
             <div id="form-container-e-relation-{{ $loop->index + 1 }}" class="p-2 mb-4 rounded-3" style="background-color: #f8f8f8">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Relation Entertainment {{ $loop->index + 1 }}</p>
@@ -68,9 +68,9 @@
                 </div>
                 <div id="form-container-e-relation-dec-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Relation Entertainment Declaration</p>
-                    @if (isset($declareCA['relation_e'][$index]))
+                    @if (isset($declareCa['relation_e'][$index]))
                         @php
-                            $relation_dec = $declareCA['relation_e'][$index];
+                            $relation_dec = $declareCa['relation_e'][$index];
                         @endphp
                         <div class="row">
                             <!-- Relation Date -->
@@ -165,8 +165,8 @@
                 </div>
             </div>
         @endforeach
-        @foreach ($declareCA['relation_e'] as $index => $relation_dec)
-            @if (!isset($detailCA['relation_e'][$index]))
+        @foreach ($declareCa['relation_e'] as $index => $relation_dec)
+            @if (!isset($caDetail['relation_e'][$index]))
                 <div id="form-container-e-relation-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Relation Entertainment {{ $loop->index + 1 }}</p>
                     <div class="row">
@@ -270,12 +270,12 @@
     <div class="mt-3">
         <button class="btn btn-primary btn-sm" id="addMoreButtonRelation" onclick="addMoreFormRelationDec(event)">Add More</button>
     </div>
-@elseif (!empty($declareCA['relation_e']) && $declareCA['relation_e'][0]['name'] !== null)
+@elseif (!empty($declareCa['relation_e']) && $declareCa['relation_e'][0]['name'] !== null)
     <div id="form-container-relation">
-        @foreach ($declareCA['relation_e'] as $index => $relation_dec)
-            @if (!isset($detailCA['relation_e'][$index]))
+        @foreach ($declareCa['relation_e'] as $index => $relation_dec)
+            @if (!isset($caDetail['relation_e'][$index]))
                 @php
-                    $initialCount = count($detailCA['relation_e']);
+                    $initialCount = count($caDetail['relation_e']);
                 @endphp
                 <div id="form-container-e-relation-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Relation Entertainment {{ $loop->index + 1 }}</p>
