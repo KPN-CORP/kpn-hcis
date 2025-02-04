@@ -179,13 +179,24 @@
                             @php
                                 // Provide default empty arrays if caDetail or sections are not set
                                 $detailPerdiem = $caDetail['detail_perdiem'] ?? [];
+                                $detailMeals = $caDetail['detail_meals'] ?? [];
                                 $detailTransport = $caDetail['detail_transport'] ?? [];
                                 $detailPenginapan = $caDetail['detail_penginapan'] ?? [];
                                 $detailLainnya = $caDetail['detail_lainnya'] ?? [];
+                                $detailEntertain = $caDetail['detail_e'] ?? [];
+                                $detailRelation = $caDetail['relation_e'] ?? [];
 
                                 // Calculate totals with default values
                                 $totalPerdiem = array_reduce(
                                     $detailPerdiem,
+                                    function ($carry, $item) {
+                                        return $carry + (int) ($item['nominal'] ?? 0);
+                                    },
+                                    0,
+                                );
+
+                                $totalMeals = array_reduce(
+                                    $detailMeals,
                                     function ($carry, $item) {
                                         return $carry + (int) ($item['nominal'] ?? 0);
                                     },
@@ -216,29 +227,44 @@
                                     0,
                                 );
 
+                                $totalDetail = array_reduce(
+                                    $detailEntertain,
+                                    function ($carry, $item) {
+                                        return $carry + (int) ($item['nominal'] ?? 0);
+                                    },
+                                    0,
+                                );
+
                                 // Total Cash Advanced
                                 $totalCashAdvanced = $totalPerdiem + $totalTransport + $totalPenginapan + $totalLainnya;
+                                $totalRequest = $totalCashAdvanced + $totalDetail;
                             @endphp
 
                             @php
-                                $detailCA = isset($ca) && $ca->detail_ca ? json_decode($ca->detail_ca, true) : [];
+                                // $detailCA = isset($ca) && $ca->detail_ca ? json_decode($ca->detail_ca, true) : [];
 
                                 // $showPerdiem = !empty($detailCA['detail_perdiem']);
 
                                 // Check if any of Transport, Penginapan, or Lainnya has data
                                 $showCashAdvanced =
-                                    !empty($detailCA['detail_perdiem']) ||
-                                    !empty($detailCA['detail_transport']) ||
-                                    !empty($detailCA['detail_meals']) ||
-                                    !empty($detailCA['detail_penginapan']) ||
-                                    !empty($detailCA['detail_lainnya']);
+                                    !empty($caDetail['detail_perdiem']) ||
+                                    !empty($caDetail['detail_transport']) ||
+                                    !empty($caDetail['detail_meals']) ||
+                                    !empty($caDetail['detail_penginapan']) ||
+                                    !empty($caDetail['detail_lainnya']);
+
+                                $showEntertain = !empty($caDetail['detail_e']) || !empty($caDetail['relation_e']);
 
                             @endphp
-                            <script>
+
+                            {{-- <script>
                                 // Pass the PHP array into a JavaScript variable
                                 const initialDetailCA = @json($detailCA);
-                            </script>
+                            </script> --}}
                             <div id="additional-fields-dalam" class="row mb-3" style="display: none;">
+                                <label for="additional-fields-dalam-title" class="mb-3">
+                                    Business Trip Needs <br>
+                                </label>
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-check">
@@ -345,10 +371,10 @@
                                             @endif
                                         </label>
                                         <div class="row">
-                                            <input type="hidden" name="ca" id="caHidden"
-                                                value="{{ $showCashAdvanced ? 'Ya' : 'Tidak' }}">
                                             <div class="col-md-2">
                                                 <div class="form-check">
+                                                    <input type="hidden" name="ca" id="caHidden"
+                                                        value="{{ $showCashAdvanced ? 'Ya' : 'Tidak' }}">
                                                     <input class="form-check-input" type="checkbox"
                                                         id="cashAdvancedCheckbox" value="Ya"
                                                         onchange="updateCAValue()" @checked($showCashAdvanced)>
@@ -358,9 +384,11 @@
                                             </div>
                                             <div class="col-md-3">
                                                 <div class="form-check">
+                                                    <input type="hidden" name="ent" id="entHidden"
+                                                        value="{{ $showEntertain ? 'Ya' : 'Tidak' }}">
                                                     <input class="form-check-input" type="checkbox"
-                                                        id="caEntertainCheckbox" value="Ya"
-                                                        onchange="updateCAValue()">
+                                                        id="caEntertainCheckbox" name="ent" value="Ya"
+                                                        onchange="updateCAValue()" @checked($showEntertain)>
                                                     <label class="form-check-label" for="caEntertainCheckbox">CA
                                                         Entertain</label>
                                                 </div>
@@ -370,7 +398,7 @@
                                                     <input type="hidden" name="tiket" value="Tidak">
                                                     <input class="form-check-input" type="checkbox" id="ticketCheckbox"
                                                         name="tiket" value="Ya"
-                                                        <?= $n->jns_dinas === 'luar kota' && $n->tiket === 'Ya' ? 'checked' : '' ?>>
+                                                        <?= $n->tiket == 'Ya' ? 'checked' : '' ?>>
                                                     <label class="form-check-label" for="ticketCheckbox">
                                                         Ticket
                                                     </label>
@@ -382,7 +410,7 @@
                                                     <input type="hidden" name="hotel" value="Tidak">
                                                     <input class="form-check-input" type="checkbox" id="hotelCheckbox"
                                                         name="hotel" value="Ya"
-                                                        <?= $n->jns_dinas === 'luar kota' && $n->hotel === 'Ya' ? 'checked' : '' ?>>
+                                                        <?= $n->hotel == 'Ya' ? 'checked' : '' ?>>
                                                     <label class="form-check-label" for="hotelCheckbox">
                                                         Hotel
                                                     </label>
@@ -394,7 +422,7 @@
                                                     <input type="hidden" name="taksi" value="Tidak">
                                                     <input class="form-check-input" type="checkbox" id="taksiCheckbox"
                                                         name="taksi" value="Ya"
-                                                        <?= $n->jns_dinas === 'luar kota' && $n->taksi === 'Ya' ? 'checked' : '' ?>>
+                                                        <?= $n->taksi == 'Ya' ? 'checked' : '' ?>>
                                                     <label class="form-check-label" for="taksiCheckbox">
                                                         Taxi Voucher
                                                     </label>
@@ -406,7 +434,7 @@
                                             <div class="col-md-12">
                                                 <ul class="nav nav-tabs nav-pills mb-2" id="pills-tab" role="tablist">
                                                     <li class="nav-item" role="presentation" id="nav-cashAdvanced"
-                                                        style="display: <?= $n->ca == 'Ya' ? 'block' : 'none' ?>;">
+                                                        style="display: <?= $showCashAdvanced == 'true' ? 'block' : 'none' ?>;">
                                                         <button class="nav-link" id="pills-cashAdvanced-tab"
                                                             data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced"
                                                             type="button" role="tab"
@@ -414,7 +442,8 @@
                                                             Advanced</button>
                                                     </li>
                                                     <li class="nav-item" role="presentation"
-                                                        id="nav-cashAdvancedEntertain" style="display:none">
+                                                        id="nav-cashAdvancedEntertain"
+                                                        style="display:<?= $showEntertain == 'true' ? 'block' : 'none' ?>">
                                                         <button class="nav-link" id="pills-cashAdvancedEntertain-tab"
                                                             data-bs-toggle="pill"
                                                             data-bs-target="#pills-cashAdvancedEntertain" type="button"
@@ -422,21 +451,21 @@
                                                             aria-selected="false">CA Entertain</button>
                                                     </li>
                                                     <li class="nav-item" role="presentation" id="nav-ticket"
-                                                        style="display: <?= $n->jns_dinas === 'luar kota' && $n->tiket == 'Ya' ? 'block' : 'none' ?>;">
+                                                        style="display: <?= $n->tiket == 'Ya' ? 'block' : 'none' ?>;">
                                                         <button class="nav-link" id="pills-ticket-tab"
                                                             data-bs-toggle="pill" data-bs-target="#pills-ticket"
                                                             type="button" role="tab" aria-controls="pills-ticket"
                                                             aria-selected="false">Ticket</button>
                                                     </li>
                                                     <li class="nav-item" role="presentation" id="nav-hotel"
-                                                        style="display: <?= $n->jns_dinas === 'luar kota' && $n->hotel == 'Ya' ? 'block' : 'none' ?>;">
+                                                        style="display: <?= $n->hotel == 'Ya' ? 'block' : 'none' ?>;">
                                                         <button class="nav-link" id="pills-hotel-tab"
                                                             data-bs-toggle="pill" data-bs-target="#pills-hotel"
                                                             type="button" role="tab" aria-controls="pills-hotel"
                                                             aria-selected="false">Hotel</button>
                                                     </li>
                                                     <li class="nav-item" role="presentation" id="nav-taksi"
-                                                        style="display: <?= $n->jns_dinas === 'luar kota' && $n->taksi == 'Ya' ? 'block' : 'none' ?>;">
+                                                        style="display: <?= $n->taksi == 'Ya' ? 'block' : 'none' ?>;">
                                                         <button class="nav-link" id="pills-taksi-tab"
                                                             data-bs-toggle="pill" data-bs-target="#pills-taksi"
                                                             type="button" role="tab" aria-controls="pills-taksi"
@@ -453,7 +482,7 @@
                                                     <div class="tab-pane fade" id="pills-cashAdvancedEntertain"
                                                         role="tabpanel" aria-labelledby="pills-cashAdvancedEntertain-tab">
                                                         {{-- Cash Advanced content --}}
-                                                        {{-- @include('hcis.reimbursements.businessTrip.editForm.editTicket') --}}
+                                                        @include('hcis.reimbursements.businessTrip.form.btEnt')
                                                     </div>
                                                     <div class="tab-pane fade" id="pills-ticket" role="tabpanel"
                                                         aria-labelledby="pills-ticket-tab">
@@ -530,6 +559,7 @@
                         document.querySelector('input[name="total_bt_meals"]').value =
                             formatNumber(total);
                         calculateTotalNominalBTTotal();
+                        calculateTotalNominalBTENTTotal();
                     }
                     $(`#form-container-bt-meals-${index}`).remove();
                     formCountMeals--;
@@ -563,6 +593,7 @@
             // Reset nilai untuk nominal BT Meals
             document.querySelector(`#nominal_bt_meals_${index}`).value = 0;
             calculateTotalNominalBTTotal();
+            calculateTotalNominalBTENTTotal();
         }
 
         function calculateTotalNominalBTMeals() {
@@ -672,8 +703,8 @@
                     const totalBtPenginapan = document.getElementById('total_bt_penginapan').value;
                     const totalBtTransport = document.getElementById('total_bt_transport').value;
                     const totalBtLainnya = document.getElementById('total_bt_lainnya').value;
+                    const totalEnt = document.getElementById('total_ent_detail').value;
                     const group_company = document.getElementById('group_company').value;
-                    console.log(group_company);
                     const caCheckbox = document.getElementById('cashAdvancedCheckbox').checked;
                     // const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
                     const totalCa = document.getElementById('totalca').value;
@@ -747,54 +778,76 @@
 
                     // Create a message with the input values, each on a new line with bold titles
                     let inputSummary = `
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                        <tr>
-                            <th style="width: 40%; text-align: left; padding: 8px;">Total Perdiem</th>
-                            <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                            <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPerdiem}</strong></td>
-                        </tr>`;
-
-                    // Conditionally add the "Total Meals" row
-                    if (group_company != 'KPN Plantations' && group_company != 'Plantations') {
-                        inputSummary += `
-                        <tr>
-                            <th style="width: 40%; text-align: left; padding: 8px;">Total Meals</th>
-                            <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                            <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtMeals}</strong></td>
-                        </tr>`;
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                    `;
+                    if (parseFloat(totalCa) > 0) {
+                        inputSummary = `
+                                <tr>
+                                    <th style="width: 40%; text-align: left; padding: 8px;">Total Perdiem</th>
+                                    <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPerdiem}</strong></td>
+                                </tr>`;
                     }
 
-                    inputSummary += `
-                            <tr>
-                                <th style="width: 40%; text-align: left; padding: 8px;">Total Accommodation</th>
-                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPenginapan}</strong></td>
-                            </tr>
-                            <tr>
-                                <th style="width: 40%; text-align: left; padding: 8px;">Total Transport</th>
-                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtTransport}</strong></td>
-                            </tr>
-                            <tr>
-                                <th style="width: 40%; text-align: left; padding: 8px;">Total Others</th>
-                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtLainnya}</strong></td>
-                            </tr>
-                        </table>
-                        <hr style="margin: 20px 0;">
-                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                            <tr>
-                                <th style="width: 40%; text-align: left; padding: 8px;">Total Cash Advanced</th>
-                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalCa}</strong></td>
-                            </tr>
-                        </table>
-                    `;
+                    if (parseFloat(totalCa) > 0) {
+                        if (group_company != 'KPN Plantations' && group_company != 'Plantations') {
+                            inputSummary += `
+                                <tr>
+                                    <th style="width: 40%; text-align: left; padding: 8px;">Total Meals</th>
+                                    <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtMeals}</strong></td>
+                                </tr>`;
+                        }
+                    }
+
+                    if (parseFloat(totalCa) > 0) {
+                        inputSummary += `
+                                <tr>
+                                    <th style="width: 40%; text-align: left; padding: 8px;">Total Accommodation</th>
+                                    <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPenginapan}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th style="width: 40%; text-align: left; padding: 8px;">Total Transport</th>
+                                    <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtTransport}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th style="width: 40%; text-align: left; padding: 8px;">Total Others</th>
+                                    <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtLainnya}</strong></td>
+                                </tr>
+                            </table>`;
+                    }
+
+                    if (parseFloat(totalCa) > 0) {
+                        inputSummary += `
+                            <hr style="margin: 20px 0;">
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                                <tr>
+                                    <th style="width: 40%; text-align: left; padding: 8px;">Total Cash Advanced</th>
+                                    <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalCa}</strong></td>
+                                </tr>
+                            </table>`;
+                    }
+
+                    if (parseFloat(totalEnt) > 0) {
+                        inputSummary += `
+                            <hr style="margin: 20px 0;">
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                                <tr>
+                                    <th style="width: 40%; text-align: left; padding: 8px;">Total Entertain</th>
+                                    <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalEnt}</strong></td>
+                                </tr>
+                            </table>`;
+                    }
 
                     // Show SweetAlert confirmation with the input summary
                     Swal.fire({
                         title: "Do you want to submit this request?",
-                        html: `You won't be able to revert this!<br><br>${inputSummary}`, // Use 'html' instead of 'text'
+                        html: `You won't be able to revert this!<br><br>${inputSummary}`, // Use 'html' instead of 'text
                         icon: "warning",
                         showCancelButton: true,
                         confirmButtonColor: "#AB2F2B",
@@ -809,7 +862,8 @@
                             input.name = button.name; // Use the button's name attribute
                             input.value = button.value; // Use the button's value attribute
 
-                            form.appendChild(input); // Append the hidden input to the form
+                            form.appendChild(
+                                input); // Append the hidden input to the form
                             form.submit(); // Submit the form only if confirmed
                         }
                     });
@@ -832,7 +886,7 @@
                     }
 
                     // Retrieve the values from the input fields
-                    // const dateReq = document.getElementById('date_required_1').value;
+                    const dateReq = document.getElementById('date_required_1').value;
                     const dateReq2 = document.getElementById('date_required_2').value;
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
                     const totalBtMealsElement = document.getElementById('total_bt_meals');
@@ -842,6 +896,7 @@
                     const totalBtLainnya = document.getElementById('total_bt_lainnya').value;
                     const group_company = document.getElementById('group_company').value;
                     const caCheckbox = document.getElementById('cashAdvancedCheckbox').checked;
+                    const entCheckbox = document.getElementById('caEntertainCheckbox').checked;
                     // const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
                     const totalCa = document.getElementById('totalca').value;
 
@@ -855,6 +910,19 @@
                     //     });
                     //     return;
                     // }
+
+                    if (entCheckbox && !dateReq) {
+                        console.log("Ini yg ent");
+
+                        Swal.fire({
+                            title: "Warning!",
+                            text: "Please select a Date Required.",
+                            icon: "warning",
+                            confirmButtonColor: "#AB2F2B",
+                            confirmButtonText: "OK",
+                        });
+                        return;
+                    }
 
                     if (caCheckbox && !dateReq2) {
                         Swal.fire({
@@ -951,6 +1019,7 @@
             calculateTotalNominalBTPenginapan();
             calculateTotalNominalBTLainnya();
             calculateTotalNominalBTTotal();
+            calculateTotalNominalBTENTTotal();
         }
 
         function calculateTotalNominalBTTotal() {
@@ -971,6 +1040,18 @@
                 total += parseNumber(input.value);
             });
             document.querySelector('input[name="totalca"]').value = formatNumber(total);
+        }
+
+        function calculateTotalNominalBTENTTotal() {
+            let total = 0;
+            document.querySelectorAll('input[name="totalca"]').forEach(input => {
+                total += parseNumber(input.value);
+            });
+            document.querySelectorAll('input[name="total_ent_detail"]').forEach(input => {
+                total += parseNumber(input.value);
+            });
+            document.querySelector('input[name="totalreq"]').value = formatNumber(total);
+            document.querySelector('input[name="totalreq2"]').value = formatNumber(total);
         }
     </script>
     <script>
@@ -1081,6 +1162,7 @@
             // Set the value of ca_decla
             // document.getElementById('ca_decla_1').value = `${year}-${month}-${day}`;
             document.getElementById('ca_decla_2').value = `${year}-${month}-${day}`;
+            document.getElementById('ca_decla_3').value = `${year}-${month}-${day}`;
         }
 
         // Event listener for when 'kembali' (End Date) changes

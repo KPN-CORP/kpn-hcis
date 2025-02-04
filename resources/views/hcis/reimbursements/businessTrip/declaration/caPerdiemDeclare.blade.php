@@ -109,10 +109,10 @@
     }
 </script>
 
-@if (!empty($detailCA['detail_perdiem']) && $detailCA['detail_perdiem'][0]['start_date'] !== null)
+@if (!empty($caDetail['detail_perdiem']) && $caDetail['detail_perdiem'][0]['start_date'] !== null)
     {{-- Form Edit --}}
     <div id="form-container-perdiem">
-        @foreach ($detailCA['detail_perdiem'] as $index => $perdiem)
+        @foreach ($caDetail['detail_perdiem'] as $index => $perdiem)
             <div id="form-container-bt-perdiem-{{ $loop->index + 1 }}" class="p-2 mb-4 rounded-3"
                 style="background-color: #f8f8f8">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">{{ $allowance }} {{ $loop->index + 1 }}</p>
@@ -179,9 +179,9 @@
                     style="border-radius: 1%;">
                     <p class="fs-5 text-primary" style="font-weight: bold;">{{ $allowance }} Declaration</p>
                     <input type="hidden" value="{{ $perdiem['location'] }}" name="location_bt_perdiem[]">
-                    @if (isset($declareCA['detail_perdiem'][$index]))
+                    @if (isset($declareCa['detail_perdiem'][$index]))
                         @php
-                            $perdiem_dec = $declareCA['detail_perdiem'][$index];
+                            $perdiem_dec = $declareCa['detail_perdiem'][$index];
                         @endphp
                         <div class="row">
                             <!-- Company Code -->
@@ -273,8 +273,8 @@
                 </div>
             </div>
         @endforeach
-        @foreach ($declareCA['detail_perdiem'] as $index => $perdiem_dec)
-            @if (!isset($detailCA['detail_perdiem'][$index]))
+        @foreach ($declareCa['detail_perdiem'] as $index => $perdiem_dec)
+            @if (!isset($caDetail['detail_perdiem'][$index]))
                 <div id="form-container-bt-perdiem-{{ $loop->index + 1 }}" class="card-body p-2 mb-3"
                     style="background-color: #f8f8f8">
                     <p class="fs-4 text-primary" style="font-weight: bold;">{{ $allowance }}
@@ -388,14 +388,14 @@
             </div>
             <input class="form-control form-control-sm bg-light" name="total_bt_perdiem" id="total_bt_perdiem"
                 type="text"
-                value="{{ number_format(array_sum(array_column($declareCA['detail_perdiem'], 'nominal')), 0, ',', '.') }}"
+                value="{{ number_format(array_sum(array_column($declareCa['detail_perdiem'], 'nominal')), 0, ',', '.') }}"
                 readonly>
         </div>
     </div>
-@elseif (!empty($declareCA['detail_perdiem']) && $declareCA['detail_perdiem'][0]['start_date'] !== null)
+@elseif (!empty($declareCa['detail_perdiem']) && $declareCa['detail_perdiem'][0]['start_date'] !== null)
     <div id="form-container-perdiem">
-        @foreach ($declareCA['detail_perdiem'] as $index => $perdiem_dec)
-            @if (!isset($detailCA['detail_perdiem'][$index]))
+        @foreach ($declareCa['detail_perdiem'] as $index => $perdiem_dec)
+            @if (!isset($caDetail['detail_perdiem'][$index]))
                 <div id="form-container-bt-perdiem-{{ $loop->index + 1 }}" class="card-body p-2 mb-3"
                     style="background-color: #f8f8f8">
                     <p class="fs-4 text-primary" style="font-weight: bold;">{{ $allowance }}
@@ -509,7 +509,7 @@
             </div>
             <input class="form-control form-control-sm bg-light" name="total_bt_perdiem" id="total_bt_perdiem"
                 type="text"
-                value="{{ number_format(array_sum(array_column($declareCA['detail_perdiem'], 'nominal')), 0, ',', '.') }}"
+                value="{{ number_format(array_sum(array_column($declareCa['detail_perdiem'], 'nominal')), 0, ',', '.') }}"
                 readonly>
         </div>
     </div>

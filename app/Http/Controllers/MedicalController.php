@@ -291,13 +291,16 @@ class MedicalController extends Controller
         $isMarried = Employee::where('employee_id', $employee_id)
             ->where('marital_status', 'Married')
             ->exists();
-        // dd($isMarried);
+
+        $isProbation = Employee::where('employee_id', $employee_id)
+            ->where('employee_type', 'Probation')
+            ->exists();
 
         $hasGlasses = HealthCoverage::where('employee_id', $employee_id)
             ->where('period', $currentYear)
             ->where('medical_type', 'Glasses')
             ->count() >= 1;
-        // dd($isGlasses);
+        // dd($isProbation);
 
         $medicalBalances = HealthPlan::where('employee_id', $employee_id)
             // ->where('period', $currentYear)
@@ -317,7 +320,7 @@ class MedicalController extends Controller
         $parentLink = 'Medical';
         $link = 'Add Medical Coverage Usage';
 
-        return view('hcis.reimbursements.medical.form.medicalForm', compact('diseases', 'medical_type', 'families', 'parentLink', 'link', 'employee_name', 'balanceData', 'hasGlasses', 'isMarried'));
+        return view('hcis.reimbursements.medical.form.medicalForm', compact('diseases', 'medical_type', 'families', 'parentLink', 'link', 'employee_name', 'balanceData', 'hasGlasses', 'isMarried', 'isProbation'));
     }
 
     public function medicalCreate(Request $request)
@@ -349,6 +352,7 @@ class MedicalController extends Controller
             }
         } else {
             $existingFiles = $request->existing_medical_proof ? json_decode($request->existing_medical_proof, true) : [];
+
         }
         
         // Proses file baru
@@ -358,19 +362,20 @@ class MedicalController extends Controller
             ]);
         
             foreach ($request->file('medical_proof') as $file) {
+                // Generate a unique filename
                 $filename = time() . '_' . $file->getClientOriginalName();
+            
+                // Define the upload path within storage (relative to storage/app/public)
                 $upload_path = 'uploads/proofs/' . $employee_data->employee_id;
-                $full_path = public_path($upload_path);
-        
-                if (!is_dir($full_path)) {
-                    mkdir($full_path, 0755, true);
-                }
-        
-                $file->move($full_path, $filename);
+            
+                // Save the file to storage/app/public/{upload_path}
+                $file->storeAs($upload_path, $filename, 'public');
+            
+                // Add the public URL path for the stored file
                 $existingFiles[] = $upload_path . '/' . $filename;
             }
         }
-        
+
         // Simpan semua file yang tersisa ke database
         $medical_proof_path = json_encode(array_values($existingFiles));    
 
@@ -1654,6 +1659,7 @@ class MedicalController extends Controller
         $medical = HealthCoverage::orderBy('created_at', 'desc')->get();
         $userRole = auth()->user()->roles->first();
         $roleRestriction = json_decode($userRole->restriction, true);
+        // dd($roleRestriction);
 
         $restrictedWorkAreas = $roleRestriction['work_area_code'] ?? [];
         $restrictedGroupCompanies = $roleRestriction['group_company'] ?? [];

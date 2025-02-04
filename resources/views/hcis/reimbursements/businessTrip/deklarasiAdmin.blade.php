@@ -259,10 +259,10 @@
                                                         </li>
                                                     </ul>
                                                     <div class="tab-content">
-                                                        <div class="tab-pane fade show active" id="pills-other"
+                                                        {{-- <div class="tab-pane fade show active" id="pills-other"
                                                             role="tabpanel" aria-labelledby="pills-other-tab">
                                                             @include('hcis.reimbursements.businessTrip.declaration-admin.caOtherDeclareAdmin')
-                                                        </div>
+                                                        </div> --}}
                                                     </div>
                                                 </div>
                                                 <div class="row mb-2">

@@ -119,7 +119,14 @@
                     <div class="card shadow mb-4">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h3 class="card-title">{{ $link }}</h3>
+                                <div>
+                                    <h3 class="card-title mb-2">{{ $link }}</h3>
+                                    <div class="text-muted small">
+                                        <span class="me-3 fs-5"><i class="ri-user-line me-1"></i>{{ Auth::user()->name }}</span>
+                                        <span class="me-3 fs-5"><i class="ri-calendar-line me-1"></i>{{ date('l, d F Y') }}</span>
+                                        <span class="me-3"><i class="ri-time-line me-1"></i><span id="currentTime"></span> WIB</span>
+                                    </div>
+                                </div>
                                 <div class="input-group" style="width: 30%;">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text bg-white w-border-dark-subtle"><i
@@ -483,5 +490,21 @@
                     document.getElementById('book_no_id').value = idNumber; // Mengisi input no_id
                 });
             });
+
+            function updateDateTime() {
+                const now = new Date();
+                
+                // Format time
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+
+                // Update DOM elements
+                document.getElementById('currentTime').textContent = `${hours}:${minutes}:${seconds}`;
+            }
+
+            // Update immediately and then every second
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
         </script>
     @endsection

@@ -4,14 +4,14 @@
             <div class="row mb-2">
                 <div class="col-md-6 mb-2">
                     <label for="date_required" class="form-label">Date Required</label>
-                    <input type="date" class="form-control form-control-sm" id="date_required_2" name="date_required"
+                    <input type="date" class="form-control form-control-sm" id="date_required_2" name="date_required_2"
                         placeholder="Date Required" onchange="syncDateRequired(this)"
-                        value="{{ $ca->date_required ?? 0 }}">
+                        value="{{ $date->date_required ?? 0 }}">
                 </div>
                 <div class="col-md-6 mb-2">
                     <label class="form-label" for="ca_decla">Declaration Estimate</label>
                     <input type="date" name="ca_decla" id="ca_decla_2" class="form-control form-control-sm bg-light"
-                        placeholder="mm/dd/yyyy" value="{{ $ca->declare_estimate ?? 0 }}" readonly>
+                        placeholder="mm/dd/yyyy" value="{{ $date->declare_estimate ?? 0 }}" readonly>
                 </div>
             </div>
             <div class="d-flex flex-column">
@@ -49,26 +49,26 @@
                     <div class="tab-pane fade show active" id="pills-perdiem" role="tabpanel"
                         aria-labelledby="pills-perdiem-tab">
                         {{-- ca perdiem content --}}
-                        @include('hcis.reimbursements.businessTrip.caPerdiem')
+                        @include('hcis.reimbursements.businessTrip.form.cashadvancedForm.caPerdiem')
                     </div>
                     @if ($group_company !== 'KPN Plantations' && $group_company !== 'Plantations')
                         <div class="tab-pane fade" id="pills-meals" role="tabpanel" aria-labelledby="pills-meals-tab">
                             {{-- ca transport content --}}
-                            @include('hcis.reimbursements.businessTrip.caMeals')
+                            @include('hcis.reimbursements.businessTrip.form.cashadvancedForm.caMeals')
                         </div>
                     @endif
                     <div class="tab-pane fade" id="pills-transport" role="tabpanel"
                         aria-labelledby="pills-transport-tab">
                         {{-- ca transport content --}}
-                        @include('hcis.reimbursements.businessTrip.caTransport')
+                        @include('hcis.reimbursements.businessTrip.form.cashadvancedForm.caTransport')
                     </div>
                     <div class="tab-pane fade" id="pills-accomodation" role="tabpanel"
                         aria-labelledby="pills-accomodation-tab">
                         {{-- ca accommodatioon content --}}
-                        @include('hcis.reimbursements.businessTrip.caAccommodation')</div>
+                        @include('hcis.reimbursements.businessTrip.form.cashadvancedForm.caAccommodation')</div>
                     <div class="tab-pane fade" id="pills-other" role="tabpanel" aria-labelledby="pills-other-tab">
                         {{-- ca others content --}}
-                        @include('hcis.reimbursements.businessTrip.caOther')
+                        @include('hcis.reimbursements.businessTrip.form.cashadvancedForm.caOther')
                     </div>
                 </div>
 
@@ -81,6 +81,16 @@
                             <span class="input-group-text">Rp</span>
                         </div>
                         <input class="form-control bg-light" name="totalca" id="totalca" type="text"
+                            min="0" value="0" readonly>
+                    </div>
+                </div>
+                <div class="col-md-12 mb-2" id="total_bt_ent" style="display:none">
+                    <label class="form-label">Total Request</label>
+                    <div class="input-group">
+                        <div class="input-group-append">
+                            <span class="input-group-text">Rp</span>
+                        </div>
+                        <input class="form-control bg-light" name="totalreq" id="totalreq" type="text"
                             min="0" value="0" readonly>
                     </div>
                 </div>

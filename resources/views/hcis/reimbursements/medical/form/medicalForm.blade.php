@@ -43,11 +43,13 @@
                                         <option value="{{ $employee_name->fullname }}">
                                             {{ $employee_name->fullname }} (Me)
                                         </option>
-                                        @foreach ($families as $family)
-                                            <option value="{{ $family->name }}">
-                                                {{ $family->name }} ({{ $family->relation_type }})
-                                            </option>
-                                        @endforeach
+                                        @if (!$isProbation)
+                                            @foreach ($families as $family)
+                                                <option value="{{ $family->name }}">
+                                                    {{ $family->name }} ({{ $family->relation_type }})
+                                                </option>
+                                            @endforeach
+                                        @endif
                                     </select>
                                 </div>
                                 <div class="col-md-4 mb-2">
@@ -158,9 +160,11 @@
                                 @endif
 
                                 <!-- Label untuk new file -->
+
                                 <div id="new-files-label" style="margin-top: 20px; margin-bottom: 10px; font-weight: bold;">
                                     New Document:
                                 </div>
+
                                 <div id="new-file-preview" class="mt-2"></div>
 
                             </div>

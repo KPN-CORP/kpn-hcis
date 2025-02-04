@@ -213,23 +213,21 @@
                             @endphp
 
                             @php
-                                $detailCA = isset($ca) && $ca->detail_ca ? json_decode($ca->detail_ca, true) : [];
+                                // $detailCA = isset($ca) && $ca->detail_ca ? json_decode($ca->detail_ca, true) : [];
 
-                                $showPerdiem = !empty($detailCA['detail_perdiem']);
+                                // $showPerdiem = !empty($detailCA['detail_perdiem']);
 
                                 // Check if any of Transport, Penginapan, or Lainnya has data
                                 $showCashAdvanced =
-                                    !empty($detailCA['detail_perdiem']) ||
-                                    !empty($detailCA['detail_transport']) ||
-                                    !empty($detailCA['detail_meals']) ||
-                                    !empty($detailCA['detail_penginapan']) ||
-                                    !empty($detailCA['detail_lainnya']);
+                                    !empty($caDetail['detail_perdiem']) ||
+                                    !empty($caDetail['detail_transport']) ||
+                                    !empty($caDetail['detail_meals']) ||
+                                    !empty($caDetail['detail_penginapan']) ||
+                                    !empty($caDetail['detail_lainnya']);
+
+                                $showEntertain = !empty($caDetail['detail_e']) || !empty($caDetail['relation_e']);
 
                             @endphp
-                            <script>
-                                // Pass the PHP array into a JavaScript variable
-                                const initialDetailCA = @json($detailCA);
-                            </script>
                             <div id="additional-fields-dalam" class="row mb-3" style="display: none;">
                                 <div class="row">
                                     <div class="col-md-4">
@@ -334,17 +332,6 @@
                                     <div class="col-md-12">
                                         <label for="additional-fields-title" class="mb-3">Business Trip Needs</label>
                                         <div class="row">
-                                            {{-- <div class="col-md-2">
-                                            <div class="form-check">
-                                                <input type="hidden" name="ca" id="caHidden"
-                                                    value="{{ $showPerdiem || $showCashAdvanced ? 'Ya' : 'Tidak' }}">
-                                                <input class="form-check-input" type="checkbox" id="perdiemCheckbox"
-                                                    value="Ya" onchange="updateCAValue()" @checked($showPerdiem)
-                                                    disabled>
-                                                <label class="form-check-label"
-                                                    for="perdiemCheckbox">{{ $allowance }}</label>
-                                            </div>
-                                        </div> --}}
                                             <div class="col-md-2">
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox"
@@ -356,11 +343,11 @@
                                             </div>
                                             <div class="col-md-3">
                                                 <div class="form-check">
-                                                    <input type="hidden" name="ca" id="caHidden"
-                                                        value="{{ $showCashAdvanced ? 'Ya' : 'Tidak' }}">
+                                                    <input type="hidden" name="ent" id="caEntertainCheckbox"
+                                                        value="{{ $showEntertain ? 'Ya' : 'Tidak' }}">
                                                     <input class="form-check-input" type="checkbox"
-                                                        id="caEntertainCheckbox" value="Ya"
-                                                        onchange="updateCAValue()" disabled>
+                                                        id="caEntertainCheckbox" name="ent" value="Ya"
+                                                        onchange="updateCAValue()" @checked($showEntertain) disabled>
                                                     <label class="form-check-label" for="caEntertainCheckbox">CA
                                                         Entertain</label>
                                                 </div>
@@ -409,13 +396,7 @@
                                         <div class="row mt-3">
                                             <div class="col-md-12">
                                                 <ul class="nav nav-tabs nav-pills mb-2" id="pills-tab" role="tablist">
-                                                    {{-- <li class="nav-item" role="presentation" id="nav-perdiem"
-                                                    style="display: {{ $showPerdiem ? 'block' : 'none' }};">
-                                                    <button class="nav-link" id="pills-perdiem-tab" data-bs-toggle="pill"
-                                                        data-bs-target="#pills-perdiem" type="button" role="tab"
-                                                        aria-controls="pills-perdiem"
-                                                        aria-selected="false">{{ $allowance }}</button>
-                                                </li> --}}
+
                                                     <li class="nav-item" role="presentation" id="nav-cashAdvanced"
                                                         style="display: {{ $showCashAdvanced ? 'block' : 'none' }};">
                                                         <button class="nav-link" id="pills-cashAdvanced-tab"
@@ -423,6 +404,16 @@
                                                             type="button" role="tab"
                                                             aria-controls="pills-cashAdvanced" aria-selected="false">Cash
                                                             Advanced</button>
+                                                    </li>
+                                                    <li class="nav-item" role="presentation"
+                                                        id="nav-cashAdvancedEntertain"
+                                                        style="display: {{ $showEntertain ? 'block' : 'none' }};">
+                                                        <button class="nav-link" id="pills-cashAdvancedEntertain-tab"
+                                                            data-bs-toggle="pill"
+                                                            data-bs-target="#pills-cashAdvancedEntertain" type="button"
+                                                            role="tab" aria-controls="pills-cashAdvancedEntertain"
+                                                            aria-selected="false">CA
+                                                            Entertain</button>
                                                     </li>
                                                     <li class="nav-item" role="presentation" id="nav-ticket"
                                                         style="display: <?= $n->jns_dinas === 'luar kota' && $n->tiket == 'Ya' ? 'block' : 'none' ?>;">
@@ -448,34 +439,15 @@
                                                 </ul>
 
                                                 <div class="tab-content" id="pills-tabContent">
-                                                    {{-- <div class="tab-pane fade" id="pills-perdiem" role="tabpanel"
-                                                    aria-labelledby="pills-perdiem-tab">
-                                                    <div class="row mb-2">
-                                                        <div class="col-md-6 mb-2">
-                                                            <label for="date_required" class="form-label">Date
-                                                                Required</label>
-                                                            <input type="date"
-                                                                class="form-control form-control-sm bg-light"
-                                                                id="date_required_1" name="date_required"
-                                                                placeholder="Date Required"
-                                                                onchange="syncDateRequired(this)"
-                                                                value="{{ $ca->date_required ?? 0 }}" readonly>
-                                                        </div>
-                                                        <div class="col-md-6 mb-2">
-                                                            <label class="form-label" for="ca_decla">Declaration
-                                                                Estimate</label>
-                                                            <input type="date" name="ca_decla" id="ca_decla_1"
-                                                                class="form-control form-control-sm bg-light"
-                                                                placeholder="mm/dd/yyyy"
-                                                                value="{{ $ca->declare_estimate ?? 0 }}" readonly>
-                                                        </div>
-                                                    </div>
-                                                    @include('hcis.reimbursements.businessTrip.approval.caPerdiemApproval')
-                                                </div> --}}
                                                     <div class="tab-pane fade" id="pills-cashAdvanced" role="tabpanel"
                                                         aria-labelledby="pills-cashAdvanced-tab">
                                                         {{-- Cash Advanced content --}}
                                                         @include('hcis.reimbursements.businessTrip.approval.btCaApproval')
+                                                    </div>
+                                                    <div class="tab-pane fade" id="pills-cashAdvancedEntertain"
+                                                        role="tabpanel" aria-labelledby="pills-cashAdvancedEntertain-tab">
+                                                        {{-- Cash Advanced content --}}
+                                                        @include('hcis.reimbursements.businessTrip.approval.btEntApproval')
                                                     </div>
                                                     <div class="tab-pane fade" id="pills-ticket" role="tabpanel"
                                                         aria-labelledby="pills-ticket-tab">

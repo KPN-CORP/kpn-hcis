@@ -26,6 +26,26 @@
         /* Change color on hover */
     }
 </style>
+<style>
+    .nav-link {
+        color: black;
+        border-bottom: 2px solid transparent;
+        transition: color 0.3s ease, border-bottom 0.3s ease;
+    }
+
+    .nav-link.active {
+        color: #AB2F2B;
+        /* Primary color */
+        border-bottom: 2px solid #AB2F2B;
+        font-weight: bold;
+        /* Underline with primary color */
+    }
+
+    .nav-link:hover {
+        color: #AB2F2B;
+        /* Change color on hover */
+    }
+</style>
 @section('content')
     <div class="container-fluid">
         <div class="row">
@@ -105,13 +125,13 @@
                                         <tr>
                                             <th>Estimated Declaration</th>
                                             <td class="block">:</td>
-                                            <td>{{ isset($ca->declare_estimate) ? date('d M Y', strtotime($ca->declare_estimate)) : '-' }}
+                                            <td>{{ isset($date->declare_estimate) ? date('d M Y', strtotime($date->declare_estimate)) : '-' }}
                                             </td>
                                         </tr>
                                         <tr>
                                             <th>Date Required</th>
                                             <td class="block">:</td>
-                                            <td>{{ isset($ca->date_required) ? date('d M Y', strtotime($ca->date_required)) : '-' }}
+                                            <td>{{ isset($date->date_required) ? date('d M Y', strtotime($date->date_required)) : '-' }}
                                             </td>
                                         </tr>
 
@@ -144,203 +164,152 @@
                                         value="{{ $n->keperluan }}"></input>
                                 </div>
                                 @php
-                                    $detailCA = isset($ca) && $ca->detail_ca ? json_decode($ca->detail_ca, true) : [];
-                                    $declareCA =
-                                        isset($ca) && $ca->declare_ca ? json_decode($ca->declare_ca, true) : [];
+                                    // $detailCA = isset($ca) && $ca->detail_ca ? json_decode($ca->detail_ca, true) : [];
+                                    // $declareCA =
+                                    //     isset($ca) && $ca->declare_ca ? json_decode($ca->declare_ca, true) : [];
 
                                     // dd($detailCA);
                                     // dd($declareCA);
                                     // dd($declareCA['detail_transport']);
 
                                 @endphp
-                                <script>
-                                    // Pass the PHP array into a JavaScript variable
-                                    const initialDetailCA = @json($detailCA);
-                                    const initialDeclareCA = @json($declareCA);
-                                </script>
+
                                 <!-- 1st Form -->
                                 <div class="row mt-2" id="ca_div">
                                     <div class="col-md-12">
                                         <div class="d-flex flex-column gap-2">
                                             <ul class="nav nav-tabs nav-pills mb-2" id="pills-tab" role="tablist">
-                                                <li class="nav-item" role="presentation">
-                                                    <button class="nav-link active" id="pills-cashAdvanced-tab"
-                                                        data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced"
-                                                        type="button" role="tab" aria-controls="pills-cashAdvanced"
-                                                        aria-selected="true">Cash Advanced</button>
-                                                </li>
-                                                <li class="nav-item" role="presentation">
-                                                    <button class="nav-link" id="pills-caEntertain-tab"
-                                                        data-bs-toggle="pill" data-bs-target="#pills-caEntertain"
-                                                        type="button" role="tab" aria-controls="pills-caEntertain"
-                                                        aria-selected="false">CA Entertain</button>
-                                                </li>
+                                                @if ($dnsTab == true)
+                                                    <li class="nav-item" role="presentation">
+                                                        <button class="nav-link active" id="pills-cashAdvanced-tab"
+                                                            data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced"
+                                                            type="button" role="tab" aria-controls="pills-cashAdvanced"
+                                                            aria-selected="true">Cash Advanced</button>
+                                                    </li>
+                                                @endif
+                                                @if ($entrTab == true)
+                                                    <li class="nav-item" role="presentation">
+                                                        <button class="nav-link" id="pills-caEntertain-tab"
+                                                            data-bs-toggle="pill" data-bs-target="#pills-caEntertain"
+                                                            type="button" role="tab" aria-controls="pills-caEntertain"
+                                                            aria-selected="false">CA Entertain</button>
+                                                    </li>
+                                                @endif
                                             </ul>
 
                                             <div class="tab-content" id="pills-tabContent">
                                                 <!-- Cash Advance Content -->
-                                                <div class="tab-pane fade show active" id="pills-cashAdvanced"
-                                                    role="tabpanel" aria-labelledby="pills-cashAdvanced-tab">
-                                                    <ul class="nav mb-3" id="pills-tab-inner" role="tablist">
-                                                        <li class="nav-item" role="presentation">
-                                                            <button class="nav-link active" id="pills-perdiem-tab"
-                                                                data-bs-toggle="pill" data-bs-target="#pills-perdiem"
-                                                                type="button" role="tab"
-                                                                aria-controls="pills-perdiem"
-                                                                aria-selected="true">{{ $allowance }}</button>
-                                                        </li>
-                                                        @if ($group_company != 'KPN Plantations')
-                                                            <li class="nav-item" role="presentation">
-                                                                <button class="nav-link" id="pills-meals-tab"
-                                                                    data-bs-toggle="pill" data-bs-target="#pills-meals"
-                                                                    type="button" role="tab"
-                                                                    aria-controls="pills-meals"
-                                                                    aria-selected="false">Meals</button>
-                                                            </li>
-                                                        @endif
-                                                        <li class="nav-item" role="presentation">
-                                                            <button class="nav-link" id="pills-transport-tab"
-                                                                data-bs-toggle="pill" data-bs-target="#pills-transport"
-                                                                type="button" role="tab"
-                                                                aria-controls="pills-transport"
-                                                                aria-selected="false">Transport</button>
-                                                        </li>
-                                                        <li class="nav-item" role="presentation">
-                                                            <button class="nav-link" id="pills-accomodation-tab"
-                                                                data-bs-toggle="pill" data-bs-target="#pills-accomodation"
-                                                                type="button" role="tab"
-                                                                aria-controls="pills-accomodation"
-                                                                aria-selected="false">Accommodation</button>
-                                                        </li>
-                                                        <li class="nav-item" role="presentation">
-                                                            <button class="nav-link" id="pills-other-tab"
-                                                                data-bs-toggle="pill" data-bs-target="#pills-other"
-                                                                type="button" role="tab" aria-controls="pills-other"
-                                                                aria-selected="false">Other</button>
-                                                        </li>
-                                                    </ul>
-                                                    <div class="tab-content">
-                                                        <div class="tab-pane fade show active" id="pills-perdiem"
-                                                            role="tabpanel" aria-labelledby="pills-perdiem-tab">
-                                                            @include('hcis.reimbursements.businessTrip.declaration.caPerdiemDeclare')
-                                                        </div>
-                                                        <div class="tab-pane fade" id="pills-meals" role="tabpanel"
-                                                            aria-labelledby="pills-meals-tab">
-                                                            @include('hcis.reimbursements.businessTrip.declaration.caMealsDeclare')
-                                                        </div>
-                                                        <div class="tab-pane fade" id="pills-transport" role="tabpanel"
-                                                            aria-labelledby="pills-transport-tab">
-                                                            @include('hcis.reimbursements.businessTrip.declaration.caTransportDeclare')
-                                                        </div>
-                                                        <div class="tab-pane fade" id="pills-accomodation"
-                                                            role="tabpanel" aria-labelledby="pills-accomodation-tab">
-                                                            @include('hcis.reimbursements.businessTrip.declaration.caAccommodationDeclare')
-                                                        </div>
-                                                        <div class="tab-pane fade" id="pills-other" role="tabpanel"
-                                                            aria-labelledby="pills-other-tab">
-                                                            @include('hcis.reimbursements.businessTrip.declaration.caOtherDeclare')
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                @include('hcis.reimbursements.businessTrip.declaration.btCaDeclaration')
 
                                                 <!-- CA Entertain Content -->
-                                                <div class="tab-pane fade" id="pills-caEntertain" role="tabpanel"
-                                                    aria-labelledby="pills-caEntertain-tab">
-                                                    <!-- Duplicate content for now -->
-                                                    <ul class="nav mb-3" id="pills-tab-inner" role="tablist">
-                                                        <li class="nav-item" role="presentation">
-                                                            <button class="nav-link active" id="pills-other-tab"
-                                                                data-bs-toggle="pill" data-bs-target="#pills-other"
-                                                                type="button" role="tab" aria-controls="pills-other"
-                                                                aria-selected="false">Other</button>
-                                                        </li>
-                                                    </ul>
-                                                    <div class="tab-content">
-                                                        <div class="tab-pane fade show active" id="pills-other"
-                                                            role="tabpanel" aria-labelledby="pills-other-tab">
-                                                            @include('hcis.reimbursements.businessTrip.declaration.caOtherDeclare')
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                @include('hcis.reimbursements.businessTrip.declaration.btEntDeclaration')
                                             </div>
                                         </div>
-                                        <div class="row mb-2">
-                                            <div class="col-md-6 mb-2">
-                                                <label class="form-label">Total Cash Advanced</label>
+                                        {{-- <div class="row mb-2">
+                                            <div class="col-md-12 mb-2">
+                                                <label class="form-label">Total Deklarasi</label>
                                                 <div class="input-group">
                                                     <div class="input-group-append">
                                                         <span class="input-group-text">Rp</span>
                                                     </div>
-                                                    <input class="form-control bg-light" name="totalca_deklarasi"
-                                                        id="totalca_declarasi" type="text" min="0"
-                                                        value="{{ number_format($ca->total_ca ?? '0', 0, ',', '.') }}"
-                                                        readonly>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6 mb-2">
-                                                <label class="form-label">Total Cash Advanced Deklarasi</label>
-                                                <div class="input-group">
-                                                    <div class="input-group-append">
-                                                        <span class="input-group-text">Rp</span>
-                                                    </div>
-                                                    <input class="form-control bg-light" name="totalca" id="totalca"
+                                                    <input class="form-control bg-light" name="total_ca_ent" id="total_ca_ent"
                                                         type="text" min="0"
                                                         value="{{ number_format($ca->total_real ?? '0', 0, ',', '.') }}"
                                                         readonly>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4 mb-2" style="display:none">
-                                                <label class="form-label">Total Cost</label>
-                                                <div class="input-group">
-                                                    <div class="input-group-append">
-                                                        <span class="input-group-text">Rp</span>
-                                                    </div>
-                                                    <input class="form-control bg-light" name="" id=""
-                                                        type="text" min="0"
-                                                        value="{{ number_format($ca->total_cost ?? '0', 0, ',', '.') }}"
-                                                        readonly>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        </div> --}}
                                         @php
                                             use Illuminate\Support\Facades\Storage;
                                         @endphp
 
-                                        <div class="col-md-12 mt-2 mb-2">
-                                            <label for="prove_declare" class="form-label">Upload Proof</label>
-                                            <div class="d-flex align-items-center">
-                                                <input type="file" id="prove_declare" name="prove_declare"
-                                                    accept="image/*,application/pdf" class="form-control me-2">
+                                        <div class="col-md-12 mb-2 mt-2">
+                                            <label for="prove_declare" class="form-label">Upload Document</label>
+                                            <input type="file" id="prove_declare" name="prove_declare[]" accept="image/*, application/pdf" class="form-control mb-2" multiple onchange="previewFiles()">
+                                            @if ((isset($dnsData->prove_declare) && $dnsData->prove_declare) || (isset($entrData->prove_declare) && $entrData->prove_declare))
+                                                <input type="hidden" name="existing_prove_declare" id="existing-prove-declare" value="{{ $dnsData->prove_declare }}">
+                                                <input type="hidden" name="removed_prove_declare" id="removed-prove-declare" value="[]">
+
+                                                <!-- Preview untuk file lama -->
+                                                <div id="existing-files-label" style="margin-bottom: 10px; font-weight: bold;">
+                                                    @if ($dnsData->prove_declare || $entrData->prove_declare)
+
+                                                        Document on Draft:
+                                                    @endif
+                                                </div>
+                                                <div id="existing-file-preview" class="mt-2">
+                                                    @if ($dnsData->prove_declare || $entrData->prove_declare)
+                                                        @php
+                                                            $proveDeclare = $dnsData->prove_declare ? $dnsData->prove_declare : $entrData->prove_declare;
+
+                                                            // Cek apakah data dalam format JSON atau masih string lama
+                                                            if (!empty($proveDeclare)) {
+                                                                $decodedData = json_decode($proveDeclare, true);
+                                                                $existingFiles = is_array($decodedData) ? $decodedData : [$proveDeclare]; // Jika bukan array, ubah menjadi array
+                                                            } else {
+                                                                $existingFiles = [];
+                                                            }
+                                                        @endphp
+
+                                                        <div id="existing-file-preview" class="mt-2">
+                                                            @if (count($existingFiles) > 1)
+                                                                @foreach ($existingFiles as $file)
+                                                                    @php $extension = pathinfo($file, PATHINFO_EXTENSION); @endphp
+                                                                    <div class="file-preview" data-file="{{ $file }}" style="position: relative; display: inline-block; margin: 10px;">
+                                                                        @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
+                                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
+                                                                                <img src="{{ asset($file) }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
+                                                                            </a>
+                                                                        @elseif ($extension === 'pdf')
+                                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
+                                                                                <img src="{{ asset('images/pdf_icon.png') }}" alt="PDF File">
+                                                                                <p>Click to view PDF</p>
+                                                                            </a>
+                                                                        @else
+                                                                            <p>File type not supported.</p>
+                                                                        @endif
+                                                                        <span class="remove-existing" data-file="{{ $file }}" style="position: absolute; top: 5px; right: 5px; cursor: pointer; background-color: #ff4d4d; color: #fff; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-weight: bold;">×</span>
+                                                                    </div>
+                                                                @endforeach
+                                                            @else
+                                                                @php
+                                                                    $file = $existingFiles[0] ?? ''; // Ambil satu file jika hanya ada satu file
+                                                                    $extension = pathinfo($file, PATHINFO_EXTENSION);
+                                                                @endphp
+
+                                                                @if (!empty($file))
+                                                                    <div class="file-preview" data-file="{{ $file }}" style="position: relative; display: inline-block; margin: 10px;">
+                                                                        @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
+                                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
+                                                                                <img src="{{ asset($file) }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
+                                                                            </a>
+                                                                        @elseif ($extension === 'pdf')
+                                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
+                                                                                <img src="{{ asset('images/pdf_icon.png') }}" alt="PDF File">
+                                                                                <p>Click to view PDF</p>
+                                                                            </a>
+                                                                        @else
+                                                                            <p>File type not supported.</p>
+                                                                        @endif
+                                                                        <span class="remove-existing" data-file="{{ $file }}" style="position: absolute; top: 5px; right: 5px; cursor: pointer; background-color: #ff4d4d; color: #fff; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-weight: bold;">×</span>
+                                                                    </div>
+                                                                @endif
+                                                            @endif
+                                                        </div>
+                                                    @endif
+
+                                                </div>
+                                            @endif
+                                            <div id="new-files-label" style="margin-top: 20px; margin-bottom: 10px; font-weight: bold;">
+                                                New Document:
                                             </div>
+
+                                            <div id="new-file-preview" class="mt-2"></div>
                                         </div>
-                                        @if (isset($ca->prove_declare) && $ca->prove_declare)
-                                            @php
-                                                // Get the file extension
-                                                $fileExtension = pathinfo($ca->prove_declare, PATHINFO_EXTENSION);
-                                                // Set the image based on the file type
-                                                $imageSrc = '';
-                                                if (in_array($fileExtension, ['pdf'])) {
-                                                    $imageSrc = 'https://img.icons8.com/color/48/000000/pdf.png'; // Replace with the path to your PDF icon
-                                                } elseif (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
-                                                    $imageSrc = Storage::url($ca->prove_declare); // Image files should display their own thumbnail
-                                                } else {
-                                                    $imageSrc = 'https://img.icons8.com/color/48/000000/file.png'; // Replace with the path to your default icon
-                                                }
-                                            @endphp
-                                            <div class="file-preview text-left">
-                                                <a href="{{ Storage::url($ca->prove_declare) }}" target="_blank"
-                                                    style="text-decoration: none;">
-                                                    <img src="{{ $imageSrc }}" alt="{{ $fileExtension }} file"
-                                                        class="file-icon" style="width: 50px; height: 50px;">
-                                                    <div style="margin-top: 5px;"><u>View Proof</u></div>
-                                                </a>
-                                                {{-- @else
-                                                <div class="text-danger">No proof uploaded</div> --}}
-                                        @endif
 
                                         {{-- <input type="hidden" name="status" value="Declaration L1" id="status"> --}}
-                                        <input type="hidden" name="no_id" value="{{ $ca->id ?? 0 }}">
-                                        <input type="hidden" name="ca_id" value="{{ $ca->no_ca ?? 0 }}">
+                                        <input type="hidden" name="no_id" value="{{ $date->id ?? 0 }}">
+                                        <input type="hidden" name="ca_id" value="{{ $date->no_ca ?? 0 }}">
                                         <input class="form-control" id="group_company" name="group_company"
                                             type="hidden" value="{{ $employee_data->group_company }}" readonly>
                                         <input class="form-control" id="perdiem" name="perdiem" type="hidden"
@@ -368,8 +337,16 @@
             </div>
         </div>
     </div>
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-    <!--<script src="{{ asset('/js/businessTrip.js') }}"></script>-->
     <script>
         //CA JS
         function handleCaForms() {
@@ -437,6 +414,7 @@
             totalBtPerdiem.forEach((field) => (field.value = 0));
 
             calculateTotalNominalBTTotal();
+            calculateTotalNominalBTENTTotal();
         }
 
         function resetFields() {
@@ -528,6 +506,7 @@
 
             // Recalculate the total CA after reset
             calculateTotalNominalBTTotal();
+            calculateTotalNominalBTENTTotal();
         }
 
         function cleanNumber(value) {
@@ -564,6 +543,19 @@
             calculateTotalNominalBTPenginapan();
             calculateTotalNominalBTLainnya();
             calculateTotalNominalBTTotal();
+            calculateTotalNominalBTENTTotal();
+        }
+
+        function calculateTotalNominalBTENTTotal() {
+            let total = 0;
+            document.querySelectorAll('input[name="totalca"]').forEach(input => {
+                total += parseNumber(input.value);
+            });
+            document.querySelectorAll('input[name="totalca_ca_deklarasi"]').forEach(input => {
+                total += parseNumber(input.value);
+            });
+            console.log(document.querySelectorAll('input[name="totalca"]'));
+            document.querySelector('input[name="total_ca_ent"]').value = formatNumber(total);
         }
 
         function calculateTotalNominalBTTotal() {
@@ -593,7 +585,9 @@
                 .forEach((input) => {
                     total += parseNumber(input.value);
                 });
-            document.querySelector('input[name="totalca"]').value = formatNumber(total);
+
+            console.log("ini total Ca Deklarasi",total);
+            document.querySelector('input[name="totalca_ca_deklarasi"]').value = formatNumber(total);
         }
 
         function toggleDivs() {
@@ -822,6 +816,7 @@
                         document.querySelector('input[name="total_bt_meals"]').value =
                             formatNumber(total);
                         calculateTotalNominalBTTotal();
+                        calculateTotalNominalBTENTTotal();
                     }
                     $(`#form-container-bt-meals-${index}`).remove();
                     formCountMeals--;
@@ -855,6 +850,7 @@
             // Reset nilai untuk nominal BT Meals
             document.querySelector(`#nominal_bt_meals_${index}`).value = 0;
             calculateTotalNominalBTTotal();
+            calculateTotalNominalBTENTTotal();
         }
 
         function calculateTotalNominalBTMeals() {
@@ -887,44 +883,115 @@
 
                     // Retrieve the values from the input fields
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
+                    const totalBtMeals = document.getElementById('total_bt_meals').value;
                     const totalBtPenginapan = document.getElementById('total_bt_penginapan').value;
                     const totalBtTransport = document.getElementById('total_bt_transport').value;
                     const totalBtLainnya = document.getElementById('total_bt_lainnya').value;
-                    const totalCa = document.getElementById('totalca').value;
+                    const totalBtCa = document.getElementById('totalca_ca_deklarasi').value;
+                    const totalEntCa = document.getElementById('totalca').value;
+                    const group_company = document.getElementById('group_company').value;
+
+                    function parseCurrency(value) {
+                        // Hapus tanda titik dan ubah ke angka
+                        return parseFloat(value.replace(/\./g, '')) || 0;
+                    }
+
+                    // Konversi nilai ke angka
+                    const totalBtCaNum = parseCurrency(totalBtCa);
+                    const totalEntCaNum = parseCurrency(totalEntCa);
+
+                    // Hitung total declaration
+                    const totalDeclaration = totalBtCaNum + totalEntCaNum;
+
+                    // Format angka ke format mata uang (opsional)
+                    function formatCurrency(value) {
+                        return value.toLocaleString('id-ID');
+                    }
+
 
                     // Create a message with the input values, each on a new line with bold titles
-                    const inputSummary = `
+                    let inputSummary = `
                         <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                        <tr>
-                            <th style="width: 40%; text-align: left; padding: 8px;">Total {{ $allowance }}</th>
-                            <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                            <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPerdiem}</strong></td>
-                        </tr>
-                        <tr>
-                            <th style="width: 40%; text-align: left; padding: 8px;">Total Accommodation</th>
-                            <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                            <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPenginapan}</strong></td>
-                        </tr>
-                        <tr>
-                            <th style="width: 40%; text-align: left; padding: 8px;">Total Transport</th>
-                            <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                            <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtTransport}</strong></td>
-                        </tr>
-                        <tr>
-                            <th style="width: 40%; text-align: left; padding: 8px;">Total Others</th>
-                            <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                            <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtLainnya}</strong></td>
-                        </tr>
-                    </table>
-                    <hr style="margin: 20px 0;">
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                        <tr>
-                            <th style="width: 40%; text-align: left; padding: 8px;">Total Declaration</th>
-                            <td style="width: 10%; text-align: right; padding: 8px;">:</td>
-                            <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalCa}</strong></td>
-                        </tr>
-                    </table>
+                    `;
+
+                    // Tambahkan total allowance jika totalBtCa tidak kosong
+                    if (totalBtCa) {
+                        inputSummary += `
+                            <tr>
+                                <th style="width: 40%; text-align: left; padding: 8px;">Total {{ $allowance }}</th>
+                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPerdiem}</strong></td>
+                            </tr>
                             `;
+
+                        // Conditionally add the "Total Meals" row
+                        if (group_company != 'KPN Plantations' && group_company != 'Plantations') {
+                            inputSummary += `
+                            <tr>
+                                <th style="width: 40%; text-align: left; padding: 8px;">Total Meals</th>
+                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtMeals}</strong></td>
+                            </tr>`;
+                        }
+
+                        inputSummary += `
+                            <tr>
+                                <th style="width: 40%; text-align: left; padding: 8px;">Total Accommodation</th>
+                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPenginapan}</strong></td>
+                            </tr>
+                            <tr>
+                                <th style="width: 40%; text-align: left; padding: 8px;">Total Transport</th>
+                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtTransport}</strong></td>
+                            </tr>
+                            <tr>
+                                <th style="width: 40%; text-align: left; padding: 8px;">Total Others</th>
+                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtLainnya}</strong></td>
+                            </tr>
+                        `;
+                    }
+
+                    inputSummary += `
+                        </table>
+                        <hr style="margin: 20px 0;">
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                    `;
+
+                    // Tampilkan Total Entertain Declaration jika totalEntCa lebih besar dari 0
+                    if (parseFloat(totalBtCa) > 0) {
+                        inputSummary += `
+                            <tr>
+                                <th style="width: 45%; text-align: left; padding: 8px;">Total Cash Advanced Declaration</th>
+                                <td style="width: 5%; text-align: right; padding: 8px;">:</td>
+                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtCa}</strong></td>
+                            </tr>
+                        `;
+                    }
+
+                    // Tampilkan Total Entertain Declaration jika totalEntCa lebih besar dari 0
+                    if (parseFloat(totalEntCa) > 0) {
+                        inputSummary += `
+                            <tr>
+                                <th style="width: 45%; text-align: left; padding: 8px;">Total Entertain Declaration</th>
+                                <td style="width: 5%; text-align: right; padding: 8px;">:</td>
+                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalEntCa}</strong></td>
+                            </tr>
+                        `;
+                    }
+
+                    inputSummary += `
+                        </table>
+                        <hr style="margin: 20px 0;">
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                            <tr>
+                                <th style="width: 45%; text-align: left; padding: 8px;">Total Declaration</th>
+                                <td style="width: 5%; text-align: right; padding: 8px;">:</td>
+                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${formatCurrency(totalDeclaration)}</strong></td>
+                            </tr>
+                        </table>
+                    `;
 
                     // Show SweetAlert confirmation with the input summary
                     Swal.fire({
@@ -978,259 +1045,177 @@
             });
         });
     </script>
+
     <script>
-        function cleanNumber(value) {
-            return parseFloat(value.replace(/\./g, '').replace(/,/g, '')) || 0;
-        }
+        document.addEventListener("DOMContentLoaded", function () {
+            let selectedFiles = [];
+            let removedFiles = []; // Menyimpan file yang dihapus
 
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        }
+            function updateExistingPreview() {
+                const removedFilesInput = document.getElementById('removed-prove-declare');
+                removedFilesInput.value = JSON.stringify(removedFiles);
 
-        function formatNumberPerdiem(num) {
-            return num.toLocaleString('id-ID');
-        }
-
-        function parseNumberPerdiem(value) {
-            return parseFloat(value.replace(/\./g, '').replace(/,/g, '')) || 0;
-        }
-
-        function parseNumber(value) {
-            return parseFloat(value.replace(/\./g, '')) || 0;
-        }
-
-        function formatInput(input) {
-            let value = input.value.replace(/\./g, '');
-            value = parseFloat(value);
-            if (!isNaN(value)) {
-                input.value = formatNumber(Math.floor(value));
-            } else {
-                input.value = formatNumber(0);
+                const previewContainer = document.getElementById('existing-file-preview');
+                const existingFiles = Array.from(previewContainer.querySelectorAll('.file-preview'));
+                existingFiles.forEach((fileElement) => {
+                    const removeButton = fileElement.querySelector('.remove-existing');
+                    removeButton.onclick = () => {
+                        const filePath = removeButton.getAttribute('data-file');
+                        removedFiles.push(filePath); // Tambahkan ke daftar file yang dihapus
+                        fileElement.remove(); // Hapus elemen dari preview
+                        updateExistingPreview();
+                    };
+                });
             }
-            calculateTotalNominalBTPerdiem();
-            calculateTotalNominalBTMeals();
-            calculateTotalNominalBTTransport();
-            calculateTotalNominalBTPenginapan();
-            calculateTotalNominalBTLainnya();
-            calculateTotalNominalBTTotal();
-        }
 
-        function calculateTotalNominalBTTotal() {
-            let total = 0;
-            document.querySelectorAll('input[name="total_bt_perdiem"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelectorAll('input[name="total_bt_meals"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelectorAll('input[name="total_bt_transport"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelectorAll('input[name="total_bt_penginapan"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelectorAll('input[name="total_bt_lainnya"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelector('input[name="totalca"]').value = formatNumber(total);
-        }
+            function updateExistingPreview() {
+                const previewContainer = document.getElementById('existing-file-preview');
+                const labelContainer = document.getElementById('existing-files-label');
+                const existingFiles = Array.from(previewContainer.querySelectorAll('.file-preview'));
 
-        document.addEventListener("DOMContentLoaded", function() {
-            // ca_type ca_nbt ca_e
-            var ca_type = document.getElementById("ca_type");
-            var ca_nbt = document.getElementById("ca_nbt");
-            var ca_e = document.getElementById("ca_e");
-            var div_bisnis_numb = document.getElementById("div_bisnis_numb");
-            var bisnis_numb = document.getElementById("bisnis_numb");
-            var div_allowance = document.getElementById("div_allowance");
-
-            function toggleDivs() {
-                if (ca_type.value === "dns") {
-                    ca_bt.style.display = "block";
-                    ca_nbt.style.display = "none";
-                    ca_e.style.display = "none";
-                    div_bisnis_numb.style.display = "block";
-                    div_allowance.style.display = "block";
-                } else if (ca_type.value === "ndns") {
-                    ca_bt.style.display = "none";
-                    ca_nbt.style.display = "block";
-                    ca_e.style.display = "none";
-                    div_bisnis_numb.style.display = "none";
-                    bisnis_numb.style.value = "";
-                    div_allowance.style.display = "none";
-                } else if (ca_type.value === "entr") {
-                    ca_bt.style.display = "none";
-                    ca_nbt.style.display = "none";
-                    ca_e.style.display = "block";
-                    div_bisnis_numb.style.display = "block";
+                if (existingFiles.length > 0) {
+                    labelContainer.style.display = 'block';
                 } else {
-                    ca_bt.style.display = "none";
-                    ca_nbt.style.display = "none";
-                    ca_e.style.display = "none";
-                    div_bisnis_numb.style.display = "none";
-                    bisnis_numb.style.value = "";
+                    labelContainer.style.display = 'none';
                 }
+
+                const removedFilesInput = document.getElementById('removed-prove-declare');
+                removedFilesInput.value = JSON.stringify(removedFiles);
+
+                existingFiles.forEach((fileElement) => {
+                    const removeButton = fileElement.querySelector('.remove-existing');
+                    removeButton.onclick = () => {
+                        const filePath = removeButton.getAttribute('data-file');
+                        removedFiles.push(filePath);
+                        fileElement.remove();
+                        updateExistingPreview();
+                    };
+                });
             }
 
-            toggleDivs();
-            ca_type.addEventListener("change", toggleDivs);
-        });
+            function updateNewPreview() {
+                const previewContainer = document.getElementById('new-file-preview');
+                const labelContainer = document.getElementById('new-files-label');
 
-        function toggleOthers() {
-            var locationFilter = document.getElementById("locationFilter");
-            var others_location = document.getElementById("others_location");
+                previewContainer.innerHTML = '';
+                selectedFiles.forEach((file, index) => {
+                    const fileExtension = file.name.split('.').pop().toLowerCase();
+                    const fileWrapper = document.createElement('div');
+                    fileWrapper.style.position = 'relative';
+                    fileWrapper.style.display = 'inline-block';
+                    fileWrapper.style.margin = '10px';
 
-            if (locationFilter.value === "Others") {
-                others_location.style.display = "block";
-            } else {
-                others_location.style.display = "none";
-                others_location.value = "";
-            }
-        }
+                    const removeIcon = document.createElement('span');
+                    removeIcon.textContent = '×';
+                    removeIcon.style = `
+                        position: absolute; top: 5px; right: 5px; cursor: pointer;
+                        background-color: #ff4d4d; color: #fff; border-radius: 50%;
+                        width: 20px; height: 20px; display: flex; align-items: center;
+                        justify-content: center; font-weight: bold;
+                    `;
+                    removeIcon.onclick = () => {
+                        selectedFiles.splice(index, 1);
+                        syncFileInput();
+                        updateNewPreview();
+                    };
+                    fileWrapper.appendChild(removeIcon);
 
-        function validateInput(input) {
-            input.value = input.value.replace(/[^0-9]/g, '');
-        }
+                    if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(file);
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const startDateInput = document.getElementById('start_date');
-            const endDateInput = document.getElementById('end_date');
-            const totalDaysInput = document.getElementById('totaldays');
-            const perdiemInput = document.getElementById('perdiem');
-            const allowanceInput = document.getElementById('allowance');
-            const othersLocationInput = document.getElementById('others_location');
-            const transportInput = document.getElementById('transport');
-            const accommodationInput = document.getElementById('accommodation');
-            const otherInput = document.getElementById('other');
-            const totalcaInput = document.getElementById('totalca');
-            const nominal_1Input = document.getElementById('nominal_1');
-            const nominal_2Input = document.getElementById('nominal_2');
-            const nominal_3Input = document.getElementById('nominal_3');
-            const nominal_4Input = document.getElementById('nominal_4');
-            const nominal_5Input = document.getElementById('nominal_5');
-            const caTypeInput = document.getElementById('ca_type');
+                        const img = document.createElement('img');
+                        img.src = URL.createObjectURL(file);
+                        img.alt = "Preview Image";
+                        img.style.width = '100px';
+                        img.style.height = '100px';
+                        img.style.border = '1px solid #ddd';
+                        img.style.borderRadius = '5px';
+                        img.style.padding = '5px';
+                        link.appendChild(img);
 
-            function formatNumber(num) {
-                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-            }
+                        fileWrapper.appendChild(link);
+                    } else if (fileExtension === 'pdf') {
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(file);
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
 
-            function parseNumber(value) {
-                return parseFloat(value.replace(/\./g, '')) || 0;
-            }
+                        const icon = document.createElement('img');
+                        icon.src = "{{ asset('images/pdf_icon.png') }}";
+                        icon.style.maxWidth = '48px';
+                        icon.style.marginTop = '10px';
+                        link.appendChild(icon);
+                        fileWrapper.appendChild(link);
 
-            function calculateTotalDays() {
-                const startDate = new Date(startDateInput.value);
-                const endDate = new Date(endDateInput.value);
-                if (startDate && endDate && !isNaN(startDate) && !isNaN(endDate)) {
-                    const timeDiff = endDate - startDate;
-                    const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-                    const totalDays = daysDiff > 0 ? daysDiff + 1 : 0 + 1;
-                    totalDaysInput.value = totalDays;
-
-                    const perdiem = parseFloat(perdiemInput.value) || 0;
-                    let allowance = totalDays * perdiem;
-
-                    if (othersLocationInput.value.trim() !== '') {
-                        allowance *= 1; // allowance * 50%
-                    } else {
-                        allowance *= 0.5;
+                        const text = document.createElement('p');
+                        text.textContent = "Click to view PDF";
+                        fileWrapper.appendChild(text);
                     }
 
-                    allowanceInput.value = formatNumber(Math.floor(allowance));
-                } else {
-                    totalDaysInput.value = 0;
-                    allowanceInput.value = 0;
-                }
-                calculateTotalCA();
+                    previewContainer.appendChild(fileWrapper);
+
+                    if (selectedFiles.length > 0) {
+                        labelContainer.style.display = 'block';
+                    } else {
+                        labelContainer.style.display = 'none';
+                    }
+                });
             }
 
-            startDateInput.addEventListener('change', calculateTotalDays);
-            endDateInput.addEventListener('change', calculateTotalDays);
-            othersLocationInput.addEventListener('input', calculateTotalDays);
-            caTypeInput.addEventListener('change', calculateTotalDays);
-            [transportInput, accommodationInput, otherInput, allowanceInput, nominal_1, nominal_2, nominal_3,
-                nominal_4, nominal_5
-            ].forEach(input => {
-                input.addEventListener('input', () => formatInput(input));
-            });
+
+            function syncFileInput() {
+                const dataTransfer = new DataTransfer();
+                selectedFiles.forEach(file => dataTransfer.items.add(file));
+                const fileInput = document.getElementById('prove_declare');
+                fileInput.files = dataTransfer.files;
+            }
+
+            window.previewFiles = function () {
+                const fileInput = document.getElementById('prove_declare');
+                const files = Array.from(fileInput.files);
+
+                const existingFilesCount = document.querySelectorAll('#existing-file-preview .file-preview').length;
+                const totalFiles = existingFilesCount + selectedFiles.length; // Total gabungan
+
+                files.forEach(file => {
+                    const fileExtension = file.name.split('.').pop().toLowerCase();
+                    if (file.size > 2 * 1024 * 1024) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'File Size Exceeded',
+                            text: `File "${file.name}" exceeds the 2MB size limit.`,
+                        });
+                        return;
+                    }
+                    if (!['jpg', 'jpeg', 'png', 'gif', 'pdf'].includes(fileExtension)) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Unsupported File Type',
+                            text: `File type "${fileExtension}" not supported.`,
+                        });
+                        return;
+                    }
+                    if (!selectedFiles.some(existingFile => existingFile.name === file.name)) {
+                        if (totalFiles < 10) {
+                            selectedFiles.push(file);
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'File Limit Exceeded',
+                                text: 'You can upload a maximum of 10 files.',
+                            });
+                        }
+                    }
+                });
+
+                syncFileInput();
+                updateNewPreview();
+            };
+
+            updateExistingPreview();
         });
-
-        document.getElementById('end_date').addEventListener('change', function() {
-            const endDate = new Date(this.value);
-            const declarationEstimateDate = new Date(endDate);
-            declarationEstimateDate.setDate(declarationEstimateDate.getDate() + 3);
-
-            const year = declarationEstimateDate.getFullYear();
-            const month = String(declarationEstimateDate.getMonth() + 1).padStart(2, '0');
-            const day = String(declarationEstimateDate.getDate()).padStart(2, '0');
-
-            document.getElementById('ca_decla').value = `${year}-${month}-${day}`;
-        });
-
-        function previewFile() {
-            const fileInput = document.getElementById('prove_declare');
-            const file = fileInput.files[0];
-            const preview = document.getElementById('existing-file-preview');
-            preview.innerHTML = ''; // Kosongkan preview sebelumnya
-
-            if (file) {
-                const fileExtension = file.name.split('.').pop().toLowerCase();
-
-                if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
-                    const img = document.createElement('img');
-                    img.style.maxWidth = '200px';
-                    img.src = URL.createObjectURL(file);
-                    preview.appendChild(img);
-                } else if (fileExtension === 'pdf') {
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(file);
-                    link.target = '_blank';
-                    const icon = document.createElement('img');
-                    icon.src = "https://img.icons8.com/color/48/000000/pdf.png";
-                    icon.style.maxWidth = '48px';
-                    link.appendChild(icon);
-                    const text = document.createElement('p');
-                    text.textContent = "Click to view PDF";
-                    preview.appendChild(link);
-                    preview.appendChild(text);
-                } else {
-                    preview.textContent = 'File type not supported.';
-                }
-            }
-        }
-        document.getElementById('mulai').addEventListener('change', handleDateChange);
-        document.getElementById('kembali').addEventListener('change', handleDateChange);
-
-        function handleDateChange() {
-            const startDateInput = document.getElementById('mulai');
-            const endDateInput = document.getElementById('kembali');
-
-            const startDate = new Date(startDateInput.value);
-            const endDate = new Date(endDateInput.value);
-
-            // Set the min attribute of the end_date input to the selected start_date
-            endDateInput.min = startDateInput.value;
-
-            // Validate dates
-            if (endDate < script startDate) {
-                alert("End Date cannot be earlier than Start Date");
-                endDateInput.value = "";
-            }
-
-            // Update min and max values for all dynamic perdiem date fields
-            document.querySelectorAll('input[name="start_bt_perdiem[]"]').forEach(function(input) {
-                input.min = startDateInput.value;
-                input.max = endDateInput.value;
-            });
-
-            document.querySelectorAll('input[name="end_bt_perdiem[]"]').forEach(function(input) {
-                input.min = startDateInput.value;
-                input.max = endDateInput.value;
-            });
-
-            document.querySelectorAll('input[name="total_days_bt_perdiem[]"]').forEach(function(input) {
-                calculateTotalDaysPerdiem(input);
-            });
-        }
     </script>
 @endsection

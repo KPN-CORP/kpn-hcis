@@ -1,5 +1,9 @@
   {{-- Detail Penggunaan Plafond --}}
-  <h4>Health Coverage Usage History</h4>
+  @if (request()->routeIs('medical.detail'))
+    <h4>Health Coverage Usage History</h4>
+  @else
+    <h4>Admin Confirmation Medical Request</h4>
+  @endif
   <div class="table-responsive">
       <table class="display nowrap responsive" id="example" width="100%">
           <thead class="bg-primary text-center align-middle">

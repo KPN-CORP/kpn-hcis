@@ -153,6 +153,9 @@
                             </div>
 
                             <div id="additional-fields-dalam" class="row mb-3" style="display: none;">
+                                <label for="additional-fields-dalam-title" class="mb-3">
+                                    Business Trip Needs <br>
+                                </label>
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-check">
@@ -255,17 +258,9 @@
                                             @endif
                                         </label>
                                         <div class="row">
-                                            {{-- <div class="col-md-2">
-                                            <div class="form-check">
-
-                                                <input class="form-check-input" type="checkbox" id="perdiemCheckbox"
-                                                    value="Ya" onchange="updateCAValue()">
-                                                <label class="form-check-label"
-                                                    for="perdiemCheckbox">{{ $allowance }}</label>
-                                            </div>
-                                        </div> --}}
                                             <div class="col-md-2">
                                                 <div class="form-check">
+                                                    <input type="hidden" name="ca" id="caHidden" value="Tidak">
                                                     <input class="form-check-input" type="checkbox"
                                                         id="cashAdvancedCheckbox" value="Ya"
                                                         onchange="updateCAValue()">
@@ -275,6 +270,7 @@
                                             </div>
                                             <div class="col-md-3">
                                                 <div class="form-check">
+                                                    <input type="hidden" name="ent" id="entHidden" value="Tidak">
                                                     <input class="form-check-input" type="checkbox"
                                                         id="caEntertainCheckbox" value="Ya"
                                                         onchange="updateCAValue()">
@@ -282,8 +278,6 @@
                                                         Entertain</label>
                                                 </div>
                                             </div>
-                                            <input type="hidden" name="ca" id="caHidden" value="Tidak">
-
                                             <div class="col-md-2">
                                                 <div class="form-check">
                                                     <input type="hidden" name="tiket" value="Tidak">
@@ -368,30 +362,6 @@
                                                 </ul>
 
                                                 <div class="tab-content" id="pills-tabContent">
-                                                    {{-- <div class="tab-pane fade" id="pills-perdiem" role="tabpanel"
-                                                    aria-labelledby="pills-perdiem-tab"> --}}
-                                                    {{-- ca perdiem content --}}
-                                                    {{-- <div id="ca_perdiem">
-                                                        <div class="row mb-2">
-                                                            <div class="col-md-6 mb-2">
-                                                                <label for="date_required" class="form-label">Date
-                                                                    Required</label>
-                                                                <input type="date" class="form-control form-control-sm"
-                                                                    id="date_required_1" name="date_required"
-                                                                    placeholder="Date Required"
-                                                                    onchange="syncDateRequired(this)">
-                                                            </div>
-                                                            <div class="col-md-6 mb-2">
-                                                                <label class="form-label" for="ca_decla">Declaration
-                                                                    Estimate</label>
-                                                                <input type="date" name="ca_decla" id="ca_decla_1"
-                                                                    class="form-control form-control-sm bg-light"
-                                                                    placeholder="mm/dd/yyyy" readonly>
-                                                            </div>
-                                                        </div>
-                                                        @include('hcis.reimbursements.businessTrip.caPerdiem')
-                                                    </div> --}}
-                                                    {{-- </div> --}}
                                                     <div class="tab-pane fade" id="pills-cashAdvanced" role="tabpanel"
                                                         aria-labelledby="pills-cashAdvanced-tab">
                                                         {{-- Cash Advanced content --}}
@@ -400,7 +370,7 @@
                                                     <div class="tab-pane fade" id="pills-cashAdvancedEntertain"
                                                         role="tabpanel" aria-labelledby="pills-cashAdvancedEntertain-tab">
                                                         {{-- Cash Advanced content --}}
-                                                        {{-- @include('hcis.reimbursements.businessTrip.form.ticket') --}}
+                                                        @include('hcis.reimbursements.businessTrip.form.btEnt')
                                                     </div>
                                                     <div class="tab-pane fade" id="pills-ticket" role="tabpanel"
                                                         aria-labelledby="pills-ticket-tab">
@@ -480,6 +450,7 @@
                         document.querySelector('input[name="total_bt_meals"]').value =
                             formatNumber(total);
                         calculateTotalNominalBTTotal();
+                        calculateTotalNominalBTENTTotal();
                     }
                     $(`#form-container-bt-meals-${index}`).remove();
                     formCountMeals--;
@@ -513,6 +484,7 @@
             // Reset nilai untuk nominal BT Meals
             document.querySelector(`#nominal_bt_meals_${index}`).value = 0;
             calculateTotalNominalBTTotal();
+            calculateTotalNominalBTENTTotal();
         }
 
         function calculateTotalNominalBTMeals() {
@@ -614,7 +586,7 @@
                     }
 
                     // Retrieve the values from the input fields
-                    // const dateReq = document.getElementById('date_required_1').value;
+                    const dateReq = document.getElementById('date_required_1').value;
                     const dateReq2 = document.getElementById('date_required_2').value;
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
                     const totalBtMealsElement = document.getElementById('total_bt_meals');
@@ -624,6 +596,7 @@
                     const totalBtLainnya = document.getElementById('total_bt_lainnya').value;
                     const group_company = document.getElementById('group_company').value;
                     const caCheckbox = document.getElementById('cashAdvancedCheckbox').checked;
+                    const entCheckbox = document.getElementById('caEntertainCheckbox').checked;
                     // const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
                     const totalCa = document.getElementById('totalca').value;
 
@@ -638,7 +611,20 @@
                     //     return;
                     // }
 
-                    if (caCheckbox && !dateReq2) {
+                    if (entCheckbox && !dateReq) {
+                        console.log("Ini yg ent");
+
+                        Swal.fire({
+                            title: "Warning!",
+                            text: "Please select a Date Required.",
+                            icon: "warning",
+                            confirmButtonColor: "#AB2F2B",
+                            confirmButtonText: "OK",
+                        });
+                        return;
+                    }
+                    if (entCheckbox && !dateReq2) {
+                        console.log("Ini Yg CA");
                         Swal.fire({
                             title: "Warning!",
                             text: "Please select a Date Required.",
@@ -687,6 +673,7 @@
                     // }
 
                     const caChecked = caCheckbox ? 'CA' : '';
+                    const entChecked = entCheckbox ? 'ENT' : '';
                     const ticketChecked = document.getElementById('ticketCheckbox').checked ?
                         'Ticket' : '';
                     const hotelChecked = document.getElementById('hotelCheckbox').checked ?
@@ -898,6 +885,7 @@
             calculateTotalNominalBTPenginapan();
             calculateTotalNominalBTLainnya();
             calculateTotalNominalBTTotal();
+            calculateTotalNominalBTENTTotal();
         }
 
         function calculateTotalNominalBTTotal() {
@@ -918,6 +906,18 @@
                 total += parseNumber(input.value);
             });
             document.querySelector('input[name="totalca"]').value = formatNumber(total);
+        }
+
+        function calculateTotalNominalBTENTTotal() {
+            let total = 0;
+            document.querySelectorAll('input[name="totalca"]').forEach(input => {
+                total += parseNumber(input.value);
+            });
+            document.querySelectorAll('input[name="total_ent_detail"]').forEach(input => {
+                total += parseNumber(input.value);
+            });
+            document.querySelector('input[name="totalreq"]').value = formatNumber(total);
+            document.querySelector('input[name="totalreq2"]').value = formatNumber(total);
         }
     </script>
     <script>
@@ -1023,6 +1023,7 @@
 
             // Set the value of ca_decla
             document.getElementById('ca_decla_2').value = `${year}-${month}-${day}`;
+            document.getElementById('ca_decla_3').value = `${year}-${month}-${day}`;
         });
     </script>
 @endsection

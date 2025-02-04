@@ -167,7 +167,7 @@ class BusinessTripController extends Controller
         $caTransactions = ca_transaction::whereIn('no_sppd', $sppdNos)
             ->whereNull('deleted_at')
             ->get()
-            ->keyBy('no_sppd');
+            ->groupBy('no_sppd');
         $tickets = Tiket::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
         $hotel = Hotel::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
         $taksi = Taksi::whereIn('no_sppd', $sppdNos)->get()->keyBy('no_sppd');
@@ -246,7 +246,8 @@ class BusinessTripController extends Controller
         $userId = Auth::id();
         $employee_data = Employee::where('id', $userId)->first();
         $employees = Employee::orderBy('ktp')->get();
-        $ca = CATransaction::where('no_sppd', $n->no_sppd)->first();
+        $cas = CATransaction::where('no_sppd', $n->no_sppd)->get();
+        $date = CATransaction::where('no_sppd', $n->no_sppd)->first();
         $group_company = Employee::where('id', $userId)->pluck('group_company')->first();
 
         if ($employee_data->group_company == 'Plantations' || $employee_data->group_company == 'KPN Plantations') {
@@ -256,7 +257,17 @@ class BusinessTripController extends Controller
         }
 
         // Initialize caDetail with an empty array if it's null
-        $caDetail = $ca ? json_decode($ca->detail_ca, true) : [];
+        // $caDetail = $ca ? json_decode($ca->detail_ca, true) : [];
+        $caDetail = [];
+        foreach ($cas as $ca) {
+            $currentDetail = json_decode($ca->detail_ca, true);
+            if (is_array($currentDetail)) {
+                $caDetail = array_merge($caDetail, $currentDetail);
+            }
+        }
+
+        // Retrieve the taxi data for the specific BusinessTrip
+        $taksi = Taksi::where('no_sppd', $n->no_sppd)->first();
 
         // Retrieve all hotels for the specific BusinessTrip
         $hotels = Hotel::where('no_sppd', $n->no_sppd)->get();
@@ -340,7 +351,8 @@ class BusinessTripController extends Controller
             'locations' => $locations,
             'caDetail' => $caDetail,
             'allowance' => $allowance,
-            'ca' => $ca,
+            'ca' => $cas,
+            'date' => $date,
             'group_company' => $group_company,
             'perdiem' => $perdiem,
             'parentLink' => $parentLink,
@@ -434,7 +446,7 @@ class BusinessTripController extends Controller
             'norek_krywn' => $request->norek_krywn,
             'nama_pemilik_rek' => $request->nama_pemilik_rek,
             'nama_bank' => $request->nama_bank,
-            'ca' => $request->ca,
+            'ca' => $request->ca === 'Tidak' ? $request->ent : $request->ca,
             'tiket' => $tktDalam,
             'hotel' => $htlDalam,
             'taksi' => $vtDalam,
@@ -446,6 +458,7 @@ class BusinessTripController extends Controller
             // 'id_hotel' => $request->id_hotel,
             // 'id_taksi' => $request->id_taksi,
         ]);
+        // dd($request->ca, $request->ent);
 
         // Handle "Taksi" update
         if ($vtDalam === 'Ya') {
@@ -697,7 +710,7 @@ class BusinessTripController extends Controller
 
         if ($request->ca === 'Ya') {
             $businessTripStatus = $request->input('status');
-            $ca = CATransaction::where('no_sppd', $oldNoSppd)->first();
+            $ca = CATransaction::where('no_sppd', $oldNoSppd)->where('type_ca', 'dns')->first();
             if (!$ca) {
                 // Create a new CA transaction
                 $ca = new CATransaction();
@@ -740,7 +753,7 @@ class BusinessTripController extends Controller
             $ca->ca_needs = $request->keperluan;
             $ca->start_date = $request->mulai;
             $ca->end_date = $request->kembali;
-            $ca->date_required = $request->date_required;
+            $ca->date_required = $request->date_required_2;
             // $ca->declare_estimate = Carbon::parse($request->kembali)->addDays(3);
             $ca->declare_estimate = $request->ca_decla;
             $ca->total_days = Carbon::parse($request->mulai)->diffInDays(Carbon::parse($request->kembali));
@@ -959,7 +972,195 @@ class BusinessTripController extends Controller
             }
         } else {
             // If CA is not selected, remove existing CA transaction for this no_sppd
-            CATransaction::where('no_sppd', $oldNoSppd)->delete();
+            CATransaction::where('no_sppd', $oldNoSppd)->where('type_ca', 'dns')->delete();
+        }
+
+        if ($request->ent === 'Ya') {
+            $businessTripStatus = $request->input('status');
+            $ent = CATransaction::where('no_sppd', $oldNoSppd)->where('type_ca', 'entr')->first();
+            if (!$ent) {
+                $ent = new CATransaction();
+                $businessTripStatus = $request->input('status');
+
+                // Generate new 'no_ca' code
+                $currentYear = date('Y');
+                $currentYearShort = date('y');
+                $prefix = 'CA';
+                $lastTransaction = CATransaction::whereYear('created_at', $currentYear)
+                    ->orderBy('no_ca', 'desc')
+                    ->first();
+
+                $lastNumber = $lastTransaction && preg_match('/CA' . $currentYearShort . '(\d{6})/', $lastTransaction->no_ca, $matches) ? intval($matches[1]) : 0;
+                $newNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
+                $newNoCa = "$prefix$currentYearShort$newNumber";
+
+                $ent_id = (string) Str::uuid();
+                $ent->no_ca = $newNoCa;
+            } else {
+                // Update the existing CA transaction
+                $ent->no_ca = $ent->no_ca; // Keep the existing no_ca
+            }
+
+            if ($statusValue === 'Draft') {
+                // Set CA status to Draft
+                $entStatus = $ent->approval_status = 'Draft';
+            } elseif ($statusValue === 'Pending L1') {
+                // Set CA status to Pending
+                $entStatus = $ent->approval_status = 'Pending';
+            }
+            // Assign values to $ent model
+            $ent->type_ca = 'entr';
+            $ent->no_sppd = $oldNoSppd;
+            $ent->user_id = $userId;
+            $ent->unit = $request->divisi;
+            $ent->contribution_level_code = $request->bb_perusahaan;
+            $ent->destination = $request->tujuan;
+            $ent->others_location = $request->others_location;
+            $ent->ca_needs = $request->keperluan;
+            $ent->start_date = $request->mulai;
+            $ent->end_date = $request->kembali;
+            $ent->date_required = $request->date_required_1;
+            // $ent->declare_estimate = Carbon::parse($request->kembali)->addDays(3);
+            $ent->declare_estimate = $request->ca_decla;
+            // dd($request->ca_decla);
+            $ent->total_days = Carbon::parse($request->mulai)->diffInDays(Carbon::parse($request->kembali));
+            $ent->total_ca = (int) str_replace('.', '', $request->total_ent_detail);
+            $ent->total_real = '0';
+            $ent->total_cost = (int) str_replace('.', '', $request->total_ent_detail);
+            $ent->approval_status = $entStatus;
+            $ent->approval_sett = $request->approval_sett ? $request->approval_sett : '';
+            $ent->approval_extend = $request->approval_extend ? $request->approval_extend : '';
+            $ent->created_by = $userId;
+
+            // Initialize arrays
+            $detail_e = [];
+            $relation_e = [];
+
+            if ($request->has('enter_type_e_detail')) {
+                foreach ($request->enter_type_e_detail as $key => $type) {
+                    $fee_detail = $request->enter_fee_e_detail[$key];
+                    $nominal = str_replace('.', '', $request->nominal_e_detail[$key]); // Menghapus titik dari nominal sebelum menyimpannya
+
+                    if (!empty($type) && !empty($nominal)) {
+                        $detail_e[] = [
+                            'type' => $type,
+                            'fee_detail' => $fee_detail,
+                            'nominal' => $nominal,
+                        ];
+                    }
+                }
+            }
+
+            // Mengumpulkan detail relation
+            if ($request->has('rname_e_relation')) {
+                foreach ($request->rname_e_relation as $key => $name) {
+                    $position = $request->rposition_e_relation[$key];
+                    $company = $request->rcompany_e_relation[$key];
+                    $purpose = $request->rpurpose_e_relation[$key];
+
+                    // Memastikan semua data yang diperlukan untuk relation terisi
+                    if (!empty($name) && !empty($position) && !empty($company) && !empty($purpose)) {
+                        $relation_e[] = [
+                            'name' => $name,
+                            'position' => $position,
+                            'company' => $company,
+                            'purpose' => $purpose,
+                            'relation_type' => array_filter([
+                                'Food' => !empty($request->food_e_relation[$key]) && $request->food_e_relation[$key] === 'food',
+                                'Transport' => !empty($request->transport_e_relation[$key]) && $request->transport_e_relation[$key] === 'transport',
+                                'Accommodation' => !empty($request->accommodation_e_relation[$key]) && $request->accommodation_e_relation[$key] === 'accommodation',
+                                'Gift' => !empty($request->gift_e_relation[$key]) && $request->gift_e_relation[$key] === 'gift',
+                                'Fund' => !empty($request->fund_e_relation[$key]) && $request->fund_e_relation[$key] === 'fund',
+                            ], fn($checked) => $checked),
+                        ];
+                    }
+                }
+            }
+
+            // Gabungkan detail entertain dan relation, lalu masukkan ke detail_ca
+            $detail_ca = [
+                'detail_e' => $detail_e,
+                'relation_e' => $relation_e,
+            ];
+            // dd($detail_ca);
+            $ent->detail_ca = json_encode($detail_ca);
+            $ent->declare_ca = json_encode($detail_ca);
+            $ent->save();
+
+            if ($statusValue !== 'Draft') {
+                $model = $ent;
+
+                $model->status_id = $managerL1;
+
+                $cek_director_id = Employee::select([
+                    'dsg.department_level2',
+                    'dsg2.director_flag',
+                    DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(dsg.department_level2, '(', -1), ')', 1) AS department_director"),
+                    'dsg2.designation_name',
+                    'dsg2.job_code',
+                    'emp.fullname',
+                    'emp.employee_id',
+                ])
+                    ->leftJoin('designations as dsg', 'dsg.job_code', '=', 'employees.designation_code')
+                    ->leftJoin('designations as dsg2', 'dsg2.department_code', '=', DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(dsg.department_level2, '(', -1), ')', 1)"))
+                    ->leftJoin('employees as emp', 'emp.designation_code', '=', 'dsg2.job_code')
+                    ->where('employees.designation_code', '=', $employee->designation_code)
+                    ->where('dsg2.director_flag', '=', 'F')
+                    ->get();
+
+                $director_id = "";
+
+                if ($cek_director_id->isNotEmpty()) {
+                    $director_id = $cek_director_id->first()->employee_id;
+                }
+                //cek matrix approval
+
+                $total_ca = str_replace('.', '', $request->total_ent_detail);
+                // dd($total_ca);
+                // dd($employee->group_company);
+                // dd($request->bb_perusahaan);
+                $data_matrix_approvals = MatrixApproval::where('modul', 'dns')
+                    ->where('group_company', 'like', '%' . $employee->group_company . '%')
+                    ->where('contribution_level_code', 'like', '%' . $request->bb_perusahaan . '%')
+                    ->whereRaw(
+                        '
+            ? BETWEEN
+            CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND
+            CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca]
+                    )
+                    ->get();
+                foreach ($data_matrix_approvals as $data_matrix_approval) {
+
+                    if ($data_matrix_approval->employee_id == "cek_L1") {
+                        $employee_id = $managerL1;
+                    } else if ($data_matrix_approval->employee_id == "cek_L2") {
+                        $employee_id = $managerL2;
+                    } else if ($data_matrix_approval->employee_id == "cek_director") {
+                        $employee_id = $director_id;
+                    } else {
+                        $employee_id = $data_matrix_approval->employee_id;
+                    }
+                    if ($employee_id != null) {
+                        $model_approval = new ca_approval;
+                        $model_approval->ca_id = $ent->id;
+                        $model_approval->role_name = $data_matrix_approval->desc;
+                        $model_approval->employee_id = $employee_id;
+                        $model_approval->layer = $data_matrix_approval->layer;
+                        $model_approval->approval_status = 'Pending';
+
+                        // Simpan data ke database
+                        $model_approval->save();
+                    }
+
+                    // Simpan data ke database
+                    $model_approval->save();
+                }
+                $ent->save();
+            }
+        } else {
+            // If CA is not selected, remove existing CA transaction for this no_sppd
+            CATransaction::where('no_sppd', $oldNoSppd)->where('type_ca', 'entr')->delete();
         }
 
         if ($statusValue !== 'Draft') {
@@ -1057,11 +1258,42 @@ class BusinessTripController extends Controller
         }
         $group_company = Employee::where('id', $employee_data->id)->pluck('group_company')->first();
 
-        $ca = CATransaction::where('no_sppd', $n->no_sppd)->first();
+        $ca = CATransaction::where('no_sppd', $n->no_sppd)->get();
+        $date = CATransaction::where('no_sppd', $n->no_sppd)->first();
+        $dns = $ca->where('type_ca', 'dns')->first();
+        $entr = $ca->where('type_ca', 'entr')->first();
+
+        $entrTab = $entr ? true : false;
+        $dnsTab = $dns ? true : false;
+        // dd($date->declare_estimate);
+
+        $entrData = null;
+        $dnsData = null;
+
+        foreach ($ca as $item) {
+            if ($item->type_ca == 'entr' && !$entrData) {
+                $entrData = $item; // Ambil data entr hanya jika belum ada
+            } elseif ($item->type_ca == 'dns' && !$dnsData) {
+                $dnsData = $item; // Ambil data dns hanya jika belum ada
+            }
+
+            // Jika sudah mendapatkan kedua tipe, keluar dari loop
+            if ($entrData && $dnsData) {
+                break;
+            }
+        }
 
         // Initialize caDetail with an empty array if it's null
-        $caDetail = $ca ? json_decode($ca->detail_ca, true) : [];
-        $declareCa = $ca ? json_decode($ca->declare_ca, true) : [];
+        $caDetail = [];
+        $declareCa = [];
+        foreach ($ca as $cas) {
+            $currentDetail = json_decode($cas->detail_ca, true);
+            $currentDeclare = json_decode($cas->declare_ca, true);
+            if (is_array($currentDetail)) {
+                $caDetail = array_merge($caDetail, $currentDetail);
+                $declareCa = array_merge($declareCa, $currentDeclare);
+            }
+        }
 
         // Safely access nominalPerdiem with default '0' if caDetail is empty
         $nominalPerdiem = isset($caDetail['detail_perdiem'][0]['nominal']) ? $caDetail['detail_perdiem'][0]['nominal'] : '0';
@@ -1131,6 +1363,11 @@ class BusinessTripController extends Controller
             'locations' => $locations,
             'caDetail' => $caDetail,
             'declareCa' => $declareCa,
+            'entrData' => $entrData,
+            'dnsData' => $dnsData,
+            'entrTab' => $entrTab,
+            'dnsTab' => $dnsTab,
+            'date' => $date,
             'ca' => $ca,
             'nominalPerdiem' => $nominalPerdiem,
             'nominalPerdiemDeclare' => $nominalPerdiemDeclare,
@@ -1178,9 +1415,58 @@ class BusinessTripController extends Controller
         $managerL2 = $deptHeadManager->manager_l1_id;
 
         // Handle "CA Transaction" update
-        $ca = CATransaction::where('no_sppd', $oldNoSppd)->first();
+        $caRecords = CATransaction::where('no_sppd', $oldNoSppd)->get();
+        $employee_data = Employee::where('id', $userId)->first();
 
-        if (!$ca) {
+        if ($request->has('removed_prove_declare')) {
+            $removedFiles = json_decode($request->removed_prove_declare, true);
+            $existingFiles = $request->existing_prove_declare ? json_decode($request->existing_prove_declare, true) : [];
+
+            // Hapus file yang ada di server
+            foreach ($removedFiles as $fileToRemove) {
+                // Cek jika file yang akan dihapus ada dalam array existingFiles
+                if (in_array($fileToRemove, $existingFiles)) {
+                    $filePath = public_path($fileToRemove); // Path file
+                    if (file_exists($filePath)) {
+                        unlink($filePath); // Menghapus file
+                    }
+                    // Menghapus file dari gambaran existingFiles
+                    $existingFiles = array_filter($existingFiles, fn($file) => $file !== $fileToRemove);
+                }
+                // dd($existingFiles);
+            }
+        } else {
+            $existingFiles = $request->existing_prove_declare ? json_decode($request->existing_prove_declare, true) : [];
+            // dd($existingFiles);
+        }
+
+        // Proses file baru
+        if ($request->hasFile('prove_declare')) {
+            $request->validate([
+                'prove_declare.*' => 'required|mimes:jpeg,png,jpg,gif,pdf|max:2048',
+            ]);
+            // dd($existingFiles);
+            // $existingFiles = [];
+            foreach ($request->file('prove_declare') as $file) {
+                if (!$file->isValid()) {
+                    dd("error");
+                    // return back()->with('error', 'One of the uploaded files is invalid.');
+                }
+
+                $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
+                $upload_path = 'uploads/proofs/' . $employee_data->employee_id;
+                $full_path = public_path($upload_path);
+
+                if (!is_dir($full_path)) {
+                    mkdir($full_path, 0777, true);
+                }
+
+                $file->move($full_path, $filename);
+                $existingFiles[] = $upload_path . '/' . $filename;
+            }
+        }
+
+        if (!$caRecords) {
             // Create a new CA transaction if it doesn't exist
             $ca = new CATransaction();
             // $ca_sett = new ca_sett_approval();
@@ -1380,171 +1666,264 @@ class BusinessTripController extends Controller
             $model->sett_id = $managerL1;
 
         }
-        if ($ca) {
-            // Assign or update values to $ca model
-            $ca->user_id = $userId;
-            $ca->no_sppd = $oldNoSppd;
-            $ca->user_id = $userId;
-            $caId = $ca->id;
+        if ($caRecords) {
+            foreach ($caRecords as $ca) {
+                // Assign or update values to $ca model
+                if ($ca->type_ca == "dns") {
+                    $ca->user_id = $userId;
+                    $ca->no_sppd = $oldNoSppd;
+                    $ca->user_id = $userId;
+                    $caId = $ca->id;
 
-            // Update approval_status based on the status value from the request
-            if ($statusValue === 'Declaration L1') {
-                $ca->approval_sett = 'Pending';
-                $caStatus = $ca->approval_sett = 'Pending';
-            } elseif ($statusValue === 'Declaration Draft') {
-                $ca->approval_sett = 'Draft';
-                $caStatus = $ca->approval_sett = 'Draft';
-            } else {
-                $ca->approval_sett = $statusValue;
-            }
-
-            $ca->declaration_at = Carbon::now();
-
-            $total_real = (int) str_replace('.', '', $request->totalca);
-            // // dd($total_real);
-            $total_ca = $ca->total_ca;
-            if ($ca->detail_ca === null) {
-                $ca->total_ca = '0';
-                $ca->total_real = (int) str_replace('.', '', $request->totalca);
-                $ca->total_cost = -1 * (int) str_replace('.', '', $ca->total_real);
-            } else {
-                $ca->total_real = $total_real;
-                $ca->total_cost = $total_ca - $total_real;
-            }
-
-            // Initialize arrays for details
-            $detail_perdiem = [];
-            $detail_meals = [];
-            $detail_transport = [];
-            $detail_penginapan = [];
-            $detail_lainnya = [];
-
-            if ($request->has('start_bt_meals')) {
-                foreach ($request->start_bt_meals as $key => $startDate) {
-                    $endDate = $request->end_bt_meals[$key] ?? '';
-                    $totalDays = $request->total_days_bt_meals[$key] ?? '';
-                    $companyCode = $request->company_bt_meals[$key] ?? '';
-                    $nominal = str_replace('.', '', $request->nominal_bt_meals[$key] ?? '0');
-                    $keterangan = $request->keterangan_bt_meals[$key] ?? '';
-
-                    if (!empty($startDate) && !empty($endDate) && !empty($totalDays) && !empty($companyCode) && !empty($nominal)) {
-                        $detail_meals[] = [
-                            'start_date' => $startDate,
-                            'end_date' => $endDate,
-                            'total_days' => $totalDays,
-                            'company_code' => $companyCode,
-                            'nominal' => $nominal,
-                            'keterangan' => $keterangan,
-                        ];
+                    // Update approval_status based on the status value from the request
+                    if ($statusValue === 'Declaration L1') {
+                        $ca->approval_sett = 'Pending';
+                        $caStatus = $ca->approval_sett = 'Pending';
+                    } elseif ($statusValue === 'Declaration Draft') {
+                        $ca->approval_sett = 'Draft';
+                        $caStatus = $ca->approval_sett = 'Draft';
+                    } else {
+                        $ca->approval_sett = $statusValue;
                     }
-                }
-            }
 
-            // Populate detail_perdiem
-            if ($request->has('start_bt_perdiem')) {
-                foreach ($request->start_bt_perdiem as $key => $startDate) {
-                    $endDate = $request->end_bt_perdiem[$key] ?? '';
-                    $totalDays = $request->total_days_bt_perdiem[$key] ?? '';
-                    $location = $request->location_bt_perdiem[$key] ?? '';
-                    $other_location = $request->other_location_bt_perdiem[$key] ?? '';
-                    $companyCode = $request->company_bt_perdiem[$key] ?? '';
-                    $nominal = str_replace('.', '', $request->nominal_bt_perdiem[$key] ?? '0');
+                    $ca->declaration_at = Carbon::now();
 
-                    if (!empty($startDate) && !empty($endDate) && !empty($companyCode) && !empty($nominal)) {
-                        $detail_perdiem[] = [
-                            'start_date' => $startDate,
-                            'end_date' => $endDate,
-                            'total_days' => $totalDays,
-                            'location' => $location,
-                            'other_location' => $other_location,
-                            'company_code' => $companyCode,
-                            'nominal' => $nominal,
-                        ];
+                    $total_real = (int) str_replace('.', '', $request->totalca_ca_deklarasi);
+                    $total_ca = $ca->total_ca;
+                    if ($ca->detail_ca === null) {
+                        $ca->total_ca = '0';
+                        $ca->total_real = (int) str_replace('.', '', $request->totalca_ca_deklarasi);
+                        $ca->total_cost = -1 * (int) str_replace('.', '', $ca->total_real);
+                    } else {
+                        $ca->total_real = $total_real;
+                        $ca->total_cost = $total_ca - $total_real;
                     }
-                }
-            }
-            // dd($detail_perdiem);
 
-            // Populate detail_transport
-            if ($request->has('tanggal_bt_transport')) {
-                foreach ($request->tanggal_bt_transport as $key => $tanggal) {
-                    $keterangan = $request->keterangan_bt_transport[$key] ?? '';
-                    $companyCode = $request->company_bt_transport[$key] ?? '';
-                    $nominal = str_replace('.', '', $request->nominal_bt_transport[$key] ?? '0');
+                    // Initialize arrays for details
+                    $detail_perdiem = [];
+                    $detail_meals = [];
+                    $detail_transport = [];
+                    $detail_penginapan = [];
+                    $detail_lainnya = [];
 
-                    if (!empty($tanggal) && !empty($companyCode) && !empty($nominal)) {
-                        $detail_transport[] = [
-                            'tanggal' => $tanggal,
-                            'keterangan' => $keterangan,
-                            'company_code' => $companyCode,
-                            'nominal' => $nominal,
-                        ];
+                    if ($request->has('start_bt_meals')) {
+                        foreach ($request->start_bt_meals as $key => $startDate) {
+                            $endDate = $request->end_bt_meals[$key] ?? '';
+                            $totalDays = $request->total_days_bt_meals[$key] ?? '';
+                            $companyCode = $request->company_bt_meals[$key] ?? '';
+                            $nominal = str_replace('.', '', $request->nominal_bt_meals[$key] ?? '0');
+                            $keterangan = $request->keterangan_bt_meals[$key] ?? '';
+
+                            if (!empty($startDate) && !empty($endDate) && !empty($totalDays) && !empty($companyCode) && !empty($nominal)) {
+                                $detail_meals[] = [
+                                    'start_date' => $startDate,
+                                    'end_date' => $endDate,
+                                    'total_days' => $totalDays,
+                                    'company_code' => $companyCode,
+                                    'nominal' => $nominal,
+                                    'keterangan' => $keterangan,
+                                ];
+                            }
+                        }
                     }
-                }
-            }
+                    // dd($request->has('start_bt_meals'));
 
-            // Populate detail_penginapan
-            if ($request->has('start_bt_penginapan')) {
-                foreach ($request->start_bt_penginapan as $key => $startDate) {
-                    $endDate = $request->end_bt_penginapan[$key] ?? '';
-                    $totalDays = $request->total_days_bt_penginapan[$key] ?? '';
-                    $hotelName = $request->hotel_name_bt_penginapan[$key] ?? '';
-                    $companyCode = $request->company_bt_penginapan[$key] ?? '';
-                    $nominal = str_replace('.', '', $request->nominal_bt_penginapan[$key] ?? '0');
-                    $totalPenginapan = str_replace('.', '', $request->total_bt_penginapan[$key] ?? '0');
+                    // Populate detail_perdiem
+                    if ($request->has('start_bt_perdiem')) {
+                        foreach ($request->start_bt_perdiem as $key => $startDate) {
+                            $endDate = $request->end_bt_perdiem[$key] ?? '';
+                            $totalDays = $request->total_days_bt_perdiem[$key] ?? '';
+                            $location = $request->location_bt_perdiem[$key] ?? '';
+                            $other_location = $request->other_location_bt_perdiem[$key] ?? '';
+                            $companyCode = $request->company_bt_perdiem[$key] ?? '';
+                            $nominal = str_replace('.', '', $request->nominal_bt_perdiem[$key] ?? '0');
 
-                    if (!empty($startDate) && !empty($endDate) && !empty($totalDays) && !empty($hotelName) && !empty($companyCode) && !empty($nominal)) {
-                        $detail_penginapan[] = [
-                            'start_date' => $startDate,
-                            'end_date' => $endDate,
-                            'total_days' => $totalDays,
-                            'hotel_name' => $hotelName,
-                            'company_code' => $companyCode,
-                            'nominal' => $nominal,
-                            'totalPenginapan' => $totalPenginapan,
-                        ];
+                            if (!empty($startDate) && !empty($endDate) && !empty($companyCode) && !empty($nominal)) {
+                                $detail_perdiem[] = [
+                                    'start_date' => $startDate,
+                                    'end_date' => $endDate,
+                                    'total_days' => $totalDays,
+                                    'location' => $location,
+                                    'other_location' => $other_location,
+                                    'company_code' => $companyCode,
+                                    'nominal' => $nominal,
+                                ];
+                            }
+                        }
                     }
-                }
-            }
+                    // dd($detail_perdiem);
 
-            // Populate detail_lainnya
-            if ($request->has('tanggal_bt_lainnya')) {
-                foreach ($request->tanggal_bt_lainnya as $key => $tanggal) {
-                    $keterangan = $request->keterangan_bt_lainnya[$key] ?? '';
-                    $nominal = str_replace('.', '', $request->nominal_bt_lainnya[$key] ?? '0');
-                    $totalLainnya = str_replace('.', '', $request->total_bt_lainnya[$key] ?? '0');
+                    // Populate detail_transport
+                    if ($request->has('tanggal_bt_transport')) {
+                        foreach ($request->tanggal_bt_transport as $key => $tanggal) {
+                            $keterangan = $request->keterangan_bt_transport[$key] ?? '';
+                            $companyCode = $request->company_bt_transport[$key] ?? '';
+                            $nominal = str_replace('.', '', $request->nominal_bt_transport[$key] ?? '0');
 
-                    if (!empty($tanggal) && !empty($nominal)) {
-                        $detail_lainnya[] = [
-                            'tanggal' => $tanggal,
-                            'keterangan' => $keterangan,
-                            'nominal' => $nominal,
-                            'totalLainnya' => $totalLainnya,
-                        ];
+                            if (!empty($tanggal) && !empty($companyCode) && !empty($nominal)) {
+                                $detail_transport[] = [
+                                    'tanggal' => $tanggal,
+                                    'keterangan' => $keterangan,
+                                    'company_code' => $companyCode,
+                                    'nominal' => $nominal,
+                                ];
+                            }
+                        }
                     }
+                    // dd($detail_transport);
+
+                    // Populate detail_penginapan
+                    if ($request->has('start_bt_penginapan')) {
+                        foreach ($request->start_bt_penginapan as $key => $startDate) {
+                            $endDate = $request->end_bt_penginapan[$key] ?? '';
+                            $totalDays = $request->total_days_bt_penginapan[$key] ?? '';
+                            $hotelName = $request->hotel_name_bt_penginapan[$key] ?? '';
+                            $companyCode = $request->company_bt_penginapan[$key] ?? '';
+                            $nominal = str_replace('.', '', $request->nominal_bt_penginapan[$key] ?? '0');
+                            $totalPenginapan = str_replace('.', '', $request->total_bt_penginapan[$key] ?? '0');
+
+                            if (!empty($startDate) && !empty($endDate) && !empty($totalDays) && !empty($hotelName) && !empty($companyCode) && !empty($nominal)) {
+                                $detail_penginapan[] = [
+                                    'start_date' => $startDate,
+                                    'end_date' => $endDate,
+                                    'total_days' => $totalDays,
+                                    'hotel_name' => $hotelName,
+                                    'company_code' => $companyCode,
+                                    'nominal' => $nominal,
+                                    'totalPenginapan' => $totalPenginapan,
+                                ];
+                            }
+                        }
+                    }
+
+                    // Populate detail_lainnya
+                    if ($request->has('tanggal_bt_lainnya')) {
+                        foreach ($request->tanggal_bt_lainnya as $key => $tanggal) {
+                            $keterangan = $request->keterangan_bt_lainnya[$key] ?? '';
+                            $nominal = str_replace('.', '', $request->nominal_bt_lainnya[$key] ?? '0');
+                            $totalLainnya = str_replace('.', '', $request->total_bt_lainnya[$key] ?? '0');
+
+                            if (!empty($tanggal) && !empty($nominal)) {
+                                $detail_lainnya[] = [
+                                    'tanggal' => $tanggal,
+                                    'keterangan' => $keterangan,
+                                    'nominal' => $nominal,
+                                    'totalLainnya' => $totalLainnya,
+                                ];
+                            }
+                        }
+                    }
+
+                    // Save the details
+                    $declare_ca = [
+                        'detail_perdiem' => $detail_perdiem,
+                        'detail_meals' => $detail_meals,
+                        'detail_transport' => $detail_transport,
+                        'detail_penginapan' => $detail_penginapan,
+                        'detail_lainnya' => $detail_lainnya,
+                    ];
+
+                    // Simpan semua file yang tersisa ke database
+                    $ca->prove_declare = json_encode(array_values($existingFiles));
+
+                    $ca->declare_ca = json_encode($declare_ca);
+                    $model = $ca;
+
+                    $model->sett_id = $managerL1;
+                } elseif ($ca->type_ca == "entr") {
+                    $ca->user_id = $userId;
+                    $ca->no_sppd = $oldNoSppd;
+                    $ca->user_id = $userId;
+                    $caId = $ca->id;
+
+                    // Update approval_status based on the status value from the request
+                    if ($statusValue === 'Declaration L1') {
+                        $ca->approval_sett = 'Pending';
+                        $caStatus = $ca->approval_sett = 'Pending';
+                    } elseif ($statusValue === 'Declaration Draft') {
+                        $ca->approval_sett = 'Draft';
+                        $caStatus = $ca->approval_sett = 'Draft';
+                    } else {
+                        $ca->approval_sett = $statusValue;
+                    }
+
+                    $ca->declaration_at = Carbon::now();
+
+                    $total_real = (int) str_replace('.', '', $request->totalca);
+                    // dd($total_real);
+                    $total_ca = $ca->total_ca;
+                    if ($ca->detail_ca === null) {
+                        $ca->total_ca = '0';
+                        $ca->total_real = (int) str_replace('.', '', $request->totalca);
+                        $ca->total_cost = -1 * (int) str_replace('.', '', $ca->total_real);
+                    } else {
+                        $ca->total_real = $total_real;
+                        $ca->total_cost = $total_ca - $total_real;
+                    }
+
+                    // Ini AWAL
+                    $detail_e = [];
+                    $relation_e = [];
+
+                    if ($request->has('enter_type_e_detail')) {
+                        foreach ($request->enter_type_e_detail as $key => $type) {
+                            $fee_detail = $request->enter_fee_e_detail[$key];
+                            $nominal = str_replace('.', '', $request->nominal_e_detail[$key]); // Menghapus titik dari nominal sebelum menyimpannya
+
+                            if (!empty($type) && !empty($nominal)) {
+                                $detail_e[] = [
+                                    'type' => $type,
+                                    'fee_detail' => $fee_detail,
+                                    'nominal' => $nominal,
+                                ];
+                            }
+                        }
+                    }
+
+                    // Mengumpulkan detail relation
+                    if ($request->has('rname_e_relation')) {
+                        foreach ($request->rname_e_relation as $key => $name) {
+                            $position = $request->rposition_e_relation[$key];
+                            $company = $request->rcompany_e_relation[$key];
+                            $purpose = $request->rpurpose_e_relation[$key];
+
+                            // Memastikan semua data yang diperlukan untuk relation terisi
+                            if (!empty($name) && !empty($position) && !empty($company) && !empty($purpose)) {
+                                $relation_e[] = [
+                                    'name' => $name,
+                                    'position' => $position,
+                                    'company' => $company,
+                                    'purpose' => $purpose,
+                                    'relation_type' => array_filter([
+                                        'Food' => !empty($request->food_e_relation[$key]) && $request->food_e_relation[$key] === 'food',
+                                        'Transport' => !empty($request->transport_e_relation[$key]) && $request->transport_e_relation[$key] === 'transport',
+                                        'Accommodation' => !empty($request->accommodation_e_relation[$key]) && $request->accommodation_e_relation[$key] === 'accommodation',
+                                        'Gift' => !empty($request->gift_e_relation[$key]) && $request->gift_e_relation[$key] === 'gift',
+                                        'Fund' => !empty($request->fund_e_relation[$key]) && $request->fund_e_relation[$key] === 'fund',
+                                    ], fn($checked) => $checked),
+                                ];
+                            }
+                        }
+                    }
+
+                    // Save the details
+                    $declare_ca = [
+                        'detail_e' => $detail_e,
+                        'relation_e' => $relation_e,
+                    ];
+                    // Ini Akihit
+
+                    // Simpan semua file yang tersisa ke database
+                    $ca->prove_declare = json_encode(array_values($existingFiles));
+
+                    $ca->declare_ca = json_encode($declare_ca);
+                    $model = $ca;
+
+                    $model->sett_id = $managerL1;
                 }
+                $ca->save();
             }
-
-            // Save the details
-            $declare_ca = [
-                'detail_perdiem' => $detail_perdiem,
-                'detail_meals' => $detail_meals,
-                'detail_transport' => $detail_transport,
-                'detail_penginapan' => $detail_penginapan,
-                'detail_lainnya' => $detail_lainnya,
-            ];
-            if ($request->hasFile('prove_declare')) {
-                $file = $request->file('prove_declare');
-                $path = $file->store('public/proofs'); // Store in 'public/proofs' directory
-                $ca->prove_declare = $path;
-            }
-
-            $ca->declare_ca = json_encode($declare_ca);
-            $model = $ca;
-
-            $model->sett_id = $managerL1;
         }
-        $ca->save();
         // Update the status field in the BusinessTrip record
         $n->update([
             'status' => $statusValue,
@@ -2423,7 +2802,7 @@ class BusinessTripController extends Controller
             'norek_krywn' => $request->norek_krywn,
             'nama_pemilik_rek' => $request->nama_pemilik_rek,
             'nama_bank' => $request->nama_bank,
-            'ca' => $request->ca,
+            'ca' => $request->ca === 'Tidak' ? $request->ent : $request->ca,
             'tiket' => $tktDalam,
             'hotel' => $htlDalam,
             'taksi' => $vtDalam,
@@ -2817,6 +3196,185 @@ class BusinessTripController extends Controller
                     $model_approval->save();
                 }
                 $ca->save();
+            }
+        }
+
+        if ($request->ent === 'Ya') {
+            $ent = new CATransaction();
+            $businessTripStatus = $request->input('status');
+
+            // Generate new 'no_ca' code
+            $currentYear = date('Y');
+            $currentYearShort = date('y');
+            $prefix = 'CA';
+            $lastTransaction = CATransaction::whereYear('created_at', $currentYear)
+                ->orderBy('no_ca', 'desc')
+                ->first();
+
+            $lastNumber = $lastTransaction && preg_match('/CA' . $currentYearShort . '(\d{6})/', $lastTransaction->no_ca, $matches) ? intval($matches[1]) : 0;
+            $newNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
+            $newNoCa = "$prefix$currentYearShort$newNumber";
+
+            if ($statusValue === 'Draft') {
+                // Set CA status to Draft
+                $entStatus = $ent->approval_status = 'Draft';
+            } elseif ($statusValue === 'Pending L1') {
+                // Set CA status to Pending
+                $entStatus = $ent->approval_status = 'Pending';
+            }
+            $ent_id = (string) Str::uuid();
+            // Assign values to $ent model
+            $ent->id = $ent_id;
+            $ent->type_ca = 'entr';
+            $ent->no_ca = $newNoCa;
+            $ent->no_sppd = $noSppd;
+            $ent->user_id = $userId;
+            $ent->unit = $request->divisi;
+            $ent->contribution_level_code = $request->bb_perusahaan;
+            $ent->destination = $request->tujuan;
+            $ent->others_location = $request->others_location;
+            $ent->ca_needs = $request->keperluan;
+            $ent->start_date = $request->mulai;
+            $ent->end_date = $request->kembali;
+            $ent->date_required = $request->date_required;
+            // $ent->declare_estimate = Carbon::parse($request->kembali)->addDays(3);
+            $ent->declare_estimate = $request->ca_decla;
+            // dd($request->ca_decla);
+            $ent->total_days = Carbon::parse($request->mulai)->diffInDays(Carbon::parse($request->kembali));
+            $ent->total_ca = (int) str_replace('.', '', $request->total_ent_detail);
+            $ent->total_real = '0';
+            $ent->total_cost = (int) str_replace('.', '', $request->total_ent_detail);
+            $ent->approval_status = $entStatus;
+            $ent->approval_sett = $request->approval_sett ? $request->approval_sett : '';
+            $ent->approval_extend = $request->approval_extend ? $request->approval_extend : '';
+            $ent->created_by = $userId;
+
+            // Initialize arrays
+            $detail_e = [];
+            $relation_e = [];
+
+            if ($request->has('enter_type_e_detail')) {
+                foreach ($request->enter_type_e_detail as $key => $type) {
+                    $fee_detail = $request->enter_fee_e_detail[$key];
+                    $nominal = str_replace('.', '', $request->nominal_e_detail[$key]); // Menghapus titik dari nominal sebelum menyimpannya
+
+                    if (!empty($type) && !empty($nominal)) {
+                        $detail_e[] = [
+                            'type' => $type,
+                            'fee_detail' => $fee_detail,
+                            'nominal' => $nominal,
+                        ];
+                    }
+                }
+            }
+
+            // Mengumpulkan detail relation
+            if ($request->has('rname_e_relation')) {
+                foreach ($request->rname_e_relation as $key => $name) {
+                    $position = $request->rposition_e_relation[$key];
+                    $company = $request->rcompany_e_relation[$key];
+                    $purpose = $request->rpurpose_e_relation[$key];
+
+                    // Memastikan semua data yang diperlukan untuk relation terisi
+                    if (!empty($name) && !empty($position) && !empty($company) && !empty($purpose)) {
+                        $relation_e[] = [
+                            'name' => $name,
+                            'position' => $position,
+                            'company' => $company,
+                            'purpose' => $purpose,
+                            'relation_type' => array_filter([
+                                'Food' => !empty($request->food_e_relation[$key]) && $request->food_e_relation[$key] === 'food',
+                                'Transport' => !empty($request->transport_e_relation[$key]) && $request->transport_e_relation[$key] === 'transport',
+                                'Accommodation' => !empty($request->accommodation_e_relation[$key]) && $request->accommodation_e_relation[$key] === 'accommodation',
+                                'Gift' => !empty($request->gift_e_relation[$key]) && $request->gift_e_relation[$key] === 'gift',
+                                'Fund' => !empty($request->fund_e_relation[$key]) && $request->fund_e_relation[$key] === 'fund',
+                            ], fn($checked) => $checked),
+                        ];
+                    }
+                }
+            }
+
+            // Gabungkan detail entertain dan relation, lalu masukkan ke detail_ca
+            $detail_ca = [
+                'detail_e' => $detail_e,
+                'relation_e' => $relation_e,
+            ];
+            // dd($detail_ca);
+            $ent->detail_ca = json_encode($detail_ca);
+            $ent->declare_ca = json_encode($detail_ca);
+            $ent->save();
+
+            if ($statusValue !== 'Draft') {
+
+                $model = $ent;
+
+                $model->status_id = $managerL1;
+
+                $cek_director_id = Employee::select([
+                    'dsg.department_level2',
+                    'dsg2.director_flag',
+                    DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(dsg.department_level2, '(', -1), ')', 1) AS department_director"),
+                    'dsg2.designation_name',
+                    'dsg2.job_code',
+                    'emp.fullname',
+                    'emp.employee_id',
+                ])
+                    ->leftJoin('designations as dsg', 'dsg.job_code', '=', 'employees.designation_code')
+                    ->leftJoin('designations as dsg2', 'dsg2.department_code', '=', DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(dsg.department_level2, '(', -1), ')', 1)"))
+                    ->leftJoin('employees as emp', 'emp.designation_code', '=', 'dsg2.job_code')
+                    ->where('employees.designation_code', '=', $employee->designation_code)
+                    ->where('dsg2.director_flag', '=', 'F')
+                    ->get();
+
+                $director_id = "";
+
+                if ($cek_director_id->isNotEmpty()) {
+                    $director_id = $cek_director_id->first()->employee_id;
+                }
+                //cek matrix approval
+
+                $total_ca = str_replace('.', '', $request->total_ent_detail);
+                // dd($total_ca);
+                // dd($employee->group_company);
+                // dd($request->bb_perusahaan);
+                $data_matrix_approvals = MatrixApproval::where('modul', 'dns')
+                    ->where('group_company', 'like', '%' . $employee->group_company . '%')
+                    ->where('contribution_level_code', 'like', '%' . $request->bb_perusahaan . '%')
+                    ->whereRaw(
+                        '
+            ? BETWEEN
+            CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND
+            CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca]
+                    )
+                    ->get();
+                foreach ($data_matrix_approvals as $data_matrix_approval) {
+
+                    if ($data_matrix_approval->employee_id == "cek_L1") {
+                        $employee_id = $managerL1;
+                    } else if ($data_matrix_approval->employee_id == "cek_L2") {
+                        $employee_id = $managerL2;
+                    } else if ($data_matrix_approval->employee_id == "cek_director") {
+                        $employee_id = $director_id;
+                    } else {
+                        $employee_id = $data_matrix_approval->employee_id;
+                    }
+                    if ($employee_id != null) {
+                        $model_approval = new ca_approval;
+                        $model_approval->ca_id = $ent_id;
+                        $model_approval->role_name = $data_matrix_approval->desc;
+                        $model_approval->employee_id = $employee_id;
+                        $model_approval->layer = $data_matrix_approval->layer;
+                        $model_approval->approval_status = 'Pending';
+
+                        // Simpan data ke database
+                        $model_approval->save();
+                    }
+
+                    // Simpan data ke database
+                    $model_approval->save();
+                }
+                $ent->save();
             }
         }
 
@@ -3794,7 +4352,7 @@ class BusinessTripController extends Controller
         $caTransactions = ca_transaction::whereIn('no_sppd', $sppdNos)
             ->whereNull('deleted_at')
             ->get()
-            ->keyBy('no_sppd');
+            ->groupBy('no_sppd');
         $tickets = Tiket::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
         $hotel = Hotel::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
         $taksi = Taksi::whereIn('no_sppd', $sppdNos)->get()->keyBy('no_sppd');
@@ -3829,18 +4387,26 @@ class BusinessTripController extends Controller
             $taksiDalamKota = $taksi;
         }
 
-        $ca = CATransaction::where('no_sppd', $n->no_sppd)->first();
+        $ca = CATransaction::where('no_sppd', $n->no_sppd)->get();
+        $date = CATransaction::where('no_sppd', $n->no_sppd)->first();
         // Initialize caDetail with an empty array if it's null
-        $caDetail = $ca ? json_decode($ca->detail_ca, true) : [];
         $perdiem = ListPerdiem::where('grade', $employee_data->job_level)
             ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')->first();
 
-        // Safely access nominalPerdiem with default '0' if caDetail is empty
-        $nominalPerdiem = isset($caDetail['detail_perdiem'][0]['nominal']) ? $caDetail['detail_perdiem'][0]['nominal'] : '0';
 
 
         // Retrieve all hotels for the specific BusinessTrip
         $hotels = Hotel::where('no_sppd', $n->no_sppd)->get();
+
+        $caDetail = [];
+        foreach ($ca as $cas) {
+            $currentDetail = json_decode($cas->detail_ca, true);
+            if (is_array($currentDetail)) {
+                $caDetail = array_merge($caDetail, $currentDetail);
+            }
+        }
+        // Safely access nominalPerdiem with default '0' if caDetail is empty
+        $nominalPerdiem = isset($caDetail['detail_perdiem'][0]['nominal']) ? $caDetail['detail_perdiem'][0]['nominal'] : '0';
 
         // Prepare hotel data for the view
         $hotelData = [];
@@ -3898,6 +4464,7 @@ class BusinessTripController extends Controller
             'locations' => $locations,
             'caDetail' => $caDetail,
             'ca' => $ca,
+            'date' => $date,
             'nominalPerdiem' => $nominalPerdiem,
             'employees' => $employees,
             'parentLink' => $parentLink,
@@ -3932,15 +4499,17 @@ class BusinessTripController extends Controller
                 return redirect()->back()->with('error', 'Unauthorized action.');
             }
             if ($businessTrip->ca == 'Ya') {
-                $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
-                if ($caTransaction && $caTransaction->caonly != 'Y') {
-                    // Update CA approval status for L1 or L2 as Rejected
-                    ca_approval::updateOrCreate(
-                        ['ca_id' => $caTransaction->id, 'employee_id' => $employeeId, 'layer' => $layer],
-                        ['approval_status' => $statusValue, 'approved_at' => now(), 'reject_info' => $rejectInfo] // Save rejection info
-                    );
+                $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+                foreach ($caTransaction as $caTransactions) {
+                    if ($caTransactions && $caTransactions->caonly != 'Y') {
+                        // Update CA approval status for L1 or L2 as Rejected
+                        ca_approval::updateOrCreate(
+                            ['ca_id' => $caTransactions->id, 'employee_id' => $employeeId, 'layer' => $layer],
+                            ['approval_status' => $statusValue, 'approved_at' => now(), 'reject_info' => $rejectInfo] // Save rejection info
+                        );
 
-                    $caTransaction->update(['approval_status' => 'Rejected']);
+                        $caTransactions->update(['approval_status' => 'Rejected']);
+                    }
                 }
             }
             if ($businessTrip->tiket == 'Ya') {
@@ -4150,26 +4719,28 @@ class BusinessTripController extends Controller
 
             // Handle CA approval for L1
             if ($businessTrip->ca == 'Ya') {
-                $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
-                if ($caTransaction && $caTransaction->caonly != 'Y') {
-                    // Update CA approval status for L1
-                    ca_approval::updateOrCreate(
-                        ['ca_id' => $caTransaction->id, 'employee_id' => $employeeId, 'layer' => $layer],
-                        ['approval_status' => 'Approved', 'approved_at' => Carbon::now()]
-                    );
+                $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+                foreach ($caTransaction as $caTransactions) {
+                    if ($caTransactions && $caTransactions->caonly != 'Y') {
+                        // Update CA approval status for L1
+                        ca_approval::updateOrCreate(
+                            ['ca_id' => $caTransactions->id, 'employee_id' => $employeeId, 'layer' => $layer],
+                            ['approval_status' => 'Approved', 'approved_at' => Carbon::now()]
+                        );
 
-                    // Find the next approver (Layer 2) from ca_approval
-                    $nextApproval = ca_approval::where('ca_id', $caTransaction->id)
-                        ->where('layer', $layer + 1)
-                        ->first();
+                        // Find the next approver (Layer 2) from ca_approval
+                        $nextApproval = ca_approval::where('ca_id', $caTransactions->id)
+                            ->where('layer', $layer + 1)
+                            ->first();
 
-                    if ($nextApproval) {
-                        $updateCa = CATransaction::where('id', $caTransaction->id)->first();
-                        $updateCa->status_id = $nextApproval->employee_id;
-                        $updateCa->save();
-                    } else {
-                        // No next layer, so mark as Approved
-                        $caTransaction->update(['approval_status' => 'Approved']);
+                        if ($nextApproval) {
+                            $updateCa = CATransaction::where('id', $caTransactions->id)->first();
+                            $updateCa->status_id = $nextApproval->employee_id;
+                            $updateCa->save();
+                        } else {
+                            // No next layer, so mark as Approved
+                            $caTransactions->update(['approval_status' => 'Approved']);
+                        }
                     }
                 }
             }
@@ -4237,26 +4808,28 @@ class BusinessTripController extends Controller
             }
             // Handle CA approval for L2
             if ($businessTrip->ca == 'Ya') {
-                $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
-                if ($caTransaction && $caTransaction->caonly != 'Y') {
-                    // Update CA approval status for L2
-                    ca_approval::updateOrCreate(
-                        ['ca_id' => $caTransaction->id, 'employee_id' => $employeeId, 'layer' => $layer],
-                        ['approval_status' => 'Approved', 'approved_at' => now()]
-                    );
+                $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+                foreach ($caTransaction as $caTransactions) {
+                    if ($caTransactions && $caTransactions->caonly != 'Y') {
+                        // Update CA approval status for L2
+                        ca_approval::updateOrCreate(
+                            ['ca_id' => $caTransactions->id, 'employee_id' => $employeeId, 'layer' => $layer],
+                            ['approval_status' => 'Approved', 'approved_at' => now()]
+                        );
 
-                    // Find the next approver (Layer 3) explicitly
-                    $nextApproval = ca_approval::where('ca_id', $caTransaction->id)
-                        ->where('layer', $layer + 1) // This will ensure it gets the immediate next layer (3)
-                        ->first();
+                        // Find the next approver (Layer 3) explicitly
+                        $nextApproval = ca_approval::where('ca_id', $caTransactions->id)
+                            ->where('layer', $layer + 1) // This will ensure it gets the immediate next layer (3)
+                            ->first();
 
-                    if ($nextApproval) {
-                        $updateCa = CATransaction::where('id', $caTransaction->id)->first();
-                        $updateCa->status_id = $nextApproval->employee_id;
-                        $updateCa->save();
-                    } else {
-                        // No next layer, so mark as Approved
-                        $caTransaction->update(['approval_status' => 'Approved']);
+                        if ($nextApproval) {
+                            $updateCa = CATransaction::where('id', $caTransactions->id)->first();
+                            $updateCa->status_id = $nextApproval->employee_id;
+                            $updateCa->save();
+                        } else {
+                            // No next layer, so mark as Approved
+                            $caTransactions->update(['approval_status' => 'Approved']);
+                        }
                     }
                 }
             }
@@ -4369,36 +4942,38 @@ class BusinessTripController extends Controller
                 }
                 // Handle CA approval for L1
                 if ($businessTrip->ca == 'Ya') {
-                    $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
-                    if ($caTransaction && $caTransaction->caonly != 'Y' && $caTransaction->caonly == null) {
-                        // Update CA approval status for L1
-                        $caApproval = ca_approval::where([
-                            'ca_id' => $caTransaction->id,
-                            'layer' => $layer
-                        ])->first();
+                    $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+                    foreach ($caTransaction as $caTransactions) {
+                        if ($caTransactions && $caTransactions->caonly != 'Y' && $caTransactions->caonly == null) {
+                            // Update CA approval status for L1
+                            $caApproval = ca_approval::where([
+                                'ca_id' => $caTransactions->id,
+                                'layer' => $layer
+                            ])->first();
 
-                        if ($caApproval) {
-                            // Only update if the record exists
-                            $caApproval->update([
-                                'approval_status' => 'Approved',
-                                'approved_at' => now(),
-                                'by_admin' => 'T',
-                                'admin_id' => $employeeId
-                            ]);
-                        }
+                            if ($caApproval) {
+                                // Only update if the record exists
+                                $caApproval->update([
+                                    'approval_status' => 'Approved',
+                                    'approved_at' => now(),
+                                    'by_admin' => 'T',
+                                    'admin_id' => $employeeId
+                                ]);
+                            }
 
-                        // Find the next approver (Layer 2) from ca_approval
-                        $nextApproval = ca_approval::where('ca_id', $caTransaction->id)
-                            ->where('layer', $layer + 1)
-                            ->first();
+                            // Find the next approver (Layer 2) from ca_approval
+                            $nextApproval = ca_approval::where('ca_id', $caTransactions->id)
+                                ->where('layer', $layer + 1)
+                                ->first();
 
-                        if ($nextApproval) {
-                            $updateCa = CATransaction::where('id', $caTransaction->id)->first();
-                            $updateCa->status_id = $nextApproval->employee_id;
-                            $updateCa->save();
-                        } else {
-                            // No next layer, so mark as Approved
-                            $caTransaction->update(['approval_status' => 'Approved']);
+                            if ($nextApproval) {
+                                $updateCa = CATransaction::where('id', $caTransactions->id)->first();
+                                $updateCa->status_id = $nextApproval->employee_id;
+                                $updateCa->save();
+                            } else {
+                                // No next layer, so mark as Approved
+                                $caTransactions->update(['approval_status' => 'Approved']);
+                            }
                         }
                     }
                 }
@@ -4470,36 +5045,38 @@ class BusinessTripController extends Controller
                 }
                 // Handle CA approval for L2
                 if ($businessTrip->ca == 'Ya') {
-                    $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
-                    if ($caTransaction && $caTransaction->caonly != 'Y' || $caTransaction->caonly == null) {
-                        // Update CA approval status for L2
-                        $caApproval = ca_approval::where([
-                            'ca_id' => $caTransaction->id,
-                            'layer' => $layer
-                        ])->first();
+                    $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+                    foreach ($caTransaction as $caTransactions) {
+                        if ($caTransactions && $caTransactions->caonly != 'Y' || $caTransactions->caonly == null) {
+                            // Update CA approval status for L2
+                            $caApproval = ca_approval::where([
+                                'ca_id' => $caTransactions->id,
+                                'layer' => $layer
+                            ])->first();
 
-                        if ($caApproval) {
-                            // Only update if the record exists
-                            $caApproval->update([
-                                'approval_status' => 'Approved',
-                                'approved_at' => now(),
-                                'by_admin' => 'T',
-                                'admin_id' => $employeeId
-                            ]);
-                        }
+                            if ($caApproval) {
+                                // Only update if the record exists
+                                $caApproval->update([
+                                    'approval_status' => 'Approved',
+                                    'approved_at' => now(),
+                                    'by_admin' => 'T',
+                                    'admin_id' => $employeeId
+                                ]);
+                            }
 
-                        // Find the next approver (Layer 3) explicitly
-                        $nextApproval = ca_approval::where('ca_id', $caTransaction->id)
-                            ->where('layer', $layer + 1) // This will ensure it gets the immediate next layer (3)
-                            ->first();
+                            // Find the next approver (Layer 3) explicitly
+                            $nextApproval = ca_approval::where('ca_id', $caTransactions->id)
+                                ->where('layer', $layer + 1) // This will ensure it gets the immediate next layer (3)
+                                ->first();
 
-                        if ($nextApproval) {
-                            $updateCa = CATransaction::where('id', $caTransaction->id)->first();
-                            $updateCa->status_id = $nextApproval->employee_id;
-                            $updateCa->save();
-                        } else {
-                            // No next layer, so mark as Approved
-                            $caTransaction->update(['approval_status' => 'Approved']);
+                            if ($nextApproval) {
+                                $updateCa = caTransaction::where('id', $caTransactions->id)->first();
+                                $updateCa->status_id = $nextApproval->employee_id;
+                                $updateCa->save();
+                            } else {
+                                // No next layer, so mark as Approved
+                                $caTransactions->update(['approval_status' => 'Approved']);
+                            }
                         }
                     }
                 }
@@ -4526,36 +5103,38 @@ class BusinessTripController extends Controller
                 $layer = 1;
                 // Handle CA approval for L1
                 if ($businessTrip->ca == 'Ya') {
-                    $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
-                    if ($caTransaction && $caTransaction->caonly != 'Y' || $caTransaction->caonly == null) {
-                        // Update CA approval status for L1
-                        $caApproval = ca_sett_approval::where([
-                            'ca_id' => $caTransaction->id,
-                            'layer' => $layer
-                        ])->where('approval_status', '!=', 'Rejected')
-                            ->first();
+                    $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+                    foreach ($caTransaction as $caTransactions) {
+                        if ($caTransactions && $caTransactions->caonly != 'Y' || $caTransactions->caonly == null) {
+                            // Update CA approval status for L1
+                            $caApproval = ca_sett_approval::where([
+                                'ca_id' => $caTransactions->id,
+                                'layer' => $layer
+                            ])->where('approval_status', '!=', 'Rejected')
+                                ->first();
 
-                        if ($caApproval) {
-                            // Only update if the record exists
-                            $caApproval->update([
-                                'approval_status' => 'Approved',
-                                'approved_at' => now(),
-                                'by_admin' => 'T',
-                                'admin_id' => $employeeId
-                            ]);
-                        }
-                        // Find the next approver (Layer 2) from ca_approval
-                        $nextApproval = ca_sett_approval::where('ca_id', $caTransaction->id)
-                            ->where('layer', $layer + 1)
-                            ->first();
+                            if ($caApproval) {
+                                // Only update if the record exists
+                                $caApproval->update([
+                                    'approval_status' => 'Approved',
+                                    'approved_at' => now(),
+                                    'by_admin' => 'T',
+                                    'admin_id' => $employeeId
+                                ]);
+                            }
+                            // Find the next approver (Layer 2) from ca_approval
+                            $nextApproval = ca_sett_approval::where('ca_id', $caTransactions->id)
+                                ->where('layer', $layer + 1)
+                                ->first();
 
-                        if ($nextApproval) {
-                            $updateCa = CATransaction::where('id', $caTransaction->id)->first();
-                            $updateCa->sett_id = $nextApproval->employee_id;
-                            $updateCa->save();
-                        } else {
-                            // No next layer, so mark as Approved
-                            $caTransaction->update(['approval_sett' => 'Approved']);
+                            if ($nextApproval) {
+                                $updateCa = CATransaction::where('id', $caTransactions->id)->first();
+                                $updateCa->sett_id = $nextApproval->employee_id;
+                                $updateCa->save();
+                            } else {
+                                // No next layer, so mark as Approved
+                                $caTransactions->update(['approval_sett' => 'Approved']);
+                            }
                         }
                     }
                 }
@@ -4577,37 +5156,39 @@ class BusinessTripController extends Controller
 
                 // Handle CA approval for L2
                 if ($businessTrip->ca == 'Ya') {
-                    $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
-                    if ($caTransaction && $caTransaction->caonly != 'Y' || $caTransaction->caonly == null) {
-                        // Update CA approval status for L1
-                        $caApproval = ca_sett_approval::where([
-                            'ca_id' => $caTransaction->id,
-                            'layer' => $layer
-                        ])->where('approval_status', '!=', 'Rejected')
-                            ->first();
+                    $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+                    foreach ($caTransaction as $caTransactions) {
+                        if ($caTransactions && $caTransactions->caonly != 'Y' || $caTransactions->caonly == null) {
+                            // Update CA approval status for L1
+                            $caApproval = ca_sett_approval::where([
+                                'ca_id' => $caTransactions->id,
+                                'layer' => $layer
+                            ])->where('approval_status', '!=', 'Rejected')
+                                ->first();
 
-                        if ($caApproval) {
-                            // Only update if the record exists
-                            $caApproval->update([
-                                'approval_status' => 'Approved',
-                                'approved_at' => now(),
-                                'by_admin' => 'T',
-                                'admin_id' => $employeeId
-                            ]);
-                        }
+                            if ($caApproval) {
+                                // Only update if the record exists
+                                $caApproval->update([
+                                    'approval_status' => 'Approved',
+                                    'approved_at' => now(),
+                                    'by_admin' => 'T',
+                                    'admin_id' => $employeeId
+                                ]);
+                            }
 
-                        // Find the next approver (Layer 3) explicitly
-                        $nextApproval = ca_sett_approval::where('ca_id', $caTransaction->id)
-                            ->where('layer', $layer + 1) // This will ensure it gets the immediate next layer (3)
-                            ->first();
+                            // Find the next approver (Layer 3) explicitly
+                            $nextApproval = ca_sett_approval::where('ca_id', $caTransactions->id)
+                                ->where('layer', $layer + 1) // This will ensure it gets the immediate next layer (3)
+                                ->first();
 
-                        if ($nextApproval) {
-                            $updateCa = CATransaction::where('id', $caTransaction->id)->first();
-                            $updateCa->sett_id = $nextApproval->employee_id;
-                            $updateCa->save();
-                        } else {
-                            // No next layer, so mark as Approved
-                            $caTransaction->update(['approval_sett' => 'Approved']);
+                            if ($nextApproval) {
+                                $updateCa = CATransaction::where('id', $caTransactions->id)->first();
+                                $updateCa->sett_id = $nextApproval->employee_id;
+                                $updateCa->save();
+                            } else {
+                                // No next layer, so mark as Approved
+                                $caTransactions->update(['approval_sett' => 'Approved']);
+                            }
                         }
                     }
                 }
@@ -4656,27 +5237,29 @@ class BusinessTripController extends Controller
                 return redirect()->back()->with('error', 'Unauthorized action.');
             }
             if ($businessTrip->ca == 'Ya') {
-                $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
+                $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
                 // dd($caTransaction->caonly != 'Y' && $caTransaction->caonly== null);
-                if ($caTransaction && $caTransaction->caonly != 'Y' && $caTransaction->caonly == null) {
-                    $caApproval = ca_approval::where([
-                        'ca_id' => $caTransaction->id,
-                        'layer' => $layer
-                    ])->first();
-                    // dd($caApproval);
+                foreach ($caTransaction as $caTransactions) {
+                    if ($caTransactions && $caTransactions->caonly != 'Y' && $caTransactions->caonly == null) {
+                        $caApproval = ca_approval::where([
+                            'ca_id' => $caTransactions->id,
+                            'layer' => $layer
+                        ])->first();
+                        // dd($caApproval);
 
-                    if ($caApproval) {
-                        // Only update if the record exists
-                        $caApproval->update([
-                            'approved_at' => now(),
-                            'reject_info' => $rejectInfo,
-                            'by_admin' => 'T',
-                            'admin_id' => $employeeId
-                        ]);
-                        ca_approval::where('ca_id', $caTransaction->id)
-                            ->update(['approval_status' => 'Rejected']);
+                        if ($caApproval) {
+                            // Only update if the record exists
+                            $caApproval->update([
+                                'approved_at' => now(),
+                                'reject_info' => $rejectInfo,
+                                'by_admin' => 'T',
+                                'admin_id' => $employeeId
+                            ]);
+                            ca_approval::where('ca_id', $caTransactions->id)
+                                ->update(['approval_status' => 'Rejected']);
 
-                        $caTransaction->update(['approval_status' => 'Rejected']);
+                            $caTransactions->update(['approval_status' => 'Rejected']);
+                        }
                     }
                 }
             }
@@ -4775,23 +5358,25 @@ class BusinessTripController extends Controller
             }
             // dd($rejectInfo, $statusValue, $layer);
             if ($businessTrip->ca == 'Ya') {
-                $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
-                if ($caTransaction && $caTransaction->caonly != 'Y' && $caTransaction->caonly == null) {
-                    $caApproval = ca_sett_approval::where([
-                        'ca_id' => $caTransaction->id,
-                        'layer' => $layer
-                    ])->first();
-                    if ($caApproval) {
-                        $caApproval->update([
-                            'approved_at' => now(),
-                            'reject_info' => $rejectInfo,
-                            'by_admin' => 'T',
-                            'admin_id' => $employeeId
-                        ]);
-                        ca_sett_approval::where('ca_id', $caTransaction->id)
-                            ->update(['approval_status' => 'Rejected']);
+                $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+                foreach ($caTransaction as $caTransactions) {
+                    if ($caTransactions && $caTransactions->caonly != 'Y' && $caTransactions->caonly == null) {
+                        $caApproval = ca_sett_approval::where([
+                            'ca_id' => $caTransactions->id,
+                            'layer' => $layer
+                        ])->first();
+                        if ($caApproval) {
+                            $caApproval->update([
+                                'approved_at' => now(),
+                                'reject_info' => $rejectInfo,
+                                'by_admin' => 'T',
+                                'admin_id' => $employeeId
+                            ]);
+                            ca_sett_approval::where('ca_id', $caTransactions->id)
+                                ->update(['approval_status' => 'Rejected']);
 
-                        $caTransaction->update(['approval_sett' => 'Rejected']);
+                            $caTransactions->update(['approval_sett' => 'Rejected']);
+                        }
                     }
                 }
             }
@@ -4818,6 +5403,8 @@ class BusinessTripController extends Controller
     {
         $user = Auth::user();
         $employeeId = $user->employee_id;
+        // $roleName = Employee::where('employee_id' ,$employeeId)->pluck('role_name')->first();
+        // dd($roleName);
         $approval = new BTApproval();
         $approval->id = (string) Str::uuid();
 
@@ -4835,23 +5422,25 @@ class BusinessTripController extends Controller
             } else {
                 return redirect()->back()->with('error', 'Unauthorized action.');
             }
-            if ($businessTrip->ca == 'Ya') {
-                $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
-                if ($caTransaction && $caTransaction->caonly != 'Y') {
+            // if ($businessTrip->ca == 'Ya') {
+            $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+            foreach ($caTransaction as $caTransactions) {
+                if ($caTransactions && $caTransactions->caonly != 'Y') {
                     // Update rejection info for the current layer
                     ca_sett_approval::updateOrCreate(
-                        ['ca_id' => $caTransaction->id, 'employee_id' => $employeeId, 'layer' => $layer],
+                        ['ca_id' => $caTransactions->id, 'employee_id' => $employeeId, 'layer' => $layer],
                         ['approval_status' => 'Rejected', 'approved_at' => now(), 'reject_info' => $rejectInfo]
                     );
 
                     // Update all records with the same ca_id to 'Rejected' status
-                    ca_sett_approval::where('ca_id', $caTransaction->id)
+                    ca_sett_approval::where('ca_id', $caTransactions->id)
                         ->update(['approval_status' => 'Rejected']);
 
                     // Update the main CA transaction approval status
-                    $caTransaction->update(['approval_sett' => 'Rejected']);
+                    $caTransactions->update(['approval_sett' => 'Rejected']);
                 }
             }
+            // }
         } elseif ($employeeId == $businessTrip->manager_l1_id) {
             $statusValue = 'Declaration L2';
             $layer = 1;
@@ -4929,30 +5518,37 @@ class BusinessTripController extends Controller
             }
             // Handle CA approval for L1
             // if ($businessTrip->ca == 'Ya') {
-            $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
-            if ($caTransaction) {
-                // Update CA approval status for L1
-                ca_sett_approval::where('ca_id', $caTransaction->id)
-                    ->where('employee_id', $employeeId)
-                    ->where('layer', $layer)
-                    ->where('approval_status', '!=', 'Rejected')  // Only update if status isn't "Declaration Rejected"
-                    ->updateOrCreate(
-                        ['ca_id' => $caTransaction->id, 'employee_id' => $employeeId, 'layer' => $layer],
-                        ['approval_status' => 'Approved', 'approved_at' => now()]
-                    );
+            $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+            // dd($caTransaction);
+            foreach ($caTransaction as $caTransactions) {
+                if ($caTransactions && $caTransactions->caonly != 'Y' || $caTransactions->caonly == null) {
+                    // Update CA approval status for L1
+                    $caApproval = ca_sett_approval::where([
+                        'ca_id' => $caTransactions->id,
+                        'layer' => $layer
+                    ])->where('approval_status', '!=', 'Rejected')
+                        ->first();
 
-                // Find the next approver (Layer 2) from ca_approval
-                $nextApproval = ca_sett_approval::where('ca_id', $caTransaction->id)
-                    ->where('layer', $layer + 1)
-                    ->first();
+                    if ($caApproval) {
+                        // Only update if the record exists
+                        $caApproval->update([
+                            'approval_status' => 'Approved',
+                            'approved_at' => now(),
+                        ]);
+                    }
+                    // Find the next approver (Layer 2) from ca_approval
+                    $nextApproval = ca_sett_approval::where('ca_id', $caTransactions->id)
+                        ->where('layer', $layer + 1)
+                        ->first();
 
-                if ($nextApproval) {
-                    $updateCa = CATransaction::where('id', $caTransaction->id)->first();
-                    $updateCa->sett_id = $nextApproval->employee_id;
-                    $updateCa->save();
-                } else {
-                    // No next layer, so mark as Approved
-                    $caTransaction->update(['approval_sett' => 'Approved']);
+                    if ($nextApproval) {
+                        $updateCa = CATransaction::where('id', $caTransactions->id)->first();
+                        $updateCa->sett_id = $nextApproval->employee_id;
+                        $updateCa->save();
+                    } else {
+                        // No next layer, so mark as Approved
+                        $caTransactions->update(['approval_sett' => 'Approved']);
+                    }
                 }
             }
             // }
@@ -4962,30 +5558,36 @@ class BusinessTripController extends Controller
 
             // Handle CA approval for L2
             // if ($businessTrip->ca == 'Ya') {
-            $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
-            if ($caTransaction) {
-                // Update CA approval status for L2
-                ca_sett_approval::where('ca_id', $caTransaction->id)
-                    ->where('employee_id', $employeeId)
-                    ->where('layer', $layer)
-                    ->where('approval_status', '!=', 'Rejected')  // Only update if status isn't "Declaration Rejected"
-                    ->updateOrCreate(
-                        ['ca_id' => $caTransaction->id, 'employee_id' => $employeeId, 'layer' => $layer],
-                        ['approval_status' => 'Approved', 'approved_at' => now()]
-                    );
+            $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+            foreach ($caTransaction as $caTransactions) {
+                if ($caTransactions && $caTransactions->caonly != 'Y' || $caTransactions->caonly == null) {
+                    // Update CA approval status for L1
+                    $caApproval = ca_sett_approval::where([
+                        'ca_id' => $caTransactions->id,
+                        'layer' => $layer
+                    ])->where('approval_status', '!=', 'Rejected')
+                        ->first();
 
-                // Find the next approver (Layer 3) explicitly
-                $nextApproval = ca_sett_approval::where('ca_id', $caTransaction->id)
-                    ->where('layer', $layer + 1) // This will ensure it gets the immediate next layer (3)
-                    ->first();
+                    if ($caApproval) {
+                        // Only update if the record exists
+                        $caApproval->update([
+                            'approval_status' => 'Approved',
+                            'approved_at' => now(),
+                        ]);
+                    }
+                    // Find the next approver (Layer 2) from ca_approval
+                    $nextApproval = ca_sett_approval::where('ca_id', $caTransactions->id)
+                        ->where('layer', $layer + 1)
+                        ->first();
 
-                if ($nextApproval) {
-                    $updateCa = CATransaction::where('id', $caTransaction->id)->first();
-                    $updateCa->sett_id = $nextApproval->employee_id;
-                    $updateCa->save();
-                } else {
-                    // No next layer, so mark as Approved
-                    $caTransaction->update(['approval_sett' => 'Approved']);
+                    if ($nextApproval) {
+                        $updateCa = CATransaction::where('id', $caTransactions->id)->first();
+                        $updateCa->sett_id = $nextApproval->employee_id;
+                        $updateCa->save();
+                    } else {
+                        // No next layer, so mark as Approved
+                        $caTransactions->update(['approval_sett' => 'Approved']);
+                    }
                 }
             }
             // }
@@ -5018,11 +5620,29 @@ class BusinessTripController extends Controller
         $userId = Auth::id();
         $employee_data = Employee::where('id', $n->user_id)->first();
         // dd($employee_data);
-        $ca = CATransaction::where('no_sppd', $n->no_sppd)->first();
+        $ca = CATransaction::where('no_sppd', $n->no_sppd)->get();
+        $dns = $ca->where('type_ca', 'dns')->first();
+        $entr = $ca->where('type_ca', 'entr')->first();
 
-        // Initialize caDetail with an empty array if it's null
-        $caDetail = $ca ? json_decode($ca->detail_ca, true) : [];
-        $declareCa = $ca ? json_decode($ca->declare_ca, true) : [];
+        // Cek apakah ada $ent dan jalankan kode jika ada
+        $entrTab = $entr ? true : false;
+        $dnsTab = $dns ? true : false;
+
+        $caDetail = [];
+        $declareCa = [];
+        foreach ($ca as $cas) {
+            $currentDetail = json_decode($cas->detail_ca, true);
+            $currentDeclare = json_decode($cas->declare_ca, true);
+            if (is_array($currentDetail) || is_array($currentDeclare)) {
+                $caDetail = array_merge($caDetail, $currentDetail);
+                $declareCa = array_merge($declareCa, $currentDeclare);
+            }
+        }
+        // dd($caDetail);
+
+        // // Initialize caDetail with an empty array if it's null
+        // $caDetail = $ca ? json_decode($ca->detail_ca, true) : [];
+        // $declareCa = $ca ? json_decode($ca->declare_ca, true) : [];
 
         // Safely access nominalPerdiem with default '0' if caDetail is empty
         $nominalPerdiem = isset($caDetail['detail_perdiem'][0]['nominal']) ? $caDetail['detail_perdiem'][0]['nominal'] : '0';
@@ -5089,6 +5709,10 @@ class BusinessTripController extends Controller
             'caDetail' => $caDetail,
             'declareCa' => $declareCa,
             'ca' => $ca,
+            'dns' => $dns,
+            'entr' => $entr,
+            'entrTab' => $entrTab,
+            'dnsTab' => $dnsTab,
             'nominalPerdiem' => $nominalPerdiem,
             'nominalPerdiemDeclare' => $nominalPerdiemDeclare,
             'hasCaData' => $hasCaData,
