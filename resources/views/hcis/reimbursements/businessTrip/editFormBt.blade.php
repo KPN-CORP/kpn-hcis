@@ -398,7 +398,7 @@
                                                     <input type="hidden" name="tiket" value="Tidak">
                                                     <input class="form-check-input" type="checkbox" id="ticketCheckbox"
                                                         name="tiket" value="Ya"
-                                                        <?= $n->tiket == 'Ya' ? 'checked' : '' ?>>
+                                                        <?= $n->jns_dinas === 'luar kota' && $n->tiket == 'Ya' ? 'checked' : '' ?>>
                                                     <label class="form-check-label" for="ticketCheckbox">
                                                         Ticket
                                                     </label>
@@ -410,7 +410,7 @@
                                                     <input type="hidden" name="hotel" value="Tidak">
                                                     <input class="form-check-input" type="checkbox" id="hotelCheckbox"
                                                         name="hotel" value="Ya"
-                                                        <?= $n->hotel == 'Ya' ? 'checked' : '' ?>>
+                                                        <?= $n->jns_dinas === 'luar kota' && $n->hotel == 'Ya' ? 'checked' : '' ?>>
                                                     <label class="form-check-label" for="hotelCheckbox">
                                                         Hotel
                                                     </label>
@@ -422,7 +422,7 @@
                                                     <input type="hidden" name="taksi" value="Tidak">
                                                     <input class="form-check-input" type="checkbox" id="taksiCheckbox"
                                                         name="taksi" value="Ya"
-                                                        <?= $n->taksi == 'Ya' ? 'checked' : '' ?>>
+                                                        <?= $n->jns_dinas === 'luar kota' && $n->taksi == 'Ya' ? 'checked' : '' ?>>
                                                     <label class="form-check-label" for="taksiCheckbox">
                                                         Taxi Voucher
                                                     </label>
@@ -443,7 +443,7 @@
                                                     </li>
                                                     <li class="nav-item" role="presentation"
                                                         id="nav-cashAdvancedEntertain"
-                                                        style="display:<?= $showEntertain == 'true' ? 'block' : 'none' ?>">
+                                                        style="display:<?= $showEntertain ? 'block' : 'none' ?>">
                                                         <button class="nav-link" id="pills-cashAdvancedEntertain-tab"
                                                             data-bs-toggle="pill"
                                                             data-bs-target="#pills-cashAdvancedEntertain" type="button"
@@ -451,21 +451,21 @@
                                                             aria-selected="false">CA Entertain</button>
                                                     </li>
                                                     <li class="nav-item" role="presentation" id="nav-ticket"
-                                                        style="display: <?= $n->tiket == 'Ya' ? 'block' : 'none' ?>;">
+                                                        style="display: <?= $n->jns_dinas === 'luar kota' && $n->tiket == 'Ya' ? 'block' : 'none' ?>;">
                                                         <button class="nav-link" id="pills-ticket-tab"
                                                             data-bs-toggle="pill" data-bs-target="#pills-ticket"
                                                             type="button" role="tab" aria-controls="pills-ticket"
                                                             aria-selected="false">Ticket</button>
                                                     </li>
                                                     <li class="nav-item" role="presentation" id="nav-hotel"
-                                                        style="display: <?= $n->hotel == 'Ya' ? 'block' : 'none' ?>;">
+                                                        style="display: <?= $n->jns_dinas === 'luar kota' && $n->hotel == 'Ya' ? 'block' : 'none' ?>;">
                                                         <button class="nav-link" id="pills-hotel-tab"
                                                             data-bs-toggle="pill" data-bs-target="#pills-hotel"
                                                             type="button" role="tab" aria-controls="pills-hotel"
                                                             aria-selected="false">Hotel</button>
                                                     </li>
                                                     <li class="nav-item" role="presentation" id="nav-taksi"
-                                                        style="display: <?= $n->taksi == 'Ya' ? 'block' : 'none' ?>;">
+                                                        style="display: <?= $n->jns_dinas === 'luar kota' && $n->taksi == 'Ya' ? 'block' : 'none' ?>;">
                                                         <button class="nav-link" id="pills-taksi-tab"
                                                             data-bs-toggle="pill" data-bs-target="#pills-taksi"
                                                             type="button" role="tab" aria-controls="pills-taksi"
