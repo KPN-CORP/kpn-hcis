@@ -5622,7 +5622,8 @@ class BusinessTripController extends Controller
         $n = BusinessTrip::find($id);
         $userId = Auth::id();
         $employee_data = Employee::where('id', $n->user_id)->first();
-        // dd($employee_data);
+        $group_company = $employee_data->group_company;
+        // dd($group_company);
         $ca = CATransaction::where('no_sppd', $n->no_sppd)->get();
         $dns = $ca->where('type_ca', 'dns')->first();
         $entr = $ca->where('type_ca', 'entr')->first();
@@ -5716,6 +5717,7 @@ class BusinessTripController extends Controller
             'entr' => $entr,
             'entrTab' => $entrTab,
             'dnsTab' => $dnsTab,
+            'group_company' => $group_company,
             'nominalPerdiem' => $nominalPerdiem,
             'nominalPerdiemDeclare' => $nominalPerdiemDeclare,
             'hasCaData' => $hasCaData,
