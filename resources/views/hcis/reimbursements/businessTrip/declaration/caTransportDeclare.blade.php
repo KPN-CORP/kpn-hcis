@@ -2,7 +2,7 @@
 <script>
     var formCountTransport = 0;
 
-    window.addEventListener("DOMContentLoaded", function () {
+    window.addEventListener("DOMContentLoaded", function() {
         formCountTransport = document.querySelectorAll(
             "#form-container-transport > div"
         ).length;
@@ -18,6 +18,9 @@
         newForm.style.backgroundColor = "#f8f8f8";
         newForm.innerHTML = `
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Transport ${formCountTransport}</p>
+                 <label for="additional-fields-title" class="mb-2">
+                        <span class="text-info fst-italic">* Transport only for Bus, Train and Speedboat</span>
+                </label>
                 <div class="card-body bg-light p-2 mb-3">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Transport Declaration</p>
                     <div class="row">
@@ -88,6 +91,9 @@
         newForm.style.backgroundColor = "#f8f8f8";
         newForm.innerHTML = `
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Transport ${formCountTransport}</p>
+                  <label for="additional-fields-title" class="mb-2">
+                        <span class="text-info fst-italic">* Transport only for Bus, Train and Speedboat</span>
+                </label>
                 <div class="card-body bg-light p-2 mb-3">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Request Declaration</p>
                     <div class="row">
@@ -148,7 +154,7 @@
         });
     }
 
-    $(".btn-warning").click(function (event) {
+    $(".btn-warning").click(function(event) {
         event.preventDefault();
         var index = $(this).closest(".card-body").index() + 1;
         removeFormTransport(index, event);
@@ -168,7 +174,7 @@
                     let nominalValue = cleanNumber(nominalInput.value);
                     let total = cleanNumber(
                         document.querySelector('input[name="total_bt_transport"]')
-                            .value
+                        .value
                     );
                     total -= nominalValue;
                     document.querySelector(
@@ -196,7 +202,7 @@
                     let nominalValue = cleanNumber(nominalInput.value);
                     let total = cleanNumber(
                         document.querySelector('input[name="total_bt_transport"]')
-                            .value
+                        .value
                     );
                     total -= nominalValue;
                     document.querySelector(
@@ -281,9 +287,14 @@
 @if (!empty($caDetail['detail_transport']) && $caDetail['detail_transport'][0]['tanggal'] !== null)
     <div id="form-container-transport">
         @foreach ($caDetail['detail_transport'] as $index => $transport)
-            <div id="form-container-bt-transport-{{ $loop->index + 1 }}" class="p-2 mb-3 rounded-3" style="background-color: #f8f8f8">
+            <div id="form-container-bt-transport-{{ $loop->index + 1 }}" class="p-2 mb-3 rounded-3"
+                style="background-color: #f8f8f8">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Transport {{ $loop->index + 1 }}</p>
-                <div id="form-container-bt-transport-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
+                <label for="additional-fields-title" class="mb-2">
+                    <span class="text-info fst-italic">* Transport only for Bus, Train and Speedboat</span>
+                </label>
+                <div id="form-container-bt-transport-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3"
+                    style="border-radius: 1%;">
                     <div class="row">
                         <p class="fs-5 text-primary" style="font-weight: bold;">Transport Request</p>
                         <div class="col-md-6">
@@ -310,13 +321,14 @@
                                 <tr>
                                     <th>End Date</th>
                                     <td class="block">:</td>
-                                    <td>{{number_format($transport['nominal'], 0, ',', '.') }}</td>
+                                    <td>{{ number_format($transport['nominal'], 0, ',', '.') }}</td>
                                 </tr>
                             </table>
                         </div>
                     </div>
                 </div>
-                <div id="form-container-bt-transport-dec-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
+                <div id="form-container-bt-transport-dec-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3"
+                    style="border-radius: 1%;">
                     <p class="fs-5 text-primary" style="font-weight: bold; ">Transport Declaration</p>
                     @if (isset($declareCa['detail_transport'][$index]))
                         @php
@@ -326,16 +338,18 @@
                             <!-- Transport Date -->
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Transport Date</label>
-                                <input type="date" name="tanggal_bt_transport[]" class="form-control" value="{{$transport_dec['tanggal']}}" placeholder="mm/dd/yyyy">
+                                <input type="date" name="tanggal_bt_transport[]" class="form-control"
+                                    value="{{ $transport_dec['tanggal'] }}" placeholder="mm/dd/yyyy">
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label" for="name">Company Code</label>
-                                <select class="form-control select2" id="company_bt_transport_{{ $loop->index + 1 }}" name="company_bt_transport[]">
+                                <select class="form-control select2" id="company_bt_transport_{{ $loop->index + 1 }}"
+                                    name="company_bt_transport[]">
                                     <option value="">Select Company...</option>
-                                    @foreach($companies as $company)
+                                    @foreach ($companies as $company)
                                         <option value="{{ $company->contribution_level_code }}"
-                                            @if($company->contribution_level_code == $transport_dec['company_code']) selected @endif>
-                                            {{ $company->contribution_level." (".$company->contribution_level_code.")" }}
+                                            @if ($company->contribution_level_code == $transport_dec['company_code']) selected @endif>
+                                            {{ $company->contribution_level . ' (' . $company->contribution_level_code . ')' }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -346,15 +360,11 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
-                                    <input class="form-control"
-                                            name="nominal_bt_transport[]"
-                                            id="nominal_bt_transport_{{ $loop->index + 1 }}"
-                                            type="text"
-                                            min="0"
-                                            value="{{number_format($transport_dec['nominal'], 0, ',', '.') }}"
-                                            onfocus="this.value = this.value === '0' ? '' : this.value;"
-                                            oninput="formatInput(this)"
-                                            onblur="formatOnBlur(this)">
+                                    <input class="form-control" name="nominal_bt_transport[]"
+                                        id="nominal_bt_transport_{{ $loop->index + 1 }}" type="text" min="0"
+                                        value="{{ number_format($transport_dec['nominal'], 0, ',', '.') }}"
+                                        onfocus="this.value = this.value === '0' ? '' : this.value;"
+                                        oninput="formatInput(this)" onblur="formatOnBlur(this)">
                                 </div>
                             </div>
 
@@ -362,14 +372,15 @@
                             <div class="col-md-12 mb-2">
                                 <div class="mb-2">
                                     <label class="form-label">Information</label>
-                                    <textarea name="keterangan_bt_transport[]" class="form-control" placeholder="Write your information ...">{{$transport_dec['keterangan']}}</textarea>
+                                    <textarea name="keterangan_bt_transport[]" class="form-control" placeholder="Write your information ...">{{ $transport_dec['keterangan'] }}</textarea>
                                 </div>
                             </div>
                         </div>
                     @endif
                     <div class="row mt-3">
                         <div class="d-flex justify-start w-100">
-                            <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px" onclick="clearFormTransport({{ $loop->index + 1 }}, event)">Reset</button>
+                            <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px"
+                                onclick="clearFormTransport({{ $loop->index + 1 }}, event)">Reset</button>
                             {{-- <button class="btn btn-warning mr-2" onclick="removeFormTransportDec({{ $loop->index + 1 }}, event)">Delete</button> --}}
                         </div>
                     </div>
@@ -378,22 +389,25 @@
         @endforeach
         @foreach ($declareCa['detail_transport'] as $index => $transport_dec)
             @if (!isset($caDetail['detail_transport'][$index]))
-                <div id="form-container-bt-transport-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
+                <div id="form-container-bt-transport-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3"
+                    style="border-radius: 1%;">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Transport {{ $loop->index + 1 }}</p>
                     <div class="row">
                         <!-- Transport Date -->
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Transport Date</label>
-                            <input type="date" name="tanggal_bt_transport[]" class="form-control" value="{{$transport_dec['tanggal']}}" placeholder="mm/dd/yyyy">
+                            <input type="date" name="tanggal_bt_transport[]" class="form-control"
+                                value="{{ $transport_dec['tanggal'] }}" placeholder="mm/dd/yyyy">
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label" for="name">Company Code</label>
-                            <select class="form-control select2" id="company_bt_transport_{{ $loop->index + 1 }}" name="company_bt_transport[]">
+                            <select class="form-control select2" id="company_bt_transport_{{ $loop->index + 1 }}"
+                                name="company_bt_transport[]">
                                 <option value="">Select Company...</option>
-                                @foreach($companies as $company)
+                                @foreach ($companies as $company)
                                     <option value="{{ $company->contribution_level_code }}"
-                                        @if($company->contribution_level_code == $transport_dec['company_code']) selected @endif>
-                                        {{ $company->contribution_level." (".$company->contribution_level_code.")" }}
+                                        @if ($company->contribution_level_code == $transport_dec['company_code']) selected @endif>
+                                        {{ $company->contribution_level . ' (' . $company->contribution_level_code . ')' }}
                                     </option>
                                 @endforeach
                             </select>
@@ -404,15 +418,11 @@
                                 <div class="input-group-append">
                                     <span class="input-group-text">Rp</span>
                                 </div>
-                                <input class="form-control"
-                                        name="nominal_bt_transport[]"
-                                        id="nominal_bt_transport_{{ $loop->index + 1 }}"
-                                        type="text"
-                                        min="0"
-                                        value="{{number_format($transport_dec['nominal'], 0, ',', '.') }}"
-                                        onfocus="this.value = this.value === '0' ? '' : this.value;"
-                                        oninput="formatInput(this)"
-                                        onblur="formatOnBlur(this)">
+                                <input class="form-control" name="nominal_bt_transport[]"
+                                    id="nominal_bt_transport_{{ $loop->index + 1 }}" type="text" min="0"
+                                    value="{{ number_format($transport_dec['nominal'], 0, ',', '.') }}"
+                                    onfocus="this.value = this.value === '0' ? '' : this.value;"
+                                    oninput="formatInput(this)" onblur="formatOnBlur(this)">
                             </div>
                         </div>
 
@@ -420,14 +430,16 @@
                         <div class="col-md-12 mb-2">
                             <div class="mb-2">
                                 <label class="form-label">Information</label>
-                                <textarea name="keterangan_bt_transport[]" class="form-control" placeholder="Write your information ...">{{$transport_dec['keterangan']}}</textarea>
+                                <textarea name="keterangan_bt_transport[]" class="form-control" placeholder="Write your information ...">{{ $transport_dec['keterangan'] }}</textarea>
                             </div>
                         </div>
                     </div>
                     <div class="row mt-3">
                         <div class="d-flex justify-start w-100">
-                            <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px" onclick="clearFormTransport({{ $loop->index + 1 }}, event)">Reset</button>
-                            <button class="btn btn-outline-primary btn-sm" onclick="removeFormTransport({{ $loop->index + 1 }}, event)">Delete</button>
+                            <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px"
+                                onclick="clearFormTransport({{ $loop->index + 1 }}, event)">Reset</button>
+                            <button class="btn btn-outline-primary btn-sm"
+                                onclick="removeFormTransport({{ $loop->index + 1 }}, event)">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -436,7 +448,8 @@
     </div>
 
     <div class="mt-1">
-        <button class="btn btn-primary btn-sm" id="addMoreButtonTransport" onclick="addMoreFormTransportDec(event)">Add More</button>
+        <button class="btn btn-primary btn-sm" id="addMoreButtonTransport"
+            onclick="addMoreFormTransportDec(event)">Add More</button>
     </div>
 
     <div class="mt-2 mb-2">
@@ -445,34 +458,43 @@
             <div class="input-group-append">
                 <span class="input-group-text">Rp</span>
             </div>
-            <input class="form-control bg-light"
-                name="total_bt_transport"
-                id="total_bt_transport" type="text"
-                min="0" value="{{ number_format(array_sum(array_column($declareCa['detail_transport'], 'nominal')), 0, ',', '.') }}" readonly>
+            <input class="form-control bg-light" name="total_bt_transport" id="total_bt_transport" type="text"
+                min="0"
+                value="{{ number_format(array_sum(array_column($declareCa['detail_transport'], 'nominal')), 0, ',', '.') }}"
+                readonly>
         </div>
     </div>
-@elseif (!empty($declareCa['detail_transport']) && $declareCa['detail_transport'][0]['tanggal'] !== null && $declareCa['detail_transport'][0]['tanggal'] !== null)
+@elseif (
+    !empty($declareCa['detail_transport']) &&
+        $declareCa['detail_transport'][0]['tanggal'] !== null &&
+        $declareCa['detail_transport'][0]['tanggal'] !== null)
     <div id="form-container-transport">
         @foreach ($declareCa['detail_transport'] as $index => $transport_dec)
             @if (!isset($caDetail['detail_transport'][$index]))
-                <div id="form-container-bt-transport-{{ $loop->index + 1 }}" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
+                <div id="form-container-bt-transport-{{ $loop->index + 1 }}" class="card-body p-2 mb-3"
+                    style="background-color: #f8f8f8">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Transport {{ $loop->index + 1 }}</p>
+                    <label for="additional-fields-title" class="mb-2">
+                        <span class="text-info fst-italic">* Transport only for Bus, Train and Speedboat</span>
+                    </label>
                     <div class="card-body bg-light p-2 mb-3">
                         <p class="fs-5 text-primary" style="font-weight: bold;">Transport Declaration</p>
                         <div class="row">
                             <!-- Transport Date -->
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Transport Date</label>
-                                <input type="date" name="tanggal_bt_transport[]" class="form-control" value="{{$transport_dec['tanggal']}}" placeholder="mm/dd/yyyy">
+                                <input type="date" name="tanggal_bt_transport[]" class="form-control"
+                                    value="{{ $transport_dec['tanggal'] }}" placeholder="mm/dd/yyyy">
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label" for="name">Company Code</label>
-                                <select class="form-control select2" id="company_bt_transport_{{ $loop->index + 1 }}" name="company_bt_transport[]">
+                                <select class="form-control select2" id="company_bt_transport_{{ $loop->index + 1 }}"
+                                    name="company_bt_transport[]">
                                     <option value="">Select Company...</option>
-                                    @foreach($companies as $company)
+                                    @foreach ($companies as $company)
                                         <option value="{{ $company->contribution_level_code }}"
-                                            @if($company->contribution_level_code == $transport_dec['company_code']) selected @endif>
-                                            {{ $company->contribution_level." (".$company->contribution_level_code.")" }}
+                                            @if ($company->contribution_level_code == $transport_dec['company_code']) selected @endif>
+                                            {{ $company->contribution_level . ' (' . $company->contribution_level_code . ')' }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -483,15 +505,12 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
-                                    <input class="form-control"
-                                            name="nominal_bt_transport[]"
-                                            id="nominal_bt_transport_{{ $loop->index + 1 }}"
-                                            type="text"
-                                            min="0"
-                                            value="{{number_format($transport_dec['nominal'], 0, ',', '.') }}"
-                                            onfocus="this.value = this.value === '0' ? '' : this.value;"
-                                            oninput="formatInput(this)"
-                                            onblur="formatOnBlur(this)">
+                                    <input class="form-control" name="nominal_bt_transport[]"
+                                        id="nominal_bt_transport_{{ $loop->index + 1 }}" type="text"
+                                        min="0"
+                                        value="{{ number_format($transport_dec['nominal'], 0, ',', '.') }}"
+                                        onfocus="this.value = this.value === '0' ? '' : this.value;"
+                                        oninput="formatInput(this)" onblur="formatOnBlur(this)">
                                 </div>
                             </div>
 
@@ -499,14 +518,16 @@
                             <div class="col-md-12 mb-2">
                                 <div class="mb-2">
                                     <label class="form-label">Information</label>
-                                    <textarea name="keterangan_bt_transport[]" class="form-control" placeholder="Write your information ...">{{$transport_dec['keterangan']}}</textarea>
+                                    <textarea name="keterangan_bt_transport[]" class="form-control" placeholder="Write your information ...">{{ $transport_dec['keterangan'] }}</textarea>
                                 </div>
                             </div>
                         </div>
                         <div class="row mt-3">
                             <div class="d-flex justify-start w-100">
-                                <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px" onclick="clearFormTransport({{ $loop->index + 1 }}, event)">Reset</button>
-                                <button class="btn btn-outline-primary btn-sm" onclick="removeFormTransport({{ $loop->index + 1 }}, event)">Delete</button>
+                                <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px"
+                                    onclick="clearFormTransport({{ $loop->index + 1 }}, event)">Reset</button>
+                                <button class="btn btn-outline-primary btn-sm"
+                                    onclick="removeFormTransport({{ $loop->index + 1 }}, event)">Delete</button>
                             </div>
                         </div>
                     </div>
@@ -516,7 +537,8 @@
     </div>
 
     <div class="mt-3">
-        <button class="btn btn-primary btn-sm" id="addMoreButtonTransport" onclick="addMoreFormTransportDec(event)">Add More</button>
+        <button class="btn btn-primary btn-sm" id="addMoreButtonTransport"
+            onclick="addMoreFormTransportDec(event)">Add More</button>
     </div>
 
     <div class="mt-2 mb-2">
@@ -525,27 +547,32 @@
             <div class="input-group-append">
                 <span class="input-group-text">Rp</span>
             </div>
-            <input class="form-control bg-light"
-                name="total_bt_transport"
-                id="total_bt_transport" type="text"
-                min="0" value="{{ number_format(array_sum(array_column($declareCa['detail_transport'], 'nominal')), 0, ',', '.') }}" readonly>
+            <input class="form-control bg-light" name="total_bt_transport" id="total_bt_transport" type="text"
+                min="0"
+                value="{{ number_format(array_sum(array_column($declareCa['detail_transport'], 'nominal')), 0, ',', '.') }}"
+                readonly>
         </div>
     </div>
 @else
     <div id="form-container-transport">
         <div id="form-container-bt-transport-1" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
             <p class="fs-4 text-primary" style="font-weight: bold; ">Transport 1</p>
+            <label for="additional-fields-title" class="mb-2">
+                <span class="text-info fst-italic">* Transport only for Bus, Train and Speedboat</span>
+            </label>
             <div class="card-body bg-light p-2 mb-3">
                 <p class="fs-5 text-primary" style="font-weight: bold;">Transport Declaration</p>
                 <div class="row">
                     <!-- Transport Date -->
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Transport Date</label>
-                        <input type="date" name="tanggal_bt_transport[]" class="form-control" placeholder="mm/dd/yyyy">
+                        <input type="date" name="tanggal_bt_transport[]" class="form-control"
+                            placeholder="mm/dd/yyyy">
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label" for="name">Company Code</label>
-                        <select class="form-control select2" id="company_bt_transport_1" name="company_bt_transport[]">
+                        <select class="form-control select2" id="company_bt_transport_1"
+                            name="company_bt_transport[]">
                             <option value="">Select Company...</option>
                             @foreach ($companies as $company)
                                 <option value="{{ $company->contribution_level_code }}">
@@ -560,15 +587,10 @@
                             <div class="input-group-append">
                                 <span class="input-group-text">Rp</span>
                             </div>
-                            <input class="form-control"
-                                    name="nominal_bt_transport[]"
-                                    id="nominal_bt_transport_1"
-                                    type="text"
-                                    min="0"
-                                    value="0"
-                                    onfocus="this.value = this.value === '0' ? '' : this.value;"
-                                    oninput="formatInput(this)"
-                                    onblur="formatOnBlur(this)">
+                            <input class="form-control" name="nominal_bt_transport[]" id="nominal_bt_transport_1"
+                                type="text" min="0" value="0"
+                                onfocus="this.value = this.value === '0' ? '' : this.value;"
+                                oninput="formatInput(this)" onblur="formatOnBlur(this)">
                         </div>
                     </div>
 
@@ -583,8 +605,10 @@
                 <br>
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
-                        <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px" onclick="clearFormTransport(1, event)">Reset</button>
-                        <button class="btn btn-outline-primary btn-sm" onclick="removeFormTransport(1, event)">Delete</button>
+                        <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px"
+                            onclick="clearFormTransport(1, event)">Reset</button>
+                        <button class="btn btn-outline-primary btn-sm"
+                            onclick="removeFormTransport(1, event)">Delete</button>
                     </div>
                 </div>
             </div>
@@ -592,7 +616,8 @@
     </div>
 
     <div class="mt-3">
-        <button class="btn btn-primary btn-sm" id="addMoreButtonTransport" onclick="addMoreFormTransportDec(event)">Add More</button>
+        <button class="btn btn-primary btn-sm" id="addMoreButtonTransport"
+            onclick="addMoreFormTransportDec(event)">Add More</button>
     </div>
 
     <div class="mt-2 mb-2">
@@ -601,11 +626,8 @@
             <div class="input-group-append">
                 <span class="input-group-text">Rp</span>
             </div>
-            <input class="form-control bg-light"
-                name="total_bt_transport"
-                id="total_bt_transport" type="text"
+            <input class="form-control bg-light" name="total_bt_transport" id="total_bt_transport" type="text"
                 min="0" value="0" readonly>
         </div>
     </div>
 @endif
-

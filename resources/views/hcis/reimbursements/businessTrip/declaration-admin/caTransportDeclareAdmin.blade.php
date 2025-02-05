@@ -18,6 +18,9 @@
         newForm.style.backgroundColor = "#f8f8f8";
         newForm.innerHTML = `
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Transport ${formCountTransport}</p>
+                  <label for="additional-fields-title" class="mb-2">
+                        <span class="text-info fst-italic">* Transport only for Bus, Train and Speedboat</span>
+                </label>
                 <div class="card-body bg-light p-2 mb-3">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Transport Declaration</p>
                     <div class="row">
@@ -88,6 +91,9 @@
         newForm.style.backgroundColor = "#f8f8f8";
         newForm.innerHTML = `
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Transport ${formCountTransport}</p>
+                  <label for="additional-fields-title" class="mb-2">
+                        <span class="text-info fst-italic">* Transport only for Bus, Train and Speedboat</span>
+                </label>
                 <div class="card-body bg-light p-2 mb-3">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Request Declaration</p>
                     <div class="row">
@@ -283,6 +289,9 @@
         @foreach ($detailCA['detail_transport'] as $index => $transport)
             <div id="form-container-bt-transport-{{ $loop->index + 1 }}" class="p-2 mb-3 rounded-3" style="background-color: #f8f8f8">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Transport {{ $loop->index + 1 }}</p>
+                <label for="additional-fields-title" class="mb-2">
+                    <span class="text-info fst-italic">* Transport only for Bus, Train and Speedboat</span>
+                </label>
                 <div id="form-container-bt-transport-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
                     <div class="row">
                         <p class="fs-5 text-primary" style="font-weight: bold;">Transport Request</p>
@@ -457,6 +466,9 @@
             @if (!isset($detailCA['detail_transport'][$index]))
                 <div id="form-container-bt-transport-{{ $loop->index + 1 }}" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Transport {{ $loop->index + 1 }}</p>
+                    <label for="additional-fields-title" class="mb-2">
+                        <span class="text-info fst-italic">* Transport only for Bus, Train and Speedboat</span>
+                    </label>
                     <div class="card-body bg-light p-2 mb-3">
                         <p class="fs-5 text-primary" style="font-weight: bold;">Transport Declaration</p>
                         <div class="row">
@@ -535,6 +547,9 @@
     <div id="form-container-transport">
         <div id="form-container-bt-transport-1" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
             <p class="fs-4 text-primary" style="font-weight: bold; ">Transport 1</p>
+            <label for="additional-fields-title" class="mb-2">
+                <span class="text-info fst-italic">* Transport only for Bus, Train and Speedboat</span>
+            </label>
             <div class="card-body bg-light p-2 mb-3">
                 <p class="fs-5 text-primary" style="font-weight: bold;">Transport Declaration</p>
                 <div class="row">
