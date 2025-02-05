@@ -93,12 +93,12 @@
                             </div>
                             <div class="row mb-2">
                                 <div class="col-md-4 mb-2">
-                                    <label for="mulai" class="form-label">Start Date</label>
+                                    <label for="mulai" class="form-label">Start Date Business Trip</label>
                                     <input type="date" class="form-control form-control-sm bg-light" id="mulai"
                                         name="mulai" placeholder="Tanggal Mulai" value="{{ $n->mulai }}" readonly>
                                 </div>
                                 <div class="col-md-4 mb-2">
-                                    <label for="kembali" class="form-label">End Date</label>
+                                    <label for="kembali" class="form-label">End Date Business Trip</label>
                                     <input type="date" class="form-control form-control-sm bg-light" id="kembali"
                                         name="kembali" placeholder="Tanggal Kembali" value="{{ $n->kembali }}" readonly>
                                 </div>
@@ -264,7 +264,7 @@
                                                 <?= $n->jns_dinas === 'dalam kota' && $n->taksi === 'Ya' ? 'checked' : '' ?>
                                                 disabled>
                                             <label class="form-check-label" for="taksiCheckboxDalamKota">
-                                                Taxi Voucher
+                                                Taxi/Grab
                                             </label>
                                         </div>
                                     </div>
@@ -296,7 +296,7 @@
                                                 <button class="nav-link" id="pills-taksi-dalam-kota-tab"
                                                     data-bs-toggle="pill" data-bs-target="#pills-taksi-dalam-kota"
                                                     type="button" role="tab" aria-controls="pills-taksi-dalam-kota"
-                                                    aria-selected="false">Taxi</button>
+                                                    aria-selected="false">Taxi/Grab</button>
                                             </li>
                                         </ul>
 
@@ -387,7 +387,7 @@
                                                         <?= $n->jns_dinas === 'luar kota' && $n->taksi == 'Ya' ? 'checked' : '' ?>
                                                         disabled>
                                                     <label class="form-check-label" for="taksiCheckbox">
-                                                        Taxi Voucher
+                                                        Taxi/Grab
                                                     </label>
                                                 </div>
                                             </div>
@@ -434,7 +434,7 @@
                                                         <button class="nav-link" id="pills-taksi-tab"
                                                             data-bs-toggle="pill" data-bs-target="#pills-taksi"
                                                             type="button" role="tab" aria-controls="pills-taksi"
-                                                            aria-selected="false">Taxi</button>
+                                                            aria-selected="false">Taxi/Grab</button>
                                                     </li>
                                                 </ul>
 
