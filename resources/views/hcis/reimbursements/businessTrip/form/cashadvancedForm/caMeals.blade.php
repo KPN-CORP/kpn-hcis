@@ -144,7 +144,8 @@
                                     id="nominal_bt_meals_{{ $loop->index + 1 }}" type="text" min="0"
                                     value="{{ number_format($meals['nominal'], 0, ',', '.') }}"
                                     onfocus="this.value = this.value === '0' ? '' : this.value;"
-                                    oninput="formatInput(this)" onblur="formatOnBlur(this)">
+                                    oninput="formatInput(this)" onblur="formatOnBlur(this)"
+                                    placeholder="0">
                             </div>
                         </div>
 

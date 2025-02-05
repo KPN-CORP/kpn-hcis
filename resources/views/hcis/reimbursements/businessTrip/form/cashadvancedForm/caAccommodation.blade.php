@@ -254,7 +254,8 @@
                             <input class="form-control" name="nominal_bt_penginapan[]" id="nominal_bt_penginapan_1"
                                 type="text" min="0" value="0"
                                 onfocus="this.value = this.value === '0' ? '' : this.value;"
-                                oninput="formatInput(this)" onblur="formatOnBlur(this)">
+                                oninput="formatInput(this)" onblur="formatOnBlur(this)"
+                                placeholder="0">
                         </div>
                     </div>
                 </div>
