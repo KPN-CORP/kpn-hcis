@@ -129,7 +129,7 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th>Date Required</th>
+                                            <th>CA Withdrawal Date</th>
                                             <td class="block">:</td>
                                             <td>{{ isset($date->date_required) ? date('d M Y', strtotime($date->date_required)) : '-' }}
                                             </td>

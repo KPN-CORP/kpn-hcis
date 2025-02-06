@@ -1,6 +1,6 @@
 <div class="card-body bg-light rounded shadow-none" id="taksi_div_dalam_kota">
     <div class="h5 text-uppercase">
-        <b>Taxi Voucher</b>
+        <b>Taxi/Grab</b>
     </div>
     <div class="row">
         <div class="col-md-12 mb-2" id="taksi_div_dalam_kota">

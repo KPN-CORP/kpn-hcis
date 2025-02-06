@@ -3,7 +3,7 @@
         <div class="table-responsive-sm">
             <div class="row mb-2">
                 <div class="col-md-6 mb-2">
-                    <label for="date_required" class="form-label">Date Required</label>
+                    <label for="date_required" class="form-label">CA Withdrawal Date</label>
                     <input type="date" class="form-control form-control-sm bg-light" id="date_required_2"
                         name="date_required" placeholder="Date Required" onchange="syncDateRequired(this)"
                         value="{{ $date->date_required ?? 0 }}" readonly>
