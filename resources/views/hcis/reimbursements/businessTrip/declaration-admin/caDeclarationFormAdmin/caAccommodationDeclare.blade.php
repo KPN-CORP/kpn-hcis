@@ -309,9 +309,9 @@
     }
 </script>
 
-@if (!empty($detailCA['detail_penginapan']) && $detailCA['detail_penginapan'][0]['start_date'] !== null && $detailCA['detail_penginapan'][0]['end_date'] !== null)
+@if (!empty($caDetail['detail_penginapan']) && $caDetail['detail_penginapan'][0]['start_date'] !== null && $caDetail['detail_penginapan'][0]['end_date'] !== null)
     <div id="form-container-penginapan">
-        @foreach($detailCA['detail_penginapan'] as $index =>$penginapan)
+        @foreach($caDetail['detail_penginapan'] as $index =>$penginapan)
             <div id="form-container-bt-penginapan-{{ $loop->index + 1 }}" class="p-2 mb-3 rounded-3" style="background-color: #f8f8f8">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Penginapan {{ $loop->index + 1 }}</p>
                 <div id="form-container-bt-penginapan-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
@@ -359,9 +359,9 @@
                 </div>
                 <div id="form-container-bt-penginapan-dec-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Accommodation Declaration</p>
-                    @if (isset($declareCA['detail_penginapan'][$index]))
+                    @if (isset($declareCa['detail_penginapan'][$index]))
                         @php
-                            $penginapan_dec = $declareCA['detail_penginapan'][$index];
+                            $penginapan_dec = $declareCa['detail_penginapan'][$index];
                         @endphp
                         <div class="row">
                             <!-- Penginapan Date -->
@@ -449,8 +449,8 @@
                 </div>
             </div>
         @endforeach
-        @foreach ($declareCA['detail_penginapan'] as $index => $penginapan_dec)
-            @if (!isset($detailCA['detail_penginapan'][$index]))
+        @foreach ($declareCa['detail_penginapan'] as $index => $penginapan_dec)
+            @if (!isset($caDetail['detail_penginapan'][$index]))
                 <div id="form-container-bt-penginapan-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Accommodation {{ $loop->index + 1 }}</p>
                     <div class="row">
@@ -553,13 +553,13 @@
             <input class="form-control bg-light"
                 name="total_bt_penginapan"
                 id="total_bt_penginapan" type="text"
-                min="0" value="{{ number_format(array_sum(array_column($declareCA['detail_penginapan'], 'nominal')), 0, ',', '.') }}" readonly>
+                min="0" value="{{ number_format(array_sum(array_column($declareCa['detail_penginapan'], 'nominal')), 0, ',', '.') }}" readonly>
         </div>
     </div>
-@elseif (!empty($declareCA['detail_penginapan']) && $declareCA['detail_penginapan'][0]['start_date'] !== null && $declareCA['detail_penginapan'][0]['end_date'] !== null)
+@elseif (!empty($declareCa['detail_penginapan']) && $declareCa['detail_penginapan'][0]['start_date'] !== null && $declareCa['detail_penginapan'][0]['end_date'] !== null)
     <div id="form-container-penginapan">
-        @foreach ($declareCA['detail_penginapan'] as $index => $penginapan_dec)
-            @if (!isset($detailCA['detail_penginapan'][$index]))
+        @foreach ($declareCa['detail_penginapan'] as $index => $penginapan_dec)
+            @if (!isset($caDetail['detail_penginapan'][$index]))
                 <div id="form-container-bt-penginapan-{{ $loop->index + 1 }}" class="p-2 mb-3 rounded-3" style="background-color: #f8f8f8">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Accommodation {{ $loop->index + 1 }}</p>
                     <div class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
@@ -665,7 +665,7 @@
             <input class="form-control bg-light"
                 name="total_bt_penginapan"
                 id="total_bt_penginapan" type="text"
-                min="0" value="{{ number_format(array_sum(array_column($declareCA['detail_penginapan'], 'nominal')), 0, ',', '.') }}" readonly>
+                min="0" value="{{ number_format(array_sum(array_column($declareCa['detail_penginapan'], 'nominal')), 0, ',', '.') }}" readonly>
         </div>
     </div>
 @else

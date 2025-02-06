@@ -4540,238 +4540,383 @@ class BusinessTripController extends Controller
     public function deklarasiStatusAdmin(Request $request, $id)
     {
         $n = BusinessTrip::find($id);
+        $userId = Auth::id();
+        $oldNoSppd = $n->no_sppd;
         $companies = Company::orderBy('contribution_level')->get();
-        $ca = CATransaction::where('no_sppd', $n->no_sppd)->first();
+        $caRecords = CATransaction::where('no_sppd', $n->no_sppd)->get();
+        $dnsRecord = $caRecords->where('type_ca', 'dns')->first();
+        $entrRecord = $caRecords->where('type_ca', 'entr')->first();
+
+        $entrTab = $entrRecord ? true : false;
+        $dnsTab = $dnsRecord ? true : false;
+
         $accNum = Company::where('contribution_level_code', $n->bb_perusahaan)->pluck('account_number')->first();
+        $ca_note = $request->ca_note;
+
         // Initialize default values
 
-        if ($ca) {
-            // Retrieve and process total values from the request if available
-            if ($request->has('totalca_deklarasi')) {
-                $totalCa = (int) str_replace('.', '', $request->totalca_deklarasi);
-            }
-            if ($request->has('totalca')) {
-                $totalReal = (int) str_replace('.', '', $request->totalca);
-            }
-            $ca->ca_note = $request->ca_note;
-            $total_real = (int) str_replace('.', '', $request->totalca);
-            // // dd($total_real);
-            $total_ca = $ca->total_ca;
+        if ($caRecords) {
+            foreach ($caRecords as $ca) {
+                // Assign or update values to $ca model
+                if ($ca->type_ca == "dns") {
+                    $ca->user_id = $userId;
+                    $ca->no_sppd = $oldNoSppd;
+                    $ca->ca_note = $ca_note;
+                    $ca->user_id = $userId;
 
-            if ($ca->detail_ca === null) {
-                $ca->total_ca = '0';
-                $ca->total_real = (int) str_replace('.', '', $request->totalca);
-                $ca->total_cost = -1 * (int) str_replace('.', '', $ca->total_real);
-            } else {
-                $ca->total_real = $total_real;
-                $ca->total_cost = $total_ca - $total_real;
-                // dd($ca->total_cost);
-            }
+                    $ca->declaration_at = Carbon::now();
 
-            // Validate if the total cost is negative and status is 'Return/Refund'
-            if ($ca->total_cost <= 0 && $request->input('accept_status') === 'Return/Refund') {
-                return redirect()->back()->with('error', 'Cannot set status to Return/Refund when the total cost is negative.');
-            } elseif ($ca->total_cost > 0 && $request->input('accept_status') === 'Return/Refund') {
-                // $employeeEmail = Employee::where('id', $n->user_id)->pluck('email')->first();
-                $employeeEmail = "eriton.dewa@kpn-corp.com";
-                $employeeName = Employee::where('id', $n->user_id)->pluck('fullname')->first();
+                    $total_real = (int) str_replace('.', '', $request->totalca_ca_deklarasi);
+                    $total_ca = $ca->total_ca;
+                    if ($ca->detail_ca === null) {
+                        $ca->total_ca = '0';
+                        $ca->total_real = (int) str_replace('.', '', $request->totalca_ca_deklarasi);
+                        $ca->total_cost = -1 * (int) str_replace('.', '', $ca->total_real);
+                    } else {
+                        $ca->total_real = $total_real;
+                        $ca->total_cost = $total_ca - $total_real;
+                    }
 
-                if ($employeeEmail) {
-                    $caTrans = CATransaction::where('no_sppd', $n->no_sppd)
-                        ->where(function ($query) {
-                            $query->where('caonly', '!=', 'Y')
-                                ->orWhereNull('caonly');
-                        })
-                        ->first();
-                    // dd($caTrans);
-                    $detail_ca = isset($caTrans) && isset($caTrans->detail_ca) ? json_decode($caTrans->detail_ca, true) : [];
+                    // Initialize arrays for details
+                    $detail_perdiem = [];
+                    $detail_meals = [];
+                    $detail_transport = [];
+                    $detail_penginapan = [];
+                    $detail_lainnya = [];
 
-                    $caDetails = [
-                        'total_amount_perdiem' => array_sum(array_column($detail_ca['detail_perdiem'] ?? [], 'nominal')),
-                        'total_amount_transport' => array_sum(array_column($detail_ca['detail_transport'] ?? [], 'nominal')),
-                        'total_amount_accommodation' => array_sum(array_column($detail_ca['detail_penginapan'] ?? [], 'nominal')),
-                        'total_amount_others' => array_sum(array_column($detail_ca['detail_lainnya'] ?? [], 'nominal')),
-                        'total_amount_meals' => array_sum(array_column($detail_ca['detail_meals'] ?? [], 'nominal')),
+                    if ($request->has('start_bt_meals')) {
+                        foreach ($request->start_bt_meals as $key => $startDate) {
+                            $endDate = $request->end_bt_meals[$key] ?? '';
+                            $totalDays = $request->total_days_bt_meals[$key] ?? '';
+                            $companyCode = $request->company_bt_meals[$key] ?? '';
+                            $nominal = str_replace('.', '', $request->nominal_bt_meals[$key] ?? '0');
+                            $keterangan = $request->keterangan_bt_meals[$key] ?? '';
+
+                            if (!empty($startDate) && !empty($endDate) && !empty($totalDays) && !empty($companyCode) && !empty($nominal)) {
+                                $detail_meals[] = [
+                                    'start_date' => $startDate,
+                                    'end_date' => $endDate,
+                                    'total_days' => $totalDays,
+                                    'company_code' => $companyCode,
+                                    'nominal' => $nominal,
+                                    'keterangan' => $keterangan,
+                                ];
+                            }
+                        }
+                    }
+                    // dd($request->has('start_bt_meals'));
+
+                    // Populate detail_perdiem
+                    if ($request->has('start_bt_perdiem')) {
+                        foreach ($request->start_bt_perdiem as $key => $startDate) {
+                            $endDate = $request->end_bt_perdiem[$key] ?? '';
+                            $totalDays = $request->total_days_bt_perdiem[$key] ?? '';
+                            $location = $request->location_bt_perdiem[$key] ?? '';
+                            $other_location = $request->other_location_bt_perdiem[$key] ?? '';
+                            $companyCode = $request->company_bt_perdiem[$key] ?? '';
+                            $nominal = str_replace('.', '', $request->nominal_bt_perdiem[$key] ?? '0');
+
+                            if (!empty($startDate) && !empty($endDate) && !empty($companyCode) && !empty($nominal)) {
+                                $detail_perdiem[] = [
+                                    'start_date' => $startDate,
+                                    'end_date' => $endDate,
+                                    'total_days' => $totalDays,
+                                    'location' => $location,
+                                    'other_location' => $other_location,
+                                    'company_code' => $companyCode,
+                                    'nominal' => $nominal,
+                                ];
+                            }
+                        }
+                    }
+                    // dd($detail_perdiem);
+
+                    // Populate detail_transport
+                    if ($request->has('tanggal_bt_transport')) {
+                        foreach ($request->tanggal_bt_transport as $key => $tanggal) {
+                            $keterangan = $request->keterangan_bt_transport[$key] ?? '';
+                            $companyCode = $request->company_bt_transport[$key] ?? '';
+                            $nominal = str_replace('.', '', $request->nominal_bt_transport[$key] ?? '0');
+
+                            if (!empty($tanggal) && !empty($companyCode) && !empty($nominal)) {
+                                $detail_transport[] = [
+                                    'tanggal' => $tanggal,
+                                    'keterangan' => $keterangan,
+                                    'company_code' => $companyCode,
+                                    'nominal' => $nominal,
+                                ];
+                            }
+                        }
+                    }
+                    // dd($detail_transport);
+
+                    // Populate detail_penginapan
+                    if ($request->has('start_bt_penginapan')) {
+                        foreach ($request->start_bt_penginapan as $key => $startDate) {
+                            $endDate = $request->end_bt_penginapan[$key] ?? '';
+                            $totalDays = $request->total_days_bt_penginapan[$key] ?? '';
+                            $hotelName = $request->hotel_name_bt_penginapan[$key] ?? '';
+                            $companyCode = $request->company_bt_penginapan[$key] ?? '';
+                            $nominal = str_replace('.', '', $request->nominal_bt_penginapan[$key] ?? '0');
+                            $totalPenginapan = str_replace('.', '', $request->total_bt_penginapan[$key] ?? '0');
+
+                            if (!empty($startDate) && !empty($endDate) && !empty($totalDays) && !empty($hotelName) && !empty($companyCode) && !empty($nominal)) {
+                                $detail_penginapan[] = [
+                                    'start_date' => $startDate,
+                                    'end_date' => $endDate,
+                                    'total_days' => $totalDays,
+                                    'hotel_name' => $hotelName,
+                                    'company_code' => $companyCode,
+                                    'nominal' => $nominal,
+                                    'totalPenginapan' => $totalPenginapan,
+                                ];
+                            }
+                        }
+                    }
+
+                    // Populate detail_lainnya
+                    if ($request->has('tanggal_bt_lainnya')) {
+                        foreach ($request->tanggal_bt_lainnya as $key => $tanggal) {
+                            $keterangan = $request->keterangan_bt_lainnya[$key] ?? '';
+                            $nominal = str_replace('.', '', $request->nominal_bt_lainnya[$key] ?? '0');
+                            $totalLainnya = str_replace('.', '', $request->total_bt_lainnya[$key] ?? '0');
+
+                            if (!empty($tanggal) && !empty($nominal)) {
+                                $detail_lainnya[] = [
+                                    'tanggal' => $tanggal,
+                                    'keterangan' => $keterangan,
+                                    'nominal' => $nominal,
+                                    'totalLainnya' => $totalLainnya,
+                                ];
+                            }
+                        }
+                    }
+
+                    // Save the details
+                    $declare_ca = [
+                        'detail_perdiem' => $detail_perdiem,
+                        'detail_meals' => $detail_meals,
+                        'detail_transport' => $detail_transport,
+                        'detail_penginapan' => $detail_penginapan,
+                        'detail_lainnya' => $detail_lainnya,
                     ];
-                    // dd($caDetails,   $detail_ca );
 
-                    $declare_ca = isset($caTrans) && isset($caTrans->declare_ca) ? json_decode($caTrans->declare_ca, true) : [];
-                    // $caDeclare = [
-                    //     'total_amount_perdiem' => array_sum(array_column($declare_ca['detail_perdiem'] ?? [], 'nominal')),
-                    //     'total_amount_meals' => array_sum(array_column($declare_ca['detail_meals'] ?? [], 'nominal')),
-                    //     'total_amount_transport' => array_sum(array_column($declare_ca['detail_transport'] ?? [], 'nominal')),
-                    //     'total_amount_accommodation' => array_sum(array_column($declare_ca['detail_penginapan'] ?? [], 'nominal')),
-                    //     'total_amount_others' => array_sum(array_column($declare_ca['detail_lainnya'] ?? [], 'nominal')),
-                    // ];
+                    $ca->declare_ca = json_encode($declare_ca);
 
-                    // Calculate the new totals from the updated request data
+                    if ($ca->total_cost <= 0 && $request->input('accept_status') === 'Return/Refund') {
+                        return redirect()->back()->with('error', 'Cannot set status to Return/Refund when the Total Cost is negative.');
+                    } elseif ($ca->total_cost > 0 && $request->input('accept_status') === 'Return/Refund') {
+                        // $employeeEmail = Employee::where('id', $n->user_id)->pluck('email')->first();
+                        $employeeEmail = "eriton.dewa@kpn-corp.com";
+                        $employeeName = Employee::where('id', $n->user_id)->pluck('fullname')->first();
+            
+                        if ($employeeEmail) {
+                            $caTrans = CATransaction::where('no_sppd', $n->no_sppd)
+                                ->where(function ($query) {
+                                    $query->where('caonly', '!=', 'Y')
+                                        ->orWhereNull('caonly');
+                                })
+                                ->first();
+                            // dd($caTrans);
+                            $detail_ca = isset($caTrans) && isset($caTrans->detail_ca) ? json_decode($caTrans->detail_ca, true) : [];
+            
+                            $caDetails = [
+                                'total_amount_perdiem' => array_sum(array_column($detail_ca['detail_perdiem'] ?? [], 'nominal')),
+                                'total_amount_transport' => array_sum(array_column($detail_ca['detail_transport'] ?? [], 'nominal')),
+                                'total_amount_accommodation' => array_sum(array_column($detail_ca['detail_penginapan'] ?? [], 'nominal')),
+                                'total_amount_others' => array_sum(array_column($detail_ca['detail_lainnya'] ?? [], 'nominal')),
+                                'total_amount_meals' => array_sum(array_column($detail_ca['detail_meals'] ?? [], 'nominal')),
+                            ];
+                            // dd($caDetails,   $detail_ca );
+            
+                            $declare_ca = isset($caTrans) && isset($caTrans->declare_ca) ? json_decode($caTrans->declare_ca, true) : [];
+                            // $caDeclare = [
+                            //     'total_amount_perdiem' => array_sum(array_column($declare_ca['detail_perdiem'] ?? [], 'nominal')),
+                            //     'total_amount_meals' => array_sum(array_column($declare_ca['detail_meals'] ?? [], 'nominal')),
+                            //     'total_amount_transport' => array_sum(array_column($declare_ca['detail_transport'] ?? [], 'nominal')),
+                            //     'total_amount_accommodation' => array_sum(array_column($declare_ca['detail_penginapan'] ?? [], 'nominal')),
+                            //     'total_amount_others' => array_sum(array_column($declare_ca['detail_lainnya'] ?? [], 'nominal')),
+                            // ];
+            
+                            // Calculate the new totals from the updated request data
+            
+                            $newDeclareCa = [
+                                'total_amount_perdiem' => array_sum(array_map(function ($nominal) {
+                                    return (int) str_replace('.', '', $nominal);
+                                }, $request->input('nominal_bt_perdiem', []))),
+                                'total_amount_transport' => array_sum(array_map(function ($nominal) {
+                                    return (int) str_replace('.', '', $nominal);
+                                }, $request->input('nominal_bt_transport', []))),
+                                'total_amount_accommodation' => array_sum(array_map(function ($nominal) {
+                                    return (int) str_replace('.', '', $nominal);
+                                }, $request->input('nominal_bt_penginapan', []))),
+                                'total_amount_others' => array_sum(array_map(function ($nominal) {
+                                    return (int) str_replace('.', '', $nominal);
+                                }, $request->input('nominal_bt_lainnya', []))),
+                                'total_amount_meals' => array_sum(array_map(function ($nominal) {
+                                    return (int) str_replace('.', '', $nominal);
+                                }, $request->input('nominal_bt_meals', []))),
+                            ];
+            
+                            $selisih = array_sum($caDetails) - array_sum($newDeclareCa);
+                            // dd($newDeclareCa, $selisih);
+            
+                            // dd($caDeclare);
+            
+                            // Send email to the manager
+                            try {
+                                Mail::to($employeeEmail)->send(new RefundNotification(
+                                    $n,
+                                    $caDetails,
+                                    $newDeclareCa,
+                                    $employeeName,
+                                    $accNum,
+                                    $selisih,
+                                ));
+                            } catch (\Exception $e) {
+                                Log::error('Email Deklarasi Status Admin Bussines Trip tidak terkirim: ' . $e->getMessage());
+                            }
+                        }
+                    }
 
-                    $newDeclareCa = [
-                        'total_amount_perdiem' => array_sum(array_map(function ($nominal) {
-                            return (int) str_replace('.', '', $nominal);
-                        }, $request->input('nominal_bt_perdiem', []))),
-                        'total_amount_transport' => array_sum(array_map(function ($nominal) {
-                            return (int) str_replace('.', '', $nominal);
-                        }, $request->input('nominal_bt_transport', []))),
-                        'total_amount_accommodation' => array_sum(array_map(function ($nominal) {
-                            return (int) str_replace('.', '', $nominal);
-                        }, $request->input('nominal_bt_penginapan', []))),
-                        'total_amount_others' => array_sum(array_map(function ($nominal) {
-                            return (int) str_replace('.', '', $nominal);
-                        }, $request->input('nominal_bt_lainnya', []))),
-                        'total_amount_meals' => array_sum(array_map(function ($nominal) {
-                            return (int) str_replace('.', '', $nominal);
-                        }, $request->input('nominal_bt_meals', []))),
+                } elseif ($ca->type_ca == "entr") {
+                    $ca->user_id = $userId;
+                    $ca->no_sppd = $oldNoSppd;
+                    $ca->user_id = $userId;
+                    $ca->ca_note = $ca_note;
+
+                    $ca->declaration_at = Carbon::now();
+
+                    $total_real = (int) str_replace('.', '', $request->totalca);
+                    // dd($total_real);
+                    $total_ca = $ca->total_ca;
+                    if ($ca->detail_ca === null) {
+                        $ca->total_ca = '0';
+                        $ca->total_real = (int) str_replace('.', '', $request->totalca);
+                        $ca->total_cost = -1 * (int) str_replace('.', '', $ca->total_real);
+                    } else {
+                        $ca->total_real = $total_real;
+                        $ca->total_cost = $total_ca - $total_real;
+                    }
+
+                    // Ini AWAL
+                    $detail_e = [];
+                    $relation_e = [];
+
+                    if ($request->has('enter_type_e_detail')) {
+                        foreach ($request->enter_type_e_detail as $key => $type) {
+                            $fee_detail = $request->enter_fee_e_detail[$key];
+                            $nominal = str_replace('.', '', $request->nominal_e_detail[$key]); // Menghapus titik dari nominal sebelum menyimpannya
+
+                            if (!empty($type) && !empty($nominal)) {
+                                $detail_e[] = [
+                                    'type' => $type,
+                                    'fee_detail' => $fee_detail,
+                                    'nominal' => $nominal,
+                                ];
+                            }
+                        }
+                    }
+
+                    // Mengumpulkan detail relation
+                    if ($request->has('rname_e_relation')) {
+                        foreach ($request->rname_e_relation as $key => $name) {
+                            $position = $request->rposition_e_relation[$key];
+                            $company = $request->rcompany_e_relation[$key];
+                            $purpose = $request->rpurpose_e_relation[$key];
+
+                            // Memastikan semua data yang diperlukan untuk relation terisi
+                            if (!empty($name) && !empty($position) && !empty($company) && !empty($purpose)) {
+                                $relation_e[] = [
+                                    'name' => $name,
+                                    'position' => $position,
+                                    'company' => $company,
+                                    'purpose' => $purpose,
+                                    'relation_type' => array_filter([
+                                        'Food' => !empty($request->food_e_relation[$key]) && $request->food_e_relation[$key] === 'food',
+                                        'Transport' => !empty($request->transport_e_relation[$key]) && $request->transport_e_relation[$key] === 'transport',
+                                        'Accommodation' => !empty($request->accommodation_e_relation[$key]) && $request->accommodation_e_relation[$key] === 'accommodation',
+                                        'Gift' => !empty($request->gift_e_relation[$key]) && $request->gift_e_relation[$key] === 'gift',
+                                        'Fund' => !empty($request->fund_e_relation[$key]) && $request->fund_e_relation[$key] === 'fund',
+                                    ], fn($checked) => $checked),
+                                ];
+                            }
+                            // dd($relation_e);
+                        }
+                    }
+
+                    // Save the details
+                    $declare_ca = [
+                        'detail_e' => $detail_e,
+                        'relation_e' => $relation_e,
                     ];
+                    // Ini Akihit
 
-                    $selisih = array_sum($caDetails) - array_sum($newDeclareCa);
-                    // dd($newDeclareCa, $selisih);
-
-                    // dd($caDeclare);
-
-                    // Send email to the manager
-                    try {
-                        Mail::to($employeeEmail)->send(new RefundNotification(
-                            $n,
-                            $caDetails,
-                            $newDeclareCa,
-                            $employeeName,
-                            $accNum,
-                            $selisih,
-                        ));
-                    } catch (\Exception $e) {
-                        Log::error('Email Deklarasi Status Admin Bussines Trip tidak terkirim: ' . $e->getMessage());
+                    $ca->declare_ca = json_encode($declare_ca);
+                    
+                    if ($ca->total_cost <= 0 && $request->input('accept_status') === 'Return/Refund') {
+                        return redirect()->back()->with('error', 'Cannot set status to Return/Refund when the Total Cost is negative.');
+                    } elseif ($ca->total_cost > 0 && $request->input('accept_status') === 'Return/Refund') {
+                        // $employeeEmail = Employee::where('id', $n->user_id)->pluck('email')->first();
+                        $employeeEmail = "eriton.dewa@kpn-corp.com";
+                        $employeeName = Employee::where('id', $n->user_id)->pluck('fullname')->first();
+            
+                        if ($employeeEmail) {
+                            $caTrans = CATransaction::where('no_sppd', $n->no_sppd)
+                                ->where(function ($query) {
+                                    $query->where('caonly', '!=', 'Y')
+                                        ->orWhereNull('caonly');
+                                })
+                                ->first();
+                            // dd($caTrans);
+                            $detail_ca = isset($caTrans) && isset($caTrans->detail_ca) ? json_decode($caTrans->detail_ca, true) : [];
+            
+                            $caDetails = [
+                                'total_amount_detailent' => array_sum(array_column($detail_ca['detail_e'] ?? [], 'nominal')),
+                            ];
+                            // dd($caDetails,   $detail_ca );
+            
+                            $declare_ca = isset($caTrans) && isset($caTrans->declare_ca) ? json_decode($caTrans->declare_ca, true) : [];
+                            // $caDeclare = [
+                            //     'total_amount_detailent' => array_sum(array_column($declare_ca['detail_e'] ?? [], 'nominal')),
+                            // ];
+            
+                            // Calculate the new totals from the updated request data
+            
+                            $newDeclareCa = [
+                                'total_amount_detailent' => array_sum(array_map(function ($nominal) {
+                                    return (int) str_replace('.', '', $nominal);
+                                }, $request->input('nominal_e_detail', []))),
+                            ];
+            
+                            $selisih = array_sum($caDetails) - array_sum($newDeclareCa);
+                            // dd($newDeclareCa, $selisih);
+            
+                            // dd($caDeclare);
+            
+                            // Send email to the manager
+                            try {
+                                Mail::to($employeeEmail)->send(new RefundNotification(
+                                    $n,
+                                    $caDetails,
+                                    $newDeclareCa,
+                                    $employeeName,
+                                    $accNum,
+                                    $selisih,
+                                ));
+                            } catch (\Exception $e) {
+                                Log::error('Email Deklarasi Status Admin Bussines Trip tidak terkirim: ' . $e->getMessage());
+                            }
+                        }
                     }
                 }
+                $ca->save();
             }
-
-            $ca->save();
-        }
-
-        // Update business trip status
+        }      
+        
         $n->status = $request->input('accept_status');
         $n->save();
 
-        $detail_perdiem = [];
-        $detail_meals = [];
-        $detail_transport = [];
-        $detail_penginapan = [];
-        $detail_lainnya = [];
-
-        if ($request->has('start_bt_meals')) {
-            foreach ($request->start_bt_meals as $key => $startDate) {
-                $endDate = $request->end_bt_meals[$key] ?? '';
-                $totalDays = $request->total_days_bt_meals[$key] ?? '';
-                $companyCode = $request->company_bt_meals[$key] ?? '';
-                $nominal = str_replace('.', '', $request->nominal_bt_meals[$key] ?? '0');
-                $keterangan = $request->keterangan_bt_meals[$key] ?? '';
-
-                if (!empty($startDate) && !empty($endDate) && !empty($totalDays) && !empty($companyCode) && !empty($nominal)) {
-                    $detail_meals[] = [
-                        'start_date' => $startDate,
-                        'end_date' => $endDate,
-                        'total_days' => $totalDays,
-                        'company_code' => $companyCode,
-                        'nominal' => $nominal,
-                        'keterangan' => $keterangan,
-                    ];
-                }
-            }
-        }
-
-        // Populate detail_perdiem
-        if ($request->has('start_bt_perdiem')) {
-            foreach ($request->start_bt_perdiem as $key => $startDate) {
-                $endDate = $request->end_bt_perdiem[$key] ?? '';
-                $totalDays = $request->total_days_bt_perdiem[$key] ?? '';
-                $location = $request->location_bt_perdiem[$key] ?? '';
-                $other_location = $request->other_location_bt_perdiem[$key] ?? '';
-                $companyCode = $request->company_bt_perdiem[$key] ?? '';
-                $nominal = str_replace('.', '', $request->nominal_bt_perdiem[$key] ?? '0');
-
-                if (!empty($startDate) && !empty($endDate) && !empty($companyCode) && !empty($nominal)) {
-                    $detail_perdiem[] = [
-                        'start_date' => $startDate,
-                        'end_date' => $endDate,
-                        'total_days' => $totalDays,
-                        'location' => $location,
-                        'other_location' => $other_location,
-                        'company_code' => $companyCode,
-                        'nominal' => $nominal,
-                    ];
-                }
-            }
-        }
-
-        // Populate detail_transport
-        if ($request->has('tanggal_bt_transport')) {
-            foreach ($request->tanggal_bt_transport as $key => $tanggal) {
-                $keterangan = $request->keterangan_bt_transport[$key] ?? '';
-                $companyCode = $request->company_bt_transport[$key] ?? '';
-                $nominal = str_replace('.', '', $request->nominal_bt_transport[$key] ?? '0');
-
-                if (!empty($tanggal) && !empty($companyCode) && !empty($nominal)) {
-                    $detail_transport[] = [
-                        'tanggal' => $tanggal,
-                        'keterangan' => $keterangan,
-                        'company_code' => $companyCode,
-                        'nominal' => $nominal,
-                    ];
-                }
-            }
-        }
-
-        // Populate detail_penginapan
-        if ($request->has('start_bt_penginapan')) {
-            foreach ($request->start_bt_penginapan as $key => $startDate) {
-                $endDate = $request->end_bt_penginapan[$key] ?? '';
-                $totalDays = $request->total_days_bt_penginapan[$key] ?? '';
-                $hotelName = $request->hotel_name_bt_penginapan[$key] ?? '';
-                $companyCode = $request->company_bt_penginapan[$key] ?? '';
-                $nominal = str_replace('.', '', $request->nominal_bt_penginapan[$key] ?? '0');
-
-                if (!empty($startDate) && !empty($endDate) && !empty($totalDays) && !empty($hotelName) && !empty($companyCode) && !empty($nominal)) {
-                    $detail_penginapan[] = [
-                        'start_date' => $startDate,
-                        'end_date' => $endDate,
-                        'total_days' => $totalDays,
-                        'hotel_name' => $hotelName,
-                        'company_code' => $companyCode,
-                        'nominal' => $nominal,
-                    ];
-                }
-            }
-        }
-
-        // Populate detail_lainnya
-        if ($request->has('tanggal_bt_lainnya')) {
-            foreach ($request->tanggal_bt_lainnya as $key => $tanggal) {
-                $keterangan = $request->keterangan_bt_lainnya[$key] ?? '';
-                $nominal = str_replace('.', '', $request->nominal_bt_lainnya[$key] ?? '0');
-
-                if (!empty($tanggal) && !empty($nominal)) {
-                    $detail_lainnya[] = [
-                        'tanggal' => $tanggal,
-                        'keterangan' => $keterangan,
-                        'nominal' => $nominal,
-                    ];
-                }
-            }
-        }
-
-        // Save the details if CA transaction is not null
-        if ($ca) {
-            $declare_ca = [
-                'detail_perdiem' => $detail_perdiem,
-                'detail_meals' => $detail_meals,
-                'detail_transport' => $detail_transport,
-                'detail_penginapan' => $detail_penginapan,
-                'detail_lainnya' => $detail_lainnya,
-            ];
-
-            $ca->declare_ca = json_encode($declare_ca);
-            $ca->save();
-        }
 
         return redirect('/businessTrip/admin')->with('success', 'Status updated successfully');
     }

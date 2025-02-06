@@ -148,9 +148,9 @@
 
 </script>
 
-@if (!empty($detailCA['detail_lainnya']) && $detailCA['detail_lainnya'][0]['tanggal'] !== null)
+@if (!empty($caDetail['detail_lainnya']) && $caDetail['detail_lainnya'][0]['tanggal'] !== null)
     <div id="form-container-lainnya">
-        @foreach ($detailCA['detail_lainnya'] as $index => $lainnya)
+        @foreach ($caDetail['detail_lainnya'] as $index => $lainnya)
             <div id="form-container-bt-lainnya-{{ $loop->index + 1 }}" class="p-2 mb-3 rounded-3" style="background-color: #f8f8f8">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Others {{ $loop->index + 1 }}</p>
                 <div id="form-container-bt-lainnya-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
@@ -179,9 +179,9 @@
                 </div>
                 <div id="form-container-bt-lainnya-dec-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3">
                     <p class="fs-5 text-primary" style="font-weight: bold; ">Others Declaration</p>
-                    @if (isset($declareCA['detail_lainnya'][$index]))
+                    @if (isset($declareCa['detail_lainnya'][$index]))
                         @php
-                            $lainnya_dec = $declareCA['detail_lainnya'][$index];
+                            $lainnya_dec = $declareCa['detail_lainnya'][$index];
                         @endphp
                         <div class="row">
                             <!-- Lainnya Date -->
@@ -217,8 +217,8 @@
                 </div>
             </div>
         @endforeach
-        @foreach ($declareCA['detail_lainnya'] as $index => $lainnya_dec)
-            @if (!isset($detailCA['detail_lainnya'][$index]))
+        @foreach ($declareCa['detail_lainnya'] as $index => $lainnya_dec)
+            @if (!isset($caDetail['detail_lainnya'][$index]))
                 <div id="form-container-bt-lainnya-{{ $loop->index + 1 }}" class="p-2 mb-3 rounded-3" style="background-color: #f8f8f8">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Others {{ $loop->index + 1 }}</p>
                     <div class="fs-5 bg-light text-primary p-2">
@@ -269,13 +269,13 @@
             <div class="input-group-append">
                 <span class="input-group-text">Rp</span>
             </div>
-            <input class="form-control bg-light" name="total_bt_lainnya" id="total_bt_lainnya" type="text" min="0" value="{{ number_format(array_sum(array_column($declareCA['detail_lainnya'], 'nominal')), 0, ',', '.') }}" readonly>
+            <input class="form-control bg-light" name="total_bt_lainnya" id="total_bt_lainnya" type="text" min="0" value="{{ number_format(array_sum(array_column($declareCa['detail_lainnya'], 'nominal')), 0, ',', '.') }}" readonly>
         </div>
     </div>
-@elseif (!empty($declareCA['detail_lainnya']) && $declareCA['detail_lainnya'][0]['nominal'] !== null)
+@elseif (!empty($declareCa['detail_lainnya']) && $declareCa['detail_lainnya'][0]['nominal'] !== null)
     <div id="form-container-lainnya">
-        @foreach ($declareCA['detail_lainnya'] as $index => $lainnya_dec)
-            @if (!isset($detailCA['detail_lainnya'][$index]))
+        @foreach ($declareCa['detail_lainnya'] as $index => $lainnya_dec)
+            @if (!isset($caDetail['detail_lainnya'][$index]))
                 <div id="form-container-bt-lainnya-{{ $loop->index + 1 }}" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Others {{ $loop->index + 1 }}</p>
                     <div class="card-body bg-light p-2 mb-3">
@@ -326,7 +326,7 @@
             <div class="input-group-append">
                 <span class="input-group-text">Rp</span>
             </div>
-            <input class="form-control bg-light" name="total_bt_lainnya" id="total_bt_lainnya" type="text" min="0" value="{{ number_format(array_sum(array_column($declareCA['detail_lainnya'], 'nominal')), 0, ',', '.') }}" readonly>
+            <input class="form-control bg-light" name="total_bt_lainnya" id="total_bt_lainnya" type="text" min="0" value="{{ number_format(array_sum(array_column($declareCa['detail_lainnya'], 'nominal')), 0, ',', '.') }}" readonly>
         </div>
     </div>
 @else

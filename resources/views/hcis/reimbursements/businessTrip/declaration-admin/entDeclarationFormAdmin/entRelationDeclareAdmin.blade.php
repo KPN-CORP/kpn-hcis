@@ -139,8 +139,8 @@
                             </div>
                             <div class="col-md-12">
                                 <label class="form-label" for="purpose">Purpose</label>
-                                <textarea name="rpurpose_e_relation[]" id="rpurpose_e_relation_{{ $loop->index + 1 }}" class="form-control"
-                                    placeholder="Write your purpose ...">{{ $relation_dec['purpose'] }}</textarea>
+                                <textarea name="rpurpose_e_relation[]" id="rpurpose_e_relation_{{ $loop->index + 1 }}" class="form-control bg-light"
+                                    placeholder="Write your purpose ..." readonly>{{ $relation_dec['purpose'] }}</textarea>
                             </div>
                         </div>
                         <br>

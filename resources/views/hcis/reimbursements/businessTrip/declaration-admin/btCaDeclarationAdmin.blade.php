@@ -1,4 +1,4 @@
-<div class="tab-pane fade show active" id="pills-cashAdvanced"
+<div class="tab-pane fade <?php echo (!$entrTab && $dnsTab) ? 'show active' : (($dnsTab && $entrTab) ? 'show active' : ''); ?>" id="pills-cashAdvanced"
     role="tabpanel" aria-labelledby="pills-cashAdvanced-tab">
     <ul class="nav mb-3" id="pills-tab-inner" role="tablist">
         <li class="nav-item" role="presentation">
@@ -65,43 +65,43 @@
             @include('hcis.reimbursements.businessTrip.declaration-admin.caDeclarationFormAdmin.caOtherDeclareAdmin')
         </div>
     </div>
-</div>
 
-<div class="row mb-2">
-    <div class="col-md-6 mb-2">
-        <label class="form-label">Total Cash Advanced</label>
-        <div class="input-group">
-            <div class="input-group-append">
-                <span class="input-group-text">Rp</span>
+    <div class="row mb-2">
+        <div class="col-md-6 mb-2">
+            <label class="form-label">Total Cash Advanced</label>
+            <div class="input-group">
+                <div class="input-group-append">
+                    <span class="input-group-text">Rp</span>
+                </div>
+                <input class="form-control bg-light" name="totalca_deklarasi"
+                    id="totalca_declarasi" type="text" min="0"
+                    value="{{ number_format($dnsData->total_ca ?? '0', 0, ',', '.') }}"
+                    readonly>
             </div>
-            <input class="form-control bg-light" name="totalca_deklarasi"
-                id="totalca_declarasi" type="text" min="0"
-                value="{{ number_format($dnsData->total_ca ?? '0', 0, ',', '.') }}"
-                readonly>
         </div>
-    </div>
-    <div class="col-md-6 mb-2">
-        <label class="form-label">Total Cash Advanced Deklarasi</label>
-        <div class="input-group">
-            <div class="input-group-append">
-                <span class="input-group-text">Rp</span>
+        <div class="col-md-6 mb-2">
+            <label class="form-label">Total Cash Advanced Deklarasi</label>
+            <div class="input-group">
+                <div class="input-group-append">
+                    <span class="input-group-text">Rp</span>
+                </div>
+                <input class="form-control bg-light" name="totalca_ca_deklarasi"
+                    id="totalca_ca_deklarasi" type="text" min="0"
+                    value="{{ number_format($dnsData->total_cost ?? '0', 0, ',', '.') }}"
+                    readonly>
             </div>
-            <input class="form-control bg-light" name="totalca"
-                id="totalca" type="text" min="0"
-                value="{{ number_format($dnsData->total_real ?? '0', 0, ',', '.') }}"
-                readonly>
         </div>
-    </div>
-    <div class="col-md-4 mb-2" style="display:none">
-        <label class="form-label">Total Cost</label>
-        <div class="input-group">
-            <div class="input-group-append">
-                <span class="input-group-text">Rp</span>
+        <div class="col-md-4 mb-2" style="display:none">
+            <label class="form-label">Total Cost</label>
+            <div class="input-group">
+                <div class="input-group-append">
+                    <span class="input-group-text">Rp</span>
+                </div>
+                <input class="form-control bg-light" name=""
+                    id="" type="text" min="0"
+                    value="{{ number_format($dnsData->total_cost ?? '0', 0, ',', '.') }}"
+                    readonly>
             </div>
-            <input class="form-control bg-light" name=""
-                id="" type="text" min="0"
-                value="{{ number_format($dnsData->total_cost ?? '0', 0, ',', '.') }}"
-                readonly>
         </div>
     </div>
 </div>

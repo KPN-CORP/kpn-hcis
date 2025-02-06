@@ -583,8 +583,6 @@
                 .forEach((input) => {
                     total += parseNumber(input.value);
                 });
-
-            console.log("ini total Ca Deklarasi",total);
             document.querySelector('input[name="totalca_ca_deklarasi"]').value = formatNumber(total);
         }
 

@@ -284,9 +284,9 @@
     }
 </script>
 
-@if (!empty($detailCA['detail_transport']) && $detailCA['detail_transport'][0]['tanggal'] !== null)
+@if (!empty($caDetail['detail_transport']) && $caDetail['detail_transport'][0]['tanggal'] !== null)
     <div id="form-container-transport">
-        @foreach ($detailCA['detail_transport'] as $index => $transport)
+        @foreach ($caDetail['detail_transport'] as $index => $transport)
             <div id="form-container-bt-transport-{{ $loop->index + 1 }}" class="p-2 mb-3 rounded-3" style="background-color: #f8f8f8">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Transport {{ $loop->index + 1 }}</p>
                 <label for="additional-fields-title" class="mb-2">
@@ -327,9 +327,9 @@
                 </div>
                 <div id="form-container-bt-transport-dec-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
                     <p class="fs-5 text-primary" style="font-weight: bold; ">Transport Declaration</p>
-                    @if (isset($declareCA['detail_transport'][$index]))
+                    @if (isset($declareCa['detail_transport'][$index]))
                         @php
-                            $transport_dec = $declareCA['detail_transport'][$index];
+                            $transport_dec = $declareCa['detail_transport'][$index];
                         @endphp
                         <div class="row">
                             <!-- Transport Date -->
@@ -385,8 +385,8 @@
                 </div>
             </div>
         @endforeach
-        @foreach ($declareCA['detail_transport'] as $index => $transport_dec)
-            @if (!isset($detailCA['detail_transport'][$index]))
+        @foreach ($declareCa['detail_transport'] as $index => $transport_dec)
+            @if (!isset($caDetail['detail_transport'][$index]))
                 <div id="form-container-bt-transport-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Transport {{ $loop->index + 1 }}</p>
                     <div class="row">
@@ -457,13 +457,13 @@
             <input class="form-control bg-light"
                 name="total_bt_transport"
                 id="total_bt_transport" type="text"
-                min="0" value="{{ number_format(array_sum(array_column($declareCA['detail_transport'], 'nominal')), 0, ',', '.') }}" readonly>
+                min="0" value="{{ number_format(array_sum(array_column($declareCa['detail_transport'], 'nominal')), 0, ',', '.') }}" readonly>
         </div>
     </div>
-@elseif (!empty($declareCA['detail_transport']) && $declareCA['detail_transport'][0]['tanggal'] !== null && $declareCA['detail_transport'][0]['tanggal'] !== null)
+@elseif (!empty($declareCa['detail_transport']) && $declareCa['detail_transport'][0]['tanggal'] !== null && $declareCa['detail_transport'][0]['tanggal'] !== null)
     <div id="form-container-transport">
-        @foreach ($declareCA['detail_transport'] as $index => $transport_dec)
-            @if (!isset($detailCA['detail_transport'][$index]))
+        @foreach ($declareCa['detail_transport'] as $index => $transport_dec)
+            @if (!isset($caDetail['detail_transport'][$index]))
                 <div id="form-container-bt-transport-{{ $loop->index + 1 }}" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Transport {{ $loop->index + 1 }}</p>
                     <label for="additional-fields-title" class="mb-2">
@@ -540,7 +540,7 @@
             <input class="form-control bg-light"
                 name="total_bt_transport"
                 id="total_bt_transport" type="text"
-                min="0" value="{{ number_format(array_sum(array_column($declareCA['detail_transport'], 'nominal')), 0, ',', '.') }}" readonly>
+                min="0" value="{{ number_format(array_sum(array_column($declareCa['detail_transport'], 'nominal')), 0, ',', '.') }}" readonly>
         </div>
     </div>
 @else
