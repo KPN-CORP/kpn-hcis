@@ -179,7 +179,7 @@
         <tr>
             <td class="label">Start Date</td>
             <td class="colon">:</td>
-            <td class="value">{{ \Carbon\Carbon::parse($transactions->start_date)->format('d-M-y') }} to {{ \Carbon\Carbon::parse($transactions->end_date)->format('d-M-y') }} ({{ $transactions->total_days }} days)</td>
+            <td class="value">{{ \Carbon\Carbon::parse($transactions->start_date)->format('d-M-y') }} to {{ \Carbon\Carbon::parse($transactions->end_date)->format('d-M-y') }} ({{ $transactions->total_days + 1 }} days)</td>
         </tr>
         <tr>
             <td class="label">Date CA Required</td>
@@ -492,7 +492,7 @@
                             <td>{{ \Carbon\Carbon::parse($perdiem['end_date'])->format('d-M-y') }}</td>
                             <td>{{ $perdiem['hotel_name'] }}</td>
                             <td>{{ $perdiem['company_code'] }}</td>
-                            <td>{{ $perdiem['total_days'] }} Hari</td>
+                            <td>{{ $perdiem['total_days'] }} Night</td>
                             <td>  
                                 <span style="float: left; margin-left:4px">Rp.</span>  
                                 <span style="float: right;">{{ number_format($perdiem['nominal'], 0, ',', '.') }}</span>  

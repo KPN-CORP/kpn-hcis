@@ -100,7 +100,7 @@
                                     <tr>
                                         <th class="label" style="border: none;">Total Date</th>
                                         <td class="colon" style="border: none;">:</td>
-                                        <td class="value" style="border: none;">{{ $transactions->total_days }} Days</td>
+                                        <td class="value" style="border: none;">{{ $transactions->total_days + 1 }} Days</td>
                                     </tr>
                                     <tr>
                                         <th class="label" style="border: none;">Date CA Required</th>
