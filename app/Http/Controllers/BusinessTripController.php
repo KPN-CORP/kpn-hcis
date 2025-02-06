@@ -4419,11 +4419,41 @@ class BusinessTripController extends Controller
             $allowance = "Allowance";
         }
         $group_company = Employee::where('id', $employee_data->id)->pluck('group_company')->first();
-        $ca = CATransaction::where('no_sppd', $n->no_sppd)->first();
+        $ca = CATransaction::where('no_sppd', $n->no_sppd)->get();
+        $date = CATransaction::where('no_sppd', $n->no_sppd)->first();
+        $dns = $ca->where('type_ca', 'dns')->first();
+        $entr = $ca->where('type_ca', 'entr')->first();
+
+        $entrTab = $entr ? true : false;
+        $dnsTab = $dns ? true : false;
+
+        $entrData = null;
+        $dnsData = null;
+
+        foreach ($ca as $item) {
+            if ($item->type_ca == 'entr' && !$entrData) {
+                $entrData = $item; // Ambil data entr hanya jika belum ada
+            } elseif ($item->type_ca == 'dns' && !$dnsData) {
+                $dnsData = $item; // Ambil data dns hanya jika belum ada
+            }
+
+            // Jika sudah mendapatkan kedua tipe, keluar dari loop
+            if ($entrData && $dnsData) {
+                break;
+            }
+        }
 
         // Initialize caDetail with an empty array if it's null
-        $caDetail = $ca ? json_decode($ca->detail_ca, true) : [];
-        $declareCa = $ca ? json_decode($ca->declare_ca, true) : [];
+        $caDetail = [];
+        $declareCa = [];
+        foreach ($ca as $cas) {
+            $currentDetail = json_decode($cas->detail_ca, true);
+            $currentDeclare = json_decode($cas->declare_ca, true);
+            if (is_array($currentDetail)) {
+                $caDetail = array_merge($caDetail, $currentDetail);
+                $declareCa = array_merge($declareCa, $currentDeclare);
+            }
+        }
 
         // Safely access nominalPerdiem with default '0' if caDetail is empty
         $nominalPerdiem = isset($caDetail['detail_perdiem'][0]['nominal']) ? $caDetail['detail_perdiem'][0]['nominal'] : '0';
@@ -4492,6 +4522,11 @@ class BusinessTripController extends Controller
             'locations' => $locations,
             'caDetail' => $caDetail,
             'declareCa' => $declareCa,
+            'entrData' => $entrData,
+            'dnsData' => $dnsData,
+            'entrTab' => $entrTab,
+            'dnsTab' => $dnsTab,
+            'date' => $date,
             'ca' => $ca,
             'nominalPerdiem' => $nominalPerdiem,
             'nominalPerdiemDeclare' => $nominalPerdiemDeclare,
