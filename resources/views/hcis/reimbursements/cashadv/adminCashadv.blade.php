@@ -642,27 +642,41 @@
                 @foreach ($ca_approvals as $approval)
                     if (transactionId === "{{ $approval->ca_id }}") {
                         var rowContainer = document.createElement('div');
-                        rowContainer.className = 'row mb-3 text-center';
+                        rowContainer.className = 'row mb-3 text-right';
 
                         var nameCol = document.createElement('div');
-                        nameCol.className = 'col-md-6';
+                        nameCol.className = 'col-md-12 mb-2';
                         var nameText = document.createElement('div');
                         nameText.innerHTML = `
-                                {{ $approval->ReqName }}
+                                <b>{{ $approval->role_name }}</b> : {{ $approval->ReqName }}
                             `;
                         nameCol.appendChild(nameText);
 
                         var buttonCol = document.createElement('div');
-                        buttonCol.className = 'col-md-6';
+                        buttonCol.className = 'col-md-12';
 
                         var dateText = document.createElement('p');
 
                         if ("{{ $approval->approval_status }}" === "Approved") {
                             if ("{{ $approval->by_admin }}" === "T") {
-                                dateText.textContent = "{{ $approval->approval_status }} By Admin ({{ $approval->admin->name ?? 'Admin tidak tersedia.' }}) ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
+                                // dateText.textContent = "{{ $approval->approval_status }} By Admin ({{ $approval->admin->name ?? 'Admin tidak tersedia.' }}) ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
+                                dateText.innerHTML = `
+                                    <div class="border rounded p-2 mb-2">  
+                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>  
+                                        <strong>Approved By Admin :</strong> {{ $approval->admin->name ?? 'Admin tidak tersedia.' }}<br> 
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
+                                    </div>
+                                `;
                                 buttonCol.appendChild(dateText);
                             } else {
-                                dateText.textContent = "{{ $approval->approval_status }} ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
+                                // dateText.textContent = "{{ $approval->approval_status }} ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
+                                dateText.innerHTML = `
+                                    <div class="border rounded p-2 mb-2">  
+                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>  
+                                        <strong>Approved By :</strong> {{ $approval->employee->fullname ?? 'Employee tidak tersedia.' }}<br> 
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
+                                    </div>
+                                `;
                                 buttonCol.appendChild(dateText);
                             }
                         } else if (previousLayerApproved) {
@@ -702,6 +716,7 @@
                         } else {
                             // Jika layer sebelumnya tidak disetujui, layer ini tidak menampilkan tombol
                             dateText.textContent = 'Waiting for previous approval';
+                            dateText.className = 'text-muted';
                             buttonCol.appendChild(dateText);
                         }
 
@@ -767,35 +782,59 @@
                 @foreach ($ca_approvals as $approval)
                     if (transactionId === "{{ $approval->ca_id }}") {
                         var rowContainer = document.createElement('div');
-                        rowContainer.className = 'row mb-3 text-center';
+                        rowContainer.className = 'row mb-3 text-right';
 
                         var nameCol = document.createElement('div');
-                        nameCol.className = 'col-md-6';
+                        nameCol.className = 'col-md-12';
                         var nameText = document.createElement('p');
-                        nameText.innerHTML = "{{ $approval->ReqName }}";
+                        nameText.innerHTML = "<b>{{ $approval->role_name }}</b> : {{ $approval->ReqName }}";
                         nameCol.appendChild(nameText);
 
                         var buttonCol = document.createElement('div');
-                        buttonCol.className = 'col-md-6';
+                        buttonCol.className = 'col-md-12';
 
                         var dateText = document.createElement('p');
 
                         if ("{{ $approval->approval_status }}" === "Approved") {
                             if ("{{ $approval->by_admin }}" === "T") {
-                                dateText.textContent = "{{ $approval->approval_status }} By Admin ({{ $approval->admin->name ?? 'Admin tidak tersedia.' }}) ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
+                                dateText.innerHTML = `
+                                    <div class="border rounded p-2 mb-2">  
+                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>  
+                                        <strong>Approved By Admin :</strong> {{ $approval->admin->name ?? 'Admin tidak tersedia.' }}<br> 
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
+                                    </div>
+                                `;
                                 buttonCol.appendChild(dateText);
                             } else {
-                                dateText.textContent = "{{ $approval->approval_status }} ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
+                                dateText.innerHTML = `
+                                    <div class="border rounded p-2 mb-2">  
+                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>  
+                                        <strong>Approved By :</strong> {{ $approval->employee->fullname ?? 'Employee tidak tersedia.' }}<br> 
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
+                                    </div>
+                                `;
                                 buttonCol.appendChild(dateText);
                             }
                             // dateText.textContent = "{{ $approval->approval_status }} ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
                             // buttonCol.appendChild(dateText);
                         } else if ("{{ $approval->approval_status }}" === "Rejected") {
                             if ("{{ $approval->by_admin }}" === "T") {
-                                dateText.textContent = "{{ $approval->approval_status }} By Admin ({{ $approval->admin->name ?? 'Admin tidak tersedia.' }}) ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
+                                dateText.innerHTML = `
+                                    <div class="border rounded p-2 mb-2">  
+                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>  
+                                        <strong>Rejected By Admin :</strong> {{ $ca_transaction->ReqName ?? 'Admin tidak tersedia.' }}<br> 
+                                        <strong>Rejected At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
+                                    </div>
+                                `;
                                 buttonCol.appendChild(dateText);
                             } else {
-                                dateText.textContent = "{{ $approval->approval_status }} ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
+                                dateText.innerHTML = `
+                                    <div class="border rounded p-2 mb-2">  
+                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>  
+                                        <strong>Rejected By :</strong> {{ $ca_transaction->ReqName ?? 'Employee tidak tersedia.' }}<br> 
+                                        <strong>Rejected At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
+                                    </div>
+                                `;
                                 buttonCol.appendChild(dateText);
                             }
                             // dateText.textContent = "{{ $approval->approval_status }} ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
@@ -822,25 +861,37 @@
                 @foreach ($ca_sett as $approval_sett)
                     if (transactionId === "{{ $approval_sett->ca_id }}") {
                         var rowContainerDec = document.createElement('div');
-                        rowContainerDec.className = 'row mb-3 text-center';
+                        rowContainerDec.className = 'row mb-3 text-right';
 
                         var nameColDec = document.createElement('div');
-                        nameColDec.className = 'col-md-6';
+                        nameColDec.className = 'col-md-12';
                         var nameTextDec = document.createElement('p');
-                        nameTextDec.innerHTML = "{{ $approval_sett->ReqName }}";
+                        nameTextDec.innerHTML = "<b>{{ $approval_sett->role_name }}</b> : {{ $approval_sett->ReqName }}";
                         nameColDec.appendChild(nameTextDec);
 
                         var buttonColDec = document.createElement('div');
-                        buttonColDec.className = 'col-md-6';
+                        buttonColDec.className = 'col-md-12';
 
                         var dateTextDec = document.createElement('p');
 
                         if ("{{ $approval_sett->approval_status }}" === "Approved") {
                             if ("{{ $approval_sett->by_admin }}" === "T") {
-                                dateTextDec.textContent = "{{ $approval_sett->approval_status }} By Admin ({{ $approval_sett->admin->name ?? 'Admin tidak tersedia.' }}) ({{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }})";
+                                dateTextDec.innerHTML = `
+                                    <div class="border rounded p-2 mb-2">  
+                                        <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>  
+                                        <strong>Approved By Admin :</strong> {{ $approval_sett->admin->name ?? 'Admin tidak tersedia.' }}<br> 
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}  
+                                    </div>
+                                `;
                                 buttonColDec.appendChild(dateTextDec);
                             } else {
-                                dateTextDec.textContent = "{{ $approval_sett->approval_status }} ({{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }})";
+                                dateTextDec.innerHTML = `
+                                    <div class="border rounded p-2 mb-2">  
+                                        <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>  
+                                        <strong>Approved By :</strong> {{ $approval_sett->employee->fullname ?? 'Employee tidak tersedia.' }}<br> 
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}  
+                                    </div>
+                                `;
                                 buttonColDec.appendChild(dateTextDec);
                             }
                         } else if (previousLayerApprovedDec) {
@@ -944,25 +995,37 @@
                 @foreach ($ca_approvals as $approval)
                     if (transactionId === "{{ $approval->ca_id }}") {
                         var rowContainer = document.createElement('div');
-                        rowContainer.className = 'row mb-3 text-center';
+                        rowContainer.className = 'row mb-3 text-right';
 
                         var nameCol = document.createElement('div');
-                        nameCol.className = 'col-md-6';
+                        nameCol.className = 'col-md-12';
                         var nameText = document.createElement('p');
-                        nameText.innerHTML = "{{ $approval->ReqName }}";
+                        nameText.innerHTML = "<b>{{ $approval->role_name }}</b> : {{ $approval->ReqName }}";
                         nameCol.appendChild(nameText);
 
                         var buttonCol = document.createElement('div');
-                        buttonCol.className = 'col-md-6';
+                        buttonCol.className = 'col-md-12';
 
                         var dateText = document.createElement('p');
 
                         if ("{{ $approval->approval_status }}" === "Approved") {
                             if ("{{ $approval->by_admin }}" === "T") {
-                                dateText.textContent = "{{ $approval->approval_status }} By Admin ({{ $approval->admin->name ?? 'Admin tidak tersedia.' }}) ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
+                                dateText.innerHTML = `
+                                    <div class="border rounded p-2 mb-2">  
+                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>  
+                                        <strong>Approved By Admin :</strong> {{ $approval->admin->name ?? 'Admin tidak tersedia.' }}<br> 
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
+                                    </div>
+                                `;
                                 buttonCol.appendChild(dateText);
                             } else {
-                                dateText.textContent = "{{ $approval->approval_status }} ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
+                                dateText.innerHTML = `
+                                    <div class="border rounded p-2 mb-2">  
+                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>  
+                                        <strong>Approved By :</strong> {{ $approval->employee->fullname ?? 'Employee tidak tersedia.' }}<br> 
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
+                                    </div>
+                                `;
                                 buttonCol.appendChild(dateText);
                             }
                         } else if (previousLayerApproved) {
@@ -994,6 +1057,7 @@
                             employee_id: "{{ $approval_extend->ReqName }}",
                             layer: "{{ $approval_extend->layer }}",
                             approval_status: "{{ $approval_extend->approval_status }}",
+                            role: "{{ $approval_extend->role_name }}",
                             by_admin: "{{ $approval_extend->by_admin }}",
                             admin_name: "{{ $approval_extend->admin->name ?? 'Admin tidak tersedia.' }}",
                             approved_at: "{{ $approval_extend->approved_at }}",
@@ -1005,25 +1069,39 @@
                 // Then render the items with dividers
                 matchingExtendItems.forEach((item, index) => {
                     var rowContainerExt = document.createElement('div');
-                    rowContainerExt.className = 'row mb-3 text-center';
+                    rowContainerExt.className = 'row mb-3 text-right';
 
                     var nameColExt = document.createElement('div');
-                    nameColExt.className = 'col-md-6';
+                    nameColExt.className = 'col-md-12';
                     var nameTextExt = document.createElement('p');
-                    nameTextExt.innerHTML = item.employee_id;
+                    nameTextExt.innerHTML = `<b>${item.role}</b> : ${item.employee_id}`;
                     nameColExt.appendChild(nameTextExt);
 
                     var buttonColExt = document.createElement('div');
-                    buttonColExt.className = 'col-md-6';
+                    buttonColExt.className = 'col-md-12';
 
                     var dateTextExt = document.createElement('p');
 
                     if (item.approval_status === "Approved") {
                         if (item.by_admin === "T") {
-                            dateTextExt.textContent = item.approval_status + " By Admin (" + item.admin_name + ") (" + moment(item.approved_at).format('DD-MMM-YY') + ")";
+                            // dateTextExt.textContent = item.approval_status + " By Admin (" + item.admin_name + ") (" + moment(item.approved_at).format('DD-MMM-YY') + ")";
+                            dateTextExt.innerHTML = `
+                                <div class="border rounded p-2 mb-2">  
+                                    <strong>Status:</strong> ${item.approval_status} <br>  
+                                    <strong>Approved By Admin :</strong> ${item.admin_name} <br> 
+                                    <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}  
+                                </div>
+                            `;
                             buttonColExt.appendChild(dateTextExt);
                         } else {
-                            dateTextExt.textContent = item.approval_status + " (" + moment(item.approved_at).format('DD-MMM-YY') + ")";
+                            // dateTextExt.textContent = item.approval_status + " (" + moment(item.approved_at).format('DD-MMM-YY') + ")";
+                            dateTextExt.innerHTML = `
+                                <div class="border rounded p-2 mb-2">  
+                                    <strong>Status:</strong> ${item.approval_status} <br>  
+                                    <strong>Approved By :</strong> ${item.employee_id} <br> 
+                                    <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}  
+                                </div>
+                            `;
                             buttonColExt.appendChild(dateTextExt);
                         }
                     } else if (previousLayerApprovedExt) {
@@ -1148,25 +1226,37 @@
                 @foreach ($ca_approvals as $approval)
                     if (transactionId === "{{ $approval->ca_id }}") {
                         var rowContainer = document.createElement('div');
-                        rowContainer.className = 'row mb-3 text-center';
+                        rowContainer.className = 'row mb-3 text-right';
 
                         var nameCol = document.createElement('div');
-                        nameCol.className = 'col-md-6';
+                        nameCol.className = 'col-md-12';
                         var nameText = document.createElement('p');
-                        nameText.innerHTML = "{{ $approval->ReqName }}";
+                        nameText.innerHTML = "<b>{{ $approval->role_name }}</b> : {{ $approval->ReqName }}";
                         nameCol.appendChild(nameText);
 
                         var buttonCol = document.createElement('div');
-                        buttonCol.className = 'col-md-6';
+                        buttonCol.className = 'col-md-12';
 
                         var dateText = document.createElement('p');
 
                         if ("{{ $approval->approval_status }}" === "Approved") {
                             if ("{{ $approval->by_admin }}" === "T") {
-                                dateText.textContent = "{{ $approval->approval_status }} By Admin ({{ $approval->admin->name ?? 'Admin tidak tersedia.' }}) ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
+                                dateText.innerHTML = `
+                                    <div class="border rounded p-2 mb-2">  
+                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>  
+                                        <strong>Approved By Admin :</strong> {{ $approval->admin->name ?? 'Admin tidak tersedia.' }}<br> 
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
+                                    </div>
+                                `;
                                 buttonCol.appendChild(dateText);
                             } else {
-                                dateText.textContent = "{{ $approval->approval_status }} ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
+                                dateText.innerHTML = `
+                                    <div class="border rounded p-2 mb-2">  
+                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>  
+                                        <strong>Approved By :</strong> {{ $approval->employee->fullname ?? 'Employee tidak tersedia.' }}<br> 
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
+                                    </div>
+                                `;
                                 buttonCol.appendChild(dateText);
                             }
                             // dateText.textContent = "{{ $approval->approval_status }} ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
@@ -1196,22 +1286,34 @@
                         rowContainerDec.className = 'row mb-3 text-center';
 
                         var nameColDec = document.createElement('div');
-                        nameColDec.className = 'col-md-6';
+                        nameColDec.className = 'col-md-12';
                         var nameTextDec = document.createElement('p');
-                        nameTextDec.innerHTML = "{{ $approval_sett->ReqName }}";
+                        nameTextDec.innerHTML = "<b>{{ $approval_sett->role_name }}</b> : {{ $approval_sett->ReqName }} ";
                         nameColDec.appendChild(nameTextDec);
 
                         var buttonColDec = document.createElement('div');
-                        buttonColDec.className = 'col-md-6';
+                        buttonColDec.className = 'col-md-12';
 
                         var dateTextDec = document.createElement('p');
 
                         if ("{{ $approval_sett->approval_status }}" === "Approved") {
                             if ("{{ $approval_sett->by_admin }}" === "T") {
-                                dateTextDec.textContent = "{{ $approval_sett->approval_status }} By Admin ({{ $approval_sett->admin->name ?? 'Admin tidak tersedia.' }}) ({{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }})";
+                                dateTextDec.innerHTML = `
+                                    <div class="border rounded p-2 mb-2">  
+                                        <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>  
+                                        <strong>Approved By Admin :</strong> {{ $approval_sett->admin->name ?? 'Admin tidak tersedia.' }}<br> 
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}  
+                                    </div>
+                                `;
                                 buttonColDec.appendChild(dateTextDec);
                             } else {
-                                dateTextDec.textContent = "{{ $approval_sett->approval_status }} ({{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }})";
+                                dateText.innerHTML = `
+                                    <div class="border rounded p-2 mb-2">  
+                                        <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>  
+                                        <strong>Approved By :</strong> {{ $approval_sett->employee->fullname ?? 'Employee tidak tersedia.' }}<br> 
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}  
+                                    </div>
+                                `;
                                 buttonColDec.appendChild(dateTextDec);
                             }
                         } else if (previousLayerApprovedDec) {
@@ -1266,6 +1368,7 @@
                             employee_id: "{{ $approval_extend->ReqName }}",
                             layer: "{{ $approval_extend->layer }}",
                             approval_status: "{{ $approval_extend->approval_status }}",
+                            role: "{{ $approval_extend->role_name }}",
                             by_admin: "{{ $approval_extend->by_admin }}",
                             admin_name: "{{ $approval_extend->admin->name ?? 'Admin tidak tersedia.' }}",
                             approved_at: "{{ $approval_extend->approved_at }}",
@@ -1276,25 +1379,37 @@
 
                 matchingDeclarationExtendItems.forEach((item, index) => {
                     var rowContainerExt = document.createElement('div');
-                    rowContainerExt.className = 'row mb-3 text-center';
+                    rowContainerExt.className = 'row mb-3 text-right';
 
                     var nameColExt = document.createElement('div');
-                    nameColExt.className = 'col-md-6';
+                    nameColExt.className = 'col-md-12';
                     var nameTextExt = document.createElement('p');
-                    nameTextExt.innerHTML = item.employee_id;
+                    nameTextExt.innerHTML = `<b>${item.role}</b> : ${item.employee_id}`;
                     nameColExt.appendChild(nameTextExt);
 
                     var buttonColExt = document.createElement('div');
-                    buttonColExt.className = 'col-md-6';
+                    buttonColExt.className = 'col-md-12';
 
                     var dateTextExt = document.createElement('p');
 
                     if (item.approval_status === "Approved") {
                         if (item.by_admin === "T") {
-                            dateTextExt.textContent = item.approval_status + " By Admin (" + item.admin_name + ") (" + moment(item.approved_at).format('DD-MMM-YY') + ")";
+                            dateTextExt.innerHTML = `
+                                <div class="border rounded p-2 mb-2">  
+                                    <strong>Status:</strong> ${item.approval_status} <br>  
+                                    <strong>Approved By Admin :</strong> ${item.admin_name} <br> 
+                                    <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}  
+                                </div>
+                            `;
                             buttonColExt.appendChild(dateTextExt);
                         } else {
-                            dateTextExt.textContent = item.approval_status + " (" + moment(item.approved_at).format('DD-MMM-YY') + ")";
+                            dateTextExt.innerHTML = `
+                                <div class="border rounded p-2 mb-2">  
+                                    <strong>Status:</strong> ${item.approval_status} <br>  
+                                    <strong>Approved By :</strong> ${item.employee_id} <br> 
+                                    <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}  
+                                </div>
+                            `;
                             buttonColExt.appendChild(dateTextExt);
                         }
                     } else if (previousLayerApprovedExt) {
