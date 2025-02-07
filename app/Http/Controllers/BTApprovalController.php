@@ -280,6 +280,9 @@ class BTApprovalController extends Controller
 
                     'total_days_others' => count($detail_ca['detail_lainnya'] ?? []),
                     'total_amount_others' => array_sum(array_column($detail_ca['detail_lainnya'] ?? [], 'nominal')),
+
+                    'total_days_meals' => count($detail_ca['detail_meals'] ?? []),
+                    'total_amount_meals' => array_sum(array_column($detail_ca['detail_meals'] ?? [], 'nominal')),
                 ];
                 // Fetch ticket and hotel details with proper conditions
                 $ticketDetails = Tiket::where('no_sppd', $businessTrip->no_sppd)
@@ -324,9 +327,9 @@ class BTApprovalController extends Controller
                         $employeeName,
                         $base64Image,
                         $textNotification,
-                    ));   
+                    ));
                 } catch (\Exception $e) {
-                	Log::error('Link Email Approval Bussines Trip tidak terkirim: ' . $e->getMessage());
+                    Log::error('Link Email Approval Bussines Trip tidak terkirim: ' . $e->getMessage());
                 }
             }
 
@@ -506,6 +509,30 @@ class BTApprovalController extends Controller
                     }
                 }
             }
+            if ($businessTrip->ca == 'Ya') {
+                $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
+                if ($caTransaction && $caTransaction->caonly != 'Y') {
+                    // Update CA approval status for L1
+                    ca_approval::updateOrCreate(
+                        ['ca_id' => $caTransaction->id, 'employee_id' => $employeeId, 'layer' => $layer],
+                        ['approval_status' => 'Approved', 'approved_at' => Carbon::now()]
+                    );
+
+                    // Find the next approver (Layer 3) from ca_approval
+                    $nextApproval = ca_approval::where('ca_id', $caTransaction->id)
+                        ->where('layer', $layer + 1)
+                        ->first();
+
+                    if ($nextApproval) {
+                        $updateCa = CATransaction::where('id', $caTransaction->id)->first();
+                        $updateCa->status_id = $nextApproval->employee_id;
+                        $updateCa->save();
+                    } else {
+                        // No next layer, so mark as Approved
+                        $caTransaction->update(['approval_status' => 'Approved']);
+                    }
+                }
+            }
             // Update the status in the BusinessTrip table
             $businessTrip->update(['status' => $statusValue]);
 
@@ -573,6 +600,9 @@ class BTApprovalController extends Controller
 
                     'total_days_others' => count($detail_ca['detail_lainnya'] ?? []),
                     'total_amount_others' => array_sum(array_column($detail_ca['detail_lainnya'] ?? [], 'nominal')),
+
+                    'total_days_meals' => count($detail_ca['detail_meals'] ?? []),
+                    'total_amount_meals' => array_sum(array_column($detail_ca['detail_meals'] ?? [], 'nominal')),
                 ];
                 // dd($caDetails,   $detail_ca );
 
@@ -589,6 +619,9 @@ class BTApprovalController extends Controller
 
                     'total_days_others' => count($declare_ca['detail_lainnya'] ?? []),
                     'total_amount_others' => array_sum(array_column($declare_ca['detail_lainnya'] ?? [], 'nominal')),
+
+                    'total_days_meals' => count($declare_ca['detail_meals'] ?? []),
+                    'total_amount_meals' => array_sum(array_column($declare_ca['detail_meals'] ?? [], 'nominal')),
                 ];
 
                 // Send email to the manager
@@ -606,67 +639,67 @@ class BTApprovalController extends Controller
                 }
             }
             // Handle CA approval for L1
-            if ($businessTrip->ca == 'Ya') {
-                $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
-                if ($caTransaction) {
-                    // Update CA approval status for L1
-                    ca_sett_approval::where('ca_id', $caTransaction->id)
-                        ->where('employee_id', $employeeId)
-                        ->where('layer', $layer)
-                        ->where('approval_status', '!=', 'Rejected')  // Only update if status isn't "Declaration Rejected"
-                        ->updateOrCreate(
-                            ['ca_id' => $caTransaction->id, 'employee_id' => $employeeId, 'layer' => $layer],
-                            ['approval_status' => 'Approved', 'approved_at' => now()]
-                        );
 
-                    // Find the next approver (Layer 2) from ca_approval
-                    $nextApproval = ca_sett_approval::where('ca_id', $caTransaction->id)
-                        ->where('layer', $layer + 1)
-                        ->first();
+            $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
+            if ($caTransaction) {
+                // Update CA approval status for L1
+                ca_sett_approval::where('ca_id', $caTransaction->id)
+                    ->where('employee_id', $employeeId)
+                    ->where('layer', $layer)
+                    ->where('approval_status', '!=', 'Rejected')  // Only update if status isn't "Declaration Rejected"
+                    ->updateOrCreate(
+                        ['ca_id' => $caTransaction->id, 'employee_id' => $employeeId, 'layer' => $layer],
+                        ['approval_status' => 'Approved', 'approved_at' => now()]
+                    );
 
-                    if ($nextApproval) {
-                        $updateCa = CATransaction::where('id', $caTransaction->id)->first();
-                        $updateCa->sett_id = $nextApproval->employee_id;
-                        $updateCa->save();
-                    } else {
-                        // No next layer, so mark as Approved
-                        $caTransaction->update(['approval_sett' => 'Approved']);
-                    }
+                // Find the next approver (Layer 2) from ca_approval
+                $nextApproval = ca_sett_approval::where('ca_id', $caTransaction->id)
+                    ->where('layer', $layer + 1)
+                    ->first();
+
+                if ($nextApproval) {
+                    $updateCa = CATransaction::where('id', $caTransaction->id)->first();
+                    $updateCa->sett_id = $nextApproval->employee_id;
+                    $updateCa->save();
+                } else {
+                    // No next layer, so mark as Approved
+                    $caTransaction->update(['approval_sett' => 'Approved']);
                 }
             }
+
         } elseif ($employeeId == $businessTrip->manager_l2_id) {
             $statusValue = 'Declaration Approved';
             $layer = 2;
 
             // Handle CA approval for L2
-            if ($businessTrip->ca == 'Ya') {
-                $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
-                if ($caTransaction) {
-                    // Update CA approval status for L2
-                    ca_sett_approval::where('ca_id', $caTransaction->id)
-                        ->where('employee_id', $employeeId)
-                        ->where('layer', $layer)
-                        ->where('approval_status', '!=', 'Rejected')  // Only update if status isn't "Declaration Rejected"
-                        ->updateOrCreate(
-                            ['ca_id' => $caTransaction->id, 'employee_id' => $employeeId, 'layer' => $layer],
-                            ['approval_status' => 'Approved', 'approved_at' => now()]
-                        );
 
-                    // Find the next approver (Layer 3) explicitly
-                    $nextApproval = ca_sett_approval::where('ca_id', $caTransaction->id)
-                        ->where('layer', $layer + 1) // This will ensure it gets the immediate next layer (3)
-                        ->first();
+            $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
+            if ($caTransaction) {
+                // Update CA approval status for L2
+                ca_sett_approval::where('ca_id', $caTransaction->id)
+                    ->where('employee_id', $employeeId)
+                    ->where('layer', $layer)
+                    ->where('approval_status', '!=', 'Rejected')  // Only update if status isn't "Declaration Rejected"
+                    ->updateOrCreate(
+                        ['ca_id' => $caTransaction->id, 'employee_id' => $employeeId, 'layer' => $layer],
+                        ['approval_status' => 'Approved', 'approved_at' => now()]
+                    );
 
-                    if ($nextApproval) {
-                        $updateCa = CATransaction::where('id', $caTransaction->id)->first();
-                        $updateCa->sett_id = $nextApproval->employee_id;
-                        $updateCa->save();
-                    } else {
-                        // No next layer, so mark as Approved
-                        $caTransaction->update(['approval_sett' => 'Approved']);
-                    }
+                // Find the next approver (Layer 3) explicitly
+                $nextApproval = ca_sett_approval::where('ca_id', $caTransaction->id)
+                    ->where('layer', $layer + 1) // This will ensure it gets the immediate next layer (3)
+                    ->first();
+
+                if ($nextApproval) {
+                    $updateCa = CATransaction::where('id', $caTransaction->id)->first();
+                    $updateCa->sett_id = $nextApproval->employee_id;
+                    $updateCa->save();
+                } else {
+                    // No next layer, so mark as Approved
+                    $caTransaction->update(['approval_sett' => 'Approved']);
                 }
             }
+
         } else {
             return redirect()->back()->with('error', 'Unauthorized action.');
         }
