@@ -275,15 +275,22 @@ function updateCAValue() {
     const cashAdvancedChecked = document.getElementById(
         "cashAdvancedCheckbox"
     ).checked;
-    const cashAdvancedEntertainChecked = document.getElementById(
+    const cashEntertainChecked = document.getElementById(
         "caEntertainCheckbox"
     ).checked;
     const caField = document.getElementById("caHidden");
+    const entField = document.getElementById("entHidden");
 
-    if (cashAdvancedChecked || cashAdvancedEntertainChecked) {
+    if (cashAdvancedChecked) {
         caField.value = "Ya";
     } else {
         caField.value = "Tidak";
+    }
+
+    if (cashEntertainChecked) {
+        entField.value = "Ya";
+    } else {
+        entField.value = "Tidak";
     }
 }
 

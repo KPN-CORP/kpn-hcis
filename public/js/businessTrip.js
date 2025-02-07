@@ -166,7 +166,7 @@ function updateCAValue() {
     const caField = document.getElementById("caHidden");
     const entField = document.getElementById("entHidden");
 
-    if (cashAdvancedChecked || cashAdvancedEntertainChecked) {
+    if (cashAdvancedChecked) {
         caField.value = "Ya";
     } else {
         caField.value = "Tidak";

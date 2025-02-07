@@ -1824,7 +1824,7 @@ class BusinessTripController extends Controller
                 ];
                 $ca->prove_declare = json_encode(array_values($existingFiles));
 
-                $ca->detail_ca = '[{"detail_perdiem":[],"detail_meals":[],"detail_transport":[],"detail_penginapan":[],"detail_lainnya":[]}]';
+                $ca->detail_ca = '{"detail_perdiem":[],"detail_meals":[],"detail_transport":[],"detail_penginapan":[],"detail_lainnya":[]}';
                 $ca->declare_ca = json_encode($declare_ca);
                 $model = $ca;
 

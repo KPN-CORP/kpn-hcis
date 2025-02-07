@@ -285,8 +285,22 @@
                                                         data-total-days="{{ $ca_transaction->total_days }}">
                                                         <i class="bi bi-list-check"></i>
                                                     </button>
+                                                @elseif($ca_transaction->approval_sett == 'Pending' && $ca_transaction->approval_status == 'Rejected')
+                                                    <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" title="Approval Declaration Update" data-bs-target="#approvalDecModal"
+                                                        data-type="{{ $ca_transaction->type_ca }}"
+                                                        data-total="{{ number_format($ca_transaction->total_ca, 0, ',', '.') }}"
+                                                        data-id="{{ $ca_transaction->id }}"
+                                                        data-no="{{ $ca_transaction->no_ca }}"
+                                                        data-sppd="{{ $ca_transaction->no_sppd }}"
+                                                        data-sett="{{ $ca_transaction->approval_sett }}"
+                                                        data-status="{{ $ca_transaction->approval_status }}"
+                                                        data-start-date="{{ $ca_transaction->start_date }}"
+                                                        data-end-date="{{ $ca_transaction->end_date }}"
+                                                        data-total-days="{{ $ca_transaction->total_days }}">
+                                                        <i class="bi bi-list-check"></i>
+                                                    </button>
                                                 @endif
-                                                @if($ca_transaction->approval_status=='Approved' && $ca_transaction->ca_status<>'Done')
+                                                @if(($ca_transaction->approval_status=='Approved' || $ca_transaction->approval_sett=='Approved' ) && $ca_transaction->ca_status<>'Done')
                                                     <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" title="Status Update" data-bs-target="#statusModal"
                                                         data-id="{{ $ca_transaction->id }}"
                                                         data-status="{{ $ca_transaction->ca_status }}"
@@ -767,6 +781,16 @@
                         var dateText = document.createElement('p');
 
                         if ("{{ $approval->approval_status }}" === "Approved") {
+                            if ("{{ $approval->by_admin }}" === "T") {
+                                dateText.textContent = "{{ $approval->approval_status }} By Admin ({{ $approval->admin->name ?? 'Admin tidak tersedia.' }}) ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
+                                buttonCol.appendChild(dateText);
+                            } else {
+                                dateText.textContent = "{{ $approval->approval_status }} ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
+                                buttonCol.appendChild(dateText);
+                            }
+                            // dateText.textContent = "{{ $approval->approval_status }} ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
+                            // buttonCol.appendChild(dateText);
+                        } else if ("{{ $approval->approval_status }}" === "Rejected") {
                             if ("{{ $approval->by_admin }}" === "T") {
                                 dateText.textContent = "{{ $approval->approval_status }} By Admin ({{ $approval->admin->name ?? 'Admin tidak tersedia.' }}) ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
                                 buttonCol.appendChild(dateText);

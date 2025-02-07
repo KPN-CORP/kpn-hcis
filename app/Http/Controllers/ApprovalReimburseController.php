@@ -248,6 +248,16 @@ class ApprovalReimburseController extends Controller
                     $caApproval->approval_status = 'Rejected';
                     $caApproval->approved_at = Carbon::now();
                     $caApproval->reject_info = $req->reject_info;
+                    $caApproval->total_ca = 0;
+                    $caApproval->total_cost = $caApproval->total_ca - $caApproval->total_real;
+                    if ($caApproval->type_ca == 'entr') {
+                        $caApproval->detail_ca = '[{"detail_e":[],"relation_e":[]}]';
+                        $caApproval->detail_ca = '[{"detail_e":[],"relation_e":[]}]';
+                    }
+                    if ($caApproval->type_ca == 'dns') {
+                        $caApproval->detail_ca = '{"detail_perdiem":[],"detail_meals":[],"detail_transport":[],"detail_penginapan":[],"detail_lainnya":[]}';
+                        $caApproval->detail_ca = '{"detail_perdiem":[],"detail_meals":[],"detail_transport":[],"detail_penginapan":[],"detail_lainnya":[]}';
+                    }
                     $caApproval->save();
                 }
             }
@@ -255,6 +265,18 @@ class ApprovalReimburseController extends Controller
             $caTransaction = CATransaction::where('id', $ca_id)->first();
             if ($caTransaction) {
                 $caTransaction->approval_status = 'Rejected';
+                $caTransaction->approved_at = Carbon::now();
+                $caTransaction->reject_info = $req->reject_info;
+                $caTransaction->total_ca = 0;
+                $caTransaction->total_cost = $caTransaction->total_ca - $caTransaction->total_real;
+                if ($caTransaction->type_ca == 'entr') {
+                    $caTransaction->detail_ca = '[{"detail_e":[],"relation_e":[]}]';
+                    $caTransaction->detail_ca = '[{"detail_e":[],"relation_e":[]}]';
+                }
+                if ($caTransaction->type_ca == 'dns') {
+                    $caTransaction->detail_ca = '{"detail_perdiem":[],"detail_meals":[],"detail_transport":[],"detail_penginapan":[],"detail_lainnya":[]}';
+                    $caTransaction->detail_ca = '{"detail_perdiem":[],"detail_meals":[],"detail_transport":[],"detail_penginapan":[],"detail_lainnya":[]}';
+                }
                 $caTransaction->save();
             }
 
@@ -431,6 +453,18 @@ class ApprovalReimburseController extends Controller
             $caTransaction = CATransaction::where('id', $ca_id)->first();
             if ($caTransaction) {
                 $caTransaction->approval_status = 'Rejected';
+                $caTransaction->approved_at = Carbon::now();
+                $caTransaction->reject_info = $req->reject_info;
+                $caTransaction->total_ca = 0;
+                $caTransaction->total_cost = $caTransaction->total_ca - $caTransaction->total_real;
+                if ($caTransaction->type_ca == 'entr') {
+                    $caTransaction->detail_ca = '[{"detail_e":[],"relation_e":[]}]';
+                    $caTransaction->detail_ca = '[{"detail_e":[],"relation_e":[]}]';
+                }
+                if ($caTransaction->type_ca == 'dns') {
+                    $caTransaction->detail_ca = '{"detail_perdiem":[],"detail_meals":[],"detail_transport":[],"detail_penginapan":[],"detail_lainnya":[]}';
+                    $caTransaction->detail_ca = '{"detail_perdiem":[],"detail_meals":[],"detail_transport":[],"detail_penginapan":[],"detail_lainnya":[]}';
+                }
                 $caTransaction->save();
             }
 
@@ -599,6 +633,18 @@ class ApprovalReimburseController extends Controller
             $caTransaction = CATransaction::where('id', $ca_id)->first();
             if ($caTransaction) {
                 $caTransaction->approval_status = 'Rejected';
+                $caTransaction->approved_at = Carbon::now();
+                $caTransaction->reject_info = $req->reject_info;
+                $caTransaction->total_ca = 0;
+                $caTransaction->total_cost = $caTransaction->total_ca - $caTransaction->total_real;
+                if ($caTransaction->type_ca == 'entr') {
+                    $caTransaction->detail_ca = '[{"detail_e":[],"relation_e":[]}]';
+                    $caTransaction->detail_ca = '[{"detail_e":[],"relation_e":[]}]';
+                }
+                if ($caTransaction->type_ca == 'dns') {
+                    $caTransaction->detail_ca = '{"detail_perdiem":[],"detail_meals":[],"detail_transport":[],"detail_penginapan":[],"detail_lainnya":[]}';
+                    $caTransaction->detail_ca = '{"detail_perdiem":[],"detail_meals":[],"detail_transport":[],"detail_penginapan":[],"detail_lainnya":[]}';
+                }
                 $caTransaction->save();
             }
 
