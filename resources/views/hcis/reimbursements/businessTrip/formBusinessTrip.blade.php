@@ -782,7 +782,7 @@
                                     <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${formatCurrency(totalRequest)}</strong></td>
                                 </tr>
                             </table>
-                        `;   
+                        `;
                     }
 
                     // Show SweetAlert confirmation with the input summary
