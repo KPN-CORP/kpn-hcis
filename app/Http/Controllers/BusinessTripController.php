@@ -563,6 +563,8 @@ class BusinessTripController extends Controller
                             'total_hari' => $hotelData['total_hari'][$key],
                             'approval_status' => $statusValue,
                             "contribution_level_code" => $request->bb_perusahaan,
+                            "manager_l1_id" => $managerL1,
+                            "manager_l2_id" => $managerL2,
                         ]);
 
                         $processedHotelIds[] = $hotelId;
@@ -587,6 +589,8 @@ class BusinessTripController extends Controller
                             'total_hari' => $hotelData['total_hari'][$key],
                             'approval_status' => $statusValue,
                             "contribution_level_code" => $request->bb_perusahaan,
+                            "manager_l1_id" => $managerL1,
+                            "manager_l2_id" => $managerL2,
                         ]);
 
                         $processedHotelIds[] = $newHotel->id;
@@ -665,6 +669,8 @@ class BusinessTripController extends Controller
                         'np_tkt' => $employee_data->fullname ?? null,
                         'tlp_tkt' => $employee_data->personal_mobile_number ?? null,
                         "contribution_level_code" => $request->bb_perusahaan,
+                        "manager_l1_id" => $managerL1,
+                        "manager_l2_id" => $managerL2,
                     ];
 
                     // Fetch employee data to get jk_tkt
@@ -2797,7 +2803,7 @@ class BusinessTripController extends Controller
 
                             $pdfFiles = [];
 
-                            $dnsCA = $allCa->where('type_ca', 'dns')->first();
+                            $dnsCA = $allCa->where('type_ca', 'dns')->where('approval_status', '!=', 'Rejected')->first();
                             if ($dnsCA) {
                                 $employee_data = Employee::where('id', $user->id)->first();
                                 $allowance = in_array($employee_data->group_company, ['Plantations', 'KPN Plantations'])
@@ -2809,32 +2815,34 @@ class BusinessTripController extends Controller
                                     ->where('approval_status', '!=', 'Rejected')
                                     ->orderBy('layer', 'asc')
                                     ->get();
+                                if ($approval->isNotEmpty()) {
+                                    $data = [
+                                        'link' => 'Cash Advanced',
+                                        'parentLink' => 'Reimbursement',
+                                        'userId' => $user->id,
+                                        'companies' => Company::orderBy('contribution_level')->get(),
+                                        'locations' => Location::orderBy('area')->get(),
+                                        'employee_data' => $employee_data,
+                                        'perdiem' => ListPerdiem::where('grade', $employee_data->job_level)
+                                            ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')
+                                            ->first(),
+                                        'no_sppds' => CATransaction::where('user_id', $user->id)
+                                            ->where('approval_sett', '!=', 'Done')
+                                            ->get(),
+                                        'transactions' => $dnsCA,
+                                        'approval' => $approval,
+                                        'allowance' => $allowance,
+                                    ];
 
-                                $data = [
-                                    'link' => 'Cash Advanced',
-                                    'parentLink' => 'Reimbursement',
-                                    'userId' => $user->id,
-                                    'companies' => Company::orderBy('contribution_level')->get(),
-                                    'locations' => Location::orderBy('area')->get(),
-                                    'employee_data' => $employee_data,
-                                    'perdiem' => ListPerdiem::where('grade', $employee_data->job_level)
-                                        ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')
-                                        ->first(),
-                                    'no_sppds' => CATransaction::where('user_id', $user->id)
-                                        ->where('approval_sett', '!=', 'Done')
-                                        ->get(),
-                                    'transactions' => $dnsCA,
-                                    'approval' => $approval,
-                                    'allowance' => $allowance,
-                                ];
 
-                                $pdfFiles[] = [
-                                    'name' => 'CA.pdf',
-                                    'viewPath' => 'hcis.reimbursements.businessTrip.ca_pdf',
-                                    'data' => $data
-                                ];
+                                    $pdfFiles[] = [
+                                        'name' => 'CA.pdf',
+                                        'viewPath' => 'hcis.reimbursements.businessTrip.ca_pdf',
+                                        'data' => $data
+                                    ];
+                                }
                             }
-                            $entrCA = $allCa->where('type_ca', 'entr')->first();
+                            $entrCA = $allCa->where('type_ca', 'entr')->where('approval_status', '!=', 'Rejected')->first();
                             if ($entrCA) {
                                 $employee_data = Employee::where('id', $user->id)->first();
                                 $allowance = in_array($employee_data->group_company, ['Plantations', 'KPN Plantations'])
@@ -2846,30 +2854,32 @@ class BusinessTripController extends Controller
                                     ->where('approval_status', '!=', 'Rejected')
                                     ->orderBy('layer', 'asc')
                                     ->get();
+                                if ($approval->isNotEmpty()) {
+                                    $data = [
+                                        'link' => 'Cash Advanced Entertainment',
+                                        'parentLink' => 'Reimbursement',
+                                        'userId' => $user->id,
+                                        'companies' => Company::orderBy('contribution_level')->get(),
+                                        'locations' => Location::orderBy('area')->get(),
+                                        'employee_data' => $employee_data,
+                                        'perdiem' => ListPerdiem::where('grade', $employee_data->job_level)
+                                            ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')
+                                            ->first(),
+                                        'no_sppds' => CATransaction::where('user_id', $user->id)
+                                            ->where('approval_sett', '!=', 'Done')
+                                            ->get(),
+                                        'transactions' => $entrCA,
+                                        'approval' => $approval,
+                                        'allowance' => $allowance,
+                                    ];
 
-                                $data = [
-                                    'link' => 'Cash Advanced Entertainment',
-                                    'parentLink' => 'Reimbursement',
-                                    'userId' => $user->id,
-                                    'companies' => Company::orderBy('contribution_level')->get(),
-                                    'locations' => Location::orderBy('area')->get(),
-                                    'employee_data' => $employee_data,
-                                    'perdiem' => ListPerdiem::where('grade', $employee_data->job_level)
-                                        ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')
-                                        ->first(),
-                                    'no_sppds' => CATransaction::where('user_id', $user->id)
-                                        ->where('approval_sett', '!=', 'Done')
-                                        ->get(),
-                                    'transactions' => $entrCA,
-                                    'approval' => $approval,
-                                    'allowance' => $allowance,
-                                ];
 
-                                $pdfFiles[] = [
-                                    'name' => 'CA Entertain.pdf',
-                                    'viewPath' => 'hcis.reimbursements.businessTrip.caEntr_pdf',
-                                    'data' => $data
-                                ];
+                                    $pdfFiles[] = [
+                                        'name' => 'CA Entertain.pdf',
+                                        'viewPath' => 'hcis.reimbursements.businessTrip.caEntr_pdf',
+                                        'data' => $data
+                                    ];
+                                }
                             }
                             foreach ($pdfFiles as $pdfFile) {
                                 $pdf = PDF::loadView($pdfFile['viewPath'], $pdfFile['data']);
@@ -3153,7 +3163,7 @@ class BusinessTripController extends Controller
 
                             $pdfFiles = [];
 
-                            $dnsCA = $allCa->where('type_ca', 'dns')->first();
+                            $dnsCA = $allCa->where('type_ca', 'dns')->where('approval_status', '!=', 'Rejected')->first();
                             if ($dnsCA) {
                                 $employee_data = Employee::where('id', $sppd->user_id)->first();
                                 $allowance = in_array($employee_data->group_company, ['Plantations', 'KPN Plantations'])
@@ -3190,7 +3200,7 @@ class BusinessTripController extends Controller
                                     'data' => $data
                                 ];
                             }
-                            $entrCA = $allCa->where('type_ca', 'entr')->first();
+                            $entrCA = $allCa->where('type_ca', 'entr')->where('approval_status', '!=', 'Rejected')->first();
                             if ($entrCA) {
                                 $employee_data = Employee::where('id', $sppd->user_id)->first();
                                 $allowance = in_array($employee_data->group_company, ['Plantations', 'KPN Plantations'])
@@ -3300,7 +3310,7 @@ class BusinessTripController extends Controller
 
                             $pdfFiles = [];
 
-                             $dnsCA = $allCa->where('type_ca', 'dns')->first();
+                            $dnsCA = $allCa->where('type_ca', 'dns')->first();
                             if ($dnsCA) {
                                 $employee_data = Employee::where('id', $sppd->user_id)->first();
                                 $allowance = in_array($employee_data->group_company, ['Plantations', 'KPN Plantations'])
@@ -3658,6 +3668,8 @@ class BusinessTripController extends Controller
                     $hotel->total_hari = $hotelData['total_hari'][$key];
                     $hotel->approval_status = $statusValue;
                     $hotel->contribution_level_code = $request->bb_perusahaan;
+                    $hotel->manager_l1_id = $managerL1;
+                    $hotel->manager_l2_id = $managerL2;
 
                     $hotel->save();
                 }
@@ -3724,6 +3736,8 @@ class BusinessTripController extends Controller
                     $tiket->ket_tkt = $ticketData['ket_tkt'][$key] ?? null;
                     $tiket->approval_status = $statusValue;
                     $tiket->contribution_level_code = $request->bb_perusahaan;
+                    $tiket->manager_l1_id = $managerL1;
+                    $tiket->manager_l2_id = $managerL2;
                     $tiket->jns_dinas_tkt = 'Dinas';
 
                     $tiket->save();

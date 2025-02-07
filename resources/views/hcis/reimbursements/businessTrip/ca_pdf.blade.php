@@ -375,7 +375,6 @@
                                         @if ($role->approval_status == 'Approved')
                                             {{-- <br><img src="{{ public_path('images/approved_64.png')}}" alt="logo"> --}}
                                             {{-- <br><img src="{{ asset('images/approved_64.png') }}" alt="logo"> --}}
-                                            LSALDLASDL
                                         @else
                                             <br><br><br><br><br>
                                         @endif
