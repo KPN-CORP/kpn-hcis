@@ -2932,41 +2932,95 @@ class BusinessTripController extends Controller
                             break;
                         case 'deklarasi':
                             $ca = CATransaction::where('no_sppd', $sppd->no_sppd)->first();
-                            if (!$ca || in_array($sppd->status, ['Approved', 'Pending L1', 'Pending L2', 'Rejected', 'Declaration Draft'])) {
-                                continue 2;
-                            }
-                            $pdfName = 'Deklarasi.pdf';
-                            $viewPath = 'hcis.reimbursements.businessTrip.deklarasi_pdf';
-                            $employee_data = Employee::where('id', $user->id)->first();
-                            if ($employee_data->group_company == 'Plantations' || $employee_data->group_company == 'KPN Plantations') {
-                                $allowance = "Perdiem";
-                            } else {
-                                $allowance = "Allowance";
-                            }
-                            $companies = Company::orderBy('contribution_level')->get();
-                            $locations = Location::orderBy('area')->get();
-                            $perdiem = ListPerdiem::where('grade', $employee_data->job_level)
-                                ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')->first();
-                            $no_sppds = CATransaction::where('user_id', $user->id)->where('approval_sett', '!=', 'Done')->get();
-                            $approval = ca_sett_approval::with('employee')
-                                ->where('ca_id', $ca->id)
-                                ->where('approval_status', '!=', 'Rejected')
-                                ->orderBy('layer', 'asc')
+                            $allCa = CATransaction::where('no_sppd', $sppd->no_sppd)
                                 ->get();
 
-                            $data = [
-                                'link' => 'Cash Advanced',
-                                'parentLink' => 'Reimbursement',
-                                'userId' => $user->id,
-                                'companies' => $companies,
-                                'locations' => $locations,
-                                'employee_data' => $employee_data,
-                                'transactions' => $ca,
-                                'approval' => $approval,
-                                'perdiem' => $perdiem,
-                                'no_sppds' => $no_sppds,
-                                'allowance' => $allowance,
-                            ];
+                            if ($allCa->isEmpty() || in_array($sppd->status, ['Approved', 'Pending L1', 'Pending L2', 'Rejected', 'Declaration Draft'])) {
+                                continue 2;
+                            }
+
+
+                            $pdfFiles = [];
+
+                            $dnsCA = $allCa->where('type_ca', 'dns')->first();
+                            if ($dnsCA) {
+                                $employee_data = Employee::where('id', $user->id)->first();
+                                $allowance = in_array($employee_data->group_company, ['Plantations', 'KPN Plantations'])
+                                    ? "Perdiem"
+                                    : "Allowance";
+
+                                $approval = ca_approval::with('employee')
+                                    ->where('ca_id', $dnsCA->id)
+                                    ->where('approval_status', '!=', 'Rejected')
+                                    ->orderBy('layer', 'asc')
+                                    ->get();
+
+                                $data = [
+                                    'link' => 'Cash Advanced',
+                                    'parentLink' => 'Reimbursement',
+                                    'userId' => $user->id,
+                                    'companies' => Company::orderBy('contribution_level')->get(),
+                                    'locations' => Location::orderBy('area')->get(),
+                                    'employee_data' => $employee_data,
+                                    'perdiem' => ListPerdiem::where('grade', $employee_data->job_level)
+                                        ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')
+                                        ->first(),
+                                    'no_sppds' => CATransaction::where('user_id', $user->id)
+                                        ->where('approval_sett', '!=', 'Done')
+                                        ->get(),
+                                    'transactions' => $dnsCA,
+                                    'approval' => $approval,
+                                    'allowance' => $allowance,
+                                ];
+
+                                $pdfFiles[] = [
+                                    'name' => 'Deklarasi.pdf',
+                                    'viewPath' => 'hcis.reimbursements.businessTrip.deklarasi_pdf',
+                                    'data' => $data
+                                ];
+                            }
+                            $entrCA = $allCa->where('type_ca', 'entr')->first();
+                            if ($entrCA) {
+                                $employee_data = Employee::where('id', $user->id)->first();
+                                $allowance = in_array($employee_data->group_company, ['Plantations', 'KPN Plantations'])
+                                    ? "Perdiem"
+                                    : "Allowance";
+
+                                $approval = ca_approval::with('employee')
+                                    ->where('ca_id', $entrCA->id)
+                                    ->where('approval_status', '!=', 'Rejected')
+                                    ->orderBy('layer', 'asc')
+                                    ->get();
+
+                                $data = [
+                                    'link' => 'Cash Advanced Entertainment',
+                                    'parentLink' => 'Reimbursement',
+                                    'userId' => $user->id,
+                                    'companies' => Company::orderBy('contribution_level')->get(),
+                                    'locations' => Location::orderBy('area')->get(),
+                                    'employee_data' => $employee_data,
+                                    'perdiem' => ListPerdiem::where('grade', $employee_data->job_level)
+                                        ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')
+                                        ->first(),
+                                    'no_sppds' => CATransaction::where('user_id', $user->id)
+                                        ->where('approval_sett', '!=', 'Done')
+                                        ->get(),
+                                    'transactions' => $entrCA,
+                                    'approval' => $approval,
+                                    'allowance' => $allowance,
+                                ];
+
+                                $pdfFiles[] = [
+                                    'name' => 'Deklarasi Entertain.pdf',
+                                    'viewPath' => 'hcis.reimbursements.businessTrip.deklarasiEntr_pdf',
+                                    'data' => $data
+                                ];
+                            }
+                            foreach ($pdfFiles as $pdfFile) {
+                                $pdf = PDF::loadView($pdfFile['viewPath'], $pdfFile['data']);
+                                $pdfContent = $pdf->output();
+                                $zip->addFromString($pdfFile['name'], $pdfContent);
+                            }
                             break;
                         default:
                             continue 2;
@@ -3087,46 +3141,98 @@ class BusinessTripController extends Controller
                             $data = ['sppd' => $sppd];
                             break;
                         case 'ca':
-                            $ca = CATransaction::where('no_sppd', $sppd->no_sppd)->first();
-                            if (!$ca || $ca->detail_ca === NULL) {
-                                Log::info('Skipping CA download: Not a CA or no detailed CA information');
+                            $ca = CATransaction::where('no_sppd', $sppd->no_sppd)
+                                ->first();
+                            $allCa = CATransaction::where('no_sppd', $sppd->no_sppd)
+                                ->get();
+
+                            if ($allCa->isEmpty()) {
+                                Log::info('Skipping CA download: No CA records found');
                                 continue 2;
                             }
 
-                            // Integrate CA PDF generation from cashadvancedDownload
-                            $pdfName = 'CA.pdf';
-                            $viewPath = 'hcis.reimbursements.businessTrip.ca_pdf';
-                            $employee_data = Employee::where('id', $sppd->user_id)->first();
-                            $companies = Company::orderBy('contribution_level')->get();
-                            $locations = Location::orderBy('area')->get();
-                            $perdiem = ListPerdiem::where('grade', $employee_data->job_level)
-                                ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')->first();
-                            $no_sppds = CATransaction::where('user_id', $user->id)->where('approval_sett', '!=', 'Done')->get();
-                            $approval = ca_approval::with('employee')
-                                ->where('ca_id', $ca->id)
-                                ->where('approval_status', '!=', 'Rejected')
-                                ->orderBy('layer', 'asc')
-                                ->get();
+                            $pdfFiles = [];
 
-                            if ($employee_data->group_company == 'Plantations' || $employee_data->group_company == 'KPN Plantations') {
-                                $allowance = "Perdiem";
-                            } else {
-                                $allowance = "Allowance";
+                            $dnsCA = $allCa->where('type_ca', 'dns')->first();
+                            if ($dnsCA) {
+                                $employee_data = Employee::where('id', $sppd->user_id)->first();
+                                $allowance = in_array($employee_data->group_company, ['Plantations', 'KPN Plantations'])
+                                    ? "Perdiem"
+                                    : "Allowance";
+
+                                $approval = ca_approval::with('employee')
+                                    ->where('ca_id', $dnsCA->id)
+                                    ->where('approval_status', '!=', 'Rejected')
+                                    ->orderBy('layer', 'asc')
+                                    ->get();
+
+                                $data = [
+                                    'link' => 'Cash Advanced',
+                                    'parentLink' => 'Reimbursement',
+                                    'userId' => $user->id,
+                                    'companies' => Company::orderBy('contribution_level')->get(),
+                                    'locations' => Location::orderBy('area')->get(),
+                                    'employee_data' => $employee_data,
+                                    'perdiem' => ListPerdiem::where('grade', $employee_data->job_level)
+                                        ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')
+                                        ->first(),
+                                    'no_sppds' => CATransaction::where('user_id', $user->id)
+                                        ->where('approval_sett', '!=', 'Done')
+                                        ->get(),
+                                    'transactions' => $dnsCA,
+                                    'approval' => $approval,
+                                    'allowance' => $allowance,
+                                ];
+
+                                $pdfFiles[] = [
+                                    'name' => 'CA.pdf',
+                                    'viewPath' => 'hcis.reimbursements.businessTrip.ca_pdf',
+                                    'data' => $data
+                                ];
+                            }
+                            $entrCA = $allCa->where('type_ca', 'entr')->first();
+                            if ($entrCA) {
+                                $employee_data = Employee::where('id', $sppd->user_id)->first();
+                                $allowance = in_array($employee_data->group_company, ['Plantations', 'KPN Plantations'])
+                                    ? "Perdiem"
+                                    : "Allowance";
+
+                                $approval = ca_approval::with('employee')
+                                    ->where('ca_id', $entrCA->id)
+                                    ->where('approval_status', '!=', 'Rejected')
+                                    ->orderBy('layer', 'asc')
+                                    ->get();
+
+                                $data = [
+                                    'link' => 'Cash Advanced Entertainment',
+                                    'parentLink' => 'Reimbursement',
+                                    'userId' => $user->id,
+                                    'companies' => Company::orderBy('contribution_level')->get(),
+                                    'locations' => Location::orderBy('area')->get(),
+                                    'employee_data' => $employee_data,
+                                    'perdiem' => ListPerdiem::where('grade', $employee_data->job_level)
+                                        ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')
+                                        ->first(),
+                                    'no_sppds' => CATransaction::where('user_id', $user->id)
+                                        ->where('approval_sett', '!=', 'Done')
+                                        ->get(),
+                                    'transactions' => $entrCA,
+                                    'approval' => $approval,
+                                    'allowance' => $allowance,
+                                ];
+
+                                $pdfFiles[] = [
+                                    'name' => 'CA Entertain.pdf',
+                                    'viewPath' => 'hcis.reimbursements.businessTrip.caEntr_pdf',
+                                    'data' => $data
+                                ];
+                            }
+                            foreach ($pdfFiles as $pdfFile) {
+                                $pdf = PDF::loadView($pdfFile['viewPath'], $pdfFile['data']);
+                                $pdfContent = $pdf->output();
+                                $zip->addFromString($pdfFile['name'], $pdfContent);
                             }
 
-                            $data = [
-                                'link' => 'Cash Advanced',
-                                'parentLink' => 'Reimbursement',
-                                'userId' => $user->id,
-                                'companies' => $companies,
-                                'locations' => $locations,
-                                'employee_data' => $employee_data,
-                                'perdiem' => $perdiem,
-                                'no_sppds' => $no_sppds,
-                                'transactions' => $ca,
-                                'approval' => $approval,
-                                'allowance' => $allowance,
-                            ];
                             break;
                         case 'tiket':
                             $tickets = Tiket::where('no_sppd', $sppd->no_sppd)->get();
@@ -3182,43 +3288,97 @@ class BusinessTripController extends Controller
                             $data = ['taksi' => $taksi];
                             break;
                         case 'deklarasi':
-                            $ca = CATransaction::where('no_sppd', $sppd->no_sppd)->first();
-                            if (!$ca || in_array($sppd->status, ['Approved', 'Pending L1', 'Pending L2', 'Rejected', 'Declaration Draft'])) {
-                                continue 2;
-                            }
-                            $employee_data = Employee::where('id', $sppd->user_id)->first();
-                            if ($employee_data->group_company == 'Plantations' || $employee_data->group_company == 'KPN Plantations') {
-                                $allowance = "Perdiem";
-                            } else {
-                                $allowance = "Allowance";
-                            }
-                            $pdfName = 'Deklarasi.pdf';
-                            $viewPath = 'hcis.reimbursements.businessTrip.deklarasi_pdf';
-                            $employee_data = Employee::where('id', $user->id)->first();
-                            $companies = Company::orderBy('contribution_level')->get();
-                            $locations = Location::orderBy('area')->get();
-                            $perdiem = ListPerdiem::where('grade', $employee_data->job_level)
-                                ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')->first();
-                            $no_sppds = CATransaction::where('user_id', $user->id)->where('approval_sett', '!=', 'Done')->get();
-                            $approval = ca_sett_approval::with('employee')
-                                ->where('ca_id', $ca->id)
-                                ->where('approval_status', '!=', 'Rejected')
-                                ->orderBy('layer', 'asc')
+                            $ca = CATransaction::where('no_sppd', $sppd->no_sppd)
+                                ->first();
+                            $allCa = CATransaction::where('no_sppd', $sppd->no_sppd)
                                 ->get();
 
-                            $data = [
-                                'link' => 'Cash Advanced',
-                                'parentLink' => 'Reimbursement',
-                                'userId' => $user->id,
-                                'companies' => $companies,
-                                'locations' => $locations,
-                                'employee_data' => $employee_data,
-                                'transactions' => $ca,
-                                'approval' => $approval,
-                                'perdiem' => $perdiem,
-                                'no_sppds' => $no_sppds,
-                                '$allowance' => $allowance,
-                            ];
+                            if ($allCa->isEmpty() || in_array($sppd->status, ['Approved', 'Pending L1', 'Pending L2', 'Rejected', 'Declaration Draft'])) {
+                                continue 2;
+                            }
+
+
+                            $pdfFiles = [];
+
+                             $dnsCA = $allCa->where('type_ca', 'dns')->first();
+                            if ($dnsCA) {
+                                $employee_data = Employee::where('id', $sppd->user_id)->first();
+                                $allowance = in_array($employee_data->group_company, ['Plantations', 'KPN Plantations'])
+                                    ? "Perdiem"
+                                    : "Allowance";
+
+                                $approval = ca_approval::with('employee')
+                                    ->where('ca_id', $dnsCA->id)
+                                    ->where('approval_status', '!=', 'Rejected')
+                                    ->orderBy('layer', 'asc')
+                                    ->get();
+
+                                $data = [
+                                    'link' => 'Cash Advanced',
+                                    'parentLink' => 'Reimbursement',
+                                    'userId' => $user->id,
+                                    'companies' => Company::orderBy('contribution_level')->get(),
+                                    'locations' => Location::orderBy('area')->get(),
+                                    'employee_data' => $employee_data,
+                                    'perdiem' => ListPerdiem::where('grade', $employee_data->job_level)
+                                        ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')
+                                        ->first(),
+                                    'no_sppds' => CATransaction::where('user_id', $user->id)
+                                        ->where('approval_sett', '!=', 'Done')
+                                        ->get(),
+                                    'transactions' => $dnsCA,
+                                    'approval' => $approval,
+                                    'allowance' => $allowance,
+                                ];
+
+                                $pdfFiles[] = [
+                                    'name' => 'Deklarasi.pdf',
+                                    'viewPath' => 'hcis.reimbursements.businessTrip.deklarasi_pdf',
+                                    'data' => $data
+                                ];
+                            }
+                            $entrCA = $allCa->where('type_ca', 'entr')->first();
+                            if ($entrCA) {
+                                $employee_data = Employee::where('id', $sppd->user_id)->first();
+                                $allowance = in_array($employee_data->group_company, ['Plantations', 'KPN Plantations'])
+                                    ? "Perdiem"
+                                    : "Allowance";
+
+                                $approval = ca_approval::with('employee')
+                                    ->where('ca_id', $entrCA->id)
+                                    ->where('approval_status', '!=', 'Rejected')
+                                    ->orderBy('layer', 'asc')
+                                    ->get();
+
+                                $data = [
+                                    'link' => 'Cash Advanced Entertainment',
+                                    'parentLink' => 'Reimbursement',
+                                    'userId' => $user->id,
+                                    'companies' => Company::orderBy('contribution_level')->get(),
+                                    'locations' => Location::orderBy('area')->get(),
+                                    'employee_data' => $employee_data,
+                                    'perdiem' => ListPerdiem::where('grade', $employee_data->job_level)
+                                        ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')
+                                        ->first(),
+                                    'no_sppds' => CATransaction::where('user_id', $user->id)
+                                        ->where('approval_sett', '!=', 'Done')
+                                        ->get(),
+                                    'transactions' => $entrCA,
+                                    'approval' => $approval,
+                                    'allowance' => $allowance,
+                                ];
+
+                                $pdfFiles[] = [
+                                    'name' => 'Deklarasi Entertain.pdf',
+                                    'viewPath' => 'hcis.reimbursements.businessTrip.deklarasiEntr_pdf',
+                                    'data' => $data
+                                ];
+                            }
+                            foreach ($pdfFiles as $pdfFile) {
+                                $pdf = PDF::loadView($pdfFile['viewPath'], $pdfFile['data']);
+                                $pdfContent = $pdf->output();
+                                $zip->addFromString($pdfFile['name'], $pdfContent);
+                            }
                             break;
                         default:
                             continue 2;

@@ -373,7 +373,6 @@
                 </td>
             </tr>
         </table>
-    @elseif ( $transactions->type_ca == 'ndns' )
         <table class="table-approve" style="width: 80%;">
             <tr>
                 <th colspan="5"><b>Detail Cash Advanced :</b></th>

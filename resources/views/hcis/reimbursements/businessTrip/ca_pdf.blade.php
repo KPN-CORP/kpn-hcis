@@ -374,7 +374,8 @@
                                     <td>
                                         @if ($role->approval_status == 'Approved')
                                             {{-- <br><img src="{{ public_path('images/approved_64.png')}}" alt="logo"> --}}
-                                            <br><img src="{{ asset('images/approved_64.png') }}" alt="logo">
+                                            {{-- <br><img src="{{ asset('images/approved_64.png') }}" alt="logo"> --}}
+                                            LSALDLASDL
                                         @else
                                             <br><br><br><br><br>
                                         @endif
@@ -561,37 +562,6 @@
                         </tr>
                     </table>
                 @endif
-            @elseif ($transactions->type_ca == 'ndns')
-                <table class="table-approve">
-                    <tr>
-                        <th colspan="3"><b>Detail Non Bussiness Trip :</b></th>
-                    </tr>
-                    <tr class="head-row">
-                        <td style="width:12%">Date</td>
-                        <td>Information</td>
-                        <td style="width:20%">Amount</td>
-                    </tr>
-
-                    @foreach ($detailCA as $item)
-                        <tr style="text-align: center">
-                            <td>{{ \Carbon\Carbon::parse($item['tanggal_nbt'])->format('d-M-y') }}</td>
-                            <td style="text-align: left">{{ $item['keterangan_nbt'] }}</td>
-                            <td>
-                                <span style="float: left; margin-left:4px">Rp.</span>
-                                <span
-                                    style="float: right;">{{ number_format($item['nominal_nbt'], 0, ',', '.') }}</span>
-                            </td>
-                        </tr>
-                    @endforeach
-                    <tr class="total-row">
-                        <td colspan="2" class="head-row">Total</td>
-                        <td>
-                            <span style="float: left; margin-left:4px">Rp.</span>
-                            <span
-                                style="float: right;">{{ number_format(array_sum(array_column($detailCA, 'nominal_nbt')), 0, ',', '.') }}</span>
-                        </td>
-                    </tr>
-                </table>
             @elseif ($transactions->type_ca == 'entr')
                 @if (count($detailCA['detail_e']) > 0 && !empty($detailCA['detail_e'][0]['type']))
                     <table class="table-approve">
