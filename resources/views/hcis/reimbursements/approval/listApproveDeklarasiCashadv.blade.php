@@ -151,7 +151,7 @@
                                 const initialDetailCA = @json($declareCA);
                             </script>
                             <br>
-                            <div class="row" id="ca_bt" style="display: none;">
+                            <div class="row" id="ca_bt" style="display: {{ $transactions->type_ca == 'dns' ? 'block' : 'none' }}">  
                                 @if ($transactions->type_ca == 'dns')
                                     <div class="col-md-12">
                                         <div class="table-responsive-sm">
@@ -248,6 +248,98 @@
                                                                         <td colspan="5" class="text-right">Total</td>
                                                                         <td class="text-center">{{$totalDays}} Days</td>
                                                                         <td style="text-align: right"> Rp. {{ number_format($totalPerdiem, 0, ',', '.') }} </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <div class="text-bg-primary fw-bold p-1 text-center" style="margin-bottom:-20px">Meals :</div>
+                                                    <div class="table-responsive">
+                                                        <table class="table table-hover table-sm nowrap" id="mealsTableDec" width="100%" cellspacing="0">
+                                                            <thead class="thead-light">
+                                                                <tr style="text-align-last: center;">
+                                                                    <th>No</th>
+                                                                    <th>Start Date</th>
+                                                                    <th>End Date</th>
+                                                                    <th>Total Days</th>
+                                                                    <th>Company Code</th>
+                                                                    <th>Information</th>
+                                                                    <th>Amount</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <?php $totalMeals = 0; $totalDays = 0; ?>
+                                                                @foreach ($detailCA['detail_meals'] as $meals)
+                                                                    <tr class="text-center">
+                                                                        <td class="text-center">{{ $loop->index + 1 }}</td>
+                                                                        <td>{{ \Carbon\Carbon::parse($meals['start_date'])->format('d-M-y') }}</td>
+                                                                        <td>{{ \Carbon\Carbon::parse($meals['end_date'])->format('d-M-y') }}</td>
+                                                                        <td>
+                                                                            {{$meals['total_days']}}
+                                                                        </td>
+                                                                        <td>{{ $meals['company_code'] }}</td>
+                                                                        <td>
+                                                                            {{ $meals['keterangan'] }}
+                                                                        </td>
+                                                                        <td style="text-align: right">Rp. {{ number_format($meals['nominal'], 0, ',', '.') }}</td>
+                                                                    </tr>
+                                                                    <?php
+                                                                        $totalMeals += $meals['nominal'];
+                                                                    ?>
+                                                                @endforeach
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="6" class="text-right">Total</td>
+                                                                        <td style="text-align: right"> Rp. {{ number_format($totalMeals, 0, ',', '.') }} </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="text-bg-primary fw-bold p-1 text-center" style="margin-bottom:-20px">Meals Declaration :</div>
+                                                    <div class="table-responsive">
+                                                        <table class="table table-hover table-sm nowrap" id="mealsTable" width="100%" cellspacing="0">
+                                                            <thead class="thead-light">
+                                                                <tr style="text-align-last: center;">
+                                                                    <th>No</th>
+                                                                    <th>Start Date</th>
+                                                                    <th>End Date</th>
+                                                                    <th>Total Days</th>
+                                                                    <th>Company Code</th>
+                                                                    <th>Information</th>
+                                                                    <th>Amount</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <?php $totalMeals = 0; $totalDays = 0; ?>
+                                                                @foreach ($declareCA['detail_meals'] as $meals)
+                                                                    <tr class="text-center">
+                                                                        <td class="text-center">{{ $loop->index + 1 }}</td>
+                                                                        <td>{{ \Carbon\Carbon::parse($meals['start_date'])->format('d-M-y') }}</td>
+                                                                        <td>{{ \Carbon\Carbon::parse($meals['end_date'])->format('d-M-y') }}</td>
+                                                                        <td>
+                                                                            {{$meals['total_days']}}
+                                                                        </td>
+                                                                        <td>{{ $meals['company_code'] }}</td>
+                                                                        <td>
+                                                                            {{ $meals['keterangan'] }}
+                                                                        </td>
+                                                                        <td style="text-align: right">Rp. {{ number_format($meals['nominal'], 0, ',', '.') }}</td>
+                                                                    </tr>
+                                                                    <?php
+                                                                        $totalMeals += $meals['nominal'];
+                                                                    ?>
+                                                                @endforeach
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="6" class="text-right">Total</td>
+                                                                        <td style="text-align: right"> Rp. {{ number_format($totalMeals, 0, ',', '.') }} </td>
                                                                     </tr>
                                                                 </tbody>
                                                             </tbody>
@@ -789,40 +881,46 @@
                                 @endif
                             </div>
                             <div class="row">
-                                <div class="col-md-12 mb-2">
-                                    <label for="prove_declare" class="form-label">Upload Document</label>
-
-                                    <!-- Input file -->
-                                    <input type="hidden" id="prove_declare" name="prove_declare" accept="image/*, application/pdf" class="form-control" onchange="previewFile()" disabled>
-                                    <input type="hidden" name="existing_prove_declare" value="{{ $transactions->prove_declare }}">
-
-                                    <!-- Show existing file -->
-                                    <div id="existing-file-preview" class="mt-2">
-                                        @if ($transactions->prove_declare)
-                                            @php
-                                                //$existingFiles = json_decode($transactions->prove_declare, true);
-                                                $existingFiles = is_array($transactions->prove_declare) ? $transactions->prove_declare : [$transactions->prove_declare];
-                                            @endphp
-
-                                            @foreach ($existingFiles as $file)
-                                                @php $extension = pathinfo($file, PATHINFO_EXTENSION); @endphp
-                                                <div class="file-preview" data-file="{{ $file }}" style="position: relative; display: inline-block; margin: 10px;">
-                                                    @if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif']))
-                                                        <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
-                                                            <img src="{{ asset($file) }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
-                                                        </a>
-                                                    @elseif($extension === 'pdf')
-                                                        <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
-                                                            <img src="{{ asset('images/pdf_icon.png') }}" alt="PDF File">
-                                                            <p>Click to view PDF</p>
-                                                        </a>
-                                                    @else
-                                                        <p>File type not supported.</p>
-                                                    @endif
-                                                </div>
-                                            @endforeach
-                                        @endif
-                                    </div>
+                                <div class="col-md-12 mb-2 mt-2">
+                                    @if (isset($transactions->prove_declare) && $transactions->prove_declare)
+                                        <input type="hidden" name="existing_prove_declare" id="existing-prove-declare" value="{{ $transactions->prove_declare }}">
+                                        <input type="hidden" name="removed_prove_declare" id="removed-prove-declare" value="[]">
+    
+                                        <!-- Preview untuk file lama -->
+                                        <div id="existing-files-label" style="margin-bottom: 10px; font-weight: bold;">
+                                            @if ($transactions->prove_declare)
+                                                
+                                                Uploaded Document:
+                                            @endif
+                                        </div>
+                                        <div id="existing-file-preview" class="mt-2">
+                                            @if ($transactions->prove_declare)
+                                                @php
+                                                    $existingFiles = json_decode($transactions->prove_declare, true);
+                                                @endphp
+    
+                                                @foreach ($existingFiles as $file)
+                                                    @php $extension = pathinfo($file, PATHINFO_EXTENSION); @endphp
+                                                    <div class="file-preview" data-file="{{ $file }}" style="position: relative; display: inline-block; margin: 10px;">
+                                                        @if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'PNG', 'JPG', 'JPEG']))
+                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
+                                                                <img src="{{ asset($file) }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
+                                                            </a>
+                                                        @elseif($extension === 'pdf')
+                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
+                                                                <img src="{{ asset('images/pdf_icon.png') }}" alt="PDF File">
+                                                                <p>Click to view PDF</p>
+                                                            </a>
+                                                        @else
+                                                            <p>File type not supported.</p>
+                                                        @endif
+                                                    </div>
+                                                @endforeach
+                                            @endif
+                                        </div>
+                                    @else
+                                        <div class="text-danger">No proof uploaded</div>
+                                    @endif
                                 </div>
                                 <div class="col-md-6 mb-2">
                                     <label class="form-label">Total Cash Advanced</label>
@@ -991,8 +1089,10 @@
 
         $(document).ready(function() {
             var tableIds = [
-                // '#perdiemTable',
-                // '#perdiemTableDec',
+                '#perdiemTable',
+                '#perdiemTableDec',
+                '#mealsTable',
+                '#mealsTableDec',
                 '#transportTable',
                 '#transportTableDec',
                 '#penginapanTable',

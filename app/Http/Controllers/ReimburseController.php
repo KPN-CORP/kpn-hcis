@@ -246,7 +246,7 @@ class ReimburseController extends Controller
         $link = 'Report CA';
         $query = CATransaction::with(['employee', 'statusReqEmployee', 'statusSettEmployee', 'statusExtendEmployee'])->orderBy('created_at', 'desc');
         $ca_approvals = ca_approval::with(['employee', 'statusReqEmployee'])
-            ->where('approval_status', '<>', 'Rejected')
+            // ->where('approval_status', '<>', 'Rejected')
             ->orderBy('layer', 'asc') // Mengurutkan berdasarkan layer
             ->get();
 
