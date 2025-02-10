@@ -797,7 +797,7 @@
                     let inputSummary = `
                         <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
                     `;
-                    if (totalCa) {
+                    if (parseFloat(totalCa) > 0) {
                         inputSummary += `
                             <tr>
                                 <th style="width: 40%; text-align: left; padding: 8px;">Total {{ $allowance }}</th>

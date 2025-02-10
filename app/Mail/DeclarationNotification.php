@@ -17,24 +17,36 @@ class DeclarationNotification extends Mailable
     public $businessTrip;
     public $caDetails;
     public $caDeclare;
+    public $entDetails;
+    public $entDeclare;
     public $managerName;
     public $approvalLink;
     public $rejectionLink;
+    public $isEnt;
+    public $isCa;    
 
     public function __construct(
         BusinessTrip $businessTrip,
         $caDetails = null,
         $caDeclare = null,
+        $entDetails = null,
+        $entDeclare = null,
         $managerName = null,
         $approvalLink = null,
-        $rejectionLink = null
+        $rejectionLink = null,
+        $isEnt = null,
+        $isCa = null,
     ) {
         $this->businessTrip = $businessTrip;
         $this->caDetails = $caDetails;
         $this->caDeclare = $caDeclare;
+        $this->entDetails = $entDetails;
+        $this->entDeclare = $entDeclare;
         $this->managerName = $managerName;
         $this->approvalLink = $approvalLink;
         $this->rejectionLink = $rejectionLink;
+        $this->isEnt = $isEnt;
+        $this->isCa = $isCa;
     }
 
     public function build()
@@ -44,9 +56,13 @@ class DeclarationNotification extends Mailable
                 'businessTrip' => $this->businessTrip,
                 'caDetails' => $this->caDetails,
                 'caDeclare' => $this->caDeclare,
+                'entDetails' => $this->entDetails,
+                'entDeclare' => $this->entDeclare,
                 'managerName' => $this->managerName,
                 'approvalLink' => $this->approvalLink,
                 'rejectionLink' => $this->rejectionLink,
+                'isEnt' => $this->isEnt,
+                'isCa' => $this->isCa,
             ]);
     }
 
