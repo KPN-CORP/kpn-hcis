@@ -249,6 +249,7 @@ class BusinessTripController extends Controller
         $cas = CATransaction::where('no_sppd', $n->no_sppd)->get();
         $date = CATransaction::where('no_sppd', $n->no_sppd)->first();
         $group_company = Employee::where('id', $userId)->pluck('group_company')->first();
+        $bt_sppd = BusinessTrip::where('status', '!=', 'Done')->where('status', '!=', 'Rejected')->where('status', '!=', 'Draft')->orderBy('no_sppd', 'desc')->get();
 
         if ($employee_data->group_company == 'Plantations' || $employee_data->group_company == 'KPN Plantations') {
             $allowance = "Perdiem";
@@ -358,6 +359,7 @@ class BusinessTripController extends Controller
             'parentLink' => $parentLink,
             'link' => $link,
             'isAllowed' => $isAllowed,
+            'bt_sppd' => $bt_sppd,
         ]);
     }
 
@@ -3461,6 +3463,7 @@ class BusinessTripController extends Controller
         $companies = Company::orderBy('contribution_level')->get();
         $employees = Employee::orderBy('ktp')->get();
         $no_sppds = CATransaction::where('user_id', $userId)->where('approval_sett', '!=', 'Done')->get();
+        $bt_sppd = BusinessTrip::where('status', '!=', 'Done')->where('status', '!=', 'Rejected')->where('status', '!=', 'Draft')->orderBy('no_sppd', 'desc')->get();
         $perdiem = ListPerdiem::where('grade', $employee_data->job_level)
             ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')->first();
 
@@ -3491,6 +3494,7 @@ class BusinessTripController extends Controller
                 'companies' => $companies,
                 'locations' => $locations,
                 'no_sppds' => $no_sppds,
+                'bt_sppd' => $bt_sppd,
                 'perdiem' => $perdiem,
                 'parentLink' => $parentLink,
                 'link' => $link,
@@ -3636,6 +3640,7 @@ class BusinessTripController extends Controller
                     'tgl_masuk_htl' => $request->tgl_masuk_htl_dalam_kota,
                     'tgl_keluar_htl' => $request->tgl_keluar_htl_dalam_kota,
                     'total_hari' => $request->total_hari_dalam_kota,
+                    'no_sppd_htl' => $request->no_sppd_dalam_kota,
                     'approval_status' => $statusValue,
                 ];
             } else {
@@ -3647,6 +3652,7 @@ class BusinessTripController extends Controller
                     'tgl_masuk_htl' => $request->tgl_masuk_htl,
                     'tgl_keluar_htl' => $request->tgl_keluar_htl,
                     'total_hari' => $request->total_hari,
+                    'no_sppd_htl' => $request->no_sppd,
                     'approval_status' => $statusValue,
                 ];
             }
@@ -3666,6 +3672,7 @@ class BusinessTripController extends Controller
                     $hotel->tgl_masuk_htl = $hotelData['tgl_masuk_htl'][$key];
                     $hotel->tgl_keluar_htl = $hotelData['tgl_keluar_htl'][$key];
                     $hotel->total_hari = $hotelData['total_hari'][$key];
+                    $hotel->no_sppd_htl = $hotelData['no_sppd_htl'][$key];
                     $hotel->approval_status = $statusValue;
                     $hotel->contribution_level_code = $request->bb_perusahaan;
                     $hotel->manager_l1_id = $managerL1;
@@ -3675,7 +3682,6 @@ class BusinessTripController extends Controller
                 }
             }
         }
-
 
         if ($tktDalam === 'Ya') {
             if ($request->jns_dinas === 'dalam kota') {
@@ -4173,8 +4179,8 @@ class BusinessTripController extends Controller
 
         if ($statusValue !== 'Draft') {
             // Get manager email
-            // $managerEmail = Employee::where('employee_id', $managerL1)->pluck('email')->first();
-            $managerEmail = "eriton.dewa@kpn-corp.com";
+            $managerEmail = Employee::where('employee_id', $managerL1)->pluck('email')->first();
+            // $managerEmail = "eriton.dewa@kpn-corp.com";
 
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);

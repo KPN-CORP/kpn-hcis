@@ -425,6 +425,7 @@ Route::middleware('auth')->group(function () {
     //Search
     Route::get('/search/name', [SearchController::class, 'searchNik'])->name('searchNik');
     Route::get('/search/passengers', [SearchController::class, 'searchPassenger'])->name('searchNik');
+    Route::get('/search/no-sppd', [SearchController::class, 'searchSppd'])->name('searchSppd');
 
     //DEKLARASI BT
     Route::get('/businessTrip/declaration/{id}', [BusinessTripController::class, 'deklarasi'])->name('businessTrip.deklarasi');

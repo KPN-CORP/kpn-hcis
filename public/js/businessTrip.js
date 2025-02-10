@@ -1696,6 +1696,7 @@ function LuarKotaHotelInit() {
             const addedForm = hotelFormsContainer.lastElementChild;
             toggleRequiredAttributes(addedForm, hotelCheckbox.checked);
             updateFormNumbers();
+            initializeAllSelect2();
         } else {
             Swal.fire({
                 title: "Warning!",
@@ -1763,8 +1764,8 @@ function LuarKotaHotelInit() {
                          <div class="sppd-options" style="display: none;">
                             <div class="row mb-3">
                                 <div class="col-md-12">
-                                    <label class="form-label">No. SPPD</label>
-                                    <select class="form-select select2 form-select-sm" name="no_sppd[]">
+                                  <label class="form-label">No. SPPD for Colleague (If a colleague uses the same room)</label>
+                                    <select class="form-select select2 form-select-sm select-sppd" name="no_sppd[]" id="no_sppd_${formNumber}">
                                         <option value="-">No Business Trip</option>
                                     </select>
                                 </div>
@@ -1795,8 +1796,51 @@ function LuarKotaHotelInit() {
             </div>`;
     }
 
+    function initializeAllSelect2() {
+        $(".select-sppd").each(function () {
+            const $select = $(this);
+            if (!$select.data("select2")) {
+                const config = {
+                    theme: "bootstrap-5",
+                    width: "100%",
+                    minimumInputLength: 0, // Allow searching without any input
+                    allowClear: true, // Adds an "x" to clear the selection
+                    placeholder: "Please Select", // Placeholder text
+                    ajax: {
+                        url: "/search/no-sppd",
+                        dataType: "json",
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                searchTerm: params.term || "", // Send empty string if no search term
+                                page: params.page || 1,
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: data.map(function (item) {
+                                    return {
+                                        id: item.no_sppd,
+                                        text: item.no_sppd,
+                                    };
+                                }),
+                                pagination: {
+                                    more: params.page * 30 < data.total_count,
+                                },
+                            };
+                        },
+                        cache: true,
+                    },
+                };
+
+                $select.select2(config);
+            }
+        });
+    }
     // Initial setup
     updateButtonVisibility();
+    initializeAllSelect2();
     updateAllFormsRequiredState(hotelCheckbox.checked);
 }
 
@@ -1931,6 +1975,7 @@ function DalamKotaHotelInit() {
             const addedForm = hotelFormsContainer.lastElementChild;
             toggleRequiredAttributes(addedForm, hotelCheckbox.checked);
             updateFormNumbers();
+            initializeAllSelect2();
         } else {
             Swal.fire({
                 title: "Warning!",
@@ -1998,8 +2043,8 @@ function DalamKotaHotelInit() {
                         <div class="sppd-options" style="display: none;">
                             <div class="row mb-3">
                                 <div class="col-md-12">
-                                    <label class="form-label">No. SPPD</label>
-                                    <select class="form-select select2 form-select-sm" name="no_sppd[]">
+                                   <label class="form-label">No. SPPD for Colleague (If a colleague uses the same room)</label>
+                                    <select class="form-select select2 form-select-sm select-sppd" name="no_sppd[]">
                                         <option value="-">No Business Trip</option>
                                     </select>
                                 </div>
@@ -2030,7 +2075,51 @@ function DalamKotaHotelInit() {
             </div>`;
     }
 
+    function initializeAllSelect2() {
+        $(".select-sppd").each(function () {
+            const $select = $(this);
+            if (!$select.data("select2")) {
+                const config = {
+                    theme: "bootstrap-5",
+                    width: "100%",
+                    minimumInputLength: 0, // Allow searching without any input
+                    allowClear: true, // Adds an "x" to clear the selection
+                    placeholder: "Please Select", // Placeholder text
+                    ajax: {
+                        url: "/search/no-sppd",
+                        dataType: "json",
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                searchTerm: params.term || "", // Send empty string if no search term
+                                page: params.page || 1,
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: data.map(function (item) {
+                                    return {
+                                        id: item.no_sppd,
+                                        text: item.no_sppd,
+                                    };
+                                }),
+                                pagination: {
+                                    more: params.page * 30 < data.total_count,
+                                },
+                            };
+                        },
+                        cache: true,
+                    },
+                };
+
+                $select.select2(config);
+            }
+        });
+    }
+
     // Initial setup
+    initializeAllSelect2();
     updateButtonVisibility();
     updateAllFormsRequiredState(hotelCheckbox.checked);
 }

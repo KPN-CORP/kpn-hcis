@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BusinessTrip;
 use App\Models\Dependents;
 use App\Models\Employee;
 use App\Models\HomeTrip;
@@ -26,6 +27,22 @@ class SearchController extends Controller
             ->get();
 
         return response()->json($employees);
+    }
+    public function searchSppd(Request $request)
+    {
+        $searchTerm = $request->input('searchTerm');
+        $limit = 10; // Adjust as needed
+
+        $no_sppd = BusinessTrip::select('no_sppd')
+            ->where(function ($query) use ($searchTerm) {
+                $query->where('no_sppd', 'LIKE', '%' . $searchTerm . '%');
+            })
+            ->whereNotIn('status', ['Rejected', 'Done', 'Draft'])
+            ->orderBy('no_sppd', 'desc')
+            ->limit($limit) // Limit the number of results returned
+            ->get();
+
+        return response()->json($no_sppd);
     }
     public function searchPassenger(Request $request)
     {
