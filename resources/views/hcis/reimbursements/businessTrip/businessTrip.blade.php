@@ -211,7 +211,7 @@
                                                             return [
                                                                 'No. CA' => $transaction->no_ca,
                                                                 'No. SPPD' => $transaction->no_sppd,
-                                                                'Jenis' => $transaction->type_ca === 'dns' ? 'Business Trip' : 'Entertain', // Conditional assignment  
+                                                                'Jenis' => $transaction->type_ca === 'dns' ? 'Business Trip' : 'Entertain', // Conditional assignment
                                                                 'Unit' => $transaction->unit,
                                                                 'Destination' => $transaction->destination,
                                                                 'CA Total' => 'Rp ' . number_format($transaction->total_ca, 0, ',', '.'),
@@ -220,7 +220,7 @@
                                                                 'Start' => date('d-M-Y', strtotime($transaction->start_date)),
                                                                 'End' => date('d-M-Y', strtotime($transaction->end_date)),
                                                             ];
-                                                        })->values()) }}"                                                        
+                                                        })->values()) }}"
                                                         ><u>Details</u></a>
                                                 @else
                                                     -
@@ -269,6 +269,7 @@
                                                                 return [
                                                                     'No. Hotel' => $hotel->no_htl,
                                                                     'No. SPPD' => $hotel->no_sppd,
+                                                                    'Colleague No. SPPD' => $hotel->no_sppd_htl,
                                                                     'Unit' => $hotel->unit,
                                                                     'Hotel Name' => $hotel->nama_htl,
                                                                     'Location' => $hotel->lokasi_htl,

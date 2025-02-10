@@ -23,16 +23,17 @@
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Hotel Name</label>
                         <div class="input-group">
-                            <input class="form-control form-control-sm bg-light" name="nama_htl_dalam_kota[]" type="text"
-                                placeholder="ex: Hyatt" value="{{ $hotel['nama_htl'] ?? '' }}" readonly>
+                            <input class="form-control form-control-sm bg-light" name="nama_htl_dalam_kota[]"
+                                type="text" placeholder="ex: Hyatt" value="{{ $hotel['nama_htl'] ?? '' }}" readonly>
                         </div>
                     </div>
 
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Hotel Location</label>
                         <div class="input-group">
-                            <input class="form-control form-control-sm bg-light" name="lokasi_htl_dalam_kota[]" type="text"
-                                placeholder="ex: Jakarta" value="{{ $hotel['lokasi_htl'] ?? '' }}" readonly>
+                            <input class="form-control form-control-sm bg-light" name="lokasi_htl_dalam_kota[]"
+                                type="text" placeholder="ex: Jakarta" value="{{ $hotel['lokasi_htl'] ?? '' }}"
+                                readonly>
                         </div>
                     </div>
                     <div class="col-md-2 mb-2">
@@ -49,23 +50,42 @@
                     <div class="col-md-2 mb-2">
                         <label class="form-label">Total Room</label>
                         <div class="input-group">
-                            <input class="form-control form-control-sm bg-light" name="jmlkmr_htl_dalam_kota[]" type="number"
-                                min="1" placeholder="ex: 1" value="{{ $hotel['jmlkmr_htl'] ?? '' }}" readonly>
+                            <input class="form-control form-control-sm bg-light" name="jmlkmr_htl_dalam_kota[]"
+                                type="number" min="1" placeholder="ex: 1"
+                                value="{{ $hotel['jmlkmr_htl'] ?? '' }}" readonly>
+                        </div>
+                    </div>
+                    <div class="sppd-options"
+                        style="{{ isset($n->jns_dinas) && $n->jns_dinas === 'dalam kota' && isset($hotel['bed_htl']) && $hotel['bed_htl'] === 'Twin Bed' ? 'display: block;' : 'display: none;' }}">
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label class="form-label">No. SPPD for Colleague (If a colleague uses the same
+                                    room)</label>
+                                <select class="form-select select2 form-select-sm" name="no_sppd_dalam_kota[]" disabled>
+                                    <option value="-">No Business Trip</option>
+                                    @foreach ($bt_sppd as $no_sppd)
+                                        <option value="{{ $no_sppd->no_sppd }}"
+                                            {{ isset($hotel['no_sppd_htl']) && $hotel['no_sppd_htl'] === $no_sppd->no_sppd ? 'selected' : '' }}>
+                                            {{ $no_sppd->no_sppd }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Check In Date</label>
-                        <input type="date" class="form-control form-control-sm bg-light" name="tgl_masuk_htl_dalam_kota[]"
-                            id="check-in-dalam-kota-<?php echo $i; ?>"
+                        <input type="date" class="form-control form-control-sm bg-light"
+                            name="tgl_masuk_htl_dalam_kota[]" id="check-in-dalam-kota-<?php echo $i; ?>"
                             value="{{ $hotel['tgl_masuk_htl'] ?? '' }}"
                             onchange="calculateTotalDaysDalamKota(<?php echo $i; ?>)" readonly>
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Check Out Date</label>
-                        <input type="date" class="form-control form-control-sm bg-light" name="tgl_keluar_htl_dalam_kota[]"
-                            id="check-out-dalam-kota-<?php echo $i; ?>"
+                        <input type="date" class="form-control form-control-sm bg-light"
+                            name="tgl_keluar_htl_dalam_kota[]" id="check-out-dalam-kota-<?php echo $i; ?>"
                             value="{{ $hotel['tgl_keluar_htl'] ?? '' }}"
                             onchange="calculateTotalDaysDalamKota(<?php echo $i; ?>)" readonly>
                     </div>

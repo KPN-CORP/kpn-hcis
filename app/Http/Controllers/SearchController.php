@@ -37,7 +37,7 @@ class SearchController extends Controller
             ->where(function ($query) use ($searchTerm) {
                 $query->where('no_sppd', 'LIKE', '%' . $searchTerm . '%');
             })
-            ->whereNotIn('status', ['Rejected', 'Done', 'Draft'])
+            ->whereNotIn('status', ['Rejected', 'Verified', 'Draft'])
             ->orderBy('no_sppd', 'desc')
             ->limit($limit) // Limit the number of results returned
             ->get();

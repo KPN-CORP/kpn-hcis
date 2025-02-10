@@ -52,6 +52,24 @@
                                 min="1" placeholder="ex: 1" value="{{ $hotel['jmlkmr_htl'] ?? '' }}">
                         </div>
                     </div>
+                    <div class="sppd-options"
+                        style="{{ isset($n->jns_dinas) && $n->jns_dinas === 'luar kota' && isset($hotel['bed_htl']) && $hotel['bed_htl'] === 'Twin Bed' ? 'display: block;' : 'display: none;' }}">
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label class="form-label">No. SPPD for Colleague (If a colleague uses the same
+                                    room)</label>
+                                <select class="form-select select2 form-select-sm" name="no_sppd[]">
+                                    <option value="-">No Business Trip</option>
+                                    @foreach ($bt_sppd as $no_sppd)
+                                        <option value="{{ $no_sppd->no_sppd }}"
+                                            {{ isset($hotel['no_sppd_htl']) && $hotel['no_sppd_htl'] === $no_sppd->no_sppd ? 'selected' : '' }}>
+                                            {{ $no_sppd->no_sppd }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4 mb-2">

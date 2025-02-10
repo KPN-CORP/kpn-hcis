@@ -128,9 +128,12 @@
                                 <div>
                                     <h3 class="card-title mb-2">{{ $link }}</h3>
                                     <div class="text-muted small">
-                                        <span class="me-3 fs-5"><i class="ri-user-line me-1"></i>{{ Auth::user()->name }}</span>
-                                        <span class="me-3 fs-5"><i class="ri-calendar-line me-1"></i>{{ date('l, d F Y') }}</span>
-                                        <span class="me-3"><i class="ri-time-line me-1"></i><span id="currentTime"></span> WIB</span>
+                                        <span class="me-3 fs-5"><i
+                                                class="ri-user-line me-1"></i>{{ Auth::user()->name }}</span>
+                                        <span class="me-3 fs-5"><i
+                                                class="ri-calendar-line me-1"></i>{{ date('l, d F Y') }}</span>
+                                        <span class="me-3"><i class="ri-time-line me-1"></i><span id="currentTime"></span>
+                                            WIB</span>
                                     </div>
                                 </div>
                                 <div class="input-group" style="width: 30%;">
@@ -179,7 +182,8 @@
                                 </div>
                             </form>
                             <div class="table-responsive" style="overflow-y: auto">
-                                <table class="table table-sm table-hover" id="scheduleTable" width="100%" cellspacing="0">
+                                <table class="table table-sm table-hover" id="scheduleTable" width="100%"
+                                    cellspacing="0">
                                     <thead class="thead-light">
                                         <tr>
                                             <th>No</th>
@@ -213,23 +217,22 @@
                                                     @if ($n->ca == 'Ya' && isset($caTransactions[$n->no_sppd]))
                                                         <a class="text-info btn-detail" data-toggle="modal"
                                                             data-target="#detailModal" style="cursor: pointer"
-                                                            data-ca="{{ json_encode(  
-                                                                $caTransactions[$n->no_sppd]->map(function ($transaction) {  
-                                                                    return [  
-                                                                        'No. CA' => $transaction->no_ca,  
-                                                                        'No. SPPD' => $transaction->no_sppd,  
-                                                                        'Jenis' => $transaction->type_ca === 'dns' ? 'Business Trip' : 'Entertain', // Conditional assignment  
-                                                                        'Unit' => $transaction->unit,  
-                                                                        'Destination' => $transaction->destination,  
-                                                                        'CA Total' => 'Rp ' . number_format($transaction->total_ca, 0, ',', '.'),  
-                                                                        'Total Real' => 'Rp ' . number_format($transaction->total_real, 0, ',', '.'),  
-                                                                        'Total Cost' => 'Rp ' . number_format($transaction->total_cost, 0, ',', '.'),  
-                                                                        'Start' => date('d-M-Y', strtotime($transaction->start_date)),  
-                                                                        'End' => date('d-M-Y', strtotime($transaction->end_date)),  
-                                                                    ];  
-                                                                })->values()
-                                                            ) }}"                                                    
-                                                            ><u>Details</u></a>
+                                                            data-ca="{{ json_encode(
+                                                                $caTransactions[$n->no_sppd]->map(function ($transaction) {
+                                                                        return [
+                                                                            'No. CA' => $transaction->no_ca,
+                                                                            'No. SPPD' => $transaction->no_sppd,
+                                                                            'Jenis' => $transaction->type_ca === 'dns' ? 'Business Trip' : 'Entertain', // Conditional assignment
+                                                                            'Unit' => $transaction->unit,
+                                                                            'Destination' => $transaction->destination,
+                                                                            'CA Total' => 'Rp ' . number_format($transaction->total_ca, 0, ',', '.'),
+                                                                            'Total Real' => 'Rp ' . number_format($transaction->total_real, 0, ',', '.'),
+                                                                            'Total Cost' => 'Rp ' . number_format($transaction->total_cost, 0, ',', '.'),
+                                                                            'Start' => date('d-M-Y', strtotime($transaction->start_date)),
+                                                                            'End' => date('d-M-Y', strtotime($transaction->end_date)),
+                                                                        ];
+                                                                    })->values(),
+                                                            ) }}"><u>Details</u></a>
                                                     @else
                                                         -
                                                     @endif
@@ -272,6 +275,7 @@
                                                                     return [
                                                                         'No. Hotel' => $hotel->no_htl,
                                                                         'No. SPPD' => $hotel->no_sppd,
+                                                                        'Colleague No. SPPD' => $hotel->no_sppd_htl,
                                                                         'Unit' => $hotel->unit,
                                                                         'Hotel Name' => $hotel->nama_htl,
                                                                         'Location' => $hotel->lokasi_htl,
@@ -986,15 +990,17 @@
                             function createTableHtml(data, title) {
                                 var tableHtml = '<h5>' + title + '</h5>';
                                 tableHtml += '<div class="table-responsive">' + // Added this for horizontal scrolling
-                                            '<table class="table table-sm table-bordered nowrap w-100" cellspacing="0">' + // Added w-100 and table-bordered
-                                            '<thead><tr>';
+                                    '<table class="table table-sm table-bordered nowrap w-100" cellspacing="0">' +
+                                    // Added w-100 and table-bordered
+                                    '<thead><tr>';
                                 var isArray = Array.isArray(data) && data.length > 0;
 
                                 // Assuming all objects in the data array have the same keys, use the first object to create headers
                                 if (isArray) {
                                     for (var key in data[0]) {
                                         if (data[0].hasOwnProperty(key)) {
-                                            tableHtml += '<th class="text-nowrap">' + key + '</th>'; // Added text-nowrap to prevent header wrapping
+                                            tableHtml += '<th class="text-nowrap">' + key +
+                                            '</th>'; // Added text-nowrap to prevent header wrapping
                                         }
                                     }
                                 } else if (typeof data === 'object') {
@@ -1093,7 +1099,7 @@
                 <script>
                     function updateDateTime() {
                         const now = new Date();
-                        
+
                         // Format time
                         const hours = String(now.getHours()).padStart(2, '0');
                         const minutes = String(now.getMinutes()).padStart(2, '0');

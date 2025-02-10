@@ -309,6 +309,7 @@ class BusinessTripController extends Controller
                 'tgl_masuk_htl' => $hotel->tgl_masuk_htl,
                 'tgl_keluar_htl' => $hotel->tgl_keluar_htl,
                 'total_hari' => $hotel->total_hari,
+                'no_sppd_htl' => $hotel->no_sppd_htl,
                 'more_htl' => ($index < count($hotels) - 1) ? 'Ya' : 'Tidak'
             ];
         }
@@ -455,10 +456,6 @@ class BusinessTripController extends Controller
             'status' => $statusValue,
             'manager_l1_id' => $managerL1,
             'manager_l2_id' => $managerL2,
-            // 'id_ca' => $request->id_ca,
-            // 'id_tiket' => $request->id_tiket,
-            // 'id_hotel' => $request->id_hotel,
-            // 'id_taksi' => $request->id_taksi,
         ]);
         // dd($request->ca, $request->ent);
 
@@ -485,8 +482,6 @@ class BusinessTripController extends Controller
                     'unit' => $request->divisi,
                     'no_sppd' => $oldNoSppd,
                     'approval_status' => $statusValue,
-                    // 'nominal_vt' => (int) str_replace('.', '', $request->nominal_vt),
-                    // 'keeper_vt' => (int) str_replace('.', '', $request->keeper_vt),
                 ];
                 // dd($taksiData);
 
@@ -533,6 +528,7 @@ class BusinessTripController extends Controller
                     'tgl_masuk_htl' => $request->tgl_masuk_htl_dalam_kota,
                     'tgl_keluar_htl' => $request->tgl_keluar_htl_dalam_kota,
                     'total_hari' => $request->total_hari_dalam_kota,
+                    'no_sppd_htl' => $request->no_sppd_dalam_kota,
                     'approval_status' => $statusValue,
                 ];
             } else {
@@ -544,6 +540,7 @@ class BusinessTripController extends Controller
                     'tgl_masuk_htl' => $request->tgl_masuk_htl,
                     'tgl_keluar_htl' => $request->tgl_keluar_htl,
                     'total_hari' => $request->total_hari,
+                    'no_sppd_htl' => $request->no_sppd,
                     'approval_status' => $statusValue,
                 ];
             }
@@ -563,6 +560,7 @@ class BusinessTripController extends Controller
                             'tgl_masuk_htl' => $hotelData['tgl_masuk_htl'][$key],
                             'tgl_keluar_htl' => $hotelData['tgl_keluar_htl'][$key],
                             'total_hari' => $hotelData['total_hari'][$key],
+                            'no_sppd_htl' => $hotelData['no_sppd_htl'][$key],
                             'approval_status' => $statusValue,
                             "contribution_level_code" => $request->bb_perusahaan,
                             "manager_l1_id" => $managerL1,
@@ -589,6 +587,7 @@ class BusinessTripController extends Controller
                             'tgl_masuk_htl' => $hotelData['tgl_masuk_htl'][$key],
                             'tgl_keluar_htl' => $hotelData['tgl_keluar_htl'][$key],
                             'total_hari' => $hotelData['total_hari'][$key],
+                            'no_sppd_htl' => $hotelData['no_sppd_htl'][$key],
                             'approval_status' => $statusValue,
                             "contribution_level_code" => $request->bb_perusahaan,
                             "manager_l1_id" => $managerL1,
@@ -3463,7 +3462,7 @@ class BusinessTripController extends Controller
         $companies = Company::orderBy('contribution_level')->get();
         $employees = Employee::orderBy('ktp')->get();
         $no_sppds = CATransaction::where('user_id', $userId)->where('approval_sett', '!=', 'Done')->get();
-        $bt_sppd = BusinessTrip::where('status', '!=', 'Done')->where('status', '!=', 'Rejected')->where('status', '!=', 'Draft')->orderBy('no_sppd', 'desc')->get();
+        $bt_sppd = BusinessTrip::where('status', '!=', 'Verified')->where('status', '!=', 'Rejected')->where('status', '!=', 'Draft')->orderBy('no_sppd', 'desc')->get();
         $perdiem = ListPerdiem::where('grade', $employee_data->job_level)
             ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')->first();
 
@@ -5360,6 +5359,7 @@ class BusinessTripController extends Controller
         $employee_data = Employee::where('id', $n->user_id)->first();
         $employees = Employee::orderBy('ktp')->get();
         $group_company = Employee::where('id', $employee_data->id)->pluck('group_company')->first();
+        $bt_sppd = BusinessTrip::where('status', '!=', 'Done')->where('status', '!=', 'Rejected')->where('status', '!=', 'Draft')->orderBy('no_sppd', 'desc')->get();
 
         if ($employee_data->group_company == 'Plantations' || $employee_data->group_company == 'KPN Plantations') {
             $allowance = "Perdiem";
@@ -5408,6 +5408,7 @@ class BusinessTripController extends Controller
                 'tgl_masuk_htl' => $hotel->tgl_masuk_htl,
                 'tgl_keluar_htl' => $hotel->tgl_keluar_htl,
                 'total_hari' => $hotel->total_hari,
+                'no_sppd_htl' => $hotel->no_sppd_htl,
                 'more_htl' => ($index < count($hotels) - 1) ? 'Ya' : 'Tidak'
             ];
         }
@@ -5462,6 +5463,7 @@ class BusinessTripController extends Controller
             'group_company' => $group_company,
             'taksiLuarKota' => $taksiLuarKota,
             'taksiDalamKota' => $taksiDalamKota,
+            'bt_sppd' => $bt_sppd,
         ]);
     }
 

@@ -2044,7 +2044,7 @@ function DalamKotaHotelInit() {
                             <div class="row mb-3">
                                 <div class="col-md-12">
                                    <label class="form-label">No. SPPD for Colleague (If a colleague uses the same room)</label>
-                                    <select class="form-select select2 form-select-sm select-sppd" name="no_sppd[]">
+                                    <select class="form-select select2 form-select-sm select-sppd" name="no_sppd_dalam_kota[]">
                                         <option value="-">No Business Trip</option>
                                     </select>
                                 </div>
