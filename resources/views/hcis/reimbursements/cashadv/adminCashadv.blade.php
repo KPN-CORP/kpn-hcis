@@ -285,7 +285,7 @@
                                                         data-total-days="{{ $ca_transaction->total_days }}">
                                                         <i class="bi bi-list-check"></i>
                                                     </button>
-                                                @elseif($ca_transaction->approval_sett == 'Pending' && $ca_transaction->approval_status == 'Rejected')
+                                                @elseif(($ca_transaction->approval_sett == 'Pending' || $ca_transaction->approval_sett == 'Approved') && $ca_transaction->approval_status == 'Rejected')
                                                     <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" title="Approval Declaration Update" data-bs-target="#approvalDecModal"
                                                         data-type="{{ $ca_transaction->type_ca }}"
                                                         data-total="{{ number_format($ca_transaction->total_ca, 0, ',', '.') }}"
