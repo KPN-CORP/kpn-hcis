@@ -59,7 +59,7 @@
                         </div>
 
                         <!-- Business Trip Info -->
-                        <div class="row mb-3">
+                        <div class="row mb-2">
                             <div class="col-6">
                                 <label class="form-label" for="bisnis_numb">Business Trip Number</label>
                                 <select class="form-select select2 form-select-sm" id="bisnis_numb" name="bisnis_numb">
@@ -75,7 +75,7 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-6 mb-2">
                                 <div class="mb-2">
                                     <label class="form-label" for="contribution_level_code">Costing Company</label>
                                     <select class="form-control select2 form-select-sm" id="contribution_level_code"
