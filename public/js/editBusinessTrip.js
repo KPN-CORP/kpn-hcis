@@ -1650,6 +1650,26 @@ function DalamKotaTicketInit() {
 }
 
 //Hotel JS
+$(document).ready(function () {
+    // Function to toggle SPPD options with event delegation
+    function toggleSppdOptions() {
+        // Delegating event to handle dynamically created forms
+        $(document).on("change", ".form-select", function () {
+            const selectElement = $(this);
+            // Single block for both "luar kota" and "dalam kota" forms
+            const sppdOptionsClass = ".sppd-options";
+
+            if (selectElement.val() === "Twin Bed") {
+                selectElement.closest(".row").find(sppdOptionsClass).show();
+            } else {
+                selectElement.closest(".row").find(sppdOptionsClass).hide();
+            }
+        });
+    }
+
+    // Apply toggle function for all form elements
+    toggleSppdOptions();
+});
 function LuarKotaHotelInit() {
     let formHotelCount = 0; // Initialize with 0 to count existing forms
     const maxHotelForms = 5;

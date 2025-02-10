@@ -26,16 +26,28 @@
                     </div>
                     <div class="col-md-2 mb-2">
                         <label class="form-label">Bed Size</label>
-                        <select class="form-select form-select-sm select2" name="bed_htl_dalam_kota[]">
+                        <select class="form-select form-select-sm select2" name="bed_htl_dalam_kota[]"
+                            id="bed_size_select_dalam_kota">
                             <option value="Single Bed">Double Bed</option>
                             <option value="Twin Bed">Twin Bed</option>
                         </select>
                     </div>
+
                     <div class="col-md-2 mb-2">
                         <label class="form-label">Total Room</label>
                         <div class="input-group">
                             <input class="form-control form-control-sm" name="jmlkmr_htl_dalam_kota[]" type="number"
                                 min="1" placeholder="ex: 1">
+                        </div>
+                    </div>
+                    <div class="sppd-options" style="display: none;">
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label class="form-label">No. SPPD</label>
+                                <select class="form-select select2 form-select-sm" name="no_sppd[]">
+                                    <option value="-">No Business Trip</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>

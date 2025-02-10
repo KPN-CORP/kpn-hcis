@@ -4182,6 +4182,8 @@ class BusinessTripController extends Controller
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
             $textNotification = "requesting a Bussiness Trip and waiting for your Approval with the following details :";
             $managerName = Employee::where('employee_id', $managerL1)->pluck('fullname')->first();
+            $isEnt = $request->ent === 'Ya';
+            $isCa = $request->ca === 'Ya';
 
             if ($managerEmail) {
                 $detail_ca = isset($detail_ca) ? $detail_ca : [];
@@ -4200,6 +4202,13 @@ class BusinessTripController extends Controller
 
                     'total_days_meals' => count($detail_ca['detail_meals'] ?? []),
                     'total_amount_meals' => array_sum(array_column($detail_ca['detail_meals'] ?? [], 'nominal')),
+                ];
+                $entDetails = [
+                    'total_days_detail' => array_sum(array_column($detail_ca['detail_e'] ?? [], 'total_days')),
+                    'total_amount_ent' => array_sum(array_column($detail_ca['detail_e'] ?? [], 'nominal')),
+
+                    'total_days_detail' => count($detail_ca['relation_e'] ?? []),
+                    'total_amount_relation' => array_sum(array_column($detail_ca['relation_e'] ?? [], 'nominal')),
                 ];
                 // Fetch ticket and hotel details with proper conditions
                 $ticketDetails = Tiket::where('no_sppd', $businessTrip->no_sppd)
@@ -4245,6 +4254,9 @@ class BusinessTripController extends Controller
                         $employeeName,
                         $base64Image,
                         $textNotification,
+                        $isEnt,
+                        $isCa,
+                        $entDetails,
                     ));
                 } catch (\Exception $e) {
                     Log::error('Email Create Bussines Trip tidak terkirim: ' . $e->getMessage());

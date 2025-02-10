@@ -1547,6 +1547,26 @@ function DalamKotaTicketInit() {
 }
 
 //Hotel JS
+$(document).ready(function () {
+    // Function to toggle SPPD options with event delegation
+    function toggleSppdOptions() {
+        // Delegating event to handle dynamically created forms
+        $(document).on("change", ".form-select", function () {
+            const selectElement = $(this);
+            // Single block for both "luar kota" and "dalam kota" forms
+            const sppdOptionsClass = ".sppd-options";
+
+            if (selectElement.val() === "Twin Bed") {
+                selectElement.closest(".row").find(sppdOptionsClass).show();
+            } else {
+                selectElement.closest(".row").find(sppdOptionsClass).hide();
+            }
+        });
+    }
+
+    // Apply toggle function for all form elements
+    toggleSppdOptions();
+});
 function LuarKotaHotelInit() {
     let formHotelCount = 1;
     const maxHotelForms = 5;
@@ -1729,7 +1749,7 @@ function LuarKotaHotelInit() {
                         </div>
                         <div class="col-md-2 mb-2">
                             <label class="form-label">Bed Size</label>
-                            <select class="form-select form-select-sm select2" name="bed_htl[]">
+                            <select class="form-select form-select-sm select2" name="bed_htl[]" id="bed_size_select_${formNumber}">
                                 <option value="Double Bed">Double Bed</option>
                                 <option value="Twin Bed">Twin Bed</option>
                             </select>
@@ -1738,6 +1758,16 @@ function LuarKotaHotelInit() {
                             <label class="form-label">Total Room</label>
                             <div class="input-group">
                                 <input class="form-control form-control-sm" name="jmlkmr_htl[]" type="number" min="1" placeholder="ex: 1">
+                            </div>
+                        </div>
+                         <div class="sppd-options" style="display: none;">
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label class="form-label">No. SPPD</label>
+                                    <select class="form-select select2 form-select-sm" name="no_sppd[]">
+                                        <option value="-">No Business Trip</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1954,7 +1984,7 @@ function DalamKotaHotelInit() {
                         </div>
                         <div class="col-md-2 mb-2">
                             <label class="form-label">Bed Size</label>
-                            <select class="form-select form-select-sm select2" name="bed_htl_dalam_kota[]">
+                            <select class="form-select form-select-sm select2" name="bed_htl_dalam_kota[]" id="bed_size_select_dalam_kota_${formNumber}">
                                 <option value="Double Bed">Double Bed</option>
                                 <option value="Twin Bed">Twin Bed</option>
                             </select>
@@ -1963,6 +1993,16 @@ function DalamKotaHotelInit() {
                             <label class="form-label">Total Room</label>
                             <div class="input-group">
                                 <input class="form-control form-control-sm" name="jmlkmr_htl_dalam_kota[]" type="number" min="1" placeholder="ex: 1">
+                            </div>
+                        </div>
+                        <div class="sppd-options" style="display: none;">
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label class="form-label">No. SPPD</label>
+                                    <select class="form-select select2 form-select-sm" name="no_sppd[]">
+                                        <option value="-">No Business Trip</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
