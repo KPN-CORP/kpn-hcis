@@ -71,8 +71,9 @@ function handleTabVisibility(
 ) {
     if (isChecked && navItem && tabButton && tabContent) {
         navItem.style.display = "block";
-        tabButton.click();
-        tabContent.classList.add("show", "active");
+        // Use Bootstrap's Tab API to properly activate the tab
+        const bsTab = new bootstrap.Tab(tabButton);
+        bsTab.show();
     } else if (navItem && tabContent) {
         navItem.style.display = "none";
         tabContent.classList.remove("show", "active");
@@ -80,7 +81,8 @@ function handleTabVisibility(
         // Find and activate next available tab
         const nextTab = findNextAvailableTab(isDalamKota);
         if (nextTab) {
-            nextTab.click();
+            const bsTab = new bootstrap.Tab(nextTab);
+            bsTab.show();
         }
     }
 }
@@ -91,22 +93,38 @@ function findNextAvailableTab(isDalamKota) {
 
     for (let tab of tabs) {
         const tabId = tab.id;
-        const section = tabId
-            .replace("pills-", "")
-            .replace("-dalam-kota-tab", "")
-            .replace("-tab", "")
-            .toLowerCase();
+        let section;
+        let checkboxId;
 
-        const checkboxId = isDalamKota
-            ? `${section}CheckboxDalamKota`
-            : `${section}Checkbox`;
+        // Special handling for CA and Entertainment
+        if (tabId.includes("cashAdvanced")) {
+            if (tabId.includes("Entertain")) {
+                section = "cashAdvancedEntertain";
+                checkboxId = "caEntertainCheckbox";
+            } else {
+                section = "cashAdvanced";
+                checkboxId = "cashAdvancedCheckbox";
+            }
+        } else {
+            section = tabId
+                .replace("pills-", "")
+                .replace("-dalam-kota-tab", "")
+                .replace("-tab", "")
+                .toLowerCase();
+
+            checkboxId = isDalamKota
+                ? `${section}CheckboxDalamKota`
+                : `${section}Checkbox`;
+        }
 
         const checkbox = document.getElementById(checkboxId);
+        const navItem = tab.closest(".nav-item");
 
         if (
             checkbox &&
             checkbox.checked &&
-            tab.closest(".nav-item").style.display !== "none"
+            navItem &&
+            navItem.style.display !== "none"
         ) {
             return tab;
         }
@@ -603,20 +621,27 @@ document.addEventListener("DOMContentLoaded", function () {
         const nav = document.getElementById(navId);
         const tab = document.getElementById(tabId);
         const pane = document.getElementById(paneId);
+        const isDalamKota = checkboxId.includes("DalamKota");
+
+        if (!checkbox) return; // Guard clause if elements don't exist
 
         checkbox.addEventListener("change", function () {
             if (this.checked) {
-                // Show the navigation tab and activate the corresponding pane
                 nav.style.display = "block";
-                tab.click(); // Programmatically activate the tab
-                if (pane) {
-                    pane.classList.add("active", "show");
-                }
+                // Use Bootstrap's Tab API
+                const bsTab = new bootstrap.Tab(tab);
+                bsTab.show();
             } else {
-                // Hide the navigation tab and deactivate the corresponding pane
                 nav.style.display = "none";
                 if (pane) {
                     pane.classList.remove("active", "show");
+                }
+
+                // Find and activate next available tab
+                const nextTab = findNextAvailableTab(isDalamKota);
+                if (nextTab) {
+                    const bsTab = new bootstrap.Tab(nextTab);
+                    bsTab.show();
                 }
             }
         });
@@ -626,13 +651,16 @@ document.addEventListener("DOMContentLoaded", function () {
     toggleSection(
         "cashAdvancedCheckbox",
         "nav-cashAdvanced",
-        "pills-cashAdvanced-tab"
+        "pills-cashAdvanced-tab",
+        "pills-cashAdvanced"
     );
     toggleSection(
         "caEntertainCheckbox",
         "nav-cashAdvancedEntertain",
-        "pills-cashAdvancedEntertain-tab"
+        "pills-cashAdvancedEntertain-tab",
+        "pills-cashAdvancedEntertain"
     );
+
     toggleSection("ticketCheckbox", "nav-ticket", "pills-ticket-tab");
     toggleSection("hotelCheckbox", "nav-hotel", "pills-hotel-tab");
     toggleSection("taksiCheckbox", "nav-taksi", "pills-taksi-tab");
@@ -656,6 +684,7 @@ document.addEventListener("DOMContentLoaded", function () {
         "pills-taksi-dalam-kota-tab",
         "pills-taksi-dalam-kota"
     );
+    setupCheckboxListeners();
 });
 
 document.addEventListener("DOMContentLoaded", function () {

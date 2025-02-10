@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     DalamKotaHotelInit();
     handleTaksiForms();
     handleCaForms();
+    initializeTabs();
 });
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -97,6 +98,69 @@ function setupCheckboxListeners() {
     });
 }
 
+function initializeTabs() {
+    // Initialize Luar Kota sections
+    const luarKotaSections = [
+        {
+            checkbox: "cashAdvancedCheckbox",
+            nav: "nav-cashAdvanced",
+            tab: "pills-cashAdvanced-tab",
+            pane: "pills-cashAdvanced",
+        },
+        {
+            checkbox: "caEntertainCheckbox",
+            nav: "nav-cashAdvancedEntertain",
+            tab: "pills-cashAdvancedEntertain-tab",
+            pane: "pills-cashAdvancedEntertain",
+        },
+        {
+            checkbox: "ticketCheckbox",
+            nav: "nav-ticket",
+            tab: "pills-ticket-tab",
+            pane: "pills-ticket",
+        },
+        {
+            checkbox: "hotelCheckbox",
+            nav: "nav-hotel",
+            tab: "pills-hotel-tab",
+            pane: "pills-hotel",
+        },
+        {
+            checkbox: "taksiCheckbox",
+            nav: "nav-taksi",
+            tab: "pills-taksi-tab",
+            pane: "pills-taksi",
+        },
+    ];
+
+    // Initialize Dalam Kota sections
+    const dalamKotaSections = [
+        {
+            checkbox: "ticketCheckboxDalamKota",
+            nav: "nav-ticket-dalam-kota",
+            tab: "pills-ticket-dalam-kota-tab",
+            pane: "pills-ticket-dalam-kota",
+        },
+        {
+            checkbox: "hotelCheckboxDalamKota",
+            nav: "nav-hotel-dalam-kota",
+            tab: "pills-hotel-dalam-kota-tab",
+            pane: "pills-hotel-dalam-kota",
+        },
+        {
+            checkbox: "taksiCheckboxDalamKota",
+            nav: "nav-taksi-dalam-kota",
+            tab: "pills-taksi-dalam-kota-tab",
+            pane: "pills-taksi-dalam-kota",
+        },
+    ];
+
+    // Initialize all sections
+    [...luarKotaSections, ...dalamKotaSections].forEach((section) => {
+        toggleSection(section.checkbox, section.nav, section.tab, section.pane);
+    });
+}
+
 function handleTabVisibility(
     isChecked,
     navItem,
@@ -126,22 +190,41 @@ function findNextAvailableTab(isDalamKota) {
 
     for (let tab of tabs) {
         const tabId = tab.id;
-        const section = tabId
-            .replace("pills-", "")
-            .replace("-dalam-kota-tab", "")
-            .replace("-tab", "")
-            .toLowerCase();
+        let section;
+        let checkboxId;
 
-        const checkboxId = isDalamKota
-            ? `${section}CheckboxDalamKota`
-            : `${section}Checkbox`;
+        // Handle CA and Entertain cases first (only for Luar Kota)
+        if (!isDalamKota && tabId.includes("cashAdvanced")) {
+            if (tabId.includes("Entertain")) {
+                section = "cashAdvancedEntertain";
+                checkboxId = "caEntertainCheckbox";
+            } else {
+                section = "cashAdvanced";
+                checkboxId = "cashAdvancedCheckbox";
+            }
+        } else {
+            section = tabId
+                .replace("pills-", "")
+                .replace("-dalam-kota-tab", "")
+                .replace("-tab", "")
+                .toLowerCase();
+
+            checkboxId = isDalamKota
+                ? `${section}CheckboxDalamKota`
+                : `${section}Checkbox`;
+        }
 
         const checkbox = document.getElementById(checkboxId);
+        const navItem = isDalamKota
+            ? document.getElementById(`nav-${section}-dalam-kota`)
+            : document.getElementById(`nav-${section}`);
 
+        // Check if this tab is valid and should be active
         if (
             checkbox &&
             checkbox.checked &&
-            tab.closest(".nav-item").style.display !== "none"
+            navItem &&
+            navItem.style.display !== "none"
         ) {
             return tab;
         }
@@ -162,6 +245,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     if (document.getElementById("cashAdvancedCheckbox").checked) {
         activateTab("pills-cashAdvanced-tab");
+    }
+    if (document.getElementById("caEntertainCheckbox").checked) {
+        activateTab("pills-cashAdvancedEntertain-tab");
     }
     if (document.getElementById("ticketCheckbox").checked) {
         activateTab("pills-ticket-tab");
@@ -228,34 +314,6 @@ function formatCurrency(input) {
     let formattedValue = value.replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Add thousands separators
     input.value = formattedValue;
 }
-
-//save to draft
-// document.addEventListener("DOMContentLoaded", function () {
-//     document
-//         .getElementById("save-draft")
-//         .addEventListener("click", function (event) {
-//             event.preventDefault();
-
-//             // Remove the existing status input
-//             const existingStatus = document.getElementById("status");
-//             if (existingStatus) {
-//                 existingStatus.remove();
-//             }
-
-//             // Create a new hidden input for "Draft"
-//             const draftInput = document.createElement("input");
-//             draftInput.type = "hidden";
-//             draftInput.name = "status";
-//             draftInput.value = "Draft";
-//             draftInput.id = "status";
-
-//             // Append the draft input to the form
-//             this.closest("form").appendChild(draftInput);
-
-//             // Submit the form
-//             this.closest("form").submit();
-//         });
-// });
 
 function syncDateRequired(changedInput) {
     // Get the value of the changed date_required field
@@ -723,6 +781,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const nav = document.getElementById(navId);
         const tab = document.getElementById(tabId);
         const pane = document.getElementById(paneId);
+        const isDalamKota = checkboxId.includes("DalamKota");
 
         checkbox.addEventListener("change", function () {
             if (this.checked) {
@@ -737,6 +796,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 nav.style.display = "none";
                 if (pane) {
                     pane.classList.remove("active", "show");
+                }
+
+                // Find and activate next available tab when unchecked
+                const nextTab = findNextAvailableTab(isDalamKota);
+                if (nextTab) {
+                    setTimeout(() => {
+                        nextTab.click();
+                    }, 50);
                 }
             }
         });
@@ -1806,7 +1873,7 @@ function LuarKotaHotelInit() {
             const addedForm = hotelFormsContainer.lastElementChild;
             toggleRequiredAttributes(addedForm, hotelCheckbox.checked);
             updateFormNumbers();
-            initializeAllSelect2()
+            initializeAllSelect2();
         } else {
             Swal.fire({
                 title: "Warning!",
