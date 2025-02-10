@@ -46,6 +46,8 @@ use App\Models\Designation;
 use Faker\Provider\Medical;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use App\Mail\TestEmail;
+use Illuminate\Support\Facades\Mail;
 
 Route::get('/', function () {
     return redirect('reimbursements');
@@ -72,6 +74,18 @@ Route::get('/test-email', function () {
     $name = 'John Doe';
 
     return view('email.reminderschedule', compact('messages', 'name'));
+});
+
+Route::get('/send-test-email', function () {
+    $testEmailAddress = 'eriton.dewa@kpn-corp.com'; // Ganti dengan alamat email tujuan
+    $messageContent = 'This is a test email sent from Laravel.';
+
+    try {
+        Mail::to($testEmailAddress)->send(new TestEmail($messageContent));
+        return 'Test email has been sent successfully!';
+    } catch (\Exception $e) {
+        return 'Failed to send email. Error: ' . $e->getMessage();
+    }
 });
 Route::get('/apiemployees/{id}', [ApiEmployeeController::class, 'show']);
 
