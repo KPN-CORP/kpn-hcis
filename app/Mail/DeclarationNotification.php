@@ -22,6 +22,9 @@ class DeclarationNotification extends Mailable
     public $managerName;
     public $approvalLink;
     public $rejectionLink;
+    public $employeeName;
+    public $base64Image;
+    public $textNotification;
     public $isEnt;
     public $isCa;    
 
@@ -34,6 +37,9 @@ class DeclarationNotification extends Mailable
         $managerName = null,
         $approvalLink = null,
         $rejectionLink = null,
+        $employeeName = null,
+        $base64Image = null,
+        $textNotification = null,
         $isEnt = null,
         $isCa = null,
     ) {
@@ -45,6 +51,9 @@ class DeclarationNotification extends Mailable
         $this->managerName = $managerName;
         $this->approvalLink = $approvalLink;
         $this->rejectionLink = $rejectionLink;
+        $this->employeeName = $employeeName;
+        $this->base64Image = $base64Image;
+        $this->textNotification = $textNotification;
         $this->isEnt = $isEnt;
         $this->isCa = $isCa;
     }
@@ -61,6 +70,9 @@ class DeclarationNotification extends Mailable
                 'managerName' => $this->managerName,
                 'approvalLink' => $this->approvalLink,
                 'rejectionLink' => $this->rejectionLink,
+                'employeeName' => $this->employeeName,
+                'base64Image' => $this->base64Image,
+                'textNotification' => $this->textNotification,
                 'isEnt' => $this->isEnt,
                 'isCa' => $this->isCa,
             ]);

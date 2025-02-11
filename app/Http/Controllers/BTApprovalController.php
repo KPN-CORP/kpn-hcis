@@ -622,6 +622,12 @@ class BTApprovalController extends Controller
             $managerL2 = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('email')->first();
             $managerName = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('fullname')->first();
 
+            $imagePath = public_path('images/kop.jpg');
+            $imageContent = file_get_contents($imagePath);
+            $employeeName = Employee::where('id', $businessTrip->user_id)->pluck('fullname')->first();
+            $base64Image = "data:image/png;base64," . base64_encode($imageContent);
+            $textNotification = "requesting a Bussiness Trip and waiting for your Approval with the following details :";
+
             // dd($managerL2);
             if ($managerL2) {
                 $approvalLink = route('approve.business.trip.declare', [
@@ -646,63 +652,68 @@ class BTApprovalController extends Controller
                 $entr = $caTrans->where('type_ca', 'entr')->first();
                 $isEnt = $entr ? true : false;
                 $isCa = $dns ? true : false;
+
+                $caDetails = [];
+                $caDeclare = [];
+                $entDetails = [];
+                $entDeclare = [];
                 
                 // dd( $detail_ca, $caTrans);
 
                 // dd($caTrans, $n->no_sppd);
                 if ($isCa == true) {
-                    $detail_ca = isset($dns) && isset($dns->detail_ca) ? json_decode($dns->detail_ca, true) : [];
-                    $declare_ca = isset($dns) && isset($dns->declare_ca) ? json_decode($dns->declare_ca, true) : [];
+                    $detail_ca_ntf = isset($dns) && isset($dns->detail_ca) ? json_decode($dns->detail_ca, true) : [];
+                    $declare_ca_ntf = isset($dns) && isset($dns->declare_ca) ? json_decode($dns->declare_ca, true) : [];
 
                     $caDetails = [
-                        'total_days_perdiem' => array_sum(array_column($detail_ca['detail_perdiem'] ?? [], 'total_days')),
-                        'total_amount_perdiem' => array_sum(array_column($detail_ca['detail_perdiem'] ?? [], 'nominal')),
+                        'total_days_perdiem' => array_sum(array_column($detail_ca_ntf['detail_perdiem'] ?? [], 'total_days')),
+                        'total_amount_perdiem' => array_sum(array_column($detail_ca_ntf['detail_perdiem'] ?? [], 'nominal')),
     
-                        'total_days_transport' => count($detail_ca['detail_transport'] ?? []),
-                        'total_amount_transport' => array_sum(array_column($detail_ca['detail_transport'] ?? [], 'nominal')),
+                        'total_days_transport' => count($detail_ca_ntf['detail_transport'] ?? []),
+                        'total_amount_transport' => array_sum(array_column($detail_ca_ntf['detail_transport'] ?? [], 'nominal')),
     
-                        'total_days_accommodation' => array_sum(array_column($detail_ca['detail_penginapan'] ?? [], 'total_days')),
-                        'total_amount_accommodation' => array_sum(array_column($detail_ca['detail_penginapan'] ?? [], 'nominal')),
+                        'total_days_accommodation' => array_sum(array_column($detail_ca_ntf['detail_penginapan'] ?? [], 'total_days')),
+                        'total_amount_accommodation' => array_sum(array_column($detail_ca_ntf['detail_penginapan'] ?? [], 'nominal')),
     
-                        'total_days_others' => count($detail_ca['detail_lainnya'] ?? []),
-                        'total_amount_others' => array_sum(array_column($detail_ca['detail_lainnya'] ?? [], 'nominal')),
+                        'total_days_others' => count($detail_ca_ntf['detail_lainnya'] ?? []),
+                        'total_amount_others' => array_sum(array_column($detail_ca_ntf['detail_lainnya'] ?? [], 'nominal')),
     
-                        'total_days_meals' => count($detail_ca['detail_meals'] ?? []),
-                        'total_amount_meals' => array_sum(array_column($detail_ca['detail_meals'] ?? [], 'nominal')),
+                        'total_days_meals' => count($detail_ca_ntf['detail_meals'] ?? []),
+                        'total_amount_meals' => array_sum(array_column($detail_ca_ntf['detail_meals'] ?? [], 'nominal')),
                     ];
                     // dd($caDetails,   $detail_ca );
     
                     $caDeclare = [
-                        'total_days_perdiem' => array_sum(array_column($declare_ca['detail_perdiem'] ?? [], 'total_days')),
-                        'total_amount_perdiem' => array_sum(array_column($declare_ca['detail_perdiem'] ?? [], 'nominal')),
+                        'total_days_perdiem' => array_sum(array_column($declare_ca_ntf['detail_perdiem'] ?? [], 'total_days')),
+                        'total_amount_perdiem' => array_sum(array_column($declare_ca_ntf['detail_perdiem'] ?? [], 'nominal')),
     
-                        'total_days_transport' => count($declare_ca['detail_transport'] ?? []),
-                        'total_amount_transport' => array_sum(array_column($declare_ca['detail_transport'] ?? [], 'nominal')),
+                        'total_days_transport' => count($declare_ca_ntf['detail_transport'] ?? []),
+                        'total_amount_transport' => array_sum(array_column($declare_ca_ntf['detail_transport'] ?? [], 'nominal')),
     
-                        'total_days_accommodation' => array_sum(array_column($declare_ca['detail_penginapan'] ?? [], 'total_days')),
-                        'total_amount_accommodation' => array_sum(array_column($declare_ca['detail_penginapan'] ?? [], 'nominal')),
+                        'total_days_accommodation' => array_sum(array_column($declare_ca_ntf['detail_penginapan'] ?? [], 'total_days')),
+                        'total_amount_accommodation' => array_sum(array_column($declare_ca_ntf['detail_penginapan'] ?? [], 'nominal')),
     
-                        'total_days_others' => count($declare_ca['detail_lainnya'] ?? []),
-                        'total_amount_others' => array_sum(array_column($declare_ca['detail_lainnya'] ?? [], 'nominal')),
+                        'total_days_others' => count($declare_ca_ntf['detail_lainnya'] ?? []),
+                        'total_amount_others' => array_sum(array_column($declare_ca_ntf['detail_lainnya'] ?? [], 'nominal')),
     
-                        'total_days_meals' => count($declare_ca['detail_meals'] ?? []),
-                        'total_amount_meals' => array_sum(array_column($declare_ca['detail_meals'] ?? [], 'nominal')),
+                        'total_days_meals' => count($declare_ca_ntf['detail_meals'] ?? []),
+                        'total_amount_meals' => array_sum(array_column($declare_ca_ntf['detail_meals'] ?? [], 'nominal')),
                     ];
                 }
                 if ($isEnt == true) {
-                    $detail_ca = isset($entr) && isset($entr->detail_ca) ? json_decode($entr->detail_ca, true) : [];
-                    $declare_ca = isset($entr) && isset($entr->declare_ca) ? json_decode($entr->declare_ca, true) : [];
+                    $detail_ent_ntf = isset($entr) && isset($entr->detail_ca) ? json_decode($entr->detail_ca, true) : [];
+                    $declare_ent_ntf = isset($entr) && isset($entr->declare_ca) ? json_decode($entr->declare_ca, true) : [];
                     $entDetails = [
-                        'total_amount_ent' => array_sum(array_column($detail_ca['detail_e'] ?? [], 'nominal')),
+                        'total_amount_ent' => array_sum(array_column($detail_ent_ntf['detail_e'] ?? [], 'nominal')),
                     ];
 
                     $entDeclare = [
-                        'total_amount_ent' => array_sum(array_column($declare_ca['detail_e'] ?? [], 'nominal')),
+                        'total_amount_ent' => array_sum(array_column($declare_ent_ntf['detail_e'] ?? [], 'nominal')),
                     ];
                 }
 
                 // Send email to the manager
-                try {
+                // try {
                     Mail::to($managerL2)->send(new DeclarationNotification(
                         $businessTrip,
                         $caDetails,
@@ -712,12 +723,15 @@ class BTApprovalController extends Controller
                         $managerName,
                         $approvalLink,
                         $rejectionLink,
+                        $employeeName,
+                        $base64Image,
+                        $textNotification,
                         $isEnt,
                         $isCa,
                     ));
-                } catch (\Exception $e) {
-                    Log::error('Email Deklarasi Approval Bussines Trip tidak terkirim: ' . $e->getMessage());
-                }
+                // } catch (\Exception $e) {
+                    // Log::error('Email Deklarasi Approval Bussines Trip tidak terkirim: ' . $e->getMessage());
+                // }
             }
             // Handle CA approval for L1
 

@@ -63,7 +63,7 @@ class CashAdvancedNotification extends Mailable
     public function build()
     {
         return $this->subject('New Cash Advanced Trip Request')
-            ->view('hcis.reimbursements.approval.email.caNotification-bak');
+            ->view('hcis.reimbursements.businessTrip.email.caNotification-bak');
     }
 
     /**
@@ -82,7 +82,7 @@ class CashAdvancedNotification extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'hcis.reimbursements.approval.email.caNotification-bak',
+            view: 'hcis.reimbursements.businessTrip.email.caNotification-bak',
         );
     }
 
