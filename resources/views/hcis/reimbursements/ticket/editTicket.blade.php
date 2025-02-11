@@ -203,7 +203,7 @@
                                                 <div class="col-md-6 mb-2">
                                                     <label class="form-label">Transportation Type</label>
                                                     <div class="input-group">
-                                                        <select class="form-select form-select-sm" name="jenis_tkt[]"
+                                                        <select class="form-select form-select-sm select2" name="jenis_tkt[]"
                                                             required>
                                                             <option value="">Select Transportation Type</option>
                                                             <option value="Train"
