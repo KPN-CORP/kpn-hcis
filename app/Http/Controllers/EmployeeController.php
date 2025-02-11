@@ -112,8 +112,8 @@ class EmployeeController extends Controller
             'Authorization' => 'Basic ZGFyd2luYm94c3R1ZGlvOkRCc3R1ZGlvMTIzNDUh'
         ];
 
-        // Loop untuk handle multiple requests
-        $startOffsets = [0, 1801, 3601, 5401];
+        // Loop untuk handle multiple requests 0, 1801 , 3601, 5401
+        $startOffsets = [3601, 5401];
         $totalSaved = 0;
 
         foreach ($startOffsets as $start) {

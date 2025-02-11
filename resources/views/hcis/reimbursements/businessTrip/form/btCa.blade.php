@@ -41,7 +41,7 @@
                 </ul>
                 {{-- <div class="card"> --}}
                 <div class="tab-content" id="pills-tabContent">
-                    @if ($group_company != 'KPN Plantations')
+                    @if ($group_company != 'Plantations')
                         <div class="tab-pane fade show active" id="pills-meals" role="tabpanel"
                             aria-labelledby="pills-meals-tab">
                             {{-- ca transport content --}}

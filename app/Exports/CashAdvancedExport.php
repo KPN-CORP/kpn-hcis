@@ -5,7 +5,6 @@ namespace App\Exports;
 use App\Models\CATransaction;
 use App\Models\Employee;
 use App\Models\ca_approval;
-use App\Models\ca_sett_approval;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -42,78 +41,56 @@ class CashAdvancedExport implements FromCollection, WithHeadings, WithStyles, Wi
         $grandTotalBalance = 0;
 
         foreach ($categories as $key => [$categoryNumber, $categoryName]) {
-            // Query data per kategori
-            $categoryData = CATransaction::select(
-                DB::raw("'$categoryNumber' AS type_ca_number"),  // Set nomor kategori (I, II, III)
-                DB::raw("'$categoryName' AS type_ca_name"),       // Set nama kategori (Dinas, Non Dinas, Entertain)
-                'ca_transactions.unit',
-                DB::raw("DATE_FORMAT(ca_transactions.created_at, '%d-%M-%Y') as formatted_created_at"),
-                DB::raw("DATE_FORMAT(ca_transactions.date_required, '%d-%M-%Y') as formatted_date_required"),
-                DB::raw("DATE_FORMAT(ca_transactions.start_date, '%d-%M-%Y') as formatted_start_date"),
-                DB::raw("DATE_FORMAT(ca_transactions.end_date, '%d-%M-%Y') as formatted_end_date"),
-                DB::raw("DATE_FORMAT(ca_transactions.declare_estimate, '%d-%M-%Y') as formatted_declare_estimate"),
-                'ca_transactions.contribution_level_code',
-                'employees.employee_id',
-                'employees.fullname as employee_name',
-                DB::raw("(
-                    SELECT GROUP_CONCAT(DISTINCT e1.fullname ORDER BY layer ASC)
-                    FROM ca_approvals ca1
-                    LEFT JOIN employees e1 ON FIND_IN_SET(e1.employee_id, (
-                        SELECT GROUP_CONCAT(DISTINCT employee_id ORDER BY layer ASC)
-                        FROM ca_approvals
-                        WHERE ca_approvals.ca_id = ca_transactions.id
-                        AND role_name = 'Dept Head'
-                    )) > 0
-                    WHERE ca1.ca_id = ca_transactions.id
-                    AND ca1.role_name = 'Dept Head'
-                ) AS manager_l1_fullnames"),
-                DB::raw("(
-                    SELECT GROUP_CONCAT(DISTINCT e2.fullname ORDER BY layer ASC)
-                    FROM ca_approvals ca2
-                    LEFT JOIN employees e2 ON FIND_IN_SET(e2.employee_id, (
-                        SELECT GROUP_CONCAT(DISTINCT employee_id ORDER BY layer ASC)
-                        FROM ca_approvals
-                        WHERE ca_approvals.ca_id = ca_transactions.id
-                        AND role_name = 'Div Head'
-                    )) > 0
-                    WHERE ca2.ca_id = ca_transactions.id
-                    AND ca2.role_name = 'Div Head'
-                ) AS manager_l2_fullnames"),
-                'ca_transactions.no_ca',
-                'ca_transactions.no_sppd',
-                'ca_transactions.total_ca',
-                'ca_transactions.total_real',
-                DB::raw('ca_transactions.total_ca - ca_transactions.total_real as balance'),
-                'ca_transactions.approval_status',
-                'ca_transactions.approval_sett',
-                'ca_transactions.approval_extend',
-                DB::raw("DATEDIFF(CURDATE(), ca_transactions.declare_estimate) as days_difference"),
-                DB::raw("CASE
-                WHEN DATEDIFF(CURDATE(), ca_transactions.declare_estimate) > 0 THEN 'Overdue'
-                ELSE 'Not Overdue'
-            END as overdue_status"),
-                DB::raw("CASE
-                WHEN DATEDIFF(CURDATE(), ca_transactions.declare_estimate) > 0 THEN ca_transactions.total_ca
-                ELSE 0
-            END as total_ca_adjusted"),
-                DB::raw("CASE
-                WHEN DATEDIFF(CURDATE(), ca_transactions.declare_estimate) BETWEEN 0 AND 6 THEN ca_transactions.total_ca
-                ELSE 0
-            END as total_ca_within_6_days"),
-                DB::raw("CASE
-                WHEN DATEDIFF(CURDATE(), ca_transactions.declare_estimate) BETWEEN 7 AND 14 THEN ca_transactions.total_ca
-                ELSE 0
-            END as total_ca_within_14_days"),
-                DB::raw("CASE
-                WHEN DATEDIFF(CURDATE(), ca_transactions.declare_estimate) BETWEEN 15 AND 30 THEN ca_transactions.total_ca
-                ELSE 0
-            END as total_ca_within_30_days"),
-                DB::raw("CASE
-                WHEN DATEDIFF(CURDATE(), ca_transactions.declare_estimate) BETWEEN 30 AND 999 THEN ca_transactions.total_ca
-                ELSE 0
-            END as total_ca_within_99_days")
-            )
-                ->join('employees', 'ca_transactions.user_id', '=', 'employees.id')
+            // Menggunakan eager loading untuk mengoptimalkan pengambilan data dari relasi
+            $categoryData = CATransaction::with([
+                    'employee', 
+                    'approvals.managerL1',
+                    'approvals.managerL2'
+                ])
+                ->select(
+                    DB::raw("'$categoryNumber' AS type_ca_number"),  // Set nomor kategori (I, II, III)
+                    DB::raw("'$categoryName' AS type_ca_name"),       // Set nama kategori (Dinas, Non Dinas, Entertain)
+                    'ca_transactions.unit',
+                    DB::raw("DATE_FORMAT(ca_transactions.created_at, '%d-%M-%Y') as formatted_created_at"),
+                    DB::raw("DATE_FORMAT(ca_transactions.date_required, '%d-%M-%Y') as formatted_date_required"),
+                    DB::raw("DATE_FORMAT(ca_transactions.start_date, '%d-%M-%Y') as formatted_start_date"),
+                    DB::raw("DATE_FORMAT(ca_transactions.end_date, '%d-%M-%Y') as formatted_end_date"),
+                    DB::raw("DATE_FORMAT(ca_transactions.declare_estimate, '%d-%M-%Y') as formatted_declare_estimate"),
+                    'ca_transactions.contribution_level_code',
+                    'ca_transactions.no_ca',
+                    'ca_transactions.no_sppd',
+                    'ca_transactions.total_ca',
+                    'ca_transactions.total_real',
+                    DB::raw('ca_transactions.total_ca - ca_transactions.total_real as balance'),
+                    'ca_transactions.approval_status',
+                    'ca_transactions.approval_sett',
+                    'ca_transactions.approval_extend',
+                    DB::raw("DATEDIFF(CURDATE(), ca_transactions.declare_estimate) as days_difference"),
+                    DB::raw("CASE
+                        WHEN DATEDIFF(CURDATE(), ca_transactions.declare_estimate) > 0 THEN 'Overdue'
+                        ELSE 'Not Overdue'
+                    END as overdue_status"),
+                    DB::raw("CASE
+                        WHEN DATEDIFF(CURDATE(), ca_transactions.declare_estimate) > 0 THEN ca_transactions.total_ca
+                        ELSE 0
+                    END as total_ca_adjusted"),
+                    DB::raw("CASE
+                        WHEN DATEDIFF(CURDATE(), ca_transactions.declare_estimate) BETWEEN 0 AND 6 THEN ca_transactions.total_ca
+                        ELSE 0
+                    END as total_ca_within_6_days"),
+                    DB::raw("CASE
+                        WHEN DATEDIFF(CURDATE(), ca_transactions.declare_estimate) BETWEEN 7 AND 14 THEN ca_transactions.total_ca
+                        ELSE 0
+                    END as total_ca_within_14_days"),
+                    DB::raw("CASE
+                        WHEN DATEDIFF(CURDATE(), ca_transactions.declare_estimate) BETWEEN 15 AND 30 THEN ca_transactions.total_ca
+                        ELSE 0
+                    END as total_ca_within_30_days"),
+                    DB::raw("CASE
+                        WHEN DATEDIFF(CURDATE(), ca_transactions.declare_estimate) BETWEEN 30 AND 999 THEN ca_transactions.total_ca
+                        ELSE 0
+                    END as total_ca_within_99_days")
+                )
                 ->where('ca_transactions.type_ca', $key)
                 ->get();
 
@@ -138,9 +115,9 @@ class CashAdvancedExport implements FromCollection, WithHeadings, WithStyles, Wi
             ]);
 
             // Tambahkan data kategori dengan nomor urut
-            $categoryData->each(function ($row, $index) use ($data) {
+            $categoryData->each(function ($row) use ($data) {
                 $data->push([
-                    'Type_CA' => $index + 1,  // Nomor urut
+                    'Type_CA' => $row->id,  // Nomor urut
                     'Unit' => $row->unit,
                     'Created At' => $row->formatted_created_at,
                     'Date Required' => $row->formatted_date_required,
@@ -148,10 +125,10 @@ class CashAdvancedExport implements FromCollection, WithHeadings, WithStyles, Wi
                     'End Date' => $row->formatted_end_date,
                     'Declare Estimate' => $row->formatted_declare_estimate,
                     'Level Code' => $row->contribution_level_code,
-                    'Employee ID' => $row->employee_id,
-                    'Employee Name' => $row->employee_name,
-                    'Dept Head' => $row->manager_l1_fullnames,
-                    'Div Head' => $row->manager_l2_fullnames,
+                    'Employee ID' => $row->employee->employee_id ?? 'N/A',
+                    'Employee Name' => $row->employee->fullname ?? 'N/A',
+                    'Dept Head' => $row->approvals->managerL1->fullname ?? 'N/A',
+                    'Div Head' => $row->approvals->managerL2->fullname ?? 'N/A',
                     'No CA' => $row->no_ca,
                     'No SPPD' => $row->no_sppd,
                     'Total CA' => $row->total_ca,
@@ -219,7 +196,7 @@ class CashAdvancedExport implements FromCollection, WithHeadings, WithStyles, Wi
     public function headings(): array
     {
         // Base headings
-        $headings = [
+        return [
             'No',
             'Unit',
             'Submitted Date',
@@ -249,8 +226,6 @@ class CashAdvancedExport implements FromCollection, WithHeadings, WithStyles, Wi
             '15 - 30 Days',
             '> 30 Days',
         ];
-
-        return $headings;
     }
 
     public function styles(Worksheet $sheet)
@@ -266,7 +241,7 @@ class CashAdvancedExport implements FromCollection, WithHeadings, WithStyles, Wi
                 'fill' => [
                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                     'startColor' => [
-                        'argb' => '228B22', // Warna kuning
+                        'argb' => '228B22', // Warna hijau
                     ],
                 ],
                 'alignment' => [
