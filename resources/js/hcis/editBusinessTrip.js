@@ -783,36 +783,28 @@ document.addEventListener("DOMContentLoaded", function () {
         const pane = document.getElementById(paneId);
         const isDalamKota = checkboxId.includes("DalamKota");
 
+        if (!checkbox) return; // Guard clause if elements don't exist
+
         checkbox.addEventListener("change", function () {
             if (this.checked) {
                 nav.style.display = "block";
-                tab.click();
-                setTimeout(() => {
-                    if (pane) {
-                        pane.classList.add("active", "show");
-                    }
-                }, 50);
+                // Use Bootstrap's Tab API
+                const bsTab = new bootstrap.Tab(tab);
+                bsTab.show();
             } else {
                 nav.style.display = "none";
                 if (pane) {
                     pane.classList.remove("active", "show");
                 }
 
-                // Find and activate next available tab when unchecked
+                // Find and activate next available tab
                 const nextTab = findNextAvailableTab(isDalamKota);
                 if (nextTab) {
-                    setTimeout(() => {
-                        nextTab.click();
-                    }, 50);
+                    const bsTab = new bootstrap.Tab(nextTab);
+                    bsTab.show();
                 }
             }
         });
-
-        if (checkbox.checked) {
-            setTimeout(() => {
-                tab.click();
-            }, 50);
-        }
     }
 
     // Initialize toggleSection for Luar Kota
