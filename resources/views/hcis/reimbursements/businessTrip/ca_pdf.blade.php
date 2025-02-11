@@ -186,7 +186,7 @@
             <td class="label">Start Date</td>
             <td class="colon">:</td>
             <td class="value">{{ \Carbon\Carbon::parse($transactions->start_date)->format('d-M-y') }} to
-                {{ \Carbon\Carbon::parse($transactions->end_date)->format('d-M-y') }} ({{ $transactions->total_days }}
+                {{ \Carbon\Carbon::parse($transactions->end_date)->format('d-M-y') }} ({{ $transactions->total_days + 1 }}
                 days)</td>
         </tr>
         <tr>
@@ -236,7 +236,7 @@
                             @endif
                         </td>
                         <td>{{ $perdiem['company_code'] }}</td>
-                        <td>{{ $perdiem['total_days'] }} Hari</td>
+                        <td>{{ $perdiem['total_days'] }} Night</td>
                     </tr>
                 @endforeach
                 <tr class="total-row">
@@ -428,7 +428,7 @@
                                     @endif
                                 </td>
                                 <td>{{ $perdiem['company_code'] }}</td>
-                                <td>{{ $perdiem['total_days'] }} Hari</td>
+                                <td>{{ $perdiem['total_days'] }} Night</td>
                                 <td>
                                     <span style="float: left; margin-left:4px">Rp.</span>
                                     <span
@@ -439,7 +439,7 @@
                         <tr class="total-row">
                             <td colspan="4" class="head-row">Total</td>
                             <td>
-                                {{ array_sum(array_column($detailCA['detail_perdiem'], 'total_days')) }} Hari
+                                {{ array_sum(array_column($detailCA['detail_perdiem'], 'total_days')) }} Night
                             </td>
                             <td>
                                 <span style="float: left; margin-left:4px">Rp.</span>
@@ -507,7 +507,7 @@
                                 <td>{{ \Carbon\Carbon::parse($perdiem['end_date'])->format('d-M-y') }}</td>
                                 <td>{{ $perdiem['hotel_name'] }}</td>
                                 <td>{{ $perdiem['company_code'] }}</td>
-                                <td>{{ $perdiem['total_days'] }} Hari</td>
+                                <td>{{ $perdiem['total_days'] }} Night</td>
                                 <td>
                                     <span style="float: left; margin-left:4px">Rp.</span>
                                     <span
