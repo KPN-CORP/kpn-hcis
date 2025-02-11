@@ -673,7 +673,7 @@
                                     @endif
                                 </td>
                                 <td>{{ $perdiem['company_code'] }}</td>
-                                <td>{{ $perdiem['total_days'] }} Night</td>
+                                <td>{{ $perdiem['total_days'] }} Days</td>
                                 <td>
                                     <span style="float: left; margin-left:4px">Rp.</span>
                                     <span
@@ -684,7 +684,7 @@
                         <tr class="total-row">
                             <td colspan="4" class="head-row">Total</td>
                             <td>
-                                {{ array_sum(array_column($detailCA['detail_perdiem'], 'total_days')) }} Night
+                                {{ array_sum(array_column($detailCA['detail_perdiem'], 'total_days')) }} Days
                             </td>
                             <td>
                                 <span style="float: left; margin-left:4px">Rp.</span>
@@ -722,7 +722,7 @@
                                 @endif
                             </td>
                             <td>{{ $perdiem['company_code'] }}</td>
-                            <td>{{ $perdiem['total_days'] }} Night</td>
+                            <td>{{ $perdiem['total_days'] }} Days</td>
                             <td>
                                 <span style="float: left; margin-left:4px">Rp.</span>
                                 <span
@@ -733,7 +733,7 @@
                     <tr class="total-row">
                         <td colspan="4" class="head-row">Total</td>
                         <td>
-                            {{ array_sum(array_column($declareCA['detail_perdiem'], 'total_days')) }} Night
+                            {{ array_sum(array_column($declareCA['detail_perdiem'], 'total_days')) }} Days
                         </td>
                         <td>
                             <span style="float: left; margin-left:4px">Rp.</span>

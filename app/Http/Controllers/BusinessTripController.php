@@ -3600,10 +3600,6 @@ class BusinessTripController extends Controller
             // dd($statusValue),
             'manager_l1_id' => $managerL1,
             'manager_l2_id' => $managerL2,
-            'id_ca' => $request->id_ca,
-            'id_tiket' => $request->id_tiket,
-            'id_hotel' => $request->id_hotel,
-            'id_taksi' => $request->id_taksi,
             'approval_status' => $request->status,
 
         ]);

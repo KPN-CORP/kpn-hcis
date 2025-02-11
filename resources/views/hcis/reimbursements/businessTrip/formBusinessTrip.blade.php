@@ -618,20 +618,7 @@
                         return value.toLocaleString('id-ID');
                     }
 
-                    // if (perdiemCheckbox && !dateReq) {
-                    //     Swal.fire({
-                    //         title: "Warning!",
-                    //         text: "Please select a Date Required.",
-                    //         icon: "warning",
-                    //         confirmButtonColor: "#AB2F2B",
-                    //         confirmButtonText: "OK",
-                    //     });
-                    //     return;
-                    // }
-
                     if (entCheckbox && !dateReq) {
-                        console.log("Ini yg ent");
-
                         Swal.fire({
                             title: "Warning!",
                             text: "Please select a Date CA Withdrawal.",
@@ -641,8 +628,7 @@
                         });
                         return;
                     }
-                    if (entCheckbox && !dateReq2) {
-                        console.log("Ini Yg CA");
+                    if (caCheckbox && !dateReq2) {
                         Swal.fire({
                             title: "Warning!",
                             text: "Please select a Date CA Withdrawal .",
@@ -826,7 +812,7 @@
                     }
 
                     // Retrieve the values from the input fields
-                    // const dateReq = document.getElementById('date_required_1').value;
+                    const dateReq = document.getElementById('date_required_1').value;
                     const dateReq2 = document.getElementById('date_required_2').value;
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
                     const totalBtPenginapan = document.getElementById('total_bt_penginapan').value;
@@ -836,30 +822,31 @@
                     const caCheckbox = document.getElementById('cashAdvancedCheckbox').checked;
                     const totalBtMealsElement = document.getElementById('total_bt_meals');
                     const totalBtMeals = totalBtMealsElement ? totalBtMealsElement.value || 0 : 0;
+                    const entCheckbox = document.getElementById('caEntertainCheckbox').checked;
                     // const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
                     const totalCa = document.getElementById('totalca').value;
 
-                    // if (perdiemCheckbox && !dateReq) {
-                    //     Swal.fire({
-                    //         title: "Warning!",
-                    //         text: "Please select a Date Required.",
-                    //         icon: "warning",
-                    //         confirmButtonColor: "#AB2F2B",
-                    //         confirmButtonText: "OK",
-                    //     });
-                    //     return;
-                    // }
-
-                    if (caCheckbox && !dateReq2) {
+                    if (entCheckbox && !dateReq) {
                         Swal.fire({
                             title: "Warning!",
-                            text: "Please select a Date Required.",
+                            text: "Please select a Date CA Withdrawal.",
                             icon: "warning",
                             confirmButtonColor: "#AB2F2B",
                             confirmButtonText: "OK",
                         });
                         return;
                     }
+                    if (caCheckbox && !dateReq2) {
+                        Swal.fire({
+                            title: "Warning!",
+                            text: "Please select a Date CA Withdrawal .",
+                            icon: "warning",
+                            confirmButtonColor: "#AB2F2B",
+                            confirmButtonText: "OK",
+                        });
+                        return;
+                    }
+
                     // Check if CA is checked and all fields are zero
                     if (caCheckbox && totalBtPerdiem == 0 && totalBtPenginapan == 0 &&
                         totalBtTransport == 0 && totalBtLainnya == 0) {
