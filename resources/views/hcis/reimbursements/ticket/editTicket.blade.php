@@ -413,6 +413,10 @@
             const ticketFormsContainer = document.getElementById("ticket_forms_container");
             const addTicketButton = document.getElementById("add-ticket-btn");
 
+            updateRemoveButtons();
+            updateFormNumbers();
+            updateAddButtonVisibility();
+
             function toggleRequiredAttributes(form, isRequired) {
                 const fields = [
                     'input[name="jk_tkt[]"]',
