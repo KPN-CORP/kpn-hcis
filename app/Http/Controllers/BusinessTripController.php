@@ -2653,7 +2653,6 @@ class BusinessTripController extends Controller
                 $entDeclare = [
                     'total_amount_ent' => array_sum(array_column($declare_ent_ntf['detail_e'] ?? [], 'nominal')),
                 ];
-                // dd($isEnt);
                 // Send email to the manager
                 // try {
                     Mail::to($managerEmail)->send(new DeclarationNotification(
@@ -4994,74 +4993,6 @@ class BusinessTripController extends Controller
                         // $employeeEmail = Employee::where('id', $n->user_id)->pluck('email')->first();
                         $employeeEmail = "erzie.aldrian02@gmail.com";
                         $employeeName = Employee::where('id', $n->user_id)->pluck('fullname')->first();
-
-                        if ($employeeEmail) {
-                            $caTrans = CATransaction::where('no_sppd', $n->no_sppd)
-                                ->where(function ($query) {
-                                    $query->where('caonly', '!=', 'Y')
-                                        ->orWhereNull('caonly');
-                                })
-                                ->first();
-                            // dd($caTrans);
-                            $detail_ca = isset($caTrans) && isset($caTrans->detail_ca) ? json_decode($caTrans->detail_ca, true) : [];
-
-                            $caDetails = [
-                                'total_amount_perdiem' => array_sum(array_column($detail_ca['detail_perdiem'] ?? [], 'nominal')),
-                                'total_amount_transport' => array_sum(array_column($detail_ca['detail_transport'] ?? [], 'nominal')),
-                                'total_amount_accommodation' => array_sum(array_column($detail_ca['detail_penginapan'] ?? [], 'nominal')),
-                                'total_amount_others' => array_sum(array_column($detail_ca['detail_lainnya'] ?? [], 'nominal')),
-                                'total_amount_meals' => array_sum(array_column($detail_ca['detail_meals'] ?? [], 'nominal')),
-                            ];
-                            // dd($caDetails,   $detail_ca );
-
-                            $declare_ca = isset($caTrans) && isset($caTrans->declare_ca) ? json_decode($caTrans->declare_ca, true) : [];
-                            // $caDeclare = [
-                            //     'total_amount_perdiem' => array_sum(array_column($declare_ca['detail_perdiem'] ?? [], 'nominal')),
-                            //     'total_amount_meals' => array_sum(array_column($declare_ca['detail_meals'] ?? [], 'nominal')),
-                            //     'total_amount_transport' => array_sum(array_column($declare_ca['detail_transport'] ?? [], 'nominal')),
-                            //     'total_amount_accommodation' => array_sum(array_column($declare_ca['detail_penginapan'] ?? [], 'nominal')),
-                            //     'total_amount_others' => array_sum(array_column($declare_ca['detail_lainnya'] ?? [], 'nominal')),
-                            // ];
-
-                            // Calculate the new totals from the updated request data
-
-                            $newDeclareCa = [
-                                'total_amount_perdiem' => array_sum(array_map(function ($nominal) {
-                                    return (int) str_replace('.', '', $nominal);
-                                }, $request->input('nominal_bt_perdiem', []))),
-                                'total_amount_transport' => array_sum(array_map(function ($nominal) {
-                                    return (int) str_replace('.', '', $nominal);
-                                }, $request->input('nominal_bt_transport', []))),
-                                'total_amount_accommodation' => array_sum(array_map(function ($nominal) {
-                                    return (int) str_replace('.', '', $nominal);
-                                }, $request->input('nominal_bt_penginapan', []))),
-                                'total_amount_others' => array_sum(array_map(function ($nominal) {
-                                    return (int) str_replace('.', '', $nominal);
-                                }, $request->input('nominal_bt_lainnya', []))),
-                                'total_amount_meals' => array_sum(array_map(function ($nominal) {
-                                    return (int) str_replace('.', '', $nominal);
-                                }, $request->input('nominal_bt_meals', []))),
-                            ];
-
-                            $selisih = array_sum($caDetails) - array_sum($newDeclareCa);
-                            // dd($newDeclareCa, $selisih);
-
-                            // dd($caDeclare);
-
-                            // Send email to the manager
-                            try {
-                                Mail::to($employeeEmail)->send(new RefundNotification(
-                                    $n,
-                                    $caDetails,
-                                    $newDeclareCa,
-                                    $employeeName,
-                                    $accNum,
-                                    $selisih,
-                                ));
-                            } catch (\Exception $e) {
-                                Log::error('Email Deklarasi Status Admin Bussines Trip tidak terkirim: ' . $e->getMessage());
-                            }
-                        }
                     }
 
                 } elseif ($ca->type_ca == "entr") {
@@ -5145,57 +5076,97 @@ class BusinessTripController extends Controller
                         // $employeeEmail = Employee::where('id', $n->user_id)->pluck('email')->first();
                         $employeeEmail = "erzie.aldrian02@gmail.com";
                         $employeeName = Employee::where('id', $n->user_id)->pluck('fullname')->first();
-
-                        if ($employeeEmail) {
-                            $caTrans = CATransaction::where('no_sppd', $n->no_sppd)
-                                ->where(function ($query) {
-                                    $query->where('caonly', '!=', 'Y')
-                                        ->orWhereNull('caonly');
-                                })
-                                ->first();
-                            // dd($caTrans);
-                            $detail_ca = isset($caTrans) && isset($caTrans->detail_ca) ? json_decode($caTrans->detail_ca, true) : [];
-
-                            $caDetails = [
-                                'total_amount_detailent' => array_sum(array_column($detail_ca['detail_e'] ?? [], 'nominal')),
-                            ];
-                            // dd($caDetails,   $detail_ca );
-
-                            $declare_ca = isset($caTrans) && isset($caTrans->declare_ca) ? json_decode($caTrans->declare_ca, true) : [];
-                            // $caDeclare = [
-                            //     'total_amount_detailent' => array_sum(array_column($declare_ca['detail_e'] ?? [], 'nominal')),
-                            // ];
-
-                            // Calculate the new totals from the updated request data
-
-                            $newDeclareCa = [
-                                'total_amount_detailent' => array_sum(array_map(function ($nominal) {
-                                    return (int) str_replace('.', '', $nominal);
-                                }, $request->input('nominal_e_detail', []))),
-                            ];
-
-                            $selisih = array_sum($caDetails) - array_sum($newDeclareCa);
-                            // dd($newDeclareCa, $selisih);
-
-                            // dd($caDeclare);
-
-                            // Send email to the manager
-                            try {
-                                Mail::to($employeeEmail)->send(new RefundNotification(
-                                    $n,
-                                    $caDetails,
-                                    $newDeclareCa,
-                                    $employeeName,
-                                    $accNum,
-                                    $selisih,
-                                ));
-                            } catch (\Exception $e) {
-                                Log::error('Email Deklarasi Status Admin Bussines Trip tidak terkirim: ' . $e->getMessage());
-                            }
-                        }
                     }
                 }
                 $ca->save();
+            }
+
+            if ($employeeEmail) {
+                $caTrans = CATransaction::where('no_sppd', $n->no_sppd)
+                    ->where(function ($query) {
+                        $query->where('caonly', '!=', 'Y')
+                            ->orWhereNull('caonly');
+                    })
+                    ->get();
+
+                $imagePath = public_path('images/kop.jpg');
+                $imageContent = file_get_contents($imagePath);
+                $base64Image = "data:image/png;base64," . base64_encode($imageContent);
+                $dnsNtfRe = $caTrans->where('type_ca', 'dns')->first();
+                $entrNtfRe = $caTrans->where('type_ca', 'entr')->first();
+                $isCa = $dnsNtfRe ? true : false;
+                $isEnt = $entrNtfRe ? true : false;
+                // dd($caTrans);
+                $detail_ca_req = isset($dnsNtfRe) && isset($dnsNtfRe->detail_ca) ? json_decode($dnsNtfRe->detail_ca, true) : [];
+                $detail_ent_req = isset($entrNtfRe) && isset($entrNtfRe->detail_ca) ? json_decode($entrNtfRe->detail_ca, true) : [];
+
+                $caDetails = [
+                    'total_days_perdiem' => array_sum(array_column($detail_ca_req['detail_perdiem'] ?? [], 'total_days')),
+                    'total_amount_perdiem' => array_sum(array_column($detail_ca_req['detail_perdiem'] ?? [], 'nominal')),
+
+                    'total_days_transport' => count($detail_ca_req['detail_transport'] ?? []),
+                    'total_amount_transport' => array_sum(array_column($detail_ca_req['detail_transport'] ?? [], 'nominal')),
+
+                    'total_days_accommodation' => array_sum(array_column($detail_ca_req['detail_penginapan'] ?? [], 'total_days')),
+                    'total_amount_accommodation' => array_sum(array_column($detail_ca_req['detail_penginapan'] ?? [], 'nominal')),
+
+                    'total_days_others' => count($detail_ca_req['detail_lainnya'] ?? []),
+                    'total_amount_others' => array_sum(array_column($detail_ca_req['detail_lainnya'] ?? [], 'nominal')),
+
+                    'total_days_meals' => array_sum(array_column($detail_ca_req['detail_meals'] ?? [], 'total_days')),
+                    'total_amount_meals' => array_sum(array_column($detail_ca_req['detail_meals'] ?? [], 'nominal')),
+                ];
+                $entDetails = [
+                    'total_amount_detailent' => array_sum(array_column($detail_ent_req['detail_e'] ?? [], 'nominal')),
+                ];
+                // dd($caDetails,   $detail_ca );
+
+                $declare_ca_ntf = isset($dnsNtfRe) && isset($dnsNtfRe->detail_ca) ? json_decode($dnsNtfRe->declare_ca, true) : [];
+                $declare_ent_ntf = isset($entrNtfRe) && isset($entrNtfRe->detail_ca) ? json_decode($entrNtfRe->declare_ca, true) : [];
+                $caDeclare = [
+                    'total_days_perdiem' => array_sum(array_column($declare_ca_ntf['detail_perdiem'] ?? [], 'total_days')),
+                    'total_amount_perdiem' => array_sum(array_column($declare_ca_ntf['detail_perdiem'] ?? [], 'nominal')),
+
+                    'total_days_transport' => count($declare_ca_ntf['detail_transport'] ?? []),
+                    'total_amount_transport' => array_sum(array_column($declare_ca_ntf['detail_transport'] ?? [], 'nominal')),
+
+                    'total_days_accommodation' => array_sum(array_column($declare_ca_ntf['detail_penginapan'] ?? [], 'total_days')),
+                    'total_amount_accommodation' => array_sum(array_column($declare_ca_ntf['detail_penginapan'] ?? [], 'nominal')),
+
+                    'total_days_others' => count($declare_ca_ntf['detail_lainnya'] ?? []),
+                    'total_amount_others' => array_sum(array_column($declare_ca_ntf['detail_lainnya'] ?? [], 'nominal')),
+
+                    'total_days_meals' => array_sum(array_column($declare_ca_ntf['detail_meals'] ?? [], 'total_days')),
+                    'total_amount_meals' => array_sum(array_column($declare_ca_ntf['detail_meals'] ?? [], 'nominal')),
+                ];
+                // dd($caDeclare);
+                $entDeclare = [
+                    'total_amount_ent' => array_sum(array_column($declare_ent_ntf['detail_e'] ?? [], 'nominal')),
+                ];
+
+                $selisihCa = array_sum($caDetails) - array_sum($caDeclare);
+                $selisihEnt = array_sum($entDetails) - array_sum($entDeclare);
+                // dd($newDeclareCa, $selisih);
+
+                // Send email to the manager
+                try {
+                    Mail::to($employeeEmail)->send(new RefundNotification(
+                        $n,
+                        $caDetails,
+                        $caDeclare,
+                        $entDetails,
+                        $entDeclare,
+                        $employeeName,
+                        $accNum,
+                        $selisihCa,
+                        $selisihEnt,
+                        $isCa,
+                        $isEnt,
+                        $base64Image,
+                    ));
+                } catch (\Exception $e) {
+                    Log::error('Email Deklarasi Status Admin Bussines Trip tidak terkirim: ' . $e->getMessage());
+                }
             }
         }
 
