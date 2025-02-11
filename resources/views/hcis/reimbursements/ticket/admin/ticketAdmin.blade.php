@@ -344,8 +344,6 @@
             modal.find('#booking_code').val(bookingCode);
             modal.find('#no_tkt').val(noTkt);
             modal.find('#tkt_price').val(tktPrice);
-
-            modal.find('#book_no_htl').text('Ticket No: ' + noTkt); // Dynamically change the header
         });
 
 

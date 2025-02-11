@@ -286,7 +286,6 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         <script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
         <script>
-            // When the modal is shown, update the modal inputs with the correct transaction data
             $('#bookingModal').on('show.bs.modal', function(event) {
                 var button = $(event.relatedTarget);
                 var noId = button.data('no-id');
@@ -300,8 +299,6 @@
                 modal.find('#no_htl').val(noHtl);
                 modal.find('#booking_code').val(bookingCode);
                 modal.find('#booking_price').val(bookingPrice);
-
-                modal.find('#book_no_htl').text('Hotel No: ' + noHtl); // Dynamically change the header (if needed)
             });
 
 
