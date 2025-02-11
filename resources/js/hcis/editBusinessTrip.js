@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     DalamKotaHotelInit();
     handleTaksiForms();
     handleCaForms();
+    initializeTabs();
 });
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -97,6 +98,69 @@ function setupCheckboxListeners() {
     });
 }
 
+function initializeTabs() {
+    // Initialize Luar Kota sections
+    const luarKotaSections = [
+        {
+            checkbox: "cashAdvancedCheckbox",
+            nav: "nav-cashAdvanced",
+            tab: "pills-cashAdvanced-tab",
+            pane: "pills-cashAdvanced",
+        },
+        {
+            checkbox: "caEntertainCheckbox",
+            nav: "nav-cashAdvancedEntertain",
+            tab: "pills-cashAdvancedEntertain-tab",
+            pane: "pills-cashAdvancedEntertain",
+        },
+        {
+            checkbox: "ticketCheckbox",
+            nav: "nav-ticket",
+            tab: "pills-ticket-tab",
+            pane: "pills-ticket",
+        },
+        {
+            checkbox: "hotelCheckbox",
+            nav: "nav-hotel",
+            tab: "pills-hotel-tab",
+            pane: "pills-hotel",
+        },
+        {
+            checkbox: "taksiCheckbox",
+            nav: "nav-taksi",
+            tab: "pills-taksi-tab",
+            pane: "pills-taksi",
+        },
+    ];
+
+    // Initialize Dalam Kota sections
+    const dalamKotaSections = [
+        {
+            checkbox: "ticketCheckboxDalamKota",
+            nav: "nav-ticket-dalam-kota",
+            tab: "pills-ticket-dalam-kota-tab",
+            pane: "pills-ticket-dalam-kota",
+        },
+        {
+            checkbox: "hotelCheckboxDalamKota",
+            nav: "nav-hotel-dalam-kota",
+            tab: "pills-hotel-dalam-kota-tab",
+            pane: "pills-hotel-dalam-kota",
+        },
+        {
+            checkbox: "taksiCheckboxDalamKota",
+            nav: "nav-taksi-dalam-kota",
+            tab: "pills-taksi-dalam-kota-tab",
+            pane: "pills-taksi-dalam-kota",
+        },
+    ];
+
+    // Initialize all sections
+    [...luarKotaSections, ...dalamKotaSections].forEach((section) => {
+        toggleSection(section.checkbox, section.nav, section.tab, section.pane);
+    });
+}
+
 function handleTabVisibility(
     isChecked,
     navItem,
@@ -126,22 +190,41 @@ function findNextAvailableTab(isDalamKota) {
 
     for (let tab of tabs) {
         const tabId = tab.id;
-        const section = tabId
-            .replace("pills-", "")
-            .replace("-dalam-kota-tab", "")
-            .replace("-tab", "")
-            .toLowerCase();
+        let section;
+        let checkboxId;
 
-        const checkboxId = isDalamKota
-            ? `${section}CheckboxDalamKota`
-            : `${section}Checkbox`;
+        // Handle CA and Entertain cases first (only for Luar Kota)
+        if (!isDalamKota && tabId.includes("cashAdvanced")) {
+            if (tabId.includes("Entertain")) {
+                section = "cashAdvancedEntertain";
+                checkboxId = "caEntertainCheckbox";
+            } else {
+                section = "cashAdvanced";
+                checkboxId = "cashAdvancedCheckbox";
+            }
+        } else {
+            section = tabId
+                .replace("pills-", "")
+                .replace("-dalam-kota-tab", "")
+                .replace("-tab", "")
+                .toLowerCase();
+
+            checkboxId = isDalamKota
+                ? `${section}CheckboxDalamKota`
+                : `${section}Checkbox`;
+        }
 
         const checkbox = document.getElementById(checkboxId);
+        const navItem = isDalamKota
+            ? document.getElementById(`nav-${section}-dalam-kota`)
+            : document.getElementById(`nav-${section}`);
 
+        // Check if this tab is valid and should be active
         if (
             checkbox &&
             checkbox.checked &&
-            tab.closest(".nav-item").style.display !== "none"
+            navItem &&
+            navItem.style.display !== "none"
         ) {
             return tab;
         }
@@ -162,6 +245,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     if (document.getElementById("cashAdvancedCheckbox").checked) {
         activateTab("pills-cashAdvanced-tab");
+    }
+    if (document.getElementById("caEntertainCheckbox").checked) {
+        activateTab("pills-cashAdvancedEntertain-tab");
     }
     if (document.getElementById("ticketCheckbox").checked) {
         activateTab("pills-ticket-tab");
@@ -228,34 +314,6 @@ function formatCurrency(input) {
     let formattedValue = value.replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Add thousands separators
     input.value = formattedValue;
 }
-
-//save to draft
-// document.addEventListener("DOMContentLoaded", function () {
-//     document
-//         .getElementById("save-draft")
-//         .addEventListener("click", function (event) {
-//             event.preventDefault();
-
-//             // Remove the existing status input
-//             const existingStatus = document.getElementById("status");
-//             if (existingStatus) {
-//                 existingStatus.remove();
-//             }
-
-//             // Create a new hidden input for "Draft"
-//             const draftInput = document.createElement("input");
-//             draftInput.type = "hidden";
-//             draftInput.name = "status";
-//             draftInput.value = "Draft";
-//             draftInput.id = "status";
-
-//             // Append the draft input to the form
-//             this.closest("form").appendChild(draftInput);
-
-//             // Submit the form
-//             this.closest("form").submit();
-//         });
-// });
 
 function syncDateRequired(changedInput) {
     // Get the value of the changed date_required field
@@ -723,6 +781,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const nav = document.getElementById(navId);
         const tab = document.getElementById(tabId);
         const pane = document.getElementById(paneId);
+        const isDalamKota = checkboxId.includes("DalamKota");
 
         checkbox.addEventListener("change", function () {
             if (this.checked) {
@@ -737,6 +796,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 nav.style.display = "none";
                 if (pane) {
                     pane.classList.remove("active", "show");
+                }
+
+                // Find and activate next available tab when unchecked
+                const nextTab = findNextAvailableTab(isDalamKota);
+                if (nextTab) {
+                    setTimeout(() => {
+                        nextTab.click();
+                    }, 50);
                 }
             }
         });
@@ -1650,6 +1717,26 @@ function DalamKotaTicketInit() {
 }
 
 //Hotel JS
+$(document).ready(function () {
+    // Function to toggle SPPD options with event delegation
+    function toggleSppdOptions() {
+        // Delegating event to handle dynamically created forms
+        $(document).on("change", ".form-select", function () {
+            const selectElement = $(this);
+            // Single block for both "luar kota" and "dalam kota" forms
+            const sppdOptionsClass = ".sppd-options";
+
+            if (selectElement.val() === "Twin Bed") {
+                selectElement.closest(".row").find(sppdOptionsClass).show();
+            } else {
+                selectElement.closest(".row").find(sppdOptionsClass).hide();
+            }
+        });
+    }
+
+    // Apply toggle function for all form elements
+    toggleSppdOptions();
+});
 function LuarKotaHotelInit() {
     let formHotelCount = 0; // Initialize with 0 to count existing forms
     const maxHotelForms = 5;
@@ -1786,6 +1873,7 @@ function LuarKotaHotelInit() {
             const addedForm = hotelFormsContainer.lastElementChild;
             toggleRequiredAttributes(addedForm, hotelCheckbox.checked);
             updateFormNumbers();
+            initializeAllSelect2();
         } else {
             Swal.fire({
                 title: "Warning!",
@@ -1867,6 +1955,16 @@ function LuarKotaHotelInit() {
                         <input type="number" class="form-control form-control-sm bg-light" id="total-days-${formNumber}" name="total_hari[]"
                             readonly>
                     </div>
+                      <div class="sppd-options" style="display: none;">
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                  <label class="form-label">No. SPPD for Colleague (If a colleague uses the same room)</label>
+                                    <select class="form-select select2 form-select-sm select-sppd" name="no_sppd[]" id="no_sppd_${formNumber}">
+                                        <option value="-">No Business Trip</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="mt-2">
                         <button type="button" class="btn btn-sm btn-outline-danger remove-hotel-btn" data-form-id="${formNumber}">Remove Data</button>
@@ -1875,7 +1973,51 @@ function LuarKotaHotelInit() {
             </div>`;
     }
 
+    function initializeAllSelect2() {
+        $(".select-sppd").each(function () {
+            const $select = $(this);
+            if (!$select.data("select2")) {
+                const config = {
+                    theme: "bootstrap-5",
+                    width: "100%",
+                    minimumInputLength: 0, // Allow searching without any input
+                    allowClear: true, // Adds an "x" to clear the selection
+                    placeholder: "Please Select", // Placeholder text
+                    ajax: {
+                        url: "/search/no-sppd",
+                        dataType: "json",
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                searchTerm: params.term || "", // Send empty string if no search term
+                                page: params.page || 1,
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: data.map(function (item) {
+                                    return {
+                                        id: item.no_sppd,
+                                        text: item.no_sppd,
+                                    };
+                                }),
+                                pagination: {
+                                    more: params.page * 30 < data.total_count,
+                                },
+                            };
+                        },
+                        cache: true,
+                    },
+                };
+
+                $select.select2(config);
+            }
+        });
+    }
+
     // Initial setup
+    initializeAllSelect2();
     updateButtonVisibility();
     updateAllFormsRequiredState(hotelCheckbox.checked);
 }
@@ -2012,6 +2154,7 @@ function DalamKotaHotelInit() {
             const addedForm = hotelFormsContainer.lastElementChild;
             toggleRequiredAttributes(addedForm, hotelCheckbox.checked);
             updateFormNumbers();
+            initializeAllSelect2();
         } else {
             Swal.fire({
                 title: "Warning!",
@@ -2076,6 +2219,16 @@ function DalamKotaHotelInit() {
                                 <input class="form-control form-control-sm" name="jmlkmr_htl_dalam_kota[]" type="number" min="1" placeholder="ex: 1">
                             </div>
                         </div>
+                         <div class="sppd-options" style="display: none;">
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                   <label class="form-label">No. SPPD for Colleague (If a colleague uses the same room)</label>
+                                    <select class="form-select select2 form-select-sm select-sppd" name="no_sppd_dalam_kota[]">
+                                        <option value="-">No Business Trip</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-4 mb-2">
@@ -2100,8 +2253,51 @@ function DalamKotaHotelInit() {
                 </div>
             </div>`;
     }
+    function initializeAllSelect2() {
+        $(".select-sppd").each(function () {
+            const $select = $(this);
+            if (!$select.data("select2")) {
+                const config = {
+                    theme: "bootstrap-5",
+                    width: "100%",
+                    minimumInputLength: 0, // Allow searching without any input
+                    allowClear: true, // Adds an "x" to clear the selection
+                    placeholder: "Please Select", // Placeholder text
+                    ajax: {
+                        url: "/search/no-sppd",
+                        dataType: "json",
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                searchTerm: params.term || "", // Send empty string if no search term
+                                page: params.page || 1,
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: data.map(function (item) {
+                                    return {
+                                        id: item.no_sppd,
+                                        text: item.no_sppd,
+                                    };
+                                }),
+                                pagination: {
+                                    more: params.page * 30 < data.total_count,
+                                },
+                            };
+                        },
+                        cache: true,
+                    },
+                };
+
+                $select.select2(config);
+            }
+        });
+    }
 
     // Initial setup
+    initializeAllSelect2();
     updateButtonVisibility();
     updateAllFormsRequiredState(hotelCheckbox.checked);
 }
