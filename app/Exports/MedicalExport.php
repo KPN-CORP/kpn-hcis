@@ -76,10 +76,10 @@ class MedicalExport implements FromCollection, WithHeadings, WithStyles, WithEve
         $employeeIds = $employees->pluck('employee_id');
         $healthCoverageQuery = HealthCoverage::whereIn('employee_id', $employeeIds)->where('status', '!=', 'Draft');
         if (!empty($this->startDate) && !empty($this->endDate)) {
-            
+
             $startDate = $this->startDate . ' 00:00:00';
             $endDate = $this->endDate . ' 23:59:59';
-        
+
             $healthCoverageQuery->whereBetween('created_at', [$startDate, $endDate]);
         }
         if (!empty($this->statusMDC)) {
@@ -99,7 +99,7 @@ class MedicalExport implements FromCollection, WithHeadings, WithStyles, WithEve
             $employeeCoverages = $healthCoverages->where('employee_id', $employee->employee_id);
 
             foreach ($employeeCoverages as $coverage) {
-                if ($coverage->status == 'Done' || $coverage->status == 'Pending') {
+                // if ($coverage->status == 'Done' || $coverage->status == 'Pending') {
                     $combinedData[] = [
                         'number' => count($combinedData) + 1,
                         'NoMed' => $coverage->no_medic,

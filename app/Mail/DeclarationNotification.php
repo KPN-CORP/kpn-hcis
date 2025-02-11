@@ -17,24 +17,45 @@ class DeclarationNotification extends Mailable
     public $businessTrip;
     public $caDetails;
     public $caDeclare;
+    public $entDetails;
+    public $entDeclare;
     public $managerName;
     public $approvalLink;
     public $rejectionLink;
+    public $employeeName;
+    public $base64Image;
+    public $textNotification;
+    public $isEnt;
+    public $isCa;    
 
     public function __construct(
         BusinessTrip $businessTrip,
         $caDetails = null,
         $caDeclare = null,
+        $entDetails = null,
+        $entDeclare = null,
         $managerName = null,
         $approvalLink = null,
-        $rejectionLink = null
+        $rejectionLink = null,
+        $employeeName = null,
+        $base64Image = null,
+        $textNotification = null,
+        $isEnt = null,
+        $isCa = null,
     ) {
         $this->businessTrip = $businessTrip;
         $this->caDetails = $caDetails;
         $this->caDeclare = $caDeclare;
+        $this->entDetails = $entDetails;
+        $this->entDeclare = $entDeclare;
         $this->managerName = $managerName;
         $this->approvalLink = $approvalLink;
         $this->rejectionLink = $rejectionLink;
+        $this->employeeName = $employeeName;
+        $this->base64Image = $base64Image;
+        $this->textNotification = $textNotification;
+        $this->isEnt = $isEnt;
+        $this->isCa = $isCa;
     }
 
     public function build()
@@ -44,9 +65,16 @@ class DeclarationNotification extends Mailable
                 'businessTrip' => $this->businessTrip,
                 'caDetails' => $this->caDetails,
                 'caDeclare' => $this->caDeclare,
+                'entDetails' => $this->entDetails,
+                'entDeclare' => $this->entDeclare,
                 'managerName' => $this->managerName,
                 'approvalLink' => $this->approvalLink,
                 'rejectionLink' => $this->rejectionLink,
+                'employeeName' => $this->employeeName,
+                'base64Image' => $this->base64Image,
+                'textNotification' => $this->textNotification,
+                'isEnt' => $this->isEnt,
+                'isCa' => $this->isCa,
             ]);
     }
 

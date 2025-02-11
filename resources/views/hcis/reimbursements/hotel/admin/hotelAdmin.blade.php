@@ -75,8 +75,7 @@
                                 <li class="breadcrumb-item active">{{ $link }}</li>
                             </ol>
                         </div>
-                        <a href="{{ route('travel') }}" class="page-title"><i
-                                class="ri-arrow-left-circle-line"></i></a>
+                        <a href="{{ route('travel') }}" class="page-title"><i class="ri-arrow-left-circle-line"></i></a>
                         {{-- <button type="button" class="page-title btn btn-warning rounded-pill">Back</button> --}}
                     </div>
                 </div>
@@ -119,7 +118,17 @@
                     <div class="card shadow mb-4">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h3 class="card-title">{{ $link }}</h3>
+                                <div>
+                                    <h3 class="card-title mb-2">{{ $link }}</h3>
+                                    <div class="text-muted small">
+                                        <span class="me-3 fs-5"><i
+                                                class="ri-user-line me-1"></i>{{ Auth::user()->name }}</span>
+                                        <span class="me-3 fs-5"><i
+                                                class="ri-calendar-line me-1"></i>{{ date('l, d F Y') }}</span>
+                                        <span class="me-3"><i class="ri-time-line me-1"></i><span id="currentTime"></span>
+                                            WIB</span>
+                                    </div>
+                                </div>
                                 <div class="input-group" style="width: 30%;">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text bg-white w-border-dark-subtle"><i
@@ -168,6 +177,7 @@
                                                                 return [
                                                                     'No. Hotel' => $hotel->no_htl,
                                                                     'No. SPPD' => $hotel->no_sppd,
+                                                                    'Colleague No. SPPD' => $hotel->no_sppd_htl,
                                                                     'Unit' => $hotel->unit,
                                                                     'Hotel Name' => $hotel->nama_htl,
                                                                     'Location' => $hotel->lokasi_htl,
@@ -217,16 +227,14 @@
 
                                                 </td>
                                                 <td class="text-center">
-                                                    <button 
-                                                        type="button" 
-                                                        class="btn btn-sm btn-outline-success rounded-pill" 
-                                                        data-bs-toggle="modal" 
-                                                        data-bs-target="#approvalModal"
-                                                        data-id="{{ $transaction->id }}" 
-                                                        data-no="{{ $transaction->no_htl }}" 
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-outline-success rounded-pill"
+                                                        data-bs-toggle="modal" data-bs-target="#approvalModal"
+                                                        data-id="{{ $transaction->id }}"
+                                                        data-no="{{ $transaction->no_htl }}"
                                                         data-sppd="{{ $transaction->no_sppd }}"
                                                         data-status="{{ $transaction->approval_status }}"
-                                                        data-manager-l1="{{ $transaction->manager_l1_name ?? 'Unknown' }}" 
+                                                        data-manager-l1="{{ $transaction->manager_l1_name ?? 'Unknown' }}"
                                                         data-manager-l2="{{ $transaction->manager_l2_name ?? 'Unknown' }}">
                                                         <i class="bi bi-list-check"></i>
                                                     </button>
@@ -236,9 +244,12 @@
                                                         class="btn btn-sm btn-outline-success rounded-pill"
                                                         data-bs-toggle="modal" data-bs-target="#bookingModal"
                                                         data-no-id="{{ $transaction->id }}"
-                                                        data-no-htl="{{ $transaction->no_htl }}">
+                                                        data-no-htl="{{ $transaction->no_htl }}"
+                                                        data-booking-code="{{ $transaction->booking_code }}"
+                                                        data-booking-price="{{ $transaction->booking_price }}">
                                                         <i class="bi bi-ticket-perforated"></i>
                                                     </button>
+
                                                     <a href="{{ route('hotel.export', ['id' => $transaction->id]) }}"
                                                         class="btn btn-sm btn-outline-info rounded-pill" target="_blank">
                                                         <i class="bi bi-download"></i>
@@ -275,6 +286,22 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         <script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
         <script>
+            $('#bookingModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var noId = button.data('no-id');
+                var noHtl = button.data('no-htl');
+                var bookingCode = button.data('booking-code');
+                var bookingPrice = button.data('booking-price');
+
+                // Update the modal's input fields
+                var modal = $(this);
+                modal.find('#book_no_id').val(noId);
+                modal.find('#no_htl').val(noHtl);
+                modal.find('#booking_code').val(bookingCode);
+                modal.find('#booking_price').val(bookingPrice);
+            });
+
+
             document.addEventListener('DOMContentLoaded', function() {
                 const rejectModal = new bootstrap.Modal(document.getElementById('rejectReasonModal'), {
                     keyboard: true,
@@ -483,5 +510,21 @@
                     document.getElementById('book_no_id').value = idNumber; // Mengisi input no_id
                 });
             });
+
+            function updateDateTime() {
+                const now = new Date();
+
+                // Format time
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+
+                // Update DOM elements
+                document.getElementById('currentTime').textContent = `${hours}:${minutes}:${seconds}`;
+            }
+
+            // Update immediately and then every second
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
         </script>
     @endsection

@@ -7,121 +7,176 @@
 </head>
 
 <body>
-    <h1>New Business Trip Request</h1>
+    <div style="width: 100%; height: auto; text-align: center;">
+        <img src="{{ $base64Image }}" alt="Kop Surat" style="height: auto; margin-bottom: 20px; width: 15%;">
+    </div>
+    <h2>New Business Trip Declaration</h2>
     <p>Dear Sir/Madam: <b>{{ $managerName }}</b></p><br>
-    <p><strong>No. SPPD:</strong> {{ $businessTrip->no_sppd }}</p>
-    <p><strong>Employee Name:</strong> {{ $businessTrip->nama }}</p>
-    <p><strong>Start Date:</strong> {{ $businessTrip->mulai }}</p>
-    <p><strong>End Date:</strong> {{ $businessTrip->kembali }}</p>
-    <p><strong>Type of Service:</strong> {{ ucwords(strtolower($businessTrip->jns_dinas)) }}</p>
-    <p><strong>Location:</strong> {{ $businessTrip->tujuan }}</p>
-    <p><strong>Trip Purpose:</strong> {{ $businessTrip->keperluan }}</p>
-    <p><strong>PT :</strong> {{ $businessTrip->bb_perusahaan }}</p>
-    <hr>
-    @if ($businessTrip->ca === 'Ya')
-        <p><strong><u>CA Details:</u></strong></p>
-        <table style="border-collapse: collapse;">
-            <thead>
-                <tr>
-                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Category</th>
-                    <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Total Days</th>
-                    <th style="border: 1px solid #ddd; padding: 8px; text-align: right;">Amount (Rp)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Perdiem Row -->
-                <tr>
-                    <td style="border: 1px solid #ddd; padding: 8px;">Perdiem</td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">{{ $caDetails['total_days_perdiem'] ?? 0 }} Days
-                    </td>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
-                        {{ number_format($caDetails['total_amount_perdiem'] ?? 0, 0, ',', '.') }}</td>
-                </tr>
-
-                <!-- Transport Row -->
-                <tr>
-                    <td style="border: 1px solid #ddd; padding: 8px;">Transport</td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">{{ $caDetails['total_days_transport'] ?? 0 }}
-                        Days
-                    </td>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
-                        {{ number_format($caDetails['total_amount_transport'] ?? 0, 0, ',', '.') }}</td>
-                </tr>
-
-                <!-- Accommodation Row -->
-                <tr>
-                    <td style="border: 1px solid #ddd; padding: 8px;">Accommodation</td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">{{ $caDetails['total_days_accommodation'] ?? 0 }}
-                        Days
-                    </td>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
-                        {{ number_format($caDetails['total_amount_accommodation'] ?? 0, 0, ',', '.') }}</td>
-                </tr>
-
-                <!-- Others Row -->
-                <tr>
-                    <td style="border: 1px solid #ddd; padding: 8px;">Others</td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">{{ $caDetails['total_days_others'] ?? 0 }} Days
-                    </td>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
-                        {{ number_format($caDetails['total_amount_others'] ?? 0, 0, ',', '.') }}</td>
-                </tr>
-            </tbody>
-        </table>
-    @endif
-    <p><strong><u>CA Declaration:</u></strong></p>
-    <table style="border-collapse: collapse;">
-        <thead>
-            <tr>
-                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Category</th>
-                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Total Days</th>
-                <th style="border: 1px solid #ddd; padding: 8px; text-align: right;">Amount (Rp)</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Perdiem Row -->
-            <tr>
-                <td style="border: 1px solid #ddd; padding: 8px;">Perdiem</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">{{ $caDeclare['total_days_perdiem'] ?? 0 }} Days
-                </td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
-                    {{ number_format($caDeclare['total_amount_perdiem'] ?? 0, 0, ',', '.') }}</td>
-            </tr>
-
-            <!-- Transport Row -->
-            <tr>
-                <td style="border: 1px solid #ddd; padding: 8px;">Transport</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">{{ $caDeclare['total_days_transport'] ?? 0 }}
-                    Days
-                </td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
-                    {{ number_format($caDeclare['total_amount_transport'] ?? 0, 0, ',', '.') }}</td>
-            </tr>
-
-            <!-- Accommodation Row -->
-            <tr>
-                <td style="border: 1px solid #ddd; padding: 8px;">Accommodation</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">{{ $caDeclare['total_days_accommodation'] ?? 0 }}
-                    Days
-                </td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
-                    {{ number_format($caDeclare['total_amount_accommodation'] ?? 0, 0, ',', '.') }}</td>
-            </tr>
-
-            <!-- Others Row -->
-            <tr>
-                <td style="border: 1px solid #ddd; padding: 8px;">Others</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">{{ $caDeclare['total_days_others'] ?? 0 }} Days
-                </td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
-                    {{ number_format($caDeclare['total_amount_others'] ?? 0, 0, ',', '.') }}</td>
-            </tr>
-        </tbody>
+    <p><b>{{ $employeeName }}</b> {{ $textNotification }}</p>
+    <table>
+        <tr>
+            <td><b>No SPPD</b></td>
+            <td>:</td>
+            <td>{{ $businessTrip->no_sppd }}</td>
+        </tr>
+        <tr>
+            <td><b>Employee Name</b></td>
+            <td>:</td>
+            <td>{{ $businessTrip->nama }}</td>
+        </tr>
+        <tr>
+            <td><b>Start Date</b></td>
+            <td>:</td>
+            <td>{{ \Carbon\Carbon::parse($businessTrip->mulai)->format('d M Y') }}</td>
+        </tr>
+        <tr>
+            <td><b>End Date</b></td>
+            <td>:</td>
+            <td>{{ \Carbon\Carbon::parse($businessTrip->kembali)->format('d M Y') }}</td>
+        </tr>
+        <tr>
+            <td><b>Type of Service</b></td>
+            <td>:</td>
+            <td>{{ ucwords(strtolower($businessTrip->jns_dinas)) }}</td>
+        </tr>
+        <tr>
+            <td><b>Location</b></td>
+            <td>:</td>
+            <td>{{ $businessTrip->tujuan }}</td>
+        </tr>
+        <tr>
+            <td><b>Trip Purpose</b></td>
+            <td>:</td>
+            <td>{{ $businessTrip->keperluan }}</td>
+        </tr>
+        <tr>
+            <td><b>PT</b></td>
+            <td>:</td>
+            <td>{{ $businessTrip->bb_perusahaan }}</td>
+        </tr>
+        <tr>
+            <td><b>Cash Advance</b></td>
+            <td>:</td>
+            <td>{{ $businessTrip->ca === 'Ya' ? 'Yes' : ($businessTrip->ca === 'Tidak' ? 'No' : $businessTrip->ca) }}
+            </td>
+        </tr>
+        <tr>
+            <td><b>Ticket</b></td>
+            <td>:</td>
+            <td>{{ $businessTrip->tiket === 'Ya' ? 'Yes' : ($businessTrip->tiket === 'Tidak' ? 'No' : $businessTrip->tiket) }}
+            </td>
+        </tr>
+        <tr>
+            <td><b>Hotel</b></td>
+            <td>:</td>
+            <td>{{ $businessTrip->hotel === 'Ya' ? 'Yes' : ($businessTrip->hotel === 'Tidak' ? 'No' : $businessTrip->hotel) }}
+            </td>
+        </tr>
+        <tr>
+            <td><b>Voucher Taxi</b></td>
+            <td>:</td>
+            <td>{{ $businessTrip->taksi === 'Ya' ? 'Yes' : ($businessTrip->taksi === 'Tidak' ? 'No' : $businessTrip->taksi) }}
+            </td>
+        </tr>
     </table>
+    @if ($businessTrip->ca === 'Ya')
+        @if ($isCa == true)
+            <table style="border-collapse: collapse; width: 60%; margin-top: 8px; font-size: 12px;">
+                <tr>
+                    <th colspan="5"
+                        style="border: 1px solid #ddd; padding: 6px; background-color: #ab2f2b; color: #ffffff; font-size: 12px; font-weight: bold; text-align: center;">
+                        Cash Advanced Details
+                    </th>
+                </tr>
+                <tr style="font-weight: bold; background-color: #f5f5f5; text-align: center;">
+                    <td rowspan="2" style="border: 1px solid #ddd; padding: 6px; vertical-align: middle;">Category</td>
+                    <td colspan="2" style="border: 1px solid #ddd; padding: 6px;">Estimate Plan</td>
+                    <td colspan="2" style="border: 1px solid #ddd; padding: 6px;">Declaration</td>
+                </tr>
+                <tr style="font-weight: bold; background-color: #f5f5f5; text-align: center;">
+                    <td style="border: 1px solid #ddd; padding: 6px;">Total Days</td>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Amount</td>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Total Days</td>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Amount</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Allowance</td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: center;">{{ $caDetails['total_days_perdiem'] ?? 0 }} Days</td>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Rp. {{ number_format($caDetails['total_amount_perdiem'] ?? 0, 0, ',', '.') }}</td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: center;">{{ $caDeclare['total_days_perdiem'] ?? 0 }} Days</td>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Rp. {{ number_format($caDeclare['total_amount_perdiem'] ?? 0, 0, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Meals</td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: center;">{{ $caDetails['total_days_meals'] ?? 0 }} Days</td>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Rp. {{ number_format($caDetails['total_amount_meals'] ?? 0, 0, ',', '.') }}</td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: center;">{{ $caDeclare['total_days_meals'] ?? 0 }} Days</td>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Rp. {{ number_format($caDeclare['total_amount_meals'] ?? 0, 0, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Transport</td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: center;">-</td>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Rp. {{ number_format($caDetails['total_amount_transport'] ?? 0, 0, ',', '.') }}</td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: center;">-</td>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Rp. {{ number_format($caDeclare['total_amount_transport'] ?? 0, 0, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Accommodation</td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: center;">{{ $caDetails['total_days_accommodation'] ?? 0 }} Days</td>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Rp. {{ number_format($caDetails['total_amount_accommodation'] ?? 0, 0, ',', '.') }}</td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: center;">{{ $caDeclare['total_days_accommodation'] ?? 0 }} Days</td>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Rp. {{ number_format($caDeclare['total_amount_accommodation'] ?? 0, 0, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Others</td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: center;">-</td>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Rp. {{ number_format($caDetails['total_amount_others'] ?? 0, 0, ',', '.') }}</td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: center;">-</td>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Rp. {{ number_format($caDeclare['total_amount_others'] ?? 0, 0, ',', '.') }}</td>
+                </tr>
+            </table>
+        @endif
+        @if ($isEnt == true)
+            <table style="border-collapse: collapse; width: 50%; margin-top: 8px; font-size: 12px;">
+                <tr>
+                    <th colspan="5"
+                        style="border: 1px solid #ddd; padding: 6px; background-color: #ab2f2b; color: #ffffff; font-size: 12px; font-weight: bold; text-align: center;">
+                        Entertain Details
+                    </th>
+                </tr>
+                <tr style="font-weight: bold; background-color: #f5f5f5; text-align: center;">
+                    <td rowspan="2" style="border: 1px solid #ddd; padding: 6px; vertical-align: middle;">Category</td>
+                    <td colspan="2" style="border: 1px solid #ddd; padding: 6px;">Estimate Plan</td>
+                    <td colspan="2" style="border: 1px solid #ddd; padding: 6px;">Declaration</td>
+                </tr>
+                <tr style="font-weight: bold; background-color: #f5f5f5; text-align: center;">
+                    <td style="border: 1px solid #ddd; padding: 6px;">Total Days</td>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Amount</td>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Total Days</td>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Amount</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Entertain</td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: center;"> - </td>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Rp. {{ number_format($entDetails['total_amount_ent'] ?? 0, 0, ',', '.') }}</td>
+                    <td style="border: 1px solid #ddd; padding: 6px; text-align: center;"> - </td>
+                    <td style="border: 1px solid #ddd; padding: 6px;">Rp. {{ number_format($entDeclare['total_amount_ent'] ?? 0, 0, ',', '.') }}</td>
+                </tr>
+            </table>        
+        @endif
+    @endif
 
     <hr>
     <p>For approval or rejection of the Business Trip, you can choose the following links:</p>
-    <p><a href="{{ $approvalLink }}">Approve</a> / <a href="{{ $rejectionLink }}">Reject</a></p>
+    <p>
+        <a href="{{ $approvalLink }}" style="font-size: 20px;">Approve</a> /
+        <a href="{{ $rejectionLink }}" style="font-size: 20px;">Reject</a>
+    </p>
+
+    <p>If you have any questions, please contact the respective business unit GA. </p>
+    <br>
+    <p><strong>----------------</strong></p>
+    <p>Human Capital - KPN Corp</p>
 
     <p>Thank you,</p>
     <p>HC System</p>

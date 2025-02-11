@@ -27,21 +27,30 @@
                         </div>
                         <div class="col-md-2 mb-2">
                             <label class="form-label">Bed Size</label>
-                            <select class="form-select form-select-sm select2" name="bed_htl[]">
-                                <option value="Single Bed">Single Bed</option>
+                            <select class="form-select form-select-sm select2" name="bed_htl[]" id="bed_size_select">
+                                <option value="Single Bed">Double Bed</option>
                                 <option value="Twin Bed">Twin Bed</option>
-                                <option value="King Bed">King Bed</option>
-                                <option value="Super King Bed">Super King Bed</option>
-                                <option value="Extra Bed">Extra Bed</option>
-                                <option value="Baby Cot">Baby Cot</option>
-                                <option value="Sofa Bed">Sofa Bed</option>
                             </select>
                         </div>
+
                         <div class="col-md-2 mb-2">
                             <label class="form-label">Total Room</label>
                             <div class="input-group">
                                 <input class="form-control form-control-sm" name="jmlkmr_htl[]" type="number"
                                     min="1" placeholder="ex: 1">
+                            </div>
+                        </div>
+                        <div class="sppd-options" style="display: none;">
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label class="form-label">No. SPPD for Colleague (If a colleague uses the same room)</label>
+                                    <select class="form-select select2 form-select-sm" name="no_sppd[]">
+                                        <option value="-">No Business Trip</option>
+                                        @foreach ($bt_sppd as $no_sppd)
+                                            <option value="{{ $no_sppd->no_sppd }}">{{ $no_sppd->no_sppd }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>

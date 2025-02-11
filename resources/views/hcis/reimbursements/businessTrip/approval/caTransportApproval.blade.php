@@ -72,9 +72,9 @@
     }
 </script>
 
-@if (!empty($detailCA['detail_transport']) && $detailCA['detail_transport'][0]['tanggal'] !== null)
+@if (!empty($caDetail['detail_transport']) && $caDetail['detail_transport'][0]['tanggal'] !== null)
     <div id="form-container-transport">
-        @foreach ($detailCA['detail_transport'] as $transport)
+        @foreach ($caDetail['detail_transport'] as $transport)
             <div id="form-container-bt-transport-{{ $loop->index + 1 }}" class="card-body p-2 mb-3"
                 style="background-color: #f8f8f8">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Transport {{ $loop->index + 1 }}</p>
@@ -136,7 +136,7 @@
             </div>
             <input class="form-control bg-light" name="total_bt_transport" id="total_bt_transport" type="text"
                 min="0"
-                value="{{ number_format(array_sum(array_column($detailCA['detail_transport'], 'nominal')), 0, ',', '.') }}"
+                value="{{ number_format(array_sum(array_column($caDetail['detail_transport'], 'nominal')), 0, ',', '.') }}"
                 readonly>
         </div>
     </div>

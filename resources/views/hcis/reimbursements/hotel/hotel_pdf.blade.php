@@ -121,7 +121,12 @@
             <tr>
                 <td class="label">Bed Type</td>
                 <td class="colon">:</td>
-                <td class="value">{{ $hotel->bed_htl }}</td>
+                <td class="value">
+                    {{ $hotel->bed_htl }}
+                    @if ($hotel->no_sppd_htl !== '-')
+                        ({{ $hotel->no_sppd_htl }})
+                    @endif
+                </td>
             </tr>
             <tr>
                 <td class="label">Check In Date</td>
@@ -159,7 +164,7 @@
             <td class="label">PT</td>
             <td class="colon">:</td>
             <td class="value">
-                @if($hotel->no_sppd !== null && $hotel->no_sppd !== '-')
+                @if ($hotel->no_sppd !== null && $hotel->no_sppd !== '-')
                     {{ $hotel->businessTrip->checkCompany->contribution_level }}
                 @elseif($hotel->contribution_level_code !== null && $hotel->contribution_level_code !== '-')
                     {{ $hotel->contribution_level_code }}

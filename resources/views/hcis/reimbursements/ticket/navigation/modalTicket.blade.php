@@ -86,7 +86,8 @@
                                 <input class="form-control form-control-sm" name="booking_price" id="booking_price" type="text" value="0"
                                     onfocus="this.value = this.value === '0' ? '' : this.value;"
                                     oninput="formatNumber(this)"
-                                    onblur="removeFormatting(this)">
+                                    onblur="removeFormatting(this)"
+                                    placeholder="0">
                             </div>
                         </div>
                         <input type="hidden" name="book_no_id" id="book_no_id">
@@ -301,116 +302,116 @@
         element.value = element.value.replace(/\./g, '');
     }
 
-    document.addEventListener('DOMContentLoaded', function () {  
-        const approvalModal = document.getElementById('approvalModal');  
-        const form = document.getElementById('approveForm'); // Tambahkan baris ini  
+    document.addEventListener('DOMContentLoaded', function () {
+        const approvalModal = document.getElementById('approvalModal');
+        const form = document.getElementById('approveForm'); // Tambahkan baris ini
 
-        if (approvalModal) {  
-            approvalModal.addEventListener('show.bs.modal', function (event) {  
-                // Ambil data dari tombol yang memicu modal  
-                const button = event.relatedTarget;  
-                const tktId = button.getAttribute('data-id');  
-                const tktNo = button.getAttribute('data-no');  
-                const status = button.getAttribute('data-status');  
-                const managerL1Name = button.getAttribute('data-manager-l1') || 'Unknown';  
-                const managerL2Name = button.getAttribute('data-manager-l2') || 'Unknown';  
+        if (approvalModal) {
+            approvalModal.addEventListener('show.bs.modal', function (event) {
+                // Ambil data dari tombol yang memicu modal
+                const button = event.relatedTarget;
+                const tktId = button.getAttribute('data-id');
+                const tktNo = button.getAttribute('data-no');
+                const status = button.getAttribute('data-status');
+                const managerL1Name = button.getAttribute('data-manager-l1') || 'Unknown';
+                const managerL2Name = button.getAttribute('data-manager-l2') || 'Unknown';
 
-                // Update modal dengan data manager  
-                document.getElementById('modalSPPD').textContent = tktNo;  
-                document.getElementById('managerL1Name').textContent = managerL1Name;  
-                document.getElementById('managerL2Name').textContent = managerL2Name;  
+                // Update modal dengan data manager
+                document.getElementById('modalSPPD').textContent = tktNo;
+                document.getElementById('managerL1Name').textContent = managerL1Name;
+                document.getElementById('managerL2Name').textContent = managerL2Name;
 
-                // Ganti :id dengan tktId  
-                let action = form.getAttribute('action');  
-                form.setAttribute('action', action.replace(':id', tktId));  
+                // Ganti :id dengan tktId
+                let action = form.getAttribute('action');
+                form.setAttribute('action', action.replace(':id', tktId));
 
-                // Kontainer untuk aksi dan data approval  
-                const l1Container = document.getElementById('l1ActionContainer');  
-                const l2Container = document.getElementById('l2ActionContainer');  
+                // Kontainer untuk aksi dan data approval
+                const l1Container = document.getElementById('l1ActionContainer');
+                const l2Container = document.getElementById('l2ActionContainer');
 
-                // Hapus konten sebelumnya  
-                l1Container.innerHTML = '';  
-                l2Container.innerHTML = '';  
+                // Hapus konten sebelumnya
+                l1Container.innerHTML = '';
+                l2Container.innerHTML = '';
 
-                // Fungsi untuk mengisi kontainer aksi  
-                function populateContainer(container, status, layer) {  
-                    if (status === `Pending ${layer}`) {  
-                        container.innerHTML = `  
-                            <button type="submit" class="btn btn-success btn-sm rounded-pill me-2">Approve</button>  
-                            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill"  
-                                    data-bs-toggle="modal" 
+                // Fungsi untuk mengisi kontainer aksi
+                function populateContainer(container, status, layer) {
+                    if (status === `Pending ${layer}`) {
+                        container.innerHTML = `
+                            <button type="submit" class="btn btn-success btn-sm rounded-pill me-2">Approve</button>
+                            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill"
+                                    data-bs-toggle="modal"
                                     data-bs-target="#rejectApprovalModal"
-                                    data-id="${tktId}" 
-                                    data-no="${tktNo}">Reject</button>  
-                        `;  
-                    } else {  
-                        container.innerHTML = `<div id="approvalData${layer}" class="w-100"></div>`;  
-                    }  
-                }  
+                                    data-id="${tktId}"
+                                    data-no="${tktNo}">Reject</button>
+                        `;
+                    } else {
+                        container.innerHTML = `<div id="approvalData${layer}" class="w-100"></div>`;
+                    }
+                }
 
-                // Isi kontainer aksi untuk L1 dan L2  
-                populateContainer(l1Container, status, 'L1');  
-                populateContainer(l2Container, status, 'L2');  
+                // Isi kontainer aksi untuk L1 dan L2
+                populateContainer(l1Container, status, 'L1');
+                populateContainer(l2Container, status, 'L2');
 
-                // Ambil data approval dari server (Laravel Blade)  
-                const approvals = @json($approvalTicket) || [];  
+                // Ambil data approval dari server (Laravel Blade)
+                const approvals = @json($approvalTicket) || [];
 
-                // Filter data approval berdasarkan tktId  
-                const filteredApprovals = approvals.filter(approval => approval.tkt_id === tktId);  
+                // Filter data approval berdasarkan tktId
+                const filteredApprovals = approvals.filter(approval => approval.tkt_id === tktId);
                 console.log(filteredApprovals);
 
-                const approvalDataL1 = document.getElementById('approvalDataL1');  
-                if (approvalDataL1) {  
-                    const l1Approvals = filteredApprovals.filter(a => a.layer === 1);  
-                    if (l1Approvals.length > 0) {  
-                        approvalDataL1.innerHTML = l1Approvals.map(approval => `  
-                            <div class="border rounded p-2 mb-2">  
-                                <strong>Status:</strong> ${approval.approval_status}<br>  
-                                <strong>Approved By:</strong> ${approval.employee_id} ${approval.by_admin === 'T' ? '(Admin)' : ''}<br> 
-                                <strong>Approved At:</strong> ${moment(approval.approved_at).format('DD-MMM-YY')}  
-                            </div>  
-                        `).join('');  
-                    } else {  
-                        approvalDataL1.innerHTML = '<p class="text-muted">No L1 Request found</p>';  
-                    }  
-                }  
+                const approvalDataL1 = document.getElementById('approvalDataL1');
+                if (approvalDataL1) {
+                    const l1Approvals = filteredApprovals.filter(a => a.layer === 1);
+                    if (l1Approvals.length > 0) {
+                        approvalDataL1.innerHTML = l1Approvals.map(approval => `
+                            <div class="border rounded p-2 mb-2">
+                                <strong>Status:</strong> ${approval.approval_status}<br>
+                                <strong>Approved By:</strong> ${approval.employee_id} ${approval.by_admin === 'T' ? '(Admin)' : ''}<br>
+                                <strong>Approved At:</strong> ${moment(approval.approved_at).format('DD-MMM-YY')}
+                            </div>
+                        `).join('');
+                    } else {
+                        approvalDataL1.innerHTML = '<p class="text-muted">No L1 Request found</p>';
+                    }
+                }
 
-                const approvalDataL2 = document.getElementById('approvalDataL2');  
-                if (approvalDataL2) {  
-                    const l2Approvals = filteredApprovals.filter(a => a.layer === 2);  
-                    if (l2Approvals.length > 0) {  
-                        approvalDataL2.innerHTML = l2Approvals.map(approval => `  
-                            <div class="border rounded p-2 mb-2">  
-                                <strong>Status:</strong> ${approval.approval_status}<br>  
-                                <strong>Approved By:</strong> ${approval.employee_id} ${approval.by_admin === 'T' ? '(Admin)' : ''}<br> 
-                                <strong>Approved At:</strong> ${moment(approval.approved_at).format('DD-MMM-YY')}  
-                            </div>  
-                        `).join('');  
-                    } else {  
-                        approvalDataL2.innerHTML = '<p class="text-muted">No L2 Request found</p>';  
-                    }  
-                }  
-            });  
-        }  
+                const approvalDataL2 = document.getElementById('approvalDataL2');
+                if (approvalDataL2) {
+                    const l2Approvals = filteredApprovals.filter(a => a.layer === 2);
+                    if (l2Approvals.length > 0) {
+                        approvalDataL2.innerHTML = l2Approvals.map(approval => `
+                            <div class="border rounded p-2 mb-2">
+                                <strong>Status:</strong> ${approval.approval_status}<br>
+                                <strong>Approved By:</strong> ${approval.employee_id} ${approval.by_admin === 'T' ? '(Admin)' : ''}<br>
+                                <strong>Approved At:</strong> ${moment(approval.approved_at).format('DD-MMM-YY')}
+                            </div>
+                        `).join('');
+                    } else {
+                        approvalDataL2.innerHTML = '<p class="text-muted">No L2 Request found</p>';
+                    }
+                }
+            });
+        }
     });
 
-    document.addEventListener('DOMContentLoaded', function () {  
-        const rejectApprovalModal = document.getElementById('rejectApprovalModal');  
-        const form = document.getElementById('rejectApprovalForm'); // Tambahkan baris ini  
+    document.addEventListener('DOMContentLoaded', function () {
+        const rejectApprovalModal = document.getElementById('rejectApprovalModal');
+        const form = document.getElementById('rejectApprovalForm'); // Tambahkan baris ini
 
-        if (rejectApprovalModal) {  
-            rejectApprovalModal.addEventListener('show.bs.modal', function (event) {  
-                // Ambil data dari tombol yang memicu modal  
-                const button = event.relatedTarget;  
-                const tktId = button.getAttribute('data-id');  
-                const tktNo = button.getAttribute('data-no');  
+        if (rejectApprovalModal) {
+            rejectApprovalModal.addEventListener('show.bs.modal', function (event) {
+                // Ambil data dari tombol yang memicu modal
+                const button = event.relatedTarget;
+                const tktId = button.getAttribute('data-id');
+                const tktNo = button.getAttribute('data-no');
 
-                // Update modal dengan data manager  
-                document.getElementById('rejectionTKT').textContent = tktNo;  
+                // Update modal dengan data manager
+                document.getElementById('rejectionTKT').textContent = tktNo;
 
-                let action = form.getAttribute('action');  
-                form.setAttribute('action', action.replace(':id', tktId));  
-            });  
-        }  
+                let action = form.getAttribute('action');
+                form.setAttribute('action', action.replace(':id', tktId));
+            });
+        }
     });
 </script>

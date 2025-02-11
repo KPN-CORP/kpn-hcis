@@ -270,9 +270,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/hotel/approval/detail/{id}', [ReimburseController::class, 'hotelApprovalDetail'])->name('hotel.approval.detail');
     Route::put('/hotel/status/change/{id}', [ReimburseController::class, 'updatestatusHotel'])->name('change.status.hotel');
 
-
-
-
     //Hotel Admin
     Route::middleware(['permission:report_hcis_htl'])->group(function () {
         Route::get('/hotel/admin', [ReimburseController::class, 'hotelAdmin'])->name('hotel.admin');
@@ -425,6 +422,7 @@ Route::middleware('auth')->group(function () {
     //Search
     Route::get('/search/name', [SearchController::class, 'searchNik'])->name('searchNik');
     Route::get('/search/passengers', [SearchController::class, 'searchPassenger'])->name('searchNik');
+    Route::get('/search/no-sppd', [SearchController::class, 'searchSppd'])->name('searchSppd');
 
     //DEKLARASI BT
     Route::get('/businessTrip/declaration/{id}', [BusinessTripController::class, 'deklarasi'])->name('businessTrip.deklarasi');
