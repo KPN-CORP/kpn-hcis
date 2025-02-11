@@ -816,7 +816,7 @@ class BusinessTripController extends Controller
                     ->leftJoin('designations as dsg2', 'dsg2.department_code', '=', DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(dsg.department_level2, '(', -1), ')', 1)"))
                     ->leftJoin('employees as emp', 'emp.designation_code', '=', 'dsg2.job_code')
                     ->where('employees.designation_code', '=', $employee->designation_code)
-                    ->where('dsg2.director_flag', '=', 'T')
+                    ->where('dsg2.director_flag', '=', 'F')
                     ->get();
 
                 $director_id = "";
