@@ -159,6 +159,7 @@
                                                             return [
                                                                 'No. Hotel' => $hotel->no_htl,
                                                                 'No. SPPD' => $hotel->no_sppd,
+                                                                'Colleague No. SPPD' => $hotel->no_sppd_htl,
                                                                 'Unit' => $hotel->unit,
                                                                 'Hotel Name' => $hotel->nama_htl,
                                                                 'Location' => $hotel->lokasi_htl,

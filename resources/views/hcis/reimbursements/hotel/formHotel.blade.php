@@ -118,13 +118,8 @@
                                                     <label class="form-label">Bed Size</label>
                                                     <select class="form-select form-select-sm select2" name="bed_htl[]"
                                                         required>
-                                                        <option value="Single Bed">Single Bed</option>
+                                                        <option value="Single Bed">Double Bed</option>
                                                         <option value="Twin Bed">Twin Bed</option>
-                                                        <option value="King Bed">King Bed</option>
-                                                        <option value="Super King Bed">Super King Bed</option>
-                                                        <option value="Extra Bed">Extra Bed</option>
-                                                        <option value="Baby Cot">Baby Cot</option>
-                                                        <option value="Sofa Bed">Sofa Bed</option>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-2 mb-2">
@@ -424,14 +419,9 @@
                             </div>
                             <div class="col-md-2 mb-2">
                                 <label class="form-label">Bed Size</label>
-                                <select class="form-select form-select-sm" name="bed_htl[]">
-                                    <option value="Single Bed">Single Bed</option>
+                                <select class="form-select form-select-sm select2" name="bed_htl[]">
+                                    <option value="Double Bed">Double Bed</option>
                                     <option value="Twin Bed">Twin Bed</option>
-                                    <option value="King Bed">King Bed</option>
-                                    <option value="Super King Bed">Super King Bed</option>
-                                    <option value="Extra Bed">Extra Bed</option>
-                                    <option value="Baby Cot">Baby Cot</option>
-                                    <option value="Sofa Bed">Sofa Bed</option>
                                 </select>
                             </div>
                             <div class="col-md-2 mb-2">

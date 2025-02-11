@@ -183,9 +183,7 @@
                                                             id="jenis_tkt_<?php echo $i; ?>" required>
                                                             <option value="">Select Transportation Type</option>
                                                             <option value="Train">Train</option>
-                                                            <option value="Bus">Bus</option>
                                                             <option value="Airplane">Airplane</option>
-                                                            <option value="Car">Car</option>
                                                             <option value="Ferry">Ferry</option>
                                                         </select>
                                                     </div>
@@ -373,10 +371,14 @@
 
         document.addEventListener("DOMContentLoaded", function() {
             let formTicketCount =
-                document.querySelectorAll('[id^="ticket-form-"]').length || 1;
+                document.querySelectorAll('[id^="ticket-form-"]').length;
             const maxTicketForms = 5;
             const ticketFormsContainer = document.getElementById("ticket_forms_container");
             const addTicketButton = document.getElementById("add-ticket-btn");
+
+            updateRemoveButtons();
+            updateFormNumbers();
+            updateAddButtonVisibility();
 
             function toggleRequiredAttributes(form, isRequired) {
                 const fields = [
@@ -586,9 +588,7 @@
                             <select class="form-select form-select-sm" name="jenis_tkt[]" id="jenis_tkt_${formNumber}">
                                 <option value="">Select Transportation Type</option>
                                 <option value="Train">Train</option>
-                                <option value="Bus">Bus</option>
                                 <option value="Airplane">Airplane</option>
-                                <option value="Car">Car</option>
                                 <option value="Ferry">Ferry</option>
                             </select>
                         </div>

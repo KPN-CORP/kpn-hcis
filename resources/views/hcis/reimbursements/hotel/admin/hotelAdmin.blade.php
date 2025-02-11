@@ -75,8 +75,7 @@
                                 <li class="breadcrumb-item active">{{ $link }}</li>
                             </ol>
                         </div>
-                        <a href="{{ route('travel') }}" class="page-title"><i
-                                class="ri-arrow-left-circle-line"></i></a>
+                        <a href="{{ route('travel') }}" class="page-title"><i class="ri-arrow-left-circle-line"></i></a>
                         {{-- <button type="button" class="page-title btn btn-warning rounded-pill">Back</button> --}}
                     </div>
                 </div>
@@ -122,9 +121,12 @@
                                 <div>
                                     <h3 class="card-title mb-2">{{ $link }}</h3>
                                     <div class="text-muted small">
-                                        <span class="me-3 fs-5"><i class="ri-user-line me-1"></i>{{ Auth::user()->name }}</span>
-                                        <span class="me-3 fs-5"><i class="ri-calendar-line me-1"></i>{{ date('l, d F Y') }}</span>
-                                        <span class="me-3"><i class="ri-time-line me-1"></i><span id="currentTime"></span> WIB</span>
+                                        <span class="me-3 fs-5"><i
+                                                class="ri-user-line me-1"></i>{{ Auth::user()->name }}</span>
+                                        <span class="me-3 fs-5"><i
+                                                class="ri-calendar-line me-1"></i>{{ date('l, d F Y') }}</span>
+                                        <span class="me-3"><i class="ri-time-line me-1"></i><span id="currentTime"></span>
+                                            WIB</span>
                                     </div>
                                 </div>
                                 <div class="input-group" style="width: 30%;">
@@ -175,6 +177,7 @@
                                                                 return [
                                                                     'No. Hotel' => $hotel->no_htl,
                                                                     'No. SPPD' => $hotel->no_sppd,
+                                                                    'Colleague No. SPPD' => $hotel->no_sppd_htl,
                                                                     'Unit' => $hotel->unit,
                                                                     'Hotel Name' => $hotel->nama_htl,
                                                                     'Location' => $hotel->lokasi_htl,
@@ -224,16 +227,14 @@
 
                                                 </td>
                                                 <td class="text-center">
-                                                    <button 
-                                                        type="button" 
-                                                        class="btn btn-sm btn-outline-success rounded-pill" 
-                                                        data-bs-toggle="modal" 
-                                                        data-bs-target="#approvalModal"
-                                                        data-id="{{ $transaction->id }}" 
-                                                        data-no="{{ $transaction->no_htl }}" 
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-outline-success rounded-pill"
+                                                        data-bs-toggle="modal" data-bs-target="#approvalModal"
+                                                        data-id="{{ $transaction->id }}"
+                                                        data-no="{{ $transaction->no_htl }}"
                                                         data-sppd="{{ $transaction->no_sppd }}"
                                                         data-status="{{ $transaction->approval_status }}"
-                                                        data-manager-l1="{{ $transaction->manager_l1_name ?? 'Unknown' }}" 
+                                                        data-manager-l1="{{ $transaction->manager_l1_name ?? 'Unknown' }}"
                                                         data-manager-l2="{{ $transaction->manager_l2_name ?? 'Unknown' }}">
                                                         <i class="bi bi-list-check"></i>
                                                     </button>
@@ -493,7 +494,7 @@
 
             function updateDateTime() {
                 const now = new Date();
-                
+
                 // Format time
                 const hours = String(now.getHours()).padStart(2, '0');
                 const minutes = String(now.getMinutes()).padStart(2, '0');

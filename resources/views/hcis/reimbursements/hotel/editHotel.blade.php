@@ -39,7 +39,8 @@
                                 <div class="mb-2">
                                     <label class="form-label" for="name">Name</label>
                                     <input type="text" name="name" id="name"
-                                        value="{{ $employee_data->fullname }}" class="form-control bg-light form-control-sm" readonly>
+                                        value="{{ $employee_data->fullname }}" class="form-control bg-light form-control-sm"
+                                        readonly>
                                 </div>
                             </div>
                             <div class="col-md-5">
@@ -53,7 +54,8 @@
                                 <div class="mb-2">
                                     <label class="form-label" for="grade">Grade</label>
                                     <input type="text" name="grade" id="grade"
-                                        value="{{ $employee_data->job_level }}" class="form-control bg-light form-control-sm" readonly>
+                                        value="{{ $employee_data->job_level }}"
+                                        class="form-control bg-light form-control-sm" readonly>
                                 </div>
                             </div>
                         </div>
@@ -134,27 +136,12 @@
                                             <div class="col-md-2 mb-2">
                                                 <label class="form-label">Bed Size</label>
                                                 <select class="form-select form-select-sm select2" name="bed_htl[]">
-                                                    <option value="Single Bed"
-                                                        {{ isset($hotel['bed_htl']) && $hotel['bed_htl'] === 'Single Bed' ? 'selected' : '' }}>
-                                                        Single Bed</option>
+                                                    <option value="Double Bed"
+                                                        {{ isset($hotel['bed_htl']) && $hotel['bed_htl'] === 'Double Bed' ? 'selected' : '' }}>
+                                                        Double Bed</option>
                                                     <option value="Twin Bed"
                                                         {{ isset($hotel['bed_htl']) && $hotel['bed_htl'] === 'Twin Bed' ? 'selected' : '' }}>
                                                         Twin Bed</option>
-                                                    <option value="King Bed"
-                                                        {{ isset($hotel['bed_htl']) && $hotel['bed_htl'] === 'King Bed' ? 'selected' : '' }}>
-                                                        King Bed</option>
-                                                    <option value="Super King Bed"
-                                                        {{ isset($hotel['bed_htl']) && $hotel['bed_htl'] === 'Super King Bed' ? 'selected' : '' }}>
-                                                        Super King Bed</option>
-                                                    <option value="Extra Bed"
-                                                        {{ isset($hotel['bed_htl']) && $hotel['bed_htl'] === 'Extra Bed' ? 'selected' : '' }}>
-                                                        Extra Bed</option>
-                                                    <option value="Baby Cot"
-                                                        {{ isset($hotel['bed_htl']) && $hotel['bed_htl'] === 'Baby Cot' ? 'selected' : '' }}>
-                                                        Baby Cot</option>
-                                                    <option value="Sofa Bed"
-                                                        {{ isset($hotel['bed_htl']) && $hotel['bed_htl'] === 'Sofa Bed' ? 'selected' : '' }}>
-                                                        Sofa Bed</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-2 mb-2">
@@ -210,8 +197,8 @@
 
 
                         <div class="d-flex justify-content-end mt-4">
-                            <button type="submit" class="btn btn-outline-primary rounded-pill me-2"
-                                name="action_draft" id="save-draft" value="Draft" id="save-draft">Save as
+                            <button type="submit" class="btn btn-outline-primary rounded-pill me-2" name="action_draft"
+                                id="save-draft" value="Draft" id="save-draft">Save as
                                 Draft</button>
                             <button type="submit" class="btn btn-primary rounded-pill submit-button"
                                 name="action_submit" value="Pending L1" id="submit-btn">Submit</button>
@@ -486,13 +473,8 @@
                         <div class="col-md-2 mb-2">
                             <label class="form-label">Bed Size</label>
                             <select class="form-select form-select-sm" name="bed_htl[]">
-                                <option value="Single Bed">Single Bed</option>
+                                <option value="Double Bed">Double Bed</option>
                                 <option value="Twin Bed">Twin Bed</option>
-                                <option value="King Bed">King Bed</option>
-                                <option value="Super King Bed">Super King Bed</option>
-                                <option value="Extra Bed">Extra Bed</option>
-                                <option value="Baby Cot">Baby Cot</option>
-                                <option value="Sofa Bed">Sofa Bed</option>
                             </select>
                         </div>
                         <div class="col-md-2 mb-2">

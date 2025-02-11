@@ -139,27 +139,12 @@
                                                 <label class="form-label">Bed Size</label>
                                                 <select class="form-select form-select-sm select2" name="bed_htl[]"
                                                     disabled>
-                                                    <option value="Single Bed"
-                                                        {{ isset($hotel['bed_htl']) && $hotel['bed_htl'] === 'Single Bed' ? 'selected' : '' }}>
-                                                        Single Bed</option>
+                                                    <option value="Double Bed"
+                                                        {{ isset($hotel['bed_htl']) && $hotel['bed_htl'] === 'Double Bed' ? 'selected' : '' }}>
+                                                        Double Bed</option>
                                                     <option value="Twin Bed"
                                                         {{ isset($hotel['bed_htl']) && $hotel['bed_htl'] === 'Twin Bed' ? 'selected' : '' }}>
                                                         Twin Bed</option>
-                                                    <option value="King Bed"
-                                                        {{ isset($hotel['bed_htl']) && $hotel['bed_htl'] === 'King Bed' ? 'selected' : '' }}>
-                                                        King Bed</option>
-                                                    <option value="Super King Bed"
-                                                        {{ isset($hotel['bed_htl']) && $hotel['bed_htl'] === 'Super King Bed' ? 'selected' : '' }}>
-                                                        Super King Bed</option>
-                                                    <option value="Extra Bed"
-                                                        {{ isset($hotel['bed_htl']) && $hotel['bed_htl'] === 'Extra Bed' ? 'selected' : '' }}>
-                                                        Extra Bed</option>
-                                                    <option value="Baby Cot"
-                                                        {{ isset($hotel['bed_htl']) && $hotel['bed_htl'] === 'Baby Cot' ? 'selected' : '' }}>
-                                                        Baby Cot</option>
-                                                    <option value="Sofa Bed"
-                                                        {{ isset($hotel['bed_htl']) && $hotel['bed_htl'] === 'Sofa Bed' ? 'selected' : '' }}>
-                                                        Sofa Bed</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-2 mb-2">

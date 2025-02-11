@@ -209,16 +209,10 @@
                                                             <option value="Train"
                                                                 {{ $ticket && $ticket['jenis_tkt'] == 'Train' ? 'selected' : '' }}>
                                                                 Train</option>
-                                                            <option value="Bus"
-                                                                {{ $ticket && $ticket['jenis_tkt'] == 'Bus' ? 'selected' : '' }}>
-                                                                Bus</option>
                                                             <option value="Airplane"
                                                                 {{ $ticket && $ticket['jenis_tkt'] == 'Airplane' ? 'selected' : '' }}>
                                                                 Airplane
                                                             </option>
-                                                            <option value="Car"
-                                                                {{ $ticket && $ticket['jenis_tkt'] == 'Car' ? 'selected' : '' }}>
-                                                                Car</option>
                                                             <option value="Ferry"
                                                                 {{ $ticket && $ticket['jenis_tkt'] == 'Ferry' ? 'selected' : '' }}>
                                                                 Ferry</option>
@@ -627,9 +621,7 @@
                             <select class="form-select form-select-sm" name="jenis_tkt[]" id="jenis_tkt_${formNumber}">
                                 <option value="">Select Transportation Type</option>
                                 <option value="Train">Train</option>
-                                <option value="Bus">Bus</option>
                                 <option value="Airplane">Airplane</option>
-                                <option value="Car">Car</option>
                                 <option value="Ferry">Ferry</option>
                             </select>
                         </div>
