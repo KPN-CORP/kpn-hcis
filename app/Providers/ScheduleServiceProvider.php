@@ -26,5 +26,6 @@ class ScheduleServiceProvider extends ServiceProvider
         $schedule->command('app:reminderSchedules')->dailyAt('08:00');
         $schedule->command('app:inactive-employees')->dailyAt('00:20');
         $schedule->command('app:update-designations')->dailyAt('01:00');
+        $schedule->command('update:bt-to-db')->dailyAt('00:15')->withoutOverlapping();
     }
 }
