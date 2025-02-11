@@ -148,24 +148,24 @@ class BTApprovalController extends Controller
         } else {
             return redirect()->back()->with('error', 'Unauthorized action.');
         }
-        if ($businessTrip->ca == 'Ya') {  
-            $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();  
-            
-            foreach ($caTransaction as $caTransactions) {  
-                if ($caTransactions && $caTransactions->caonly != 'Y' && $caTransactions->caonly == null) {  
-                    // Update semua CA approval status   
-                    ca_approval::where('ca_id', $caTransactions->id)->update([  
-                        'approval_status' => $statusValue,  
-                        'approved_at' => now(),  
-                        'reject_info' => $request->reject_info  
-                    ]);  
+        if ($businessTrip->ca == 'Ya') {
+            $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
 
-                    CATransaction::where('id', $caTransactions->id)->update([  
-                        'approval_status' => $statusValue,  
-                    ]);  
-                }  
-            }  
-        }  
+            foreach ($caTransaction as $caTransactions) {
+                if ($caTransactions && $caTransactions->caonly != 'Y' && $caTransactions->caonly == null) {
+                    // Update semua CA approval status
+                    ca_approval::where('ca_id', $caTransactions->id)->update([
+                        'approval_status' => $statusValue,
+                        'approved_at' => now(),
+                        'reject_info' => $request->reject_info
+                    ]);
+
+                    CATransaction::where('id', $caTransactions->id)->update([
+                        'approval_status' => $statusValue,
+                    ]);
+                }
+            }
+        }
         if ($businessTrip->tiket == 'Ya') {
             $tikets = Tiket::where('no_sppd', $businessTrip->no_sppd)->get();
             foreach ($tikets as $tiket) {
@@ -288,16 +288,16 @@ class BTApprovalController extends Controller
                     $caDetails = [
                         'total_days_perdiem' => array_sum(array_column($detail_ca['detail_perdiem'] ?? [], 'total_days')),
                         'total_amount_perdiem' => array_sum(array_column($detail_ca['detail_perdiem'] ?? [], 'nominal')),
-    
+
                         'total_days_transport' => count($detail_ca['detail_transport'] ?? []),
                         'total_amount_transport' => array_sum(array_column($detail_ca['detail_transport'] ?? [], 'nominal')),
-    
+
                         'total_days_accommodation' => array_sum(array_column($detail_ca['detail_penginapan'] ?? [], 'total_days')),
                         'total_amount_accommodation' => array_sum(array_column($detail_ca['detail_penginapan'] ?? [], 'nominal')),
-    
+
                         'total_days_others' => count($detail_ca['detail_lainnya'] ?? []),
                         'total_amount_others' => array_sum(array_column($detail_ca['detail_lainnya'] ?? [], 'nominal')),
-    
+
                         'total_days_meals' => count($detail_ca['detail_meals'] ?? []),
                         'total_amount_meals' => array_sum(array_column($detail_ca['detail_meals'] ?? [], 'nominal')),
                     ];
@@ -657,7 +657,7 @@ class BTApprovalController extends Controller
                 $caDeclare = [];
                 $entDetails = [];
                 $entDeclare = [];
-                
+
                 // dd( $detail_ca, $caTrans);
 
                 // dd($caTrans, $n->no_sppd);
@@ -668,34 +668,34 @@ class BTApprovalController extends Controller
                     $caDetails = [
                         'total_days_perdiem' => array_sum(array_column($detail_ca_ntf['detail_perdiem'] ?? [], 'total_days')),
                         'total_amount_perdiem' => array_sum(array_column($detail_ca_ntf['detail_perdiem'] ?? [], 'nominal')),
-    
+
                         'total_days_transport' => count($detail_ca_ntf['detail_transport'] ?? []),
                         'total_amount_transport' => array_sum(array_column($detail_ca_ntf['detail_transport'] ?? [], 'nominal')),
-    
+
                         'total_days_accommodation' => array_sum(array_column($detail_ca_ntf['detail_penginapan'] ?? [], 'total_days')),
                         'total_amount_accommodation' => array_sum(array_column($detail_ca_ntf['detail_penginapan'] ?? [], 'nominal')),
-    
+
                         'total_days_others' => count($detail_ca_ntf['detail_lainnya'] ?? []),
                         'total_amount_others' => array_sum(array_column($detail_ca_ntf['detail_lainnya'] ?? [], 'nominal')),
-    
+
                         'total_days_meals' => count($detail_ca_ntf['detail_meals'] ?? []),
                         'total_amount_meals' => array_sum(array_column($detail_ca_ntf['detail_meals'] ?? [], 'nominal')),
                     ];
                     // dd($caDetails,   $detail_ca );
-    
+
                     $caDeclare = [
                         'total_days_perdiem' => array_sum(array_column($declare_ca_ntf['detail_perdiem'] ?? [], 'total_days')),
                         'total_amount_perdiem' => array_sum(array_column($declare_ca_ntf['detail_perdiem'] ?? [], 'nominal')),
-    
+
                         'total_days_transport' => count($declare_ca_ntf['detail_transport'] ?? []),
                         'total_amount_transport' => array_sum(array_column($declare_ca_ntf['detail_transport'] ?? [], 'nominal')),
-    
+
                         'total_days_accommodation' => array_sum(array_column($declare_ca_ntf['detail_penginapan'] ?? [], 'total_days')),
                         'total_amount_accommodation' => array_sum(array_column($declare_ca_ntf['detail_penginapan'] ?? [], 'nominal')),
-    
+
                         'total_days_others' => count($declare_ca_ntf['detail_lainnya'] ?? []),
                         'total_amount_others' => array_sum(array_column($declare_ca_ntf['detail_lainnya'] ?? [], 'nominal')),
-    
+
                         'total_days_meals' => count($declare_ca_ntf['detail_meals'] ?? []),
                         'total_amount_meals' => array_sum(array_column($declare_ca_ntf['detail_meals'] ?? [], 'nominal')),
                     ];
@@ -714,23 +714,23 @@ class BTApprovalController extends Controller
 
                 // Send email to the manager
                 // try {
-                    Mail::to($managerL2)->send(new DeclarationNotification(
-                        $businessTrip,
-                        $caDetails,
-                        $caDeclare,
-                        $entDetails,
-                        $entDeclare,
-                        $managerName,
-                        $approvalLink,
-                        $rejectionLink,
-                        $employeeName,
-                        $base64Image,
-                        $textNotification,
-                        $isEnt,
-                        $isCa,
-                    ));
+                Mail::to($managerL2)->send(new DeclarationNotification(
+                    $businessTrip,
+                    $caDetails,
+                    $caDeclare,
+                    $entDetails,
+                    $entDeclare,
+                    $managerName,
+                    $approvalLink,
+                    $rejectionLink,
+                    $employeeName,
+                    $base64Image,
+                    $textNotification,
+                    $isEnt,
+                    $isCa,
+                ));
                 // } catch (\Exception $e) {
-                    // Log::error('Email Deklarasi Approval Bussines Trip tidak terkirim: ' . $e->getMessage());
+                // Log::error('Email Deklarasi Approval Bussines Trip tidak terkirim: ' . $e->getMessage());
                 // }
             }
             // Handle CA approval for L1
@@ -936,23 +936,23 @@ class BTApprovalController extends Controller
             return redirect()->back()->with('error', 'Unauthorized action.');
         }
 
-        $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();  
+        $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
         // dd($caTransaction->id);
         // dd( $caTransaction, $caTransaction->caonly != 'Y');
-        foreach ($caTransaction as $caTransactions) {  
-            if ($caTransactions && $caTransactions->caonly != 'Y' && $caTransactions->caonly == null) {  
-                // Update semua CA approval status   
-                ca_sett_approval::where('ca_id', $caTransactions->id)->where('approval_status', '!=', 'Rejected')->update([  
-                    'approval_status' => 'Rejected',  
-                    'approved_at' => now(),  
-                    'reject_info' => $request->reject_info  
-                ]);  
+        foreach ($caTransaction as $caTransactions) {
+            if ($caTransactions && $caTransactions->caonly != 'Y' && $caTransactions->caonly == null) {
+                // Update semua CA approval status
+                ca_sett_approval::where('ca_id', $caTransactions->id)->where('approval_status', '!=', 'Rejected')->update([
+                    'approval_status' => 'Rejected',
+                    'approved_at' => now(),
+                    'reject_info' => $request->reject_info
+                ]);
 
-                CATransaction::where('id', $caTransactions->id)->update([  
-                    'approval_sett' => 'Rejected',  
-                ]);  
-            }  
-        }  
+                CATransaction::where('id', $caTransactions->id)->update([
+                    'approval_sett' => 'Rejected',
+                ]);
+            }
+        }
 
         // Update the status in the BusinessTrip table
         $businessTrip->update(['status' => $statusValue]);

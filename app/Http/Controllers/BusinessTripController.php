@@ -1178,8 +1178,8 @@ class BusinessTripController extends Controller
 
         if ($statusValue !== 'Draft') {
             // Get manager email
-            // $managerEmail = Employee::where('employee_id', $managerL1)->pluck('email')->first();
-            $managerEmail = "erzie.aldrian02@gmail.com";
+            $managerEmail = Employee::where('employee_id', $managerL1)->pluck('email')->first();
+            // $managerEmail = "erzie.aldrian02@gmail.com";
             $managerName = Employee::where('employee_id', $managerL1)->pluck('fullname')->first();
 
             $imagePath = public_path('images/kop.jpg');
