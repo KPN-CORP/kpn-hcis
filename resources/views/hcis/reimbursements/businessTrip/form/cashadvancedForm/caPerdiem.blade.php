@@ -110,9 +110,9 @@
     }
 </script>
 
-@if (!empty($detailCA['detail_perdiem']) && $detailCA['detail_perdiem'][0]['start_date'] !== null)
+@if (!empty($caDetail['detail_perdiem']) && $caDetail['detail_perdiem'][0]['start_date'] !== null)
     <div id="form-container-perdiem">
-        @foreach ($detailCA['detail_perdiem'] as $perdiem)
+        @foreach ($caDetail['detail_perdiem'] as $perdiem)
             <div id="form-container-bt-perdiem-{{ $loop->index + 1 }}" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">{{ $allowance }} {{ $loop->index + 1 }}</p>
                 <div id="form-container-bt-perdiem-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3">
@@ -217,7 +217,7 @@
             </div>
             <input class="form-control form-control-sm bg-light" name="total_bt_perdiem" id="total_bt_perdiem"
                 type="text"
-                value="{{ number_format(array_sum(array_column($detailCA['detail_perdiem'], 'nominal')), 0, ',', '.') }}"
+                value="{{ number_format(array_sum(array_column($caDetail['detail_perdiem'], 'nominal')), 0, ',', '.') }}"
                 readonly>
         </div>
     </div>

@@ -270,21 +270,23 @@
 
                     function createTableHtml(data, title) {
                         var tableHtml = '<h5>' + title + '</h5>';
-                        tableHtml += '<div class="table-responsive"><table class="table table-sm"><thead><tr>';
+                        tableHtml += '<div class="table-responsive">' + // Added this for horizontal scrolling
+                                    '<table class="table table-sm table-bordered nowrap w-100" cellspacing="0">' + // Added w-100 and table-bordered
+                                    '<thead><tr>';
                         var isArray = Array.isArray(data) && data.length > 0;
 
                         // Assuming all objects in the data array have the same keys, use the first object to create headers
                         if (isArray) {
                             for (var key in data[0]) {
                                 if (data[0].hasOwnProperty(key)) {
-                                    tableHtml += '<th>' + key + '</th>';
+                                    tableHtml += '<th class="text-nowrap">' + key + '</th>'; // Added text-nowrap to prevent header wrapping
                                 }
                             }
                         } else if (typeof data === 'object') {
                             // If data is a single object, create headers from its keys
                             for (var key in data) {
                                 if (data.hasOwnProperty(key)) {
-                                    tableHtml += '<th>' + key + '</th>';
+                                    tableHtml += '<th class="text-nowrap">' + key + '</th>';
                                 }
                             }
                         }

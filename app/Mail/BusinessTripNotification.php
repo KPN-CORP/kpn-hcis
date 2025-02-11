@@ -27,6 +27,9 @@ class BusinessTripNotification extends Mailable
     public $employeeName;
     public $base64Image;
     public $textNotification;
+    public $isEnt;
+    public $isCa;
+    public $entDetails;
 
     /**
      * Create a new message instance.
@@ -43,6 +46,9 @@ class BusinessTripNotification extends Mailable
         $employeeName = null,
         $base64Image = null,
         $textNotification = null,
+        $isEnt = null,
+        $isCa = null,
+        $entDetails = null,
     ) {
         $this->businessTrip = $businessTrip;
         $this->hotelDetails = $hotelDetails;
@@ -55,6 +61,9 @@ class BusinessTripNotification extends Mailable
         $this->employeeName = $employeeName;
         $this->base64Image = $base64Image;
         $this->textNotification = $textNotification;
+        $this->isEnt = $isEnt;
+        $this->isCa = $isCa;
+        $this->entDetails = $entDetails;
     }
 
     /**
@@ -75,6 +84,9 @@ class BusinessTripNotification extends Mailable
                 'employeeName' => $this->employeeName,
                 'base64Image' => $this->base64Image,
                 'textNotification' => $this->textNotification,
+                'isEnt' => $this->isEnt,
+                'isCa' => $this->isCa,
+                'entDetails' => $this->entDetails,
             ]);
     }
 

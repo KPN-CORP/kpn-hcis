@@ -203,22 +203,16 @@
                                                 <div class="col-md-6 mb-2">
                                                     <label class="form-label">Transportation Type</label>
                                                     <div class="input-group">
-                                                        <select class="form-select form-select-sm" name="jenis_tkt[]"
+                                                        <select class="form-select form-select-sm select2" name="jenis_tkt[]"
                                                             required>
                                                             <option value="">Select Transportation Type</option>
                                                             <option value="Train"
                                                                 {{ $ticket && $ticket['jenis_tkt'] == 'Train' ? 'selected' : '' }}>
                                                                 Train</option>
-                                                            <option value="Bus"
-                                                                {{ $ticket && $ticket['jenis_tkt'] == 'Bus' ? 'selected' : '' }}>
-                                                                Bus</option>
                                                             <option value="Airplane"
                                                                 {{ $ticket && $ticket['jenis_tkt'] == 'Airplane' ? 'selected' : '' }}>
                                                                 Airplane
                                                             </option>
-                                                            <option value="Car"
-                                                                {{ $ticket && $ticket['jenis_tkt'] == 'Car' ? 'selected' : '' }}>
-                                                                Car</option>
                                                             <option value="Ferry"
                                                                 {{ $ticket && $ticket['jenis_tkt'] == 'Ferry' ? 'selected' : '' }}>
                                                                 Ferry</option>
@@ -418,6 +412,10 @@
             const maxTicketForms = 5;
             const ticketFormsContainer = document.getElementById("ticket_forms_container");
             const addTicketButton = document.getElementById("add-ticket-btn");
+
+            updateRemoveButtons();
+            updateFormNumbers();
+            updateAddButtonVisibility();
 
             function toggleRequiredAttributes(form, isRequired) {
                 const fields = [
@@ -627,9 +625,7 @@
                             <select class="form-select form-select-sm" name="jenis_tkt[]" id="jenis_tkt_${formNumber}">
                                 <option value="">Select Transportation Type</option>
                                 <option value="Train">Train</option>
-                                <option value="Bus">Bus</option>
                                 <option value="Airplane">Airplane</option>
-                                <option value="Car">Car</option>
                                 <option value="Ferry">Ferry</option>
                             </select>
                         </div>

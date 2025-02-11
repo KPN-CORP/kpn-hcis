@@ -13,8 +13,8 @@
                     <div class="row">
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Employee Name</label>
-                            <select class="form-select form-select-sm select2"
-                                id="noktp_tkt_<?php echo $i; ?>" name="noktp_tkt[]">
+                            <select class="form-select form-select-sm select2" id="noktp_tkt_<?php echo $i; ?>"
+                                name="noktp_tkt[]">
                                 <option value="" selected>Please Select</option>
                                 @foreach ($employees as $employee)
                                     <option value="{{ $employee->ktp }}">
@@ -46,9 +46,7 @@
                                     id="jenis_tkt_<?php echo $i; ?>">
                                     <option value="">Select Transportation Type</option>
                                     <option value="Train">Train</option>
-                                    <option value="Bus">Bus</option>
                                     <option value="Airplane">Airplane</option>
-                                    <option value="Car">Car</option>
                                     <option value="Ferry">Ferry</option>
                                 </select>
                             </div>

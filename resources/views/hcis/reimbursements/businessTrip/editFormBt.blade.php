@@ -69,7 +69,7 @@
                                         readonly>
                                 </div>
                                 <div class="col-md-6 mb-2">
-                                    <label for="divisi" class="form-label">Divison</label>
+                                    <label for="divisi" class="form-label">Unit</label>
                                     <input type="text" class="form-control form-control-sm bg-light" id="divisi"
                                         name="divisi" style="cursor:not-allowed;" value="{{ $employee_data->unit }}"
                                         readonly>
@@ -99,13 +99,13 @@
                             </div>
                             <div class="row mb-2">
                                 <div class="col-md-4 mb-2">
-                                    <label for="mulai" class="form-label">Start Date</label>
+                                    <label for="mulai" class="form-label">Start Date Business Trip</label>
                                     <input type="date" class="form-control form-control-sm" id="mulai" name="mulai"
                                         placeholder="Tanggal Mulai" value="{{ $n->mulai }}"
                                         onchange="validateStartEndDates()">
                                 </div>
                                 <div class="col-md-4 mb-2">
-                                    <label for="kembali" class="form-label">End Date</label>
+                                    <label for="kembali" class="form-label">End Date Business Trip</label>
                                     <input type="date" class="form-control form-control-sm" id="kembali" name="kembali"
                                         placeholder="Tanggal Kembali" value="{{ $n->kembali }}"
                                         onchange="validateStartEndDates()">
@@ -165,8 +165,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label for="jns_dinas" class="form-label">Type of Service</label>
-                                    <select class="form-select form-control-sm" id="jns_dinas" name="jns_dinas" required
-                                        onchange="toggleAdditionalFields()">
+                                    <select class="form-select form-control-sm" id="jns_dinas" name="jns_dinas" required>
                                         <option value="" selected disabled>-- Choose Type of Service --</option>
                                         <option value="dalam kota" {{ $n->jns_dinas == 'dalam kota' ? 'selected' : '' }}>
                                             Dinas
@@ -180,13 +179,24 @@
                             @php
                                 // Provide default empty arrays if caDetail or sections are not set
                                 $detailPerdiem = $caDetail['detail_perdiem'] ?? [];
+                                $detailMeals = $caDetail['detail_meals'] ?? [];
                                 $detailTransport = $caDetail['detail_transport'] ?? [];
                                 $detailPenginapan = $caDetail['detail_penginapan'] ?? [];
                                 $detailLainnya = $caDetail['detail_lainnya'] ?? [];
+                                $detailEntertain = $caDetail['detail_e'] ?? [];
+                                $detailRelation = $caDetail['relation_e'] ?? [];
 
                                 // Calculate totals with default values
                                 $totalPerdiem = array_reduce(
                                     $detailPerdiem,
+                                    function ($carry, $item) {
+                                        return $carry + (int) ($item['nominal'] ?? 0);
+                                    },
+                                    0,
+                                );
+
+                                $totalMeals = array_reduce(
+                                    $detailMeals,
                                     function ($carry, $item) {
                                         return $carry + (int) ($item['nominal'] ?? 0);
                                     },
@@ -217,193 +227,293 @@
                                     0,
                                 );
 
+                                $totalDetail = array_reduce(
+                                    $detailEntertain,
+                                    function ($carry, $item) {
+                                        return $carry + (int) ($item['nominal'] ?? 0);
+                                    },
+                                    0,
+                                );
+
                                 // Total Cash Advanced
                                 $totalCashAdvanced = $totalPerdiem + $totalTransport + $totalPenginapan + $totalLainnya;
+                                $totalRequest = $totalCashAdvanced + $totalDetail;
                             @endphp
 
                             @php
-                                $detailCA = isset($ca) && $ca->detail_ca ? json_decode($ca->detail_ca, true) : [];
+                                // $detailCA = isset($ca) && $ca->detail_ca ? json_decode($ca->detail_ca, true) : [];
 
-                                $showPerdiem = !empty($detailCA['detail_perdiem']);
+                                // $showPerdiem = !empty($detailCA['detail_perdiem']);
 
                                 // Check if any of Transport, Penginapan, or Lainnya has data
                                 $showCashAdvanced =
-                                    !empty($detailCA['detail_transport']) ||
-                                    !empty($detailCA['detail_meals']) ||
-                                    !empty($detailCA['detail_penginapan']) ||
-                                    !empty($detailCA['detail_lainnya']);
+                                    !empty($caDetail['detail_perdiem']) ||
+                                    !empty($caDetail['detail_transport']) ||
+                                    !empty($caDetail['detail_meals']) ||
+                                    !empty($caDetail['detail_penginapan']) ||
+                                    !empty($caDetail['detail_lainnya']);
+
+                                $showEntertain = !empty($caDetail['detail_e']) || !empty($caDetail['relation_e']);
 
                             @endphp
-                            <script>
+
+                            {{-- <script>
                                 // Pass the PHP array into a JavaScript variable
                                 const initialDetailCA = @json($detailCA);
-                            </script>
-
-                            <div id="additional-fields" class="row mb-3" style="display: none;">
-                                <div class="col-md-12">
-                                    <label for="additional-fields-title" class="mb-3">
-                                        Business Trip Needs <br>
-                                        @if ($isAllowed)
-                                            <span class="text-info fst-italic">* Your job
-                                                level is above 8. No {{ $allowance }} is required for your job
-                                                level</span>
-                                        @endif
-                                    </label>
-                                    <div class="row">
-                                        <div class="col-md-2">
-                                            <div class="form-check">
-                                                <input type="hidden" name="ca" id="caHidden"
-                                                    value="{{ $showPerdiem || $showCashAdvanced ? 'Ya' : 'Tidak' }}">
-                                                <input class="form-check-input" type="checkbox" id="perdiemCheckbox"
-                                                    value="Ya" onchange="updateCAValue()"
-                                                    @checked($showPerdiem)>
-                                                <label class="form-check-label" for="perdiemCheckbox">{{$allowance}}</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="cashAdvancedCheckbox"
-                                                    value="Ya" onchange="updateCAValue()"
-                                                    @checked($showCashAdvanced)>
-                                                <label class="form-check-label" for="cashAdvancedCheckbox">Cash
-                                                    Advanced</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <div class="form-check">
-                                                <input type="hidden" name="tiket" value="Tidak">
-                                                <input class="form-check-input" type="checkbox" id="ticketCheckbox"
-                                                    name="tiket" value="Ya"
-                                                    <?= $n->tiket == 'Ya' ? 'checked' : '' ?>>
-                                                <label class="form-check-label" for="ticketCheckbox">
-                                                    Ticket
-                                                </label>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-2">
-                                            <div class="form-check">
-                                                <input type="hidden" name="hotel" value="Tidak">
-                                                <input class="form-check-input" type="checkbox" id="hotelCheckbox"
-                                                    name="hotel" value="Ya"
-                                                    <?= $n->hotel == 'Ya' ? 'checked' : '' ?>>
-                                                <label class="form-check-label" for="hotelCheckbox">
-                                                    Hotel
-                                                </label>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-3">
-                                            <div class="form-check">
-                                                <input type="hidden" name="taksi" value="Tidak">
-                                                <input class="form-check-input" type="checkbox" id="taksiCheckbox"
-                                                    name="taksi" value="Ya"
-                                                    <?= $n->taksi == 'Ya' ? 'checked' : '' ?>>
-                                                <label class="form-check-label" for="taksiCheckbox">
-                                                    Taxi Voucher
-                                                </label>
-                                            </div>
+                            </script> --}}
+                            <div id="additional-fields-dalam" class="row mb-3" style="display: none;">
+                                <label for="additional-fields-dalam-title" class="mb-3">
+                                    Business Trip Needs <br>
+                                </label>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            <input type="hidden" name="tiket_dalam_kota" value="Tidak">
+                                            <input class="form-check-input" type="checkbox" id="ticketCheckboxDalamKota"
+                                                name="tiket_dalam_kota" value="Ya"
+                                                <?= $n->jns_dinas === 'dalam kota' && $n->tiket === 'Ya' ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="ticketCheckboxDalamKota">
+                                                Ticket
+                                            </label>
                                         </div>
                                     </div>
 
-                                    <div class="row mt-3">
-                                        <div class="col-md-12">
-                                            <ul class="nav nav-tabs nav-pills mb-2" id="pills-tab" role="tablist">
-                                                <li class="nav-item" role="presentation" id="nav-perdiem"
-                                                    style="display: {{ $showPerdiem ? 'block' : 'none' }};">
-                                                    <button class="nav-link" id="pills-perdiem-tab" data-bs-toggle="pill"
-                                                        data-bs-target="#pills-perdiem" type="button" role="tab"
-                                                        aria-controls="pills-perdiem"
-                                                        aria-selected="false">{{ $allowance }}</button>
-                                                </li>
-                                                <li class="nav-item" role="presentation" id="nav-cashAdvanced"
-                                                    style="display: {{ $showCashAdvanced ? 'block' : 'none' }};">
-                                                    <button class="nav-link" id="pills-cashAdvanced-tab"
-                                                        data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced"
-                                                        type="button" role="tab" aria-controls="pills-cashAdvanced"
-                                                        aria-selected="false">Cash Advanced</button>
-                                                </li>
-                                                <li class="nav-item" role="presentation" id="nav-ticket"
-                                                    style="display: <?= $n->tiket == 'Ya' ? 'block' : 'none' ?>;">
-                                                    <button class="nav-link" id="pills-ticket-tab" data-bs-toggle="pill"
-                                                        data-bs-target="#pills-ticket" type="button" role="tab"
-                                                        aria-controls="pills-ticket" aria-selected="false">Ticket</button>
-                                                </li>
-                                                <li class="nav-item" role="presentation" id="nav-hotel"
-                                                    style="display: <?= $n->hotel == 'Ya' ? 'block' : 'none' ?>;">
-                                                    <button class="nav-link" id="pills-hotel-tab" data-bs-toggle="pill"
-                                                        data-bs-target="#pills-hotel" type="button" role="tab"
-                                                        aria-controls="pills-hotel" aria-selected="false">Hotel</button>
-                                                </li>
-                                                <li class="nav-item" role="presentation" id="nav-taksi"
-                                                    style="display: <?= $n->taksi == 'Ya' ? 'block' : 'none' ?>;">
-                                                    <button class="nav-link" id="pills-taksi-tab" data-bs-toggle="pill"
-                                                        data-bs-target="#pills-taksi" type="button" role="tab"
-                                                        aria-controls="pills-taksi" aria-selected="false">Taxi</button>
-                                                </li>
-                                            </ul>
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            <input type="hidden" name="hotel_dalam_kota" value="Tidak">
+                                            <input class="form-check-input" type="checkbox" id="hotelCheckboxDalamKota"
+                                                name="hotel_dalam_kota" value="Ya"
+                                                <?= $n->jns_dinas === 'dalam kota' && $n->hotel === 'Ya' ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="hotelCheckboxDalamKota">
+                                                Hotel
+                                            </label>
+                                        </div>
+                                    </div>
 
-                                            <div class="tab-content" id="pills-tabContent">
-                                                <div class="tab-pane fade" id="pills-perdiem" role="tabpanel"
-                                                    aria-labelledby="pills-perdiem-tab">
-                                                    {{-- ca perdiem content --}}
-                                                    <div id="ca_perdiem">
-                                                        <div class="row mb-2">
-                                                            <div class="col-md-6 mb-2">
-                                                                <label for="date_required" class="form-label">Date
-                                                                    Required</label>
-                                                                <input type="date" class="form-control form-control-sm"
-                                                                    id="date_required_1" name="date_required"
-                                                                    placeholder="Date Required"
-                                                                    onchange="syncDateRequired(this)"
-                                                                    value="{{ $ca->date_required ?? 0 }}">
-                                                            </div>
-                                                            <div class="col-md-6 mb-2">
-                                                                <label class="form-label" for="ca_decla">Declaration
-                                                                    Estimate</label>
-                                                                <input type="date" name="ca_decla" id="ca_decla_1"
-                                                                    class="form-control form-control-sm bg-light"
-                                                                    placeholder="mm/dd/yyyy"
-                                                                    value="{{ $ca->declare_estimate ?? 0 }}" readonly>
-                                                            </div>
-                                                        </div>
-                                                        @include('hcis.reimbursements.businessTrip.caPerdiem')
+                                    <div class="col-md-4">
+                                        <div class="form-check">
+                                            <input type="hidden" name="taksi_dalam_kota" value="Tidak">
+                                            <input class="form-check-input" type="checkbox" id="taksiCheckboxDalamKota"
+                                                name="taksi_dalam_kota" value="Ya"
+                                                <?= $n->jns_dinas === 'dalam kota' && $n->taksi === 'Ya' ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="taksiCheckboxDalamKota">
+                                                Taxi/Grab
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <ul class="nav nav-tabs nav-pills mb-2" id="dalam-kota-pills-tab" role="tablist">
+                                            <!-- Ticket Tab -->
+                                            <li class="nav-item" role="presentation" id="nav-ticket-dalam-kota"
+                                                style="display: <?= $n->jns_dinas === 'dalam kota' && $n->tiket == 'Ya' ? 'block' : 'none' ?>;">
+                                                <button class="nav-link" id="pills-ticket-dalam-kota-tab"
+                                                    data-bs-toggle="pill" data-bs-target="#pills-ticket-dalam-kota"
+                                                    type="button" role="tab" aria-controls="pills-ticket-dalam-kota"
+                                                    aria-selected="false">Ticket</button>
+                                            </li>
+
+                                            <!-- Hotel Tab -->
+                                            <li class="nav-item" role="presentation" id="nav-hotel-dalam-kota"
+                                                style="display: <?= $n->jns_dinas === 'dalam kota' && $n->hotel == 'Ya' ? 'block' : 'none' ?>;">
+                                                <button class="nav-link" id="pills-hotel-dalam-kota-tab"
+                                                    data-bs-toggle="pill" data-bs-target="#pills-hotel-dalam-kota"
+                                                    type="button" role="tab" aria-controls="pills-hotel-dalam-kota"
+                                                    aria-selected="false">Hotel</button>
+                                            </li>
+
+                                            <!-- Taxi Tab -->
+                                            <li class="nav-item" role="presentation" id="nav-taksi-dalam-kota"
+                                                style="display: <?= $n->jns_dinas === 'dalam kota' && $n->taksi == 'Ya' ? 'block' : 'none' ?>;">
+                                                <button class="nav-link" id="pills-taksi-dalam-kota-tab"
+                                                    data-bs-toggle="pill" data-bs-target="#pills-taksi-dalam-kota"
+                                                    type="button" role="tab" aria-controls="pills-taksi-dalam-kota"
+                                                    aria-selected="false">Taxi/Grab</button>
+                                            </li>
+                                        </ul>
+
+
+                                        <div id="dalam-kota-pills-tabContent" class="tab-content">
+                                            <!-- Ticket Content -->
+                                            <div class="tab-pane fade" id="pills-ticket-dalam-kota" role="tabpanel"
+                                                aria-labelledby="pills-ticket-dalam-kota-tab">
+                                                {{-- Ticket content --}}
+                                                @include('hcis.reimbursements.businessTrip.editForm.dalam-kota.editTicketDalamKota')
+                                            </div>
+
+                                            <!-- Hotel Content -->
+                                            <div class="tab-pane fade" id="pills-hotel-dalam-kota" role="tabpanel"
+                                                aria-labelledby="pills-hotel-dalam-kota-tab">
+                                                {{-- Hotel content --}}
+                                                @include('hcis.reimbursements.businessTrip.editForm.dalam-kota.editHotelDalamKota')
+                                            </div>
+
+                                            <!-- Taxi Content -->
+                                            <div class="tab-pane fade" id="pills-taksi-dalam-kota" role="tabpanel"
+                                                aria-labelledby="pills-taksi-dalam-kota-tab">
+                                                {{-- Taxi content --}}
+                                                @include('hcis.reimbursements.businessTrip.editForm.dalam-kota.editTaxiDalamKota')
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                {{-- </div> --}}
+                                <div id="additional-fields" class="row mb-3" style="display: none;">
+                                    <div class="col-md-12">
+                                        <label for="additional-fields-title" class="mb-3">
+                                            Business Trip Needs <br>
+                                            @if ($isAllowed)
+                                                <span class="text-info fst-italic">* Your job
+                                                    level is above 8. No {{ $allowance }} is required for your job
+                                                    level</span>
+                                            @endif
+                                        </label>
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <div class="form-check">
+                                                    <input type="hidden" name="ca" id="caHidden"
+                                                        value="{{ $showCashAdvanced ? 'Ya' : 'Tidak' }}">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="cashAdvancedCheckbox" value="Ya"
+                                                        onchange="updateCAValue()" @checked($showCashAdvanced)>
+                                                    <label class="form-check-label" for="cashAdvancedCheckbox">Cash
+                                                        Advanced</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input type="hidden" name="ent" id="entHidden"
+                                                        value="{{ $showEntertain ? 'Ya' : 'Tidak' }}">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        id="caEntertainCheckbox" name="ent" value="Ya"
+                                                        onchange="updateCAValue()" @checked($showEntertain)>
+                                                    <label class="form-check-label" for="caEntertainCheckbox">CA
+                                                        Entertain</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-check">
+                                                    <input type="hidden" name="tiket" value="Tidak">
+                                                    <input class="form-check-input" type="checkbox" id="ticketCheckbox"
+                                                        name="tiket" value="Ya"
+                                                        <?= $n->jns_dinas === 'luar kota' && $n->tiket == 'Ya' ? 'checked' : '' ?>>
+                                                    <label class="form-check-label" for="ticketCheckbox">
+                                                        Ticket
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <div class="form-check">
+                                                    <input type="hidden" name="hotel" value="Tidak">
+                                                    <input class="form-check-input" type="checkbox" id="hotelCheckbox"
+                                                        name="hotel" value="Ya"
+                                                        <?= $n->jns_dinas === 'luar kota' && $n->hotel == 'Ya' ? 'checked' : '' ?>>
+                                                    <label class="form-check-label" for="hotelCheckbox">
+                                                        Hotel
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                <div class="form-check">
+                                                    <input type="hidden" name="taksi" value="Tidak">
+                                                    <input class="form-check-input" type="checkbox" id="taksiCheckbox"
+                                                        name="taksi" value="Ya"
+                                                        <?= $n->jns_dinas === 'luar kota' && $n->taksi == 'Ya' ? 'checked' : '' ?>>
+                                                    <label class="form-check-label" for="taksiCheckbox">
+                                                        Taxi/Grab
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-3">
+                                            <div class="col-md-12">
+                                                <ul class="nav nav-tabs nav-pills mb-2" id="pills-tab" role="tablist">
+                                                    <li class="nav-item" role="presentation" id="nav-cashAdvanced"
+                                                        style="display: <?= $showCashAdvanced == 'true' ? 'block' : 'none' ?>;">
+                                                        <button class="nav-link" id="pills-cashAdvanced-tab"
+                                                            data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced"
+                                                            type="button" role="tab"
+                                                            aria-controls="pills-cashAdvanced" aria-selected="false">Cash
+                                                            Advanced</button>
+                                                    </li>
+                                                    <li class="nav-item" role="presentation"
+                                                        id="nav-cashAdvancedEntertain"
+                                                        style="display:<?= $showEntertain ? 'block' : 'none' ?>">
+                                                        <button class="nav-link" id="pills-cashAdvancedEntertain-tab"
+                                                            data-bs-toggle="pill"
+                                                            data-bs-target="#pills-cashAdvancedEntertain" type="button"
+                                                            role="tab" aria-controls="pills-cashAdvancedEntertain"
+                                                            aria-selected="false">CA Entertain</button>
+                                                    </li>
+                                                    <li class="nav-item" role="presentation" id="nav-ticket"
+                                                        style="display: <?= $n->jns_dinas === 'luar kota' && $n->tiket == 'Ya' ? 'block' : 'none' ?>;">
+                                                        <button class="nav-link" id="pills-ticket-tab"
+                                                            data-bs-toggle="pill" data-bs-target="#pills-ticket"
+                                                            type="button" role="tab" aria-controls="pills-ticket"
+                                                            aria-selected="false">Ticket</button>
+                                                    </li>
+                                                    <li class="nav-item" role="presentation" id="nav-hotel"
+                                                        style="display: <?= $n->jns_dinas === 'luar kota' && $n->hotel == 'Ya' ? 'block' : 'none' ?>;">
+                                                        <button class="nav-link" id="pills-hotel-tab"
+                                                            data-bs-toggle="pill" data-bs-target="#pills-hotel"
+                                                            type="button" role="tab" aria-controls="pills-hotel"
+                                                            aria-selected="false">Hotel</button>
+                                                    </li>
+                                                    <li class="nav-item" role="presentation" id="nav-taksi"
+                                                        style="display: <?= $n->jns_dinas === 'luar kota' && $n->taksi == 'Ya' ? 'block' : 'none' ?>;">
+                                                        <button class="nav-link" id="pills-taksi-tab"
+                                                            data-bs-toggle="pill" data-bs-target="#pills-taksi"
+                                                            type="button" role="tab" aria-controls="pills-taksi"
+                                                            aria-selected="false">Taxi</button>
+                                                    </li>
+                                                </ul>
+
+                                                <div class="tab-content" id="pills-tabContent">
+                                                    <div class="tab-pane fade" id="pills-cashAdvanced" role="tabpanel"
+                                                        aria-labelledby="pills-cashAdvanced-tab">
+                                                        {{-- Cash Advanced content --}}
+                                                        @include('hcis.reimbursements.businessTrip.editForm.btCaEdit')
+                                                    </div>
+                                                    <div class="tab-pane fade" id="pills-cashAdvancedEntertain"
+                                                        role="tabpanel" aria-labelledby="pills-cashAdvancedEntertain-tab">
+                                                        {{-- Cash Advanced content --}}
+                                                        @include('hcis.reimbursements.businessTrip.form.btEnt')
+                                                    </div>
+                                                    <div class="tab-pane fade" id="pills-ticket" role="tabpanel"
+                                                        aria-labelledby="pills-ticket-tab">
+                                                        {{-- Ticket content --}}
+                                                        @include('hcis.reimbursements.businessTrip.editForm.editTicket')
+                                                    </div>
+                                                    <div class="tab-pane fade" id="pills-hotel" role="tabpanel"
+                                                        aria-labelledby="pills-hotel-tab">
+                                                        {{-- Hotel content --}}
+                                                        @include('hcis.reimbursements.businessTrip.editForm.editHotel')
+                                                    </div>
+                                                    <div class="tab-pane fade" id="pills-taksi" role="tabpanel"
+                                                        aria-labelledby="pills-taksi-tab">
+                                                        {{-- Taxi content --}}
+                                                        @include('hcis.reimbursements.businessTrip.editForm.editTaxi')
                                                     </div>
                                                 </div>
-                                                <div class="tab-pane fade" id="pills-cashAdvanced" role="tabpanel"
-                                                    aria-labelledby="pills-cashAdvanced-tab">
-                                                    {{-- Cash Advanced content --}}
-                                                    @include('hcis.reimbursements.businessTrip.editForm.btCaEdit')
-                                                </div>
-                                                <div class="tab-pane fade" id="pills-ticket" role="tabpanel"
-                                                    aria-labelledby="pills-ticket-tab">
-                                                    {{-- Ticket content --}}
-                                                    @include('hcis.reimbursements.businessTrip.editForm.editTicket')
-                                                </div>
-                                                <div class="tab-pane fade" id="pills-hotel" role="tabpanel"
-                                                    aria-labelledby="pills-hotel-tab">
-                                                    {{-- Hotel content --}}
-                                                    @include('hcis.reimbursements.businessTrip.editForm.editHotel')
-                                                </div>
-                                                <div class="tab-pane fade" id="pills-taksi" role="tabpanel"
-                                                    aria-labelledby="pills-taksi-tab">
-                                                    {{-- Taxi content --}}
-                                                    @include('hcis.reimbursements.businessTrip.editForm.editTaxi')
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <input type="hidden" name="status" value="Pending L1" id="status">
-                                <input type="hidden" id="formActionType" name="formActionType" value="">
-                                <div class="d-flex justify-content-end mt-3">
-                                    <button type="submit" class="btn btn-outline-primary rounded-pill me-2 draft-button"
-                                        name="action_draft" id="save-draft" value="Draft" id="save-draft">Save as
-                                        Draft</button>
-                                    <button type="submit" class="btn btn-primary rounded-pill submit-button"
-                                        name="action_submit" value="Pending L1" id="submit-btn">Submit</button>
-                                </div>
+                                    <input type="hidden" name="status" value="Pending L1" id="status">
+                                    <input type="hidden" id="formActionType" name="formActionType" value="">
+                                    <div class="d-flex justify-content-end mt-3">
+                                        <button type="submit"
+                                            class="btn btn-outline-primary rounded-pill me-2 draft-button"
+                                            name="action_draft" id="save-draft" value="Draft" id="save-draft">Save as
+                                            Draft</button>
+                                        <button type="submit" class="btn btn-primary rounded-pill submit-button"
+                                            name="action_submit" value="Pending L1" id="submit-btn">Submit</button>
+                                    </div>
                         </form>
                     </div>
                 </div>
@@ -418,13 +528,13 @@
     <script>
         var formCountMeals = 0;
 
-        window.addEventListener("DOMContentLoaded", function () {
+        window.addEventListener("DOMContentLoaded", function() {
             formCountMeals = document.querySelectorAll(
                 "#form-container-meals > div"
             ).length;
         });
 
-        $(".btn-warning").click(function (event) {
+        $(".btn-warning").click(function(event) {
             event.preventDefault();
             var index = $(this).closest(".card-body").index() + 1;
             removeFormMeals(index, event);
@@ -449,6 +559,7 @@
                         document.querySelector('input[name="total_bt_meals"]').value =
                             formatNumber(total);
                         calculateTotalNominalBTTotal();
+                        calculateTotalNominalBTENTTotal();
                     }
                     $(`#form-container-bt-meals-${index}`).remove();
                     formCountMeals--;
@@ -482,6 +593,7 @@
             // Reset nilai untuk nominal BT Meals
             document.querySelector(`#nominal_bt_meals_${index}`).value = 0;
             calculateTotalNominalBTTotal();
+            calculateTotalNominalBTENTTotal();
         }
 
         function calculateTotalNominalBTMeals() {
@@ -497,28 +609,27 @@
         function onNominalChange() {
             calculateTotalNominalBTMeals();
         }
-
     </script>
     <script>
         function calculateTotalDays(index) {
             const checkInInput = document.getElementById(`check-in-${index}`);
             const checkOutInput = document.getElementById(`check-out-${index}`);
             const totalDaysInput = document.getElementById(`total-days-${index}`);
-        
+
             // Get Start Date and End Date from the main form
             const mulaiInput = document.getElementById("mulai");
             const kembaliInput = document.getElementById("kembali");
-        
+
             if (!checkInInput || !checkOutInput || !mulaiInput || !kembaliInput) {
                 return; // Ensure elements are present before proceeding
             }
-        
+
             // Parse the dates
             const checkInDate = new Date(checkInInput.value);
             const checkOutDate = new Date(checkOutInput.value);
             const mulaiDate = new Date(mulaiInput.value);
             const kembaliDate = new Date(kembaliInput.value);
-        
+
             // Validate Check In Date
             if (checkInDate < mulaiDate) {
                 Swal.fire({
@@ -544,7 +655,7 @@
                 totalDaysInput.value = ""; // Clear total days
                 return;
             }
-        
+
             // Ensure Check Out Date is not earlier than Check In Date
             if (checkOutDate < checkInDate) {
                 Swal.fire({
@@ -558,7 +669,7 @@
                 totalDaysInput.value = ""; // Clear total days
                 return;
             }
-        
+
             // Calculate the total days if all validations pass
             if (checkInDate && checkOutDate) {
                 const diffTime = Math.abs(checkOutDate - checkInDate);
@@ -588,21 +699,40 @@
                     const dateReq2 = document.getElementById('date_required_2').value;
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
                     const totalBtMealsElement = document.getElementById('total_bt_meals');
-                    if (totalBtMealsElement) {
-                        const totalBtMeals = totalBtMealsElement.value;
-                    }
+                    const totalBtMeals = totalBtMealsElement ? totalBtMealsElement.value || 0 : 0;
                     const totalBtPenginapan = document.getElementById('total_bt_penginapan').value;
                     const totalBtTransport = document.getElementById('total_bt_transport').value;
                     const totalBtLainnya = document.getElementById('total_bt_lainnya').value;
+                    const totalEnt = document.getElementById('total_ent_detail').value;
                     const group_company = document.getElementById('group_company').value;
                     const caCheckbox = document.getElementById('cashAdvancedCheckbox').checked;
-                    const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
+                    const entCheckbox = document.getElementById('caEntertainCheckbox').checked;
+                    // const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
                     const totalCa = document.getElementById('totalca').value;
 
-                    if (perdiemCheckbox && !dateReq) {
+                    function parseCurrency(value) {
+                        // Hapus tanda titik dan ubah ke angka
+                        return parseFloat(value.replace(/\./g, '')) || 0;
+                    }
+
+                    // Konversi nilai ke angka
+                    const totalBtCaNum = parseCurrency(totalCa);
+                    const totalEntCaNum = parseCurrency(totalEnt);
+
+                    // Hitung total declaration
+                    const totalRequest = totalBtCaNum + totalEntCaNum;
+
+                    // Format angka ke format mata uang (opsional)
+                    function formatCurrency(value) {
+                        return value.toLocaleString('id-ID');
+                    }
+
+                    if (entCheckbox && !dateReq) {
+                        console.log("Ini yg ent");
+
                         Swal.fire({
                             title: "Warning!",
-                            text: "Please select a Date Required.",
+                            text: "Please select a Date CA Withdrawal .",
                             icon: "warning",
                             confirmButtonColor: "#AB2F2B",
                             confirmButtonText: "OK",
@@ -613,7 +743,7 @@
                     if (caCheckbox && !dateReq2) {
                         Swal.fire({
                             title: "Warning!",
-                            text: "Please select a Date Required.",
+                            text: "Please select a Date CA Withdrawal.",
                             icon: "warning",
                             confirmButtonColor: "#AB2F2B",
                             confirmButtonText: "OK",
@@ -621,20 +751,24 @@
                         return;
                     }
                     // Check if CA is checked and all fields are zero
-                    if (caCheckbox && totalBtPenginapan == 0 && totalBtTransport == 0 && totalBtLainnya == 0) {
+                    if (caCheckbox && totalBtPerdiem == 0 && totalBtPenginapan == 0 &&
+                        totalBtTransport == 0 && totalBtLainnya == 0) {
+
                         if (group_company == 'KPN Plantations' || group_company == 'Plantations') {
+                            // Case 1: For KPN Plantations or Plantations, exclude "Meals" from the warning
                             Swal.fire({
                                 title: "Warning!",
-                                text: "Cash Advanced fields (Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                text: "Cash Advanced fields (Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
                                 icon: "warning",
                                 confirmButtonColor: "#AB2F2B",
                                 confirmButtonText: "OK",
                             });
                             return; // Exit without showing the confirmation if all fields are zero
-                        }else if(totalBtMeals == 0){
+                        } else if (totalBtMeals == 0) {
+                            // Case 2: For other group companies, include "Meals" in the warning
                             Swal.fire({
                                 title: "Warning!",
-                                text: "Cash Advanced fields (Meals, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                text: "Cash Advanced fields (Meals, Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
                                 icon: "warning",
                                 confirmButtonColor: "#AB2F2B",
                                 confirmButtonText: "OK",
@@ -642,16 +776,17 @@
                             return; // Exit without showing the confirmation if all fields are zero
                         }
                     }
-                    if (perdiemCheckbox && totalBtPerdiem == 0) {
-                        Swal.fire({
-                            title: "Warning!",
-                            text: "Total Perdiem is 0. Please fill in the values.",
-                            icon: "warning",
-                            confirmButtonColor: "#AB2F2B",
-                            confirmButtonText: "OK",
-                        });
-                        return; // Exit without showing the confirmation if all fields are zero
-                    }
+
+                    // if (perdiemCheckbox && totalBtPerdiem == 0) {
+                    //     Swal.fire({
+                    //         title: "Warning!",
+                    //         text: "Total {{ $allowance }} is 0. Please fill in the values.",
+                    //         icon: "warning",
+                    //         confirmButtonColor: "#AB2F2B",
+                    //         confirmButtonText: "OK",
+                    //     });
+                    //     return; // Exit without showing the confirmation if all fields are zero
+                    // }
 
                     const caChecked = caCheckbox ? 'CA' : '';
                     const ticketChecked = document.getElementById('ticketCheckbox').checked ?
@@ -662,13 +797,29 @@
                         'Taxi Voucher' : '';
 
                     // Create a message with the input values, each on a new line with bold titles
-                    const inputSummary = `
-                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                    let inputSummary = `
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                    `;
+                    if (parseFloat(totalCa) > 0) {
+                        inputSummary += `
                             <tr>
-                                <th style="width: 40%; text-align: left; padding: 8px;">Total Perdiem</th>
+                                <th style="width: 40%; text-align: left; padding: 8px;">Total {{ $allowance }}</th>
                                 <td style="width: 10%; text-align: right; padding: 8px;">:</td>
                                 <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPerdiem}</strong></td>
                             </tr>
+                            `;
+
+                        // Conditionally add the "Total Meals" row
+                        if (group_company != 'KPN Plantations' && group_company != 'Plantations') {
+                            inputSummary += `
+                            <tr>
+                                <th style="width: 40%; text-align: left; padding: 8px;">Total Meals</th>
+                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtMeals}</strong></td>
+                            </tr>`;
+                        }
+
+                        inputSummary += `
                             <tr>
                                 <th style="width: 40%; text-align: left; padding: 8px;">Total Accommodation</th>
                                 <td style="width: 10%; text-align: right; padding: 8px;">:</td>
@@ -684,21 +835,56 @@
                                 <td style="width: 10%; text-align: right; padding: 8px;">:</td>
                                 <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtLainnya}</strong></td>
                             </tr>
+                        `;
+                    }
+
+                    inputSummary += `
                         </table>
                         <hr style="margin: 20px 0;">
                         <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                    `;
+
+                    if (parseFloat(totalCa) > 0) {
+                        inputSummary += `
                             <tr>
                                 <th style="width: 40%; text-align: left; padding: 8px;">Total Cash Advanced</th>
                                 <td style="width: 10%; text-align: right; padding: 8px;">:</td>
                                 <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalCa}</strong></td>
                             </tr>
+                        `;
+                    }
+
+                    if (parseFloat(totalEnt) > 0) {
+                        inputSummary += `
+                            <tr>
+                                <th style="width: 40%; text-align: left; padding: 8px;">Total Entertain</th>
+                                <td style="width: 10%; text-align: right; padding: 8px;">:</td>
+                                <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalEnt}</strong></td>
+                            </tr>
+                        `;
+                    }
+
+                    inputSummary += `
                         </table>
-                                `;
+                    `;
+
+                    if ((parseFloat(totalCa) > 0) && (parseFloat(totalEnt) > 0)) {
+                        inputSummary += `
+                            <hr style="margin: 20px 0;">
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                                <tr>
+                                    <th style="width: 45%; text-align: left; padding: 8px;">Total Request</th>
+                                    <td style="width: 5%; text-align: right; padding: 8px;">:</td>
+                                    <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${formatCurrency(totalRequest)}</strong></td>
+                                </tr>
+                            </table>
+                        `;
+                    }
 
                     // Show SweetAlert confirmation with the input summary
                     Swal.fire({
                         title: "Do you want to submit this request?",
-                        html: `You won't be able to revert this!<br><br>${inputSummary}`, // Use 'html' instead of 'text'
+                        html: `You won't be able to revert this!<br><br>${inputSummary}`, // Use 'html' instead of 'text
                         icon: "warning",
                         showCancelButton: true,
                         confirmButtonColor: "#AB2F2B",
@@ -713,7 +899,8 @@
                             input.name = button.name; // Use the button's name attribute
                             input.value = button.value; // Use the button's value attribute
 
-                            form.appendChild(input); // Append the hidden input to the form
+                            form.appendChild(
+                                input); // Append the hidden input to the form
                             form.submit(); // Submit the form only if confirmed
                         }
                     });
@@ -740,21 +927,22 @@
                     const dateReq2 = document.getElementById('date_required_2').value;
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
                     const totalBtMealsElement = document.getElementById('total_bt_meals');
-                    if (totalBtMealsElement) {
-                        const totalBtMeals = totalBtMealsElement.value;
-                    }
+                    const totalBtMeals = totalBtMealsElement ? totalBtMealsElement.value || 0 : 0;
                     const totalBtPenginapan = document.getElementById('total_bt_penginapan').value;
                     const totalBtTransport = document.getElementById('total_bt_transport').value;
                     const totalBtLainnya = document.getElementById('total_bt_lainnya').value;
                     const group_company = document.getElementById('group_company').value;
                     const caCheckbox = document.getElementById('cashAdvancedCheckbox').checked;
-                    const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
+                    const entCheckbox = document.getElementById('caEntertainCheckbox').checked;
+                    // const perdiemCheckbox = document.getElementById('perdiemCheckbox').checked;
                     const totalCa = document.getElementById('totalca').value;
 
-                    if (perdiemCheckbox && !dateReq) {
+                    if (entCheckbox && !dateReq) {
+                        console.log("Ini yg ent");
+
                         Swal.fire({
                             title: "Warning!",
-                            text: "Please select a Date Required.",
+                            text: "Please select a Date CA Withdrawal .",
                             icon: "warning",
                             confirmButtonColor: "#AB2F2B",
                             confirmButtonText: "OK",
@@ -765,7 +953,7 @@
                     if (caCheckbox && !dateReq2) {
                         Swal.fire({
                             title: "Warning!",
-                            text: "Please select a Date Required.",
+                            text: "Please select a Date CA Withdrawal.",
                             icon: "warning",
                             confirmButtonColor: "#AB2F2B",
                             confirmButtonText: "OK",
@@ -773,20 +961,24 @@
                         return;
                     }
                     // Check if CA is checked and all fields are zero
-                    if (caCheckbox && totalBtPenginapan == 0 && totalBtTransport == 0 && totalBtLainnya == 0) {
+                    if (caCheckbox && totalBtPerdiem == 0 && totalBtPenginapan == 0 &&
+                        totalBtTransport == 0 && totalBtLainnya == 0) {
+
                         if (group_company == 'KPN Plantations' || group_company == 'Plantations') {
+                            // Case 1: For KPN Plantations or Plantations, exclude "Meals" from the warning
                             Swal.fire({
                                 title: "Warning!",
-                                text: "Cash Advanced fields (Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                text: "Cash Advanced fields (Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
                                 icon: "warning",
                                 confirmButtonColor: "#AB2F2B",
                                 confirmButtonText: "OK",
                             });
                             return; // Exit without showing the confirmation if all fields are zero
-                        }else if(totalBtMeals == 0){
+                        } else if (totalBtMeals == 0) {
+                            // Case 2: For other group companies, include "Meals" in the warning
                             Swal.fire({
                                 title: "Warning!",
-                                text: "Cash Advanced fields (Meals, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                text: "Cash Advanced fields (Meals, Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
                                 icon: "warning",
                                 confirmButtonColor: "#AB2F2B",
                                 confirmButtonText: "OK",
@@ -794,16 +986,16 @@
                             return; // Exit without showing the confirmation if all fields are zero
                         }
                     }
-                    if (perdiemCheckbox && totalBtPerdiem == 0) {
-                        Swal.fire({
-                            title: "Warning!",
-                            text: "Total Perdiem is 0. Please fill in the values.",
-                            icon: "warning",
-                            confirmButtonColor: "#AB2F2B",
-                            confirmButtonText: "OK",
-                        });
-                        return; // Exit without showing the confirmation if all fields are zero
-                    }
+                    // if (perdiemCheckbox && totalBtPerdiem == 0) {
+                    //     Swal.fire({
+                    //         title: "Warning!",
+                    //         text: "Total Perdiem is 0. Please fill in the values.",
+                    //         icon: "warning",
+                    //         confirmButtonColor: "#AB2F2B",
+                    //         confirmButtonText: "OK",
+                    //     });
+                    //     return; // Exit without showing the confirmation if all fields are zero
+                    // }
                     const input = document.createElement('input');
                     input.type =
                         'hidden'; // Hidden input so it doesn't show in the form
@@ -853,6 +1045,7 @@
             calculateTotalNominalBTPenginapan();
             calculateTotalNominalBTLainnya();
             calculateTotalNominalBTTotal();
+            calculateTotalNominalBTENTTotal();
         }
 
         function calculateTotalNominalBTTotal() {
@@ -870,9 +1063,21 @@
                 total += parseNumber(input.value);
             });
             document.querySelectorAll('input[name="total_bt_lainnya"]').forEach(input => {
-                    total += parseNumber(input.value);
-                });
+                total += parseNumber(input.value);
+            });
             document.querySelector('input[name="totalca"]').value = formatNumber(total);
+        }
+
+        function calculateTotalNominalBTENTTotal() {
+            let total = 0;
+            document.querySelectorAll('input[name="totalca"]').forEach(input => {
+                total += parseNumber(input.value);
+            });
+            document.querySelectorAll('input[name="total_ent_detail"]').forEach(input => {
+                total += parseNumber(input.value);
+            });
+            document.querySelector('input[name="totalreq"]').value = formatNumber(total);
+            document.querySelector('input[name="totalreq2"]').value = formatNumber(total);
         }
     </script>
     <script>
@@ -981,8 +1186,9 @@
             const day = String(declarationEstimateDate.getDate()).padStart(2, '0');
 
             // Set the value of ca_decla
-            document.getElementById('ca_decla_1').value = `${year}-${month}-${day}`;
+            // document.getElementById('ca_decla_1').value = `${year}-${month}-${day}`;
             document.getElementById('ca_decla_2').value = `${year}-${month}-${day}`;
+            document.getElementById('ca_decla_3').value = `${year}-${month}-${day}`;
         }
 
         // Event listener for when 'kembali' (End Date) changes

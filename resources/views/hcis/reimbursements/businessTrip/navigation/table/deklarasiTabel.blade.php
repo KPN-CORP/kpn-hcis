@@ -32,25 +32,29 @@
                         @if ($n->ca == 'Ya' && isset($caTransactions[$n->no_sppd]))
                             <a class="text-info btn-detail" data-toggle="modal"
                                 data-target="#detailModal" style="cursor: pointer"
-                                data-ca="{{ json_encode([
-                                    'No. CA' => $caTransactions[$n->no_sppd]->no_ca,
-                                    'No. SPPD' => $caTransactions[$n->no_sppd]->no_sppd,
-                                    'Unit' => $caTransactions[$n->no_sppd]->unit,
-                                    'Destination' => $bt_declaration->where('no_sppd', $n->no_sppd)->first()->tujuan,
-                                    'CA Total' => 'Rp ' . number_format($caTransactions[$n->no_sppd]->total_ca, 0, ',', '.'),
-                                    'Total Real' => 'Rp ' . number_format($caTransactions[$n->no_sppd]->total_real, 0, ',', '.'),
-                                    'Total Cost' => 'Rp ' . number_format($caTransactions[$n->no_sppd]->total_cost, 0, ',', '.'),
-                                    'Start' => date('d-M-Y', strtotime($caTransactions[$n->no_sppd]->start_date)),
-                                    'End' => date('d-M-Y', strtotime($caTransactions[$n->no_sppd]->end_date)),
-                                ]) }}"><u>Details</u></a>
+                                data-ca="{{ json_encode($caTransactions->get($n->no_sppd, collect())->map(function ($transaction) {
+                                    return [
+                                        'No. CA' => $transaction->no_ca,
+                                        'No. SPPD' => $transaction->no_sppd,
+                                        'Type' => $transaction->type_ca === 'dns' ? 'Business Trip' : 'Entertain', // Conditional assignment
+                                        'Unit' => $transaction->unit,
+                                        'Destination' => $transaction->destination,
+                                        'CA Total' => 'Rp ' . number_format($transaction->total_ca, 0, ',', '.'),
+                                        'Total Real' => 'Rp ' . number_format($transaction->total_real, 0, ',', '.'),
+                                        'Total Cost' => 'Rp ' . number_format($transaction->total_cost, 0, ',', '.'),
+                                        'Start' => date('d-M-Y', strtotime($transaction->start_date)),
+                                        'End' => date('d-M-Y', strtotime($transaction->end_date)),
+                                    ];
+                                })->values()) }}"
+                                ><u>Details</u></a>
                         @else
                             -
                         @endif
                     </td>
                     <td style="text-align: center; align-content: center">
                         @if ($n->tiket == 'Ya' && isset($tickets[$n->no_sppd]))
-                            <a class="text-info btn-detail" data-toggle="modal"
-                                data-target="#detailModal" style="cursor: pointer"
+                            <a class="text-info btn-detail" data-toggle="modal" data-target="#detailModal"
+                                style="cursor: pointer"
                                 data-tiket="{{ json_encode(
                                     $tickets[$n->no_sppd]->map(function ($ticket) {
                                         return [
@@ -80,13 +84,14 @@
                     </td>
                     <td style="text-align: center; align-content: center">
                         @if ($n->hotel == 'Ya' && isset($hotel[$n->no_sppd]))
-                            <a class="text-info btn-detail" data-toggle="modal"
-                                data-target="#detailModal" style="cursor: pointer"
+                            <a class="text-info btn-detail" data-toggle="modal" data-target="#detailModal"
+                                style="cursor: pointer"
                                 data-hotel="{{ json_encode(
                                     $hotel[$n->no_sppd]->map(function ($hotel) {
                                         return [
                                             'No. Hotel' => $hotel->no_htl,
                                             'No. SPPD' => $hotel->no_sppd,
+                                            'Colleague No. SPPD' => $hotel->no_sppd_htl,
                                             'Unit' => $hotel->unit,
                                             'Hotel Name' => $hotel->nama_htl,
                                             'Location' => $hotel->lokasi_htl,
@@ -105,13 +110,13 @@
                     </td>
                     <td style="text-align: center; align-content: center">
                         @if ($n->taksi == 'Ya' && isset($taksi[$n->no_sppd]))
-                            <a class="text-info btn-detail" data-toggle="modal"
-                                data-target="#detailModal" style="cursor: pointer"
+                            <a class="text-info btn-detail" data-toggle="modal" data-target="#detailModal"
+                                style="cursor: pointer"
                                 data-taksi="{{ json_encode([
                                     'Total Voucher' => $taksi[$n->no_sppd]->no_vt . ' Voucher',
                                     'No. SPPD' => $taksi[$n->no_sppd]->no_sppd,
                                     'Unit' => $taksi[$n->no_sppd]->unit,
-                                    'Nominal' => 'Rp ' . number_format($taksi[$n->no_sppd]->nominal_vt, 0, ',', '.'),
+                                    'Details' => $taksi[$n->no_sppd]->vt_detail,
                                 ]) }}"><u>Details<u></a>
                         @else
                             -

@@ -15,10 +15,16 @@ class RefundNotification extends Mailable
     use Queueable, SerializesModels;
     public $businessTrip;
     public $caDetails;
-    public $newDeclareCa;
+    public $caDeclare;
+    public $entDetails;
+    public $entDeclare;
     public $employeeName;
     public $accNum;
-    public $selisih;
+    public $selisihCa;
+    public $selisihEnt;
+    public $isCa;
+    public $isEnt;
+    public $base64Image;
 
     /**
      * Create a new message instance.
@@ -26,17 +32,29 @@ class RefundNotification extends Mailable
     public function __construct(
         BusinessTrip $businessTrip,
         $caDetails = null,
-        $newDeclareCa = null,
+        $caDeclare = null,
+        $entDetails = null,
+        $entDeclare = null,
         $employeeName = null,
         $accNum = null,
-        $selisih = null,
+        $selisihCa = null,
+        $selisihEnt = null,
+        $isCa = null,
+        $isEnt = null,
+        $base64Image = null,
     ) {
         $this->businessTrip = $businessTrip;
         $this->caDetails = $caDetails;
-        $this->newDeclareCa = $newDeclareCa;
+        $this->caDeclare = $caDeclare;
+        $this->entDetails = $entDetails;
+        $this->entDeclare = $entDeclare;
         $this->employeeName = $employeeName;
         $this->accNum = $accNum;
-        $this->selisih = $selisih;
+        $this->selisihCa = $selisihCa;
+        $this->selisihEnt = $selisihEnt;
+        $this->isCa = $isCa;
+        $this->isEnt = $isEnt;
+        $this->base64Image = $base64Image;
     }
 
     public function build()
@@ -45,10 +63,16 @@ class RefundNotification extends Mailable
             ->with([
                 'businessTrip' => $this->businessTrip,
                 'caDetails' => $this->caDetails,
-                'newDeclareCa' => $this->newDeclareCa,
+                'caDeclare' => $this->caDeclare,
+                'entDetails' => $this->entDetails,
+                'entDeclare' => $this->entDeclare,
                 'employeeName' => $this->employeeName,
                 'accNum' => $this->accNum,
-                'selisih' => $this->selisih,
+                'selisihCa' => $this->selisihCa,
+                'selisihEnt' => $this->selisihEnt,
+                'isCa' => $this->isCa,
+                'isEnt' => $this->isEnt,
+                'base64Image' => $this->base64Image,
             ]);
     }
     public function envelope(): Envelope

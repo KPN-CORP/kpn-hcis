@@ -302,13 +302,16 @@ class MedicalController extends Controller
         $isMarried = Employee::where('employee_id', $employee_id)
             ->where('marital_status', 'Married')
             ->exists();
-        // dd($isMarried);
+
+        $isProbation = Employee::where('employee_id', $employee_id)
+            ->where('employee_type', 'Probation')
+            ->exists();
 
         $hasGlasses = HealthCoverage::where('employee_id', $employee_id)
             ->where('period', $currentYear)
             ->where('medical_type', 'Glasses')
             ->count() >= 1;
-        // dd($isGlasses);
+        // dd($isProbation);
 
         $medicalBalances = HealthPlan::where('employee_id', $employee_id)
             // ->where('period', $currentYear)
@@ -328,7 +331,7 @@ class MedicalController extends Controller
         $parentLink = 'Medical';
         $link = 'Add Medical Coverage Usage';
 
-        return view('hcis.reimbursements.medical.form.medicalForm', compact('diseases', 'medical_type', 'families', 'parentLink', 'link', 'employee_name', 'balanceData', 'hasGlasses', 'isMarried'));
+        return view('hcis.reimbursements.medical.form.medicalForm', compact('diseases', 'medical_type', 'families', 'parentLink', 'link', 'employee_name', 'balanceData', 'hasGlasses', 'isMarried', 'isProbation'));
     }
 
     public function medicalCreate(Request $request)
@@ -1667,6 +1670,7 @@ class MedicalController extends Controller
         $medical = HealthCoverage::orderBy('created_at', 'desc')->get();
         $userRole = auth()->user()->roles->first();
         $roleRestriction = json_decode($userRole->restriction, true);
+        // dd($roleRestriction);
 
         $restrictedWorkAreas = $roleRestriction['work_area_code'] ?? [];
         $restrictedGroupCompanies = $roleRestriction['group_company'] ?? [];

@@ -40,6 +40,7 @@ class Hotel extends Model
         'manager_l1_id',
         'manager_l2_id',
         'contribution_level_code',
+        'no_sppd_htl',
     ];
     protected $table = 'htl_transactions';
 

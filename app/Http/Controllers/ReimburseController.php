@@ -246,7 +246,7 @@ class ReimburseController extends Controller
         $link = 'Report CA';
         $query = CATransaction::with(['employee', 'statusReqEmployee', 'statusSettEmployee', 'statusExtendEmployee'])->orderBy('created_at', 'desc');
         $ca_approvals = ca_approval::with(['employee', 'statusReqEmployee'])
-            ->where('approval_status', '<>', 'Rejected')
+            // ->where('approval_status', '<>', 'Rejected')
             ->orderBy('layer', 'asc') // Mengurutkan berdasarkan layer
             ->get();
 
@@ -2195,6 +2195,7 @@ class ReimburseController extends Controller
             'no_htl' => $noSppdHtl,
             'no_sppd' => $req->bisnis_numb,
             'contribution_level_code' => $req->contribution_level_code,
+            'no_sppd_htl' => '-',
         ];
 
         $namaHtl = [];
@@ -2214,6 +2215,7 @@ class ReimburseController extends Controller
                 $model->manager_l2_id = $managerL2;
                 $model->contribution_level_code = $req->contribution_level_code;
                 $model->no_sppd = $req->bisnis_numb;
+                $model->no_sppd_htl = '-';
                 $model->user_id = $userId;
                 $model->unit = $req->unit;
                 $model->nama_htl = $hotelData['nama_htl'][$key];
@@ -2601,6 +2603,7 @@ class ReimburseController extends Controller
                     'jns_dinas_htl' => $req->jns_dinas_htl,
                     'hotel_only' => 'Y',
                     'contribution_level_code' => $req->contribution_level_code,
+                    'no_sppd_htl' => '-',
                 ];
 
                 if (isset($req->hotel_ids[$index]) && isset($existingHotels[$req->hotel_ids[$index]])) {
@@ -2619,6 +2622,7 @@ class ReimburseController extends Controller
                         'manager_l1_id' => $managerL1,
                         'manager_l2_id' => $managerL2,
                         'contribution_level_code' => $req->contribution_level_code,
+                        'no_sppd_htl' => '-',
                     ]));
                     $processedHotelIds[] = $newHotel->id;  // Keep track of processed hotel IDs
                 }
@@ -2638,7 +2642,7 @@ class ReimburseController extends Controller
             $managerEmail = "eriton.dewa@kpn-corp.com";
             $managerName = Employee::where('employee_id', $managerId)->pluck('fullname')->first();
             $employeeName = Employee::where('id', $userId)->pluck('fullname')->first();
-            
+
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -2710,7 +2714,6 @@ class ReimburseController extends Controller
 
         return redirect('/hotel')->with('success', 'Hotel request updated successfully');
     }
-
 
 
     public function hotelDelete($key)
@@ -3028,7 +3031,7 @@ class ReimburseController extends Controller
             $managerEmail = "eriton.dewa@kpn-corp.com";
             $managerName = Employee::where('employee_id', $managerId)->value('fullname');
             $employeeName = Employee::where('id', $hotel->user_id)->pluck('fullname')->first();
-            
+
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -3163,7 +3166,7 @@ class ReimburseController extends Controller
             $managerEmail = "eriton.dewa@kpn-corp.com";
             $managerName = Employee::where('employee_id', $managerId)->value('fullname');
             $employeeName = Employee::where('id', $hotel->user_id)->pluck('fullname')->first();
-            
+
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -3290,8 +3293,7 @@ class ReimburseController extends Controller
             });
         }
 
-        $transactions = $transactions->select('id', 'no_htl', 'nama_htl', 'lokasi_htl', 'approval_status', 'user_id', 'no_sppd', 'manager_l1_id', 'manager_l2_id')->get();
-        // dd($transactions);
+        $transactions = $transactions->select('id', 'no_htl', 'nama_htl', 'lokasi_htl', 'approval_status', 'user_id', 'no_sppd', 'manager_l1_id', 'manager_l2_id', 'booking_code', 'booking_price')->get();
 
         // Fetch all hotel transactions, removing the user ID filter
         $hotels = Hotel::with('employee', 'hotelApproval')
@@ -4926,7 +4928,7 @@ class ReimburseController extends Controller
             if ($ticket->jns_dinas_tkt == 'Cuti') {
                 // Hitung total pengurangan kuota berdasarkan semua tiket
                 $totalDecrement = 0;
-        
+
                 foreach ($ticketNpTkt as $name) {
                     // Dapatkan type_tkt untuk setiap tiket berdasarkan nama
                     $ticketType = Tiket::where('user_id', $ticket->user_id)
@@ -4934,19 +4936,19 @@ class ReimburseController extends Controller
                         ->where('tkt_only', '=', 'Y')
                         ->where('np_tkt', $name) // Pastikan mengambil type_tkt untuk nama saat ini
                         ->value('type_tkt');
-        
+
                     // Default ke 'One Way' jika type_tkt tidak ditemukan
                     if (!$ticketType) {
                         $ticketType = 'One Way';
                     }
-        
+
                     // Tentukan nilai pengurangan berdasarkan type_tkt
                     $decrementValue = ($ticketType == 'One Way') ? 1 : 2;
-        
+
                     // Tambahkan nilai pengurangan ke total
                     $totalDecrement += $decrementValue;
                 }
-        
+
                 // Kurangi kuota total di HomeTrip berdasarkan employee_id
                 HomeTrip::where('employee_id', $ticketEmployeeId)
                     ->where('period', $currentYear)

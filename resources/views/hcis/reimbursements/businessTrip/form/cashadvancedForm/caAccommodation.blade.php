@@ -96,9 +96,9 @@
     }
 </script>
 
-@if (!empty($detailCA['detail_penginapan']) && $detailCA['detail_penginapan'][0]['start_date'] !== null)
+@if (!empty($caDetail['detail_penginapan']) && $caDetail['detail_penginapan'][0]['start_date'] !== null)
     <div id="form-container-penginapan">
-        @foreach ($detailCA['detail_penginapan'] as $penginapan)
+        @foreach ($caDetail['detail_penginapan'] as $penginapan)
             <div id="form-container-bt-penginapan-{{ $loop->index + 1 }}" class="card-body p-2 mb-3"
                 style="background-color: #f8f8f8">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Accommodation {{ $loop->index + 1 }}</p>
@@ -192,7 +192,7 @@
             </div>
             <input class="form-control bg-light" name="total_bt_penginapan" id="total_bt_penginapan" type="text"
                 min="0"
-                value="{{ number_format(array_sum(array_column($detailCA['detail_penginapan'], 'nominal')), 0, ',', '.') }}"
+                value="{{ number_format(array_sum(array_column($caDetail['detail_penginapan'], 'nominal')), 0, ',', '.') }}"
                 readonly>
         </div>
     </div>
@@ -254,7 +254,8 @@
                             <input class="form-control" name="nominal_bt_penginapan[]" id="nominal_bt_penginapan_1"
                                 type="text" min="0" value="0"
                                 onfocus="this.value = this.value === '0' ? '' : this.value;"
-                                oninput="formatInput(this)" onblur="formatOnBlur(this)">
+                                oninput="formatInput(this)" onblur="formatOnBlur(this)"
+                                placeholder="0">
                         </div>
                     </div>
                 </div>
