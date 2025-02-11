@@ -3293,8 +3293,7 @@ class ReimburseController extends Controller
             });
         }
 
-        $transactions = $transactions->select('id', 'no_htl', 'nama_htl', 'lokasi_htl', 'approval_status', 'user_id', 'no_sppd', 'manager_l1_id', 'manager_l2_id')->get();
-        // dd($transactions);
+        $transactions = $transactions->select('id', 'no_htl', 'nama_htl', 'lokasi_htl', 'approval_status', 'user_id', 'no_sppd', 'manager_l1_id', 'manager_l2_id', 'booking_code', 'booking_price')->get();
 
         // Fetch all hotel transactions, removing the user ID filter
         $hotels = Hotel::with('employee', 'hotelApproval')

@@ -1,14 +1,7 @@
 @extends('layouts_.vertical', ['page_title' => 'Ticket (Admin)'])
 
 @section('css')
-    @vite([
-        'node_modules/select2/dist/css/select2.min.css',
-        'node_modules/daterangepicker/daterangepicker.css',
-        'node_modules/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.css',
-        'node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css',
-        'node_modules/bootstrap-timepicker/css/bootstrap-timepicker.min.css',
-        'node_modules/flatpickr/dist/flatpickr.min.css'
-    ])
+    @vite(['node_modules/select2/dist/css/select2.min.css', 'node_modules/daterangepicker/daterangepicker.css', 'node_modules/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.css', 'node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css', 'node_modules/bootstrap-timepicker/css/bootstrap-timepicker.min.css', 'node_modules/flatpickr/dist/flatpickr.min.css'])
     <style>
         th {
             color: white !important;
@@ -151,9 +144,12 @@
                             <div>
                                 <h3 class="card-title mb-2">{{ $link }}</h3>
                                 <div class="text-muted small">
-                                    <span class="me-3 fs-5"><i class="ri-user-line me-1"></i>{{ Auth::user()->name }}</span>
-                                    <span class="me-3 fs-5"><i class="ri-calendar-line me-1"></i>{{ date('l, d F Y') }}</span>
-                                    <span class="me-3"><i class="ri-time-line me-1"></i><span id="currentTime"></span> WIB</span>
+                                    <span class="me-3 fs-5"><i
+                                            class="ri-user-line me-1"></i>{{ Auth::user()->name }}</span>
+                                    <span class="me-3 fs-5"><i
+                                            class="ri-calendar-line me-1"></i>{{ date('l, d F Y') }}</span>
+                                    <span class="me-3"><i class="ri-time-line me-1"></i><span id="currentTime"></span>
+                                        WIB</span>
                                 </div>
                             </div>
                             <div class="input-group" style="width: 30%;">
@@ -263,27 +259,25 @@
                                             </td>
                                             <td class="text-center">
 
-                                                <button 
-                                                    type="button" 
-                                                    class="btn btn-sm btn-outline-success rounded-pill" 
-                                                    data-bs-toggle="modal" 
-                                                    data-bs-target="#approvalModal"
-                                                    data-id="{{ $transaction->id }}" 
-                                                    data-no="{{ $transaction->no_tkt }}" 
+                                                <button type="button" class="btn btn-sm btn-outline-success rounded-pill"
+                                                    data-bs-toggle="modal" data-bs-target="#approvalModal"
+                                                    data-id="{{ $transaction->id }}"
+                                                    data-no="{{ $transaction->no_tkt }}"
                                                     data-sppd="{{ $transaction->no_sppd }}"
                                                     data-status="{{ $transaction->approval_status }}"
-                                                    data-manager-l1="{{ $transaction->manager_l1_name }}" 
+                                                    data-manager-l1="{{ $transaction->manager_l1_name }}"
                                                     data-manager-l2="{{ $transaction->manager_l2_name }}">
                                                     <i class="bi bi-list-check"></i>
                                                 </button>
                                             </td>
                                             <td class="text-center">
 
-                                                <button type="button" class="btn btn-sm btn-outline-success rounded-pill" data-bs-toggle="modal" data-bs-target="#bookingModal"
-                                                        data-no-id="{{ $transaction->id }}"
-                                                        data-no-tkt="{{ $transaction->no_tkt }}"
-                                                        data-booking-code="{{ $transaction->booking_code }}"
-                                                        data-tkt-price="{{ $transaction->tkt_price }}">
+                                                <button type="button" class="btn btn-sm btn-outline-success rounded-pill"
+                                                    data-bs-toggle="modal" data-bs-target="#bookingModal"
+                                                    data-no-id="{{ $transaction->id }}"
+                                                    data-no-tkt="{{ $transaction->no_tkt }}"
+                                                    data-booking-code="{{ $transaction->booking_code }}"
+                                                    data-tkt-price="{{ $transaction->tkt_price }}">
 
                                                     <i class="bi bi-ticket-perforated"></i>
                                                 </button>
@@ -337,6 +331,24 @@
 @endsection
 @push('scripts')
     <script>
+        $('#bookingModal').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget);
+            var noId = button.data('no-id');
+            var noTkt = button.data('no-tkt');
+            var bookingCode = button.data('booking-code');
+            var tktPrice = button.data('tkt-price');
+
+            // Update the modal's input fields
+            var modal = $(this);
+            modal.find('#book_no_id').val(noId);
+            modal.find('#booking_code').val(bookingCode);
+            modal.find('#no_tkt').val(noTkt);
+            modal.find('#tkt_price').val(tktPrice);
+
+            modal.find('#book_no_htl').text('Ticket No: ' + noTkt); // Dynamically change the header
+        });
+
+
         document.addEventListener('DOMContentLoaded', function() {
             const rejectModal = new bootstrap.Modal(document.getElementById('rejectReasonModal'), {
                 keyboard: true,
@@ -555,7 +567,7 @@
 
         function updateDateTime() {
             const now = new Date();
-            
+
             // Format time
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');

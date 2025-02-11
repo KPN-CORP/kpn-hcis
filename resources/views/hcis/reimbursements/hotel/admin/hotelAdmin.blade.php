@@ -244,9 +244,12 @@
                                                         class="btn btn-sm btn-outline-success rounded-pill"
                                                         data-bs-toggle="modal" data-bs-target="#bookingModal"
                                                         data-no-id="{{ $transaction->id }}"
-                                                        data-no-htl="{{ $transaction->no_htl }}">
+                                                        data-no-htl="{{ $transaction->no_htl }}"
+                                                        data-booking-code="{{ $transaction->booking_code }}"
+                                                        data-booking-price="{{ $transaction->booking_price }}">
                                                         <i class="bi bi-ticket-perforated"></i>
                                                     </button>
+
                                                     <a href="{{ route('hotel.export', ['id' => $transaction->id]) }}"
                                                         class="btn btn-sm btn-outline-info rounded-pill" target="_blank">
                                                         <i class="bi bi-download"></i>
@@ -283,6 +286,25 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         <script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
         <script>
+            // When the modal is shown, update the modal inputs with the correct transaction data
+            $('#bookingModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var noId = button.data('no-id');
+                var noHtl = button.data('no-htl');
+                var bookingCode = button.data('booking-code');
+                var bookingPrice = button.data('booking-price');
+
+                // Update the modal's input fields
+                var modal = $(this);
+                modal.find('#book_no_id').val(noId);
+                modal.find('#no_htl').val(noHtl);
+                modal.find('#booking_code').val(bookingCode);
+                modal.find('#booking_price').val(bookingPrice);
+
+                modal.find('#book_no_htl').text('Hotel No: ' + noHtl); // Dynamically change the header (if needed)
+            });
+
+
             document.addEventListener('DOMContentLoaded', function() {
                 const rejectModal = new bootstrap.Modal(document.getElementById('rejectReasonModal'), {
                     keyboard: true,
