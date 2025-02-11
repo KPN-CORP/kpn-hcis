@@ -9,7 +9,6 @@
 <body>
     <h2>New Business Trip Declaration</h2>
     <p>Dear Sir/Madam: <b>{{ $managerName }}</b></p><br>
-    <p><b>{{ $employeeName }}</b> {{ $textNotification }}</p>
     <table>
         <tr>
             <td><b>No SPPD</b></td>
@@ -77,7 +76,7 @@
         </tr>
     </table>
     @if ($businessTrip->ca === 'Ya')
-        @if ($isCa == true)
+        @if ($isCa)
             <table style="border-collapse: collapse; width: 60%; margin-top: 8px; font-size: 12px;">
                 <tr>
                     <th colspan="5"
@@ -133,7 +132,7 @@
                 </tr>
             </table>
         @endif
-        @if ($isEnt == true)
+        @if ($isEnt)
             <table style="border-collapse: collapse; width: 50%; margin-top: 8px; font-size: 12px;">
                 <tr>
                     <th colspan="5"

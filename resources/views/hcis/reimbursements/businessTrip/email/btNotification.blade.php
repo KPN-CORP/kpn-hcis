@@ -127,18 +127,23 @@
         </table>
     @endif
     @if ($isEnt)
-        <table>
+        <table style="border-collapse: collapse; width: 40%; margin-top: 8px; font-size: 10px;">
             <tr>
                 <th colspan="3"
                     style="border: 1px solid #ddd; padding: 4px; background-color: #ab2f2b; color: #ffffff; font-size: 10px; font-weight: bold; white-space: nowrap; text-align: center;">
                     <b>Entertain Details :</b>
                 </th>
             </tr>
+            <tr style="font-weight: bold; background-color: #f5f5f5;">
+                <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Category</td>
+                <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Total Days</td>
+                <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Amount</td>
+            </tr>
             <tr>
                 <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">Entertain</td>
-                <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">-</td>
+                <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;"> - </td>
                 <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">
-                    Rp. {{ number_format($entDetails['total_amount_others'] ?? 0, 0, ',', '.') }}
+                    Rp. {{ number_format($entDetails['total_amount_ent'] ?? 0, 0, ',', '.') }}
                 </td>
             </tr>
         </table>
