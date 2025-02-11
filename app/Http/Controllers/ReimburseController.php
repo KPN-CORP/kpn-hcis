@@ -568,7 +568,7 @@ class ReimburseController extends Controller
         $noSppdListENT = CATransaction::whereNotNull('no_sppd')
             ->where('user_id', $userId)
             ->where('no_sppd', '!=', '')
-            ->where('type_ca', 'dns')
+            ->where('type_ca', 'entr')
             ->pluck('no_sppd');
         $no_sppds = BusinessTrip::where('user_id', $userId)
             ->where('status', '!=', 'Verified')

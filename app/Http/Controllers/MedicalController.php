@@ -153,8 +153,19 @@ class MedicalController extends Controller
                 }
             } elseif ($yearsWorked == 0) {
                 $startDate = date_create($employee->date_of_joining);
-                $bulan_awal = date_format($startDate, "m");
-                $bulan_akhir = date('m');
+                
+                $tanggal = date_format($startDate, "d");
+                if ($tanggal > 15) {
+                    $bulan_awal = date_format($startDate, "m") + 1; // Bulan setelahnya
+                    // Jika bulan menjadi 13 (Desember ke Januari), reset ke 01
+                    if ($bulan_awal == 13) {
+                        $bulan_awal = '1';
+                    } 
+                } else {
+                    $bulan_awal = date_format($startDate, "m"); // Bulan tetap
+                }
+
+                $bulan_akhir = 12;
                 $bulan = ($bulan_akhir - $bulan_awal) + 1;
 
                 foreach ($plafond_list as $plafond_lists) {

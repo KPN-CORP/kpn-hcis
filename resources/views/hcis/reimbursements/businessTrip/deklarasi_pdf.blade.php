@@ -970,7 +970,7 @@
                     <tr class="total-row">
                         <td colspan="4" class="head-row">Total</td>
                         <td>
-                            {{ array_sum(array_column($declareCA['detail_penginapan'], 'total_days')) }} Hari
+                            {{ array_sum(array_column($declareCA['detail_penginapan'], 'total_days')) }} Night
                         </td>
                         <td>
                             <span style="float: left; margin-left:4px">Rp.</span>

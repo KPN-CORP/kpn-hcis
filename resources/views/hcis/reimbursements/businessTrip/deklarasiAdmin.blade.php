@@ -205,7 +205,7 @@
                                                 @include('hcis.reimbursements.businessTrip.declaration-admin.btEntDeclarationAdmin')
                                             </div>
                                         </div>
-                                        
+
                                         {{-- CHANGE REASON --}}
                                         @php
                                             $caNote = $dnsData->ca_note ?? $entrData->ca_note ?? '';
@@ -246,7 +246,7 @@
                                         <div class="col-md-12 mb-2 mt-2">
                                             <label for="prove_declare" class="form-label">Uploaded Proof</label>
                                             @if ((isset($dnsData->prove_declare) && $dnsData->prove_declare) || (isset($entrData->prove_declare) && $entrData->prove_declare))
-                                                <input type="hidden" name="existing_prove_declare" id="existing-prove-declare" value="{{ $dnsData->prove_declare ?? $entrData->prove_declare }}">                                     
+                                                <input type="hidden" name="existing_prove_declare" id="existing-prove-declare" value="{{ $dnsData->prove_declare ?? $entrData->prove_declare }}">
                                                 <input type="hidden" name="removed_prove_declare" id="removed-prove-declare" value="[]">
 
                                                 <!-- Preview untuk file lama -->
@@ -261,7 +261,7 @@
                                                         @php
                                                             // Ambil data dari dnsData atau entrData
                                                             $proveDeclare = $dnsData->prove_declare ?? $entrData->prove_declare;
-                                                
+
                                                             // Cek apakah data adalah JSON atau string biasa
                                                             $decodedData = json_decode($proveDeclare, true);
                                                             $existingFiles = is_array($decodedData) ? $decodedData : (!empty($proveDeclare) ? [$proveDeclare] : []);
@@ -1004,7 +1004,7 @@
                                     <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${formatCurrency(totalDeclaration)}</strong></td>
                                 </tr>
                             </table>
-                        `;   
+                        `;
                     }
 
                     // Show SweetAlert confirmation with the input summary

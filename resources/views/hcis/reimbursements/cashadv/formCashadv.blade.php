@@ -154,7 +154,7 @@
                                 <select class="form-control select2" id="bisnis_numb_dns" name="bisnis_numb_dns">
                                     <option value="">Select</option>
                                     @foreach ($no_sppds as $no_sppd)
-                                        @if (!$noSppdListDNS->contains($no_sppd->no_sppd)) <!-- Hanya tampilkan jika tidak ada di $noSppdListENT -->
+                                        @if (!$noSppdListENT->contains($no_sppd->no_sppd)) <!-- Hanya tampilkan jika tidak ada di $noSppdListENT -->
                                             <option value="{{ $no_sppd->no_sppd }}">
                                                 {{ $no_sppd->no_sppd }}
                                             </option>

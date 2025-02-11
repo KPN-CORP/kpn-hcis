@@ -99,7 +99,7 @@ class MedicalExport implements FromCollection, WithHeadings, WithStyles, WithEve
             $employeeCoverages = $healthCoverages->where('employee_id', $employee->employee_id);
 
             foreach ($employeeCoverages as $coverage) {
-                // if ($coverage->status == 'Done') {
+                if ($coverage->status == 'Done' || $coverage->status == 'Pending') {
                     $combinedData[] = [
                         'number' => count($combinedData) + 1,
                         'NoMed' => $coverage->no_medic,

@@ -77,7 +77,7 @@ class Hotel extends Model
     }
     public function businessTrip()
     {
-        return $this->belongsTo(BusinessTrip::class, 'user_id', 'user_id');
+        return $this->belongsTo(BusinessTrip::class, 'no_sppd', 'no_sppd');
     }
     public function getManager1FullnameAttribute()
     {

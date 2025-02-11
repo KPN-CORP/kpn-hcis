@@ -350,7 +350,9 @@
                 '#otherTable',
                 '#otherTableDec',
                 '#penginapanTable',
-                '#penginapanTableDec'
+                '#penginapanTableDec',
+                '#mealsTable',
+                '#mealsTableDec'
             ];
 
             // Loop through each table ID
