@@ -98,11 +98,11 @@ class ImportHealthCoverage implements ToModel
             }
             $formattedDate = $date->format('Y-m-d');
         }
-
+        $contribution = Employee::where('employee_id', $row[2])->pluck('contribution_level_code')->first();
         $healthCoverage = new HealthCoverage([
             'usage_id' => Str::uuid(),
             'employee_id' => $row[2],
-            'contribution_level_code' => $row[3],
+            'contribution_level_code' => $contribution,
             'no_medic' => $newNoMedic,
             'no_invoice' => $row[4],
             'hospital_name' => $row[5],

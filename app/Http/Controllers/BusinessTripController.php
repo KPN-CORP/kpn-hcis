@@ -1471,7 +1471,7 @@ class BusinessTripController extends Controller
                 ->leftJoin('designations as dsg2', 'dsg2.department_code', '=', DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(dsg.department_level2, '(', -1), ')', 1)"))
                 ->leftJoin('employees as emp', 'emp.designation_code', '=', 'dsg2.job_code')
                 ->where('employees.designation_code', '=', $employee->designation_code)
-                ->where('dsg2.director_flag', '=', 'F')
+                ->where('dsg2.director_flag', '=', 'T')
                 ->get();
 
             $director_id = "";
@@ -2236,7 +2236,7 @@ class BusinessTripController extends Controller
                 'link' => $link,
                 'isAllowed' => $isAllowed,
                 'allowance' => $allowance,
-                'group_company' => $group_company,
+                'group_company' => $employee_data->group_company,
             ]
         );
     }
@@ -2248,13 +2248,13 @@ class BusinessTripController extends Controller
         $bt->id = (string) Str::uuid();
 
         // Fetch employee data using NIK
-        $employee_data = null;
-        if ($request->has('noktp_tkt') && !empty($request->noktp_tkt[0])) {
-            $employee_data = Employee::where('ktp', $request->noktp_tkt[0])->first();
-            if (!$employee_data) {
-                return redirect()->back()->with('error', 'NIK not found');
-            }
-        }
+        // $employee_data = null;
+        // if ($request->has('noktp_tkt') && !empty($request->noktp_tkt[0])) {
+        //     $employee_data = Employee::where('ktp', $request->noktp_tkt[0])->first();
+        //     if (!$employee_data) {
+        //         return redirect()->back()->with('error', 'NIK not found');
+        //     }
+        // }
 
         // Check if "Others" is selected in the "tujuan" dropdown
         if ($request->tujuan === 'Others' && !empty($request->others_location)) {
@@ -2403,9 +2403,9 @@ class BusinessTripController extends Controller
 
             // $jml_ktp = count($request->noktp_tkt);
 
-            foreach ($ticketData['noktp_tkt'] as $key => $value) {
+            foreach ($ticketData['dari_tkt'] as $key => $value) {
                 if (!empty($value)) {
-                    $employee_data = Employee::where('ktp', $value)->first();
+                    // $employee_data = Employee::where('ktp', $value)->first();
 
                     $tiket = new Tiket();
                     $tiket->id = (string) Str::uuid();
@@ -2413,10 +2413,10 @@ class BusinessTripController extends Controller
                     $tiket->no_sppd = $noSppd;
                     $tiket->user_id = $userId;
                     $tiket->unit = $request->divisi;
-                    $tiket->jk_tkt = $employee_data ? $employee_data->gender : null;
-                    $tiket->np_tkt = $employee_data ? $employee_data->fullname : null;
-                    $tiket->noktp_tkt = $value;
-                    $tiket->tlp_tkt = $employee_data ? $employee_data->personal_mobile_number : null;
+                    $tiket->jk_tkt = $employee ? $employee->gender : null;
+                    $tiket->np_tkt = $employee ? $employee->fullname : null;
+                    $tiket->noktp_tkt = $ticketData['noktp_tkt'][$key] ?? null;
+                    $tiket->tlp_tkt = $employee ? $employee->personal_mobile_number : null;
 
                     // Handle each field using the index from $key
                     $tiket->dari_tkt = $ticketData['dari_tkt'][$key] ?? null;
@@ -2621,7 +2621,7 @@ class BusinessTripController extends Controller
                     ->leftJoin('designations as dsg2', 'dsg2.department_code', '=', DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(dsg.department_level2, '(', -1), ')', 1)"))
                     ->leftJoin('employees as emp', 'emp.designation_code', '=', 'dsg2.job_code')
                     ->where('employees.designation_code', '=', $employee->designation_code)
-                    ->where('dsg2.director_flag', '=', 'F')
+                    ->where('dsg2.director_flag', '=', 'T')
                     ->get();
 
                 $director_id = "";
@@ -2998,7 +2998,7 @@ class BusinessTripController extends Controller
         }
 
         if (!empty($permissionCompanies)) {
-            $query->whereIn('contribution_level_code', $permissionCompanies);
+            $query->whereIn('bb_perusahaan', $permissionCompanies);
         }
 
         if (!empty($permissionGroupCompanies)) {
@@ -4672,7 +4672,7 @@ class BusinessTripController extends Controller
             } else {
                 return redirect()->back()->with('error', 'Unauthorized action.');
             }
-            if ($businessTrip->ca == 'Ya') {
+            if ($businessTrip->ca == 'Ya' || $businessTrip->ca == 'Tidak') {
                 $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
                 if ($caTransaction && $caTransaction->caonly != 'Y') {
                     // Update rejection info for the current layer
@@ -4765,7 +4765,7 @@ class BusinessTripController extends Controller
                 }
             }
             // Handle CA approval for L1
-            if ($businessTrip->ca == 'Ya') {
+            if ($businessTrip->ca == 'Ya' || $businessTrip->ca == 'Tidak') {
                 $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
                 if ($caTransaction) {
                     // Update CA approval status for L1
@@ -4798,7 +4798,7 @@ class BusinessTripController extends Controller
             $layer = 2;
 
             // Handle CA approval for L2
-            if ($businessTrip->ca == 'Ya') {
+            if ($businessTrip->ca == 'Ya' || $businessTrip->ca == 'Tidak') {
                 $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->first();
                 if ($caTransaction) {
                     // Update CA approval status for L2
@@ -4806,7 +4806,7 @@ class BusinessTripController extends Controller
                         ->where('employee_id', $employeeId)
                         ->where('layer', $layer)
                         ->where('approval_status', '!=', 'Rejected')  // Only update if status isn't "Declaration Rejected"
-                        ->updateOrCreate(
+                        ->update(
                             ['ca_id' => $caTransaction->id, 'employee_id' => $employeeId, 'layer' => $layer],
                             ['approval_status' => 'Approved', 'approved_at' => now()]
                         );

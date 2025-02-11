@@ -251,7 +251,7 @@
                     <span style="float: right;">{{ number_format(array_sum(array_column($declareCA['detail_perdiem'], 'nominal')), 0, ',', '.') }}</span>  
                 </td>
             </tr>
-            @if (isset($detailCA['detail_meals']) && !in_array($transactions->employee->group_company, ['KPN Plantations', 'Plantations']))
+            @if ((isset($detailCA['detail_meals']) || isset($declareCA['detail_meals'])) && !in_array($transactions->employee->group_company, ['KPN Plantations', 'Plantations']))
             <tr>
                 <td>Meals</td>
                 <td>
@@ -670,7 +670,7 @@
                     </tr>
                 </table>
             @endif
-            @if (isset($detailCA['detail_meals']) && count($declareCA['detail_meals']) > 0 && !empty($declareCA['detail_meals'][0]['keterangan']))
+            @if (isset($declareCA['detail_meals']))
                 <table class="table-approve">
                     <tr>
                         <th colspan="3"><b>Meals Plan Declaration :</b></th>
@@ -791,7 +791,7 @@
                             <td>{{ \Carbon\Carbon::parse($penginapan['end_date'])->format('d-M-y') }}</td>
                             <td>{{ $penginapan['hotel_name'] }}</td>
                             <td>{{ $penginapan['company_code'] }}</td>
-                            <td>{{ $penginapan['total_days'] }} Hari</td>
+                            <td>{{ $penginapan['total_days'] }} Night</td>
                             <td>  
                                 <span style="float: left; margin-left:4px">Rp.</span>  
                                 <span style="float: right;">{{ number_format($penginapan['nominal'], 0, ',', '.') }}</span>  
@@ -801,7 +801,7 @@
                     <tr class="total-row">
                         <td colspan="4" class="head-row">Total</td>
                         <td>
-                            {{ array_sum(array_column($detailCA['detail_penginapan'], 'total_days')) }} Hari
+                            {{ array_sum(array_column($detailCA['detail_penginapan'], 'total_days')) }} Night
                         </td>
                         <td>  
                             <span style="float: left; margin-left:4px">Rp.</span>  
@@ -831,7 +831,7 @@
                             <td>{{ \Carbon\Carbon::parse($penginapan_dec['end_date'])->format('d-M-y') }}</td>
                             <td>{{ $penginapan_dec['hotel_name'] }}</td>
                             <td>{{ $penginapan_dec['company_code'] }}</td>
-                            <td>{{ $penginapan_dec['total_days'] }} Hari</td>
+                            <td>{{ $penginapan_dec['total_days'] }} Night</td>
                             <td>  
                                 <span style="float: left; margin-left:4px">Rp.</span>  
                                 <span style="float: right;">{{ number_format($penginapan_dec['nominal'], 0, ',', '.') }}</span>  
@@ -841,7 +841,7 @@
                     <tr class="total-row">
                         <td colspan="4" class="head-row">Total</td>
                         <td>
-                            {{ array_sum(array_column($declareCA['detail_penginapan'], 'total_days')) }} Hari
+                            {{ array_sum(array_column($declareCA['detail_penginapan'], 'total_days')) }} Night
                         </td>
                         <td>  
                             <span style="float: left; margin-left:4px">Rp.</span>  

@@ -651,9 +651,10 @@
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
                     
                     const totalBtMealsElement = document.getElementById('total_bt_meals');
-                    if (totalBtMealsElement) {
-                        const totalBtMeals = totalBtMealsElement.value;
-                    }
+                    // if (totalBtMealsElement) {
+                    //     const totalBtMeals = totalBtMealsElement.value;
+                    // }
+                    const totalBtMeals = totalBtMealsElement ? totalBtMealsElement.value || 0 : 0;
                     const totalBtPenginapan = document.getElementById('total_bt_penginapan').value;
                     const totalBtTransport = document.getElementById('total_bt_transport').value;
                     const totalBtLainnya = document.getElementById('total_bt_lainnya').value;
@@ -684,7 +685,7 @@
                         return;
                     }
                     // Check if CA is checked and all fields are zero
-                    if (caCheckbox && totalBtPenginapan == 0 && totalBtTransport == 0 && totalBtLainnya == 0) {
+                    if (caCheckbox && totalBtPerdiem == 0 && totalBtPenginapan == 0 && totalBtTransport == 0 && totalBtLainnya == 0) {
                         if (group_company == 'KPN Plantations' || group_company == 'Plantations') {
                             Swal.fire({
                                 title: "Warning!",
@@ -705,16 +706,16 @@
                             return; // Exit without showing the confirmation if all fields are zero
                         }
                     }
-                    if (perdiemCheckbox && totalBtPerdiem == 0) {
-                        Swal.fire({
-                            title: "Warning!",
-                            text: "Total {{ $allowance }} is 0. Please fill in the values.",
-                            icon: "warning",
-                            confirmButtonColor: "#AB2F2B",
-                            confirmButtonText: "OK",
-                        });
-                        return; // Exit without showing the confirmation if all fields are zero
-                    }
+                    // if (perdiemCheckbox && totalBtPerdiem == 0) {
+                    //     Swal.fire({
+                    //         title: "Warning!",
+                    //         text: "Total {{ $allowance }} is 0. Please fill in the values.",
+                    //         icon: "warning",
+                    //         confirmButtonColor: "#AB2F2B",
+                    //         confirmButtonText: "OK",
+                    //     });
+                    //     return; // Exit without showing the confirmation if all fields are zero
+                    // }
                     const input = document.createElement('input');
                     input.type =
                         'hidden'; // Hidden input so it doesn't show in the form

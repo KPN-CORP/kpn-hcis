@@ -101,7 +101,7 @@
                                     <tr>
                                         <th class="label" style="border: none;">Total Date</th>
                                         <td class="colon" style="border: none;">:</td>
-                                        <td class="value" style="border: none;">{{ $transactions->total_days }} Days</td>
+                                        <td class="value" style="border: none;">{{ $transactions->total_days + 1 }} Days</td>
                                     </tr>
                                     <tr>
                                         <th class="label" style="border: none;">Date CA Required</th>
@@ -151,11 +151,98 @@
                                 const initialDetailCA = @json($declareCA);
                             </script>
                             <br>
-                            <div class="row" id="ca_bt" style="display: none;">
+                            <div class="row" id="ca_bt">
                                 @if ($transactions->type_ca == 'dns')
                                     <div class="col-md-12">
                                         <div class="table-responsive-sm">
+                                            @if($transactions->employee->group_company != 'Plantations')
                                             <div class="row mb-3">
+                                                
+                                                <div class="col-md-6">
+                                                    <div class="text-bg-primary fw-bold p-1 text-center" style="margin-bottom:-20px">Meals :</div>
+                                                    <div class="table-responsive">
+                                                        <table class="table table-hover table-sm nowrap" id="mealsTable" width="100%" cellspacing="0">
+                                                            <thead class="thead-light">
+                                                                <tr style="text-align-last: center;">
+                                                                    <th>No</th>
+                                                                    <th>Date</th>
+                                                                    <th>Information</th>
+                                                                    <th>Amount</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <?php $totalLainnya = 0; $totalDays = 0; ?>
+                                                                @if(isset($detailCA['detail_meals']))
+                                                                @foreach ($detailCA['detail_meals'] as $lainnya)
+                                                                    <tr style="text-align-last: center;">
+                                                                        <td>{{ $loop->index + 1 }}</td>
+                                                                        <td>{{ \Carbon\Carbon::parse($lainnya['tanggal'])->format('d-M-y') }}</td>
+                                                                        <td>{{$lainnya['keterangan']}}</td>
+                                                                        <td style="text-align-last: right;">Rp. {{ number_format($lainnya['nominal'], 0, ',', '.') }}</td>
+                                                                    </tr>
+                                                                    <?php
+                                                                        $totalLainnya += $lainnya['nominal'];
+                                                                    ?>
+                                                                @endforeach
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="3" class="text-right">Total</td>
+                                                                        <td style="text-align: right"> Rp. {{ number_format($totalLainnya, 0, ',', '.') }} </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                @else
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="4" class="text-right">No data available</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                @endif
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="col-md-6">
+                                                    <div class="text-bg-primary fw-bold p-1 text-center" style="margin-bottom:-20px">Meals Declaration :</div>
+                                                    <div class="table-responsive">
+                                                        <table class="table table-hover table-sm nowrap" id="mealsTableDec" width="100%" cellspacing="0">
+                                                            <thead class="thead-light">
+                                                                <tr style="text-align-last: center;">
+                                                                    <th>No</th>
+                                                                    <th>Date</th>
+                                                                    <th>Information</th>
+                                                                    <th>Amount</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <?php $totalLainnya = 0; $totalDays = 0; ?>
+                                                                @foreach ($declareCA['detail_meals'] as $lainnya)
+                                                                    <tr style="text-align-last: center;">
+                                                                        <td>{{ $loop->index + 1 }}</td>
+                                                                        <td>{{ \Carbon\Carbon::parse($lainnya['tanggal'])->format('d-M-y') }}</td>
+                                                                        <td>{{$lainnya['keterangan']}}</td>
+                                                                        <td style="text-align-last: right;">Rp. {{ number_format($lainnya['nominal'], 0, ',', '.') }}</td>
+                                                                    </tr>
+                                                                    <?php
+                                                                        $totalLainnya += $lainnya['nominal'];
+                                                                    ?>
+                                                                @endforeach
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="3" class="text-right">Total</td>
+                                                                        <td style="text-align: right"> Rp. {{ number_format($totalLainnya, 0, ',', '.') }} </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @endif
+
+
+                                            <div class="row mb-3">
+
                                                 <div class="col-md-6">
                                                     <div class="text-bg-primary fw-bold p-1 text-center" style="margin-bottom:-20px">Perdiem :</div>
                                                     <div class="table-responsive">
@@ -173,6 +260,7 @@
                                                             </thead>
                                                             <tbody>
                                                                 <?php $totalPerdiem = 0; $totalDays = 0; ?>
+                                                                @if(isset($detailCA['detail_perdiem']))
                                                                 @foreach ($detailCA['detail_perdiem'] as $perdiem)
                                                                     <tr class="text-center">
                                                                         <td class="text-center">{{ $loop->index + 1 }}</td>
@@ -201,10 +289,18 @@
                                                                         <td style="text-align: right"> Rp. {{ number_format($totalPerdiem, 0, ',', '.') }} </td>
                                                                     </tr>
                                                                 </tbody>
+                                                                @else
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="7" class="text-right">No data available</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                @endif
                                                             </tbody>
                                                         </table>
                                                     </div>
                                                 </div>
+                                                
                                                 <div class="col-md-6">
                                                     <div class="text-bg-primary fw-bold p-1 text-center" style="margin-bottom:-20px">Perdiem Declaration :</div>
                                                     <div class="table-responsive">
@@ -256,6 +352,7 @@
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
+                                                
                                                 <div class="col-md-6">
                                                     <div class="text-bg-primary fw-bold p-1 text-center" style="margin-bottom:-20px">Transport :</div>
                                                     <div class="table-responsive">
@@ -271,6 +368,7 @@
                                                             </thead>
                                                             <tbody>
                                                                 <?php $totalTransport = 0; $totalDays = 0; ?>
+                                                                @if(isset($detailCA['detail_transport']))
                                                                 @foreach ($detailCA['detail_transport'] as $transport)
                                                                     <tr class="text-center">
                                                                         <td class="text-center">{{ $loop->index + 1 }}</td>
@@ -291,10 +389,18 @@
                                                                         <td style="text-align: right"> Rp. {{ number_format($totalTransport, 0, ',', '.') }} </td>
                                                                     </tr>
                                                                 </tbody>
+                                                                @else
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="5" class="text-right">No data available</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                @endif
                                                             </tbody>
                                                         </table>
                                                     </div>
                                                 </div>
+                                                
                                                 <div class="col-md-6">
                                                     <div class="text-bg-primary fw-bold p-1 text-center" style="margin-bottom:-20px">Transport Declaration :</div>
                                                     <div class="table-responsive">
@@ -336,6 +442,7 @@
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
+                                                
                                                 <div class="col-md-6">
                                                     <div class="text-bg-primary fw-bold p-1 text-center" style="margin-bottom:-20px">Accommodation :</div>
                                                     <div class="table-responsive">
@@ -353,6 +460,7 @@
                                                             </thead>
                                                             <tbody>
                                                                 <?php $totalPenginapan = 0; $totalDays = 0; ?>
+                                                                @if(isset($detailCA['detail_penginapan']))
                                                                 @foreach ($detailCA['detail_penginapan'] as $penginapan)
                                                                     <tr style="text-align-last: center;">
                                                                         <td>{{ $loop->index + 1 }}</td>
@@ -375,10 +483,18 @@
                                                                         <td class="text-center"> Rp. {{ number_format($totalPenginapan, 0, ',', '.') }} </td>
                                                                     </tr>
                                                                 </tbody>
+                                                                @else
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="7" class="text-right">No data available</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                @endif
                                                             </tbody>
                                                         </table>
                                                     </div>
                                                 </div>
+                                                
                                                 <div class="col-md-6">
                                                     <div class="text-bg-primary fw-bold p-1 text-center" style="margin-bottom:-20px">Accommodation Declaration :</div>
                                                     <div class="table-responsive">
@@ -424,6 +540,7 @@
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
+                                                
                                                 <div class="col-md-6">
                                                     <div class="text-bg-primary fw-bold p-1 text-center" style="margin-bottom:-20px">Others :</div>
                                                     <div class="table-responsive">
@@ -438,6 +555,7 @@
                                                             </thead>
                                                             <tbody>
                                                                 <?php $totalLainnya = 0; $totalDays = 0; ?>
+                                                                @if(isset($detailCA['detail_lainnya']))
                                                                 @foreach ($detailCA['detail_lainnya'] as $lainnya)
                                                                     <tr style="text-align-last: center;">
                                                                         <td>{{ $loop->index + 1 }}</td>
@@ -455,10 +573,18 @@
                                                                         <td style="text-align: right"> Rp. {{ number_format($totalLainnya, 0, ',', '.') }} </td>
                                                                     </tr>
                                                                 </tbody>
+                                                                @else
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="4" class="text-right">No data available</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                @endif
                                                             </tbody>
                                                         </table>
                                                     </div>
                                                 </div>
+                                                
                                                 <div class="col-md-6">
                                                     <div class="text-bg-primary fw-bold p-1 text-center" style="margin-bottom:-20px">Others Declaration :</div>
                                                     <div class="table-responsive">
@@ -802,17 +928,17 @@
                                             @php
                                                 //$existingFiles = json_decode($transactions->prove_declare, true);
                                                 $existingFiles = is_array($transactions->prove_declare) ? $transactions->prove_declare : [$transactions->prove_declare];
+                                            
                                             @endphp
-
                                             @foreach ($existingFiles as $file)
                                                 @php $extension = pathinfo($file, PATHINFO_EXTENSION); @endphp
                                                 <div class="file-preview" data-file="{{ $file }}" style="position: relative; display: inline-block; margin: 10px;">
                                                     @if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif']))
-                                                        <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
-                                                            <img src="{{ asset($file) }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
+                                                        <a href="{{ \Illuminate\Support\Facades\Storage::url($file) }}" target="_blank" rel="noopener noreferrer">
+                                                            <img src="{{ \Illuminate\Support\Facades\Storage::url($file) }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
                                                         </a>
                                                     @elseif($extension === 'pdf')
-                                                        <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
+                                                        <a href="{{ \Illuminate\Support\Facades\Storage::url($file) }}" target="_blank" rel="noopener noreferrer">
                                                             <img src="{{ asset('images/pdf_icon.png') }}" alt="PDF File">
                                                             <p>Click to view PDF</p>
                                                         </a>
@@ -991,14 +1117,16 @@
 
         $(document).ready(function() {
             var tableIds = [
-                // '#perdiemTable',
-                // '#perdiemTableDec',
+                '#perdiemTable',
+                '#perdiemTableDec',
                 '#transportTable',
                 '#transportTableDec',
                 '#penginapanTable',
                 '#penginapanTableDec',
                 '#lainnyaTable',
-                '#lainnyaTableDec'
+                '#lainnyaTableDec',
+                '#mealsTable',
+                '#mealsTableDec'
             ];
 
             // Loop through each table ID

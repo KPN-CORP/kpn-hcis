@@ -149,12 +149,13 @@
                                                         role="tab" aria-controls="pills-perdiem"
                                                         aria-selected="true">{{ $allowance }}</button>
                                                 </li>
-                                                @if ($group_company != 'KPN Plantations')
-                                                    <li class="nav-item" role="presentation">
-                                                        <button class="nav-link" id="pills-meals-tab" data-bs-toggle="pill"
-                                                            data-bs-target="#pills-meals" type="button" role="tab"
-                                                            aria-controls="pills-meals" aria-selected="false">Meals</button>
-                                                    </li>
+                                                @if ($employee_data->group_company != 'Plantations')
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link" id="pills-meals-tab" data-bs-toggle="pill"
+                                                        data-bs-target="#pills-meals" type="button" role="tab"
+                                                        aria-controls="pills-meals"
+                                                        aria-selected="false">Meals</button>
+                                                </li>
                                                 @endif
                                                 <li class="nav-item" role="presentation">
                                                     <button class="nav-link" id="pills-transport-tab" data-bs-toggle="pill"
@@ -183,7 +184,7 @@
                                                     {{-- ca perdiem content --}}
                                                     @include('hcis.reimbursements.businessTrip.declaration.caPerdiemDeclare')
                                                 </div>
-                                                <div class="tab-pane fade show" id="pills-meals" role="tabpanel"
+                                                <div class="tab-pane fade" id="pills-meals" role="tabpanel"
                                                     aria-labelledby="pills-meals-tab">
                                                     {{-- ca meals content --}}
                                                     @include('hcis.reimbursements.businessTrip.declaration.caMealsDeclare')
