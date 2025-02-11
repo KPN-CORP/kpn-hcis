@@ -7,6 +7,9 @@
 </head>
 
 <body>
+    <div style="width: 100%; height: auto; text-align: center;">
+        <img src="{{ $base64Image }}" alt="Kop Surat" style="height: auto; margin-bottom: 20px; width: 15%;">
+    </div>
     <h2>New Business Trip Declaration</h2>
     <p>Dear Sir/Madam: <b>{{ $managerName }}</b></p><br>
     <p><b>{{ $employeeName }}</b> {{ $textNotification }}</p>
