@@ -171,7 +171,6 @@
                                     // dd($detailCA);
                                     // dd($declareCA);
                                     // dd($declareCA['detail_transport']);
-
                                 @endphp
 
                                 <!-- 1st Form -->
@@ -180,20 +179,21 @@
                                         <div class="d-flex flex-column gap-2">
                                             <ul class="nav nav-tabs nav-pills mb-2" id="pills-tab" role="tablist">
                                                 {{-- @if ($dnsTab == true) --}}
-                                                    <li class="nav-item" role="presentation">
-                                                        <button class="nav-link <?php echo (!$entrTab && $dnsTab) ? 'active' : (($dnsTab && $entrTab) ? 'active' : ''); ?>" id="pills-cashAdvanced-tab"
-                                                            data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced"
-                                                            type="button" role="tab" aria-controls="pills-cashAdvanced"
-                                                            aria-selected="true">Cash Advanced</button>
-                                                    </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link <?php echo ($entrTab && $dnsTab) || ($entrTab && !$dnsTab) || (!$entrTab && $dnsTab) || (!$entrTab && !$dnsTab) ? 'show active' : ''; ?>"
+                                                        id="pills-cashAdvanced-tab" data-bs-toggle="pill"
+                                                        data-bs-target="#pills-cashAdvanced" type="button" role="tab"
+                                                        aria-controls="pills-cashAdvanced" aria-selected="true">Cash
+                                                        Advanced</button>
+                                                </li>
                                                 {{-- @endif
                                                 @if ($entrTab == true) --}}
-                                                    <li class="nav-item" role="presentation">
-                                                        <button class="nav-link <?php echo ($entrTab && !$dnsTab) ? 'active' : ''; ?>" id="pills-caEntertain-tab"
-                                                            data-bs-toggle="pill" data-bs-target="#pills-caEntertain"
-                                                            type="button" role="tab" aria-controls="pills-caEntertain"
-                                                            aria-selected="false">CA Entertain</button>
-                                                    </li>
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link <?php echo $entrTab && !$dnsTab ? 'active' : ''; ?>" id="pills-caEntertain-tab"
+                                                        data-bs-toggle="pill" data-bs-target="#pills-caEntertain"
+                                                        type="button" role="tab" aria-controls="pills-caEntertain"
+                                                        aria-selected="false">CA Entertain</button>
+                                                </li>
                                                 {{-- @endif --}}
                                             </ul>
 
@@ -226,15 +226,22 @@
 
                                         <div class="col-md-12 mb-2 mt-2">
                                             <label for="prove_declare" class="form-label">Upload Document</label>
-                                            <input type="file" id="prove_declare" name="prove_declare[]" accept="image/*, application/pdf" class="form-control mb-2" multiple onchange="previewFiles()">
-                                            @if ((isset($dnsData->prove_declare) && $dnsData->prove_declare) || (isset($entrData->prove_declare) && $entrData->prove_declare))
-                                            <input type="hidden" name="existing_prove_declare" id="existing-prove-declare" value="{{ $dnsData->prove_declare ?? $entrData->prove_declare }}">                                     
-                                                <input type="hidden" name="removed_prove_declare" id="removed-prove-declare" value="[]">
+                                            <input type="file" id="prove_declare" name="prove_declare[]"
+                                                accept="image/*, application/pdf" class="form-control mb-2" multiple
+                                                onchange="previewFiles()">
+                                            @if (
+                                                (isset($dnsData->prove_declare) && $dnsData->prove_declare) ||
+                                                    (isset($entrData->prove_declare) && $entrData->prove_declare))
+                                                <input type="hidden" name="existing_prove_declare"
+                                                    id="existing-prove-declare"
+                                                    value="{{ $dnsData->prove_declare ?? $entrData->prove_declare }}">
+                                                <input type="hidden" name="removed_prove_declare"
+                                                    id="removed-prove-declare" value="[]">
 
                                                 <!-- Preview untuk file lama -->
-                                                <div id="existing-files-label" style="margin-bottom: 10px; font-weight: bold;">
+                                                <div id="existing-files-label"
+                                                    style="margin-bottom: 10px; font-weight: bold;">
                                                     @if ($dnsData->prove_declare ?? $entrData->prove_declare)
-
                                                         Document on Draft:
                                                     @endif
                                                 </div>
@@ -242,31 +249,45 @@
                                                     @if ($dnsData->prove_declare ?? $entrData->prove_declare)
                                                         @php
                                                             // Ambil data dari dnsData atau entrData
-                                                            $proveDeclare = $dnsData->prove_declare ?? $entrData->prove_declare;
-                                                
+                                                            $proveDeclare =
+                                                                $dnsData->prove_declare ?? $entrData->prove_declare;
+
                                                             // Cek apakah data adalah JSON atau string biasa
                                                             $decodedData = json_decode($proveDeclare, true);
-                                                            $existingFiles = is_array($decodedData) ? $decodedData : (!empty($proveDeclare) ? [$proveDeclare] : []);
+                                                            $existingFiles = is_array($decodedData)
+                                                                ? $decodedData
+                                                                : (!empty($proveDeclare)
+                                                                    ? [$proveDeclare]
+                                                                    : []);
                                                         @endphp
 
                                                         <div id="existing-file-preview" class="mt-2">
                                                             @if (count($existingFiles) > 1)
                                                                 @foreach ($existingFiles as $file)
                                                                     @php $extension = pathinfo($file, PATHINFO_EXTENSION); @endphp
-                                                                    <div class="file-preview" data-file="{{ $file }}" style="position: relative; display: inline-block; margin: 10px;">
+                                                                    <div class="file-preview"
+                                                                        data-file="{{ $file }}"
+                                                                        style="position: relative; display: inline-block; margin: 10px;">
                                                                         @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
-                                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
-                                                                                <img src="{{ asset($file) }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
+                                                                            <a href="{{ asset($file) }}" target="_blank"
+                                                                                rel="noopener noreferrer">
+                                                                                <img src="{{ asset($file) }}"
+                                                                                    alt="Proof Image"
+                                                                                    style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
                                                                             </a>
                                                                         @elseif ($extension === 'pdf')
-                                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
-                                                                                <img src="{{ asset('images/pdf_icon.png') }}" alt="PDF File">
+                                                                            <a href="{{ asset($file) }}" target="_blank"
+                                                                                rel="noopener noreferrer">
+                                                                                <img src="{{ asset('images/pdf_icon.png') }}"
+                                                                                    alt="PDF File">
                                                                                 <p>Click to view PDF</p>
                                                                             </a>
                                                                         @else
                                                                             <p>File type not supported.</p>
                                                                         @endif
-                                                                        <span class="remove-existing" data-file="{{ $file }}" style="position: absolute; top: 5px; right: 5px; cursor: pointer; background-color: #ff4d4d; color: #fff; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-weight: bold;">×</span>
+                                                                        <span class="remove-existing"
+                                                                            data-file="{{ $file }}"
+                                                                            style="position: absolute; top: 5px; right: 5px; cursor: pointer; background-color: #ff4d4d; color: #fff; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-weight: bold;">×</span>
                                                                     </div>
                                                                 @endforeach
                                                             @else
@@ -276,20 +297,29 @@
                                                                 @endphp
 
                                                                 @if (!empty($file))
-                                                                    <div class="file-preview" data-file="{{ $file }}" style="position: relative; display: inline-block; margin: 10px;">
+                                                                    <div class="file-preview"
+                                                                        data-file="{{ $file }}"
+                                                                        style="position: relative; display: inline-block; margin: 10px;">
                                                                         @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
-                                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
-                                                                                <img src="{{ asset($file) }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
+                                                                            <a href="{{ asset($file) }}" target="_blank"
+                                                                                rel="noopener noreferrer">
+                                                                                <img src="{{ asset($file) }}"
+                                                                                    alt="Proof Image"
+                                                                                    style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
                                                                             </a>
                                                                         @elseif ($extension === 'pdf')
-                                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
-                                                                                <img src="{{ asset('images/pdf_icon.png') }}" alt="PDF File">
+                                                                            <a href="{{ asset($file) }}" target="_blank"
+                                                                                rel="noopener noreferrer">
+                                                                                <img src="{{ asset('images/pdf_icon.png') }}"
+                                                                                    alt="PDF File">
                                                                                 <p>Click to view PDF</p>
                                                                             </a>
                                                                         @else
                                                                             <p>File type not supported.</p>
                                                                         @endif
-                                                                        <span class="remove-existing" data-file="{{ $file }}" style="position: absolute; top: 5px; right: 5px; cursor: pointer; background-color: #ff4d4d; color: #fff; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-weight: bold;">×</span>
+                                                                        <span class="remove-existing"
+                                                                            data-file="{{ $file }}"
+                                                                            style="position: absolute; top: 5px; right: 5px; cursor: pointer; background-color: #ff4d4d; color: #fff; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-weight: bold;">×</span>
                                                                     </div>
                                                                 @endif
                                                             @endif
@@ -298,7 +328,8 @@
 
                                                 </div>
                                             @endif
-                                            <div id="new-files-label" style="margin-top: 20px; margin-bottom: 10px; font-weight: bold;">
+                                            <div id="new-files-label"
+                                                style="margin-top: 20px; margin-bottom: 10px; font-weight: bold;">
                                                 New Document:
                                             </div>
 
@@ -991,7 +1022,7 @@
                                     <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${formatCurrency(totalDeclaration)}</strong></td>
                                 </tr>
                             </table>
-                        `;   
+                        `;
                     }
 
                     // Show SweetAlert confirmation with the input summary
@@ -1048,7 +1079,7 @@
     </script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             let selectedFiles = [];
             let removedFiles = []; // Menyimpan file yang dihapus
 
@@ -1174,11 +1205,12 @@
                 fileInput.files = dataTransfer.files;
             }
 
-            window.previewFiles = function () {
+            window.previewFiles = function() {
                 const fileInput = document.getElementById('prove_declare');
                 const files = Array.from(fileInput.files);
 
-                const existingFilesCount = document.querySelectorAll('#existing-file-preview .file-preview').length;
+                const existingFilesCount = document.querySelectorAll('#existing-file-preview .file-preview')
+                    .length;
                 const totalFiles = existingFilesCount + selectedFiles.length; // Total gabungan
 
                 files.forEach(file => {

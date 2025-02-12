@@ -26,7 +26,8 @@ class DeclarationNotification extends Mailable
     public $base64Image;
     public $textNotification;
     public $isEnt;
-    public $isCa;    
+    public $isCa;
+    public $group_company;
 
     public function __construct(
         BusinessTrip $businessTrip,
@@ -42,6 +43,7 @@ class DeclarationNotification extends Mailable
         $textNotification = null,
         $isEnt = null,
         $isCa = null,
+        $group_company = null,
     ) {
         $this->businessTrip = $businessTrip;
         $this->caDetails = $caDetails;
@@ -56,6 +58,7 @@ class DeclarationNotification extends Mailable
         $this->textNotification = $textNotification;
         $this->isEnt = $isEnt;
         $this->isCa = $isCa;
+        $this->group_company = $group_company;
     }
 
     public function build()
@@ -75,6 +78,7 @@ class DeclarationNotification extends Mailable
                 'textNotification' => $this->textNotification,
                 'isEnt' => $this->isEnt,
                 'isCa' => $this->isCa,
+                'group_company' => $this->group_company,
             ]);
     }
 

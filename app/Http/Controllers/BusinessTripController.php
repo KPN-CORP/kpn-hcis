@@ -417,6 +417,12 @@ class BusinessTripController extends Controller
 
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
+
+        $isJobLevel = MatrixApproval::where('modul', 'businesstrip')
+            ->where('group_company', 'like', '%' . $employee->group_company . '%')
+            ->where('job_level', 'like', '%' . $employee->job_level . '%')
+            ->get();
+
         if ($request->jns_dinas == 'dalam kota') {
             $tktDalam = $request->tiket_dalam_kota;
             $htlDalam = $request->hotel_dalam_kota;
@@ -455,7 +461,7 @@ class BusinessTripController extends Controller
             'taksi' => $vtDalam,
             'status' => $statusValue,
             'manager_l1_id' => $managerL1,
-            'manager_l2_id' => $managerL2,
+            'manager_l2_id' => ($isJobLevel->count() == 1) ? '-' : $managerL2,
         ]);
         // dd($request->ca, $request->ent);
 
@@ -564,7 +570,7 @@ class BusinessTripController extends Controller
                             'approval_status' => $statusValue,
                             "contribution_level_code" => $request->bb_perusahaan,
                             "manager_l1_id" => $managerL1,
-                            "manager_l2_id" => $managerL2,
+                            'manager_l2_id' => ($isJobLevel->count() == 1) ? '-' : $managerL2,
                         ]);
 
                         $processedHotelIds[] = $hotelId;
@@ -591,7 +597,7 @@ class BusinessTripController extends Controller
                             'approval_status' => $statusValue,
                             "contribution_level_code" => $request->bb_perusahaan,
                             "manager_l1_id" => $managerL1,
-                            "manager_l2_id" => $managerL2,
+                            'manager_l2_id' => ($isJobLevel->count() == 1) ? '-' : $managerL2,
                         ]);
 
                         $processedHotelIds[] = $newHotel->id;
@@ -671,8 +677,10 @@ class BusinessTripController extends Controller
                         'tlp_tkt' => $employee_data->personal_mobile_number ?? null,
                         "contribution_level_code" => $request->bb_perusahaan,
                         "manager_l1_id" => $managerL1,
-                        "manager_l2_id" => $managerL2,
+                        'manager_l2_id' => ($isJobLevel->count() == 1) ? '-' : $managerL2,
                     ];
+
+                    // dd($ticketData);
 
                     // Fetch employee data to get jk_tkt
                     $employee_data = Employee::where('ktp', $value)->first();
@@ -699,6 +707,8 @@ class BusinessTripController extends Controller
                             'no_tkt' => $newNoTkt, // Assign the generated no_tkt
                             'noktp_tkt' => $value,
                             'approval_status' => $statusValue,
+                            'manager_l1_id' => $managerL1,
+                            'manager_l2_id' => ($isJobLevel->count() == 1) ? '-' : $managerL2,
                         ]));
                     }
 
@@ -1181,6 +1191,7 @@ class BusinessTripController extends Controller
             $managerEmail = Employee::where('employee_id', $managerL1)->pluck('email')->first();
             // $managerEmail = "erzie.aldrian02@gmail.com";
             $managerName = Employee::where('employee_id', $managerL1)->pluck('fullname')->first();
+            $group_company = Employee::where('id', $employee->id)->pluck('group_company')->first();
 
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
@@ -1445,6 +1456,10 @@ class BusinessTripController extends Controller
         $dnsTab = $dnsRecord ? true : false;
 
         $employee_data = Employee::where('id', $userId)->first();
+
+        if ($request->totalca_ca_deklarasi == 0) {
+            return redirect()->back()->with('error', 'CA Real cannot be zero.')->withInput();
+        }
 
         if ($request->has('removed_prove_declare')) {
             $removedFiles = json_decode($request->removed_prove_declare, true);
@@ -2572,9 +2587,10 @@ class BusinessTripController extends Controller
                     $model_approval->save();
                 }
             }
-            // $managerEmail = Employee::where('employee_id', $managerL1)->pluck('email')->first();
-            $managerEmail = "erzie.aldrian02@gmail.com";
+            $managerEmail = Employee::where('employee_id', $managerL1)->pluck('email')->first();
+            // $managerEmail = "erzie.aldrian02@gmail.com";
             $managerName = Employee::where('employee_id', $managerL1)->pluck('fullname')->first();
+            $group_company = Employee::where('id', $employee_data->id)->pluck('group_company')->first();
 
             if ($managerEmail) {
                 $approvalLink = route('approve.business.trip.declare', [
@@ -2655,21 +2671,22 @@ class BusinessTripController extends Controller
                 ];
                 // Send email to the manager
                 // try {
-                    Mail::to($managerEmail)->send(new DeclarationNotification(
-                        $n,
-                        $caDetails,
-                        $caDeclare,
-                        $entDetails,
-                        $entDeclare,
-                        $managerName,
-                        $approvalLink,
-                        $rejectionLink,
-                        $employeeName,
-                        $base64Image,
-                        $textNotification,
-                        $isEnt,
-                        $isCa,
-                    ));
+                Mail::to($managerEmail)->send(new DeclarationNotification(
+                    $n,
+                    $caDetails,
+                    $caDeclare,
+                    $entDetails,
+                    $entDeclare,
+                    $managerName,
+                    $approvalLink,
+                    $rejectionLink,
+                    $employeeName,
+                    $base64Image,
+                    $textNotification,
+                    $isEnt,
+                    $isCa,
+                    $group_company,
+                ));
                 // } catch (\Exception $e) {
                 //     Log::error('Email Deklarasi Create Bussines Trip tidak terkirim: ' . $e->getMessage());
                 // }
@@ -3604,6 +3621,11 @@ class BusinessTripController extends Controller
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
 
+        $isJobLevel = MatrixApproval::where('modul', 'businesstrip')
+            ->where('group_company', 'like', '%' . $employee->group_company . '%')
+            ->where('job_level', 'like', '%' . $employee->job_level . '%')
+            ->get();
+
         if ($request->jns_dinas == 'dalam kota') {
             $tktDalam = $request->tiket_dalam_kota;
             $htlDalam = $request->hotel_dalam_kota;
@@ -3642,7 +3664,7 @@ class BusinessTripController extends Controller
             'status' => $statusValue,
             // dd($statusValue),
             'manager_l1_id' => $managerL1,
-            'manager_l2_id' => $managerL2,
+            'manager_l2_id' => ($isJobLevel->count() == 1) ? '-' : $managerL2,
             'approval_status' => $request->status,
 
         ]);
@@ -3714,7 +3736,7 @@ class BusinessTripController extends Controller
                     $hotel->approval_status = $statusValue;
                     $hotel->contribution_level_code = $request->bb_perusahaan;
                     $hotel->manager_l1_id = $managerL1;
-                    $hotel->manager_l2_id = $managerL2;
+                    $hotel->manager_l2_id = ($isJobLevel->count() == 1) ? '-' : $managerL2;
 
                     $hotel->save();
                 }
@@ -3781,14 +3803,13 @@ class BusinessTripController extends Controller
                     $tiket->approval_status = $statusValue;
                     $tiket->contribution_level_code = $request->bb_perusahaan;
                     $tiket->manager_l1_id = $managerL1;
-                    $tiket->manager_l2_id = $managerL2;
+                    $tiket->manager_l2_id = ($isJobLevel->count() == 1) ? '-' : $managerL2;
                     $tiket->jns_dinas_tkt = 'Dinas';
 
                     $tiket->save();
                 }
             }
         }
-
 
         // dd($request->all());
         if ($request->ca === 'Ya') {
@@ -4221,6 +4242,7 @@ class BusinessTripController extends Controller
             // Get manager email
             $managerEmail = Employee::where('employee_id', $managerL1)->pluck('email')->first();
             // $managerEmail = "eriton.dewa@kpn-corp.com";
+            $group_company = Employee::where('id', $employee->id)->pluck('group_company')->first();
 
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
@@ -4300,6 +4322,7 @@ class BusinessTripController extends Controller
                         $isEnt,
                         $isCa,
                         $entDetails,
+                        $group_company,
                     ));
                 } catch (\Exception $e) {
                     Log::error('Email Create Bussines Trip tidak terkirim: ' . $e->getMessage());
@@ -5579,6 +5602,95 @@ class BusinessTripController extends Controller
                     $approval_vt->save();
                 }
             }
+        } elseif ($businessTrip->manager_l2_id == '-') {
+            $statusValue = 'Approved';
+            $layer = 1;
+            if ($businessTrip->hotel == 'Ya') {
+                $hotels = Hotel::where('no_sppd', $businessTrip->no_sppd)->get();
+                foreach ($hotels as $hotel) {
+                    if ($hotel->hotel_only != 'Y') {
+                        $hotel->update([
+                            'approval_status' => $statusValue,
+                        ]);
+                        $approval_htl = new HotelApproval();
+                        $approval_htl->id = (string) Str::uuid(); // Generate a UUID for the approval record
+                        $approval_htl->htl_id = $hotel->id;
+                        $approval_htl->employee_id = $employeeId; // Assuming the logged-in user's employee ID is needed
+                        $approval_htl->role_id = $user->role_id; // Assuming role_id is in the user data
+                        $approval_htl->role_name = $user->role_name; // Assuming role_name is in the user data
+                        $approval_htl->layer = $layer; // Set layer to 2 for rejected cases
+                        $approval_htl->approval_status = $statusValue;
+                        $approval_htl->approved_at = now();
+                        $approval_htl->save();
+                    }
+                }
+            }
+            if ($businessTrip->taksi == 'Ya') {
+                $taksi = Taksi::where('no_sppd', $businessTrip->no_sppd)->first();
+                if ($taksi) {
+                    // Update the existing hotel record with the new approval status
+                    $taksi->update([
+                        'approval_status' => $statusValue,
+                    ]);
+                    $approval_vt = new TaksiApproval();
+                    $approval_vt->id = (string) Str::uuid(); // Generate a UUID for the approval record
+                    $approval_vt->vt_id = $taksi->id;
+                    $approval_vt->employee_id = $employeeId; // Assuming the logged-in user's employee ID is needed
+                    $approval_vt->role_id = $user->role_id; // Assuming role_id is in the user data
+                    $approval_vt->role_name = $user->role_name; // Assuming role_name is in the user data
+                    $approval_vt->layer = $layer; // Set layer to 2 for rejected cases
+                    $approval_vt->approval_status = $statusValue;
+                    $approval_vt->approved_at = now();
+                    $approval_vt->save();
+                }
+            }
+            if ($businessTrip->tiket == 'Ya') {
+                $tikets = Tiket::where('no_sppd', $businessTrip->no_sppd)->get();
+                foreach ($tikets as $tiket) {
+                    if ($tiket->tkt_only != 'Y') {
+                        $tiket->update([
+                            'approval_status' => $statusValue,
+                        ]);
+                        $approval_tkt = new TiketApproval();
+                        $approval_tkt->id = (string) Str::uuid(); // Generate a UUID for the approval record
+                        $approval_tkt->tkt_id = $tiket->id;
+                        $approval_tkt->employee_id = Auth::user()->employee_id; // Assuming the logged-in user's employee ID is needed
+                        $approval_tkt->role_id = Auth::user()->role_id; // Assuming role_id is in the user data
+                        $approval_tkt->role_name = Auth::user()->role_name; // Assuming role_name is in the user data
+                        $approval_tkt->layer = $layer; // Determine layer based on status
+                        $approval_tkt->approval_status = $statusValue;
+                        $approval_tkt->approved_at = now();
+                        $approval_tkt->save();
+                    }
+                }
+            }
+            // Handle CA approval for L2
+            if ($businessTrip->ca == 'Ya') {
+                $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+                foreach ($caTransaction as $caTransactions) {
+                    if ($caTransactions && $caTransactions->caonly != 'Y') {
+                        // Update CA approval status for L2
+                        ca_approval::updateOrCreate(
+                            ['ca_id' => $caTransactions->id, 'employee_id' => $employeeId, 'layer' => $layer],
+                            ['approval_status' => 'Approved', 'approved_at' => now()]
+                        );
+
+                        // Find the next approver (Layer 3) explicitly
+                        $nextApproval = ca_approval::where('ca_id', $caTransactions->id)
+                            ->where('layer', $layer + 1)
+                            ->first();
+
+                        if ($nextApproval) {
+                            $updateCa = CATransaction::where('id', $caTransactions->id)->first();
+                            $updateCa->status_id = $nextApproval->employee_id;
+                            $updateCa->save();
+                        } else {
+                            // No next layer, so mark as Approved
+                            $caTransactions->update(['approval_status' => 'Approved']);
+                        }
+                    }
+                }
+            }
         } elseif ($employeeId == $businessTrip->manager_l1_id) {
             $statusValue = 'Pending L2';
             $layer = 1;
@@ -6431,7 +6543,6 @@ class BusinessTripController extends Controller
             } else {
                 return redirect()->back()->with('error', 'Unauthorized action.');
             }
-            // if ($businessTrip->ca == 'Ya') {
             $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
             foreach ($caTransaction as $caTransactions) {
                 if ($caTransactions && $caTransactions->caonly != 'Y') {
@@ -6449,7 +6560,43 @@ class BusinessTripController extends Controller
                     $caTransactions->update(['approval_sett' => 'Rejected']);
                 }
             }
-            // }
+        } elseif ($businessTrip->manager_l2_id == '-') {
+            $statusValue = 'Declaration Approved';
+            $layer = 1;
+
+            // Handle CA approval for L2
+            $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+            foreach ($caTransaction as $caTransactions) {
+                if ($caTransactions && $caTransactions->caonly != 'Y' || $caTransactions->caonly == null) {
+                    // Update CA approval status for L1
+                    $caApproval = ca_sett_approval::where([
+                        'ca_id' => $caTransactions->id,
+                        'layer' => $layer
+                    ])->where('approval_status', '!=', 'Rejected')
+                        ->first();
+
+                    if ($caApproval) {
+                        // Only update if the record exists
+                        $caApproval->update([
+                            'approval_status' => 'Approved',
+                            'approved_at' => now(),
+                        ]);
+                    }
+                    // Find the next approver (Layer 2) from ca_approval
+                    $nextApproval = ca_sett_approval::where('ca_id', $caTransactions->id)
+                        ->where('layer', $layer + 1)
+                        ->first();
+
+                    if ($nextApproval) {
+                        $updateCa = CATransaction::where('id', $caTransactions->id)->first();
+                        $updateCa->sett_id = $nextApproval->employee_id;
+                        $updateCa->save();
+                    } else {
+                        // No next layer, so mark as Approved
+                        $caTransactions->update(['approval_sett' => 'Approved']);
+                    }
+                }
+            }
         } elseif ($employeeId == $businessTrip->manager_l1_id) {
             $statusValue = 'Declaration L2';
             $layer = 1;

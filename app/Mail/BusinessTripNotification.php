@@ -30,6 +30,7 @@ class BusinessTripNotification extends Mailable
     public $isEnt;
     public $isCa;
     public $entDetails;
+    public $group_company;
 
     /**
      * Create a new message instance.
@@ -49,6 +50,7 @@ class BusinessTripNotification extends Mailable
         $isEnt = null,
         $isCa = null,
         $entDetails = null,
+        $group_company = null,
     ) {
         $this->businessTrip = $businessTrip;
         $this->hotelDetails = $hotelDetails;
@@ -64,6 +66,7 @@ class BusinessTripNotification extends Mailable
         $this->isEnt = $isEnt;
         $this->isCa = $isCa;
         $this->entDetails = $entDetails;
+        $this->group_company = $group_company;
     }
 
     /**
@@ -87,6 +90,7 @@ class BusinessTripNotification extends Mailable
                 'isEnt' => $this->isEnt,
                 'isCa' => $this->isCa,
                 'entDetails' => $this->entDetails,
+                'group_company' => $this->group_company,
             ]);
     }
 
