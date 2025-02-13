@@ -107,7 +107,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="approvalModalLabel">Approval Business Trip Tiket - <span id="modalSPPD"></span></h5>
+                <h5 class="modal-title" id="approvalModalLabel">Approval Ticket - <span id="modalSPPD"></span></h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                     aria-label="Close"></button>
             </div>
@@ -358,7 +358,6 @@
 
                 // Filter data approval berdasarkan tktId
                 const filteredApprovals = approvals.filter(approval => approval.tkt_id === tktId);
-                console.log(filteredApprovals);
 
                 const approvalDataL1 = document.getElementById('approvalDataL1');
                 if (approvalDataL1) {
