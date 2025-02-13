@@ -6505,8 +6505,7 @@ class BusinessTripController extends Controller
                 $imageContent = file_get_contents($imagePath);
                 $employeeName = Employee::where('employee_id', $employeeId)->pluck('fullname')->first();
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-                $textNotification = "testtstststs requesting a Declaration Bussiness Trip and waiting for your Approval with the following details :";
-                // dd( $detail_ca, $caTrans);
+                $textNotification = "requesting a Declaration Bussiness Trip and waiting for your Approval with the following details :";
 
                 // dd($caTrans, $n->no_sppd);
                 $caDetails = [
@@ -6985,7 +6984,7 @@ class BusinessTripController extends Controller
             $employeeName = Employee::where('employee_id', $employeeId)->pluck('fullname')->first();
             $group_company = Employee::where('employee_id', $employeeId)->pluck('group_company')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "testtstststs requesting a Declaration Bussiness Trip and waiting for your Approval with the following details :";
+            $textNotification = "requesting a Declaration Bussiness Trip and waiting for your Approval with the following details :";
             // dd( $detail_ca, $caTrans);
 
             // dd($caTrans, $n->no_sppd);
