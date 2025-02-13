@@ -960,6 +960,7 @@ class BusinessTripController extends Controller
                 $data_matrix_approvals = MatrixApproval::where('modul', 'dns')
                     ->where('group_company', 'like', '%' . $employee->group_company . '%')
                     ->where('contribution_level_code', 'like', '%' . $request->bb_perusahaan . '%')
+                    ->where('job_level', 'like', '%' . $employee->job_level . '%')
                     ->whereRaw(
                         '? BETWEEN CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
                         [$total_ca]
@@ -1145,6 +1146,7 @@ class BusinessTripController extends Controller
                 $data_matrix_approvals = MatrixApproval::where('modul', 'dns')
                     ->where('group_company', 'like', '%' . $employee->group_company . '%')
                     ->where('contribution_level_code', 'like', '%' . $request->bb_perusahaan . '%')
+                    ->where('job_level', 'like', '%' . $employee->job_level . '%')
                     ->whereRaw(
                         '
             ? BETWEEN
@@ -2521,6 +2523,7 @@ class BusinessTripController extends Controller
                 $data_matrix_approvals = MatrixApproval::where('modul', 'dns')
                     ->where('group_company', 'like', '%' . $employee->group_company . '%')
                     ->where('contribution_level_code', 'like', '%' . $request->bb_perusahaan . '%')
+                    ->where('job_level', 'like', '%' . $employee->job_level . '%')
                     ->whereRaw(
                         '? BETWEEN CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
                         [$total_ca]
@@ -2558,6 +2561,7 @@ class BusinessTripController extends Controller
                 $data_matrix_approvals = MatrixApproval::where('modul', 'dns')
                     ->where('group_company', 'like', '%' . $employee->group_company . '%')
                     ->where('contribution_level_code', 'like', '%' . $request->bb_perusahaan . '%')
+                    ->where('job_level', 'like', '%' . $employee->job_level . '%')
                     ->whereRaw(
                         '? BETWEEN CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
                         [$total_ca]
@@ -4021,6 +4025,7 @@ class BusinessTripController extends Controller
                 $data_matrix_approvals = MatrixApproval::where('modul', 'dns')
                     ->where('group_company', 'like', '%' . $employee->group_company . '%')
                     ->where('contribution_level_code', 'like', '%' . $request->bb_perusahaan . '%')
+                    ->where('job_level', 'like', '%' . $employee->job_level . '%')
                     ->whereRaw(
                         '
             ? BETWEEN
@@ -4202,6 +4207,7 @@ class BusinessTripController extends Controller
                 $data_matrix_approvals = MatrixApproval::where('modul', 'dns')
                     ->where('group_company', 'like', '%' . $employee->group_company . '%')
                     ->where('contribution_level_code', 'like', '%' . $request->bb_perusahaan . '%')
+                    ->where('job_level', 'like', '%' . $employee->job_level . '%')
                     ->whereRaw(
                         '
             ? BETWEEN
