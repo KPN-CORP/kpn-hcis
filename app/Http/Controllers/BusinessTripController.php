@@ -5015,8 +5015,8 @@ class BusinessTripController extends Controller
                     if ($ca->total_cost <= 0 && $request->input('accept_status') === 'Return/Refund') {
                         return redirect()->back()->with('error', 'Cannot set status to Return/Refund when the Total Cost is negative.');
                     } elseif ($ca->total_cost > 0 && $request->input('accept_status') === 'Return/Refund') {
-                        // $employeeEmail = Employee::where('id', $n->user_id)->pluck('email')->first();
-                        $employeeEmail = "erzie.aldrian02@gmail.com";
+                        $employeeEmail = Employee::where('id', $n->user_id)->pluck('email')->first();
+                        // $employeeEmail = "erzie.aldrian02@gmail.com";
                         $employeeName = Employee::where('id', $n->user_id)->pluck('fullname')->first();
                     }
 
@@ -5098,8 +5098,8 @@ class BusinessTripController extends Controller
                     if ($ca->total_cost <= 0 && $request->input('accept_status') === 'Return/Refund') {
                         return redirect()->back()->with('error', 'Cannot set status to Return/Refund when the Total Cost is negative.');
                     } elseif ($ca->total_cost > 0 && $request->input('accept_status') === 'Return/Refund') {
-                        // $employeeEmail = Employee::where('id', $n->user_id)->pluck('email')->first();
-                        $employeeEmail = "erzie.aldrian02@gmail.com";
+                        $employeeEmail = Employee::where('id', $n->user_id)->pluck('email')->first();
+                        // $employeeEmail = "erzie.aldrian02@gmail.com";
                         $employeeName = Employee::where('id', $n->user_id)->pluck('fullname')->first();
                     }
                 }
@@ -5696,8 +5696,8 @@ class BusinessTripController extends Controller
         } elseif ($employeeId == $businessTrip->manager_l1_id) {
             $statusValue = 'Pending L2';
             $layer = 1;
-            // $managerL2 = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('email')->first();
-            $managerL2 = "erzie.aldrian02@gmail.com";
+            $managerL2 = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('email')->first();
+            // $managerL2 = "erzie.aldrian02@gmail.com";
             $managerName = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('fullname')->first();
 
             $imagePath = public_path('images/kop.jpg');
@@ -6755,8 +6755,8 @@ class BusinessTripController extends Controller
         } elseif ($employeeId == $businessTrip->manager_l1_id) {
             $statusValue = 'Declaration L2';
             $layer = 1;
-            // $managerL2 = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('email')->first();
-            $managerL2 = "erzie.aldrian02@gmail.com";
+            $managerL2 = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('email')->first();
+            // $managerL2 = "erzie.aldrian02@gmail.com";
             $managerName = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('fullname')->first();
 
             $approvalLink = route('approve.business.trip.declare', [

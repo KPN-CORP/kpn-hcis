@@ -738,9 +738,20 @@
                                 if (approvalDataL1) {
                                     const l1Approvals = filteredApprovals.filter(a => a.layer === 1 && a
                                         .approval_status === 'Pending L2');
+                                    const l1ApprovalsOnce = filteredApprovals.filter(a => a.layer === 1 && a
+                                        .approval_status === 'Approved');
                                     const l1Rejections = filteredApprovals.filter(a => a.layer === 1 && a
                                         .approval_status === 'Rejected');
-                                    if (l1Approvals.length > 0) {
+                                    if (l1ApprovalsOnce.length > 0) {
+                                        approvalDataL1.innerHTML = l1ApprovalsOnce.map(approval => `
+                                                        <div class="border rounded p-2 mb-2">
+                                                            <strong>Status:</strong> ${approval.approval_status}<br>
+                                                            <strong>Approved By:</strong> ${approval.employee_id}<br>
+                                                             <strong>Approved At:</strong> ${formatDateToCustomString(approval.approved_at)}<br>
+                                                            <strong>Processed By:</strong> ${approval.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                                        </div>
+                                                    `).join('');
+                                    } else if (l1Approvals.length > 0) {
                                         approvalDataL1.innerHTML = l1Approvals.map(approval => `
                                                         <div class="border rounded p-2 mb-2">
                                                             <strong>Status:</strong> ${approval.approval_status}<br>
@@ -799,11 +810,24 @@
                                         a.layer === 1 &&
                                         (a.approval_status === 'Declaration L2')
                                     );
+                                    const l1DeclarationsOnce = filteredApprovals.filter(a =>
+                                        a.layer === 1 &&
+                                        (a.approval_status === 'Declaration Approved')
+                                    );
                                     const l1DeclarationsReject = filteredApprovals.filter(a =>
                                         a.layer === 1 &&
                                         (a.approval_status === 'Declaration Rejected')
                                     );
-                                    if (l1Declarations.length > 0) {
+                                    if (l1DeclarationsOnce.length > 0) {
+                                        approvalDataL1Declare.innerHTML = l1DeclarationsOnce.map(approval => `
+                                        <div class="border rounded p-2 mb-2">
+                                            <strong>Status:</strong> ${approval.approval_status}<br>
+                                            <strong>Approved By:</strong> ${approval.employee_id}<br>
+                                            <strong>Approved At:</strong> ${formatDateToCustomString(approval.approved_at)}<br>
+                                            <strong>Processed By:</strong> ${approval.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                        </div>
+                                    `).join('');
+                                    } else if (l1Declarations.length > 0) {
                                         approvalDataL1Declare.innerHTML = l1Declarations.map(approval => `
                                         <div class="border rounded p-2 mb-2">
                                             <strong>Status:</strong> ${approval.approval_status}<br>
@@ -1000,7 +1024,7 @@
                                     for (var key in data[0]) {
                                         if (data[0].hasOwnProperty(key)) {
                                             tableHtml += '<th class="text-nowrap">' + key +
-                                            '</th>'; // Added text-nowrap to prevent header wrapping
+                                                '</th>'; // Added text-nowrap to prevent header wrapping
                                         }
                                     }
                                 } else if (typeof data === 'object') {
