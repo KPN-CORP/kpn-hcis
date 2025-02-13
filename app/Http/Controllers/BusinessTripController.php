@@ -1513,6 +1513,7 @@ class BusinessTripController extends Controller
             if ($entrTab == false && $request->totalca > 0) {
                 // Create a new CA transaction if it doesn't exist
                 $ca = new CATransaction();
+                $dnsTab = true;
 
                 // Generate new 'no_ca' code
                 $currentYear = date('Y');
@@ -1648,6 +1649,7 @@ class BusinessTripController extends Controller
             if ($dnsTab == false && $request->totalca_ca_deklarasi > 0) {
                 // Create a new CA transaction if it doesn't exist
                 $ca = new CATransaction();
+                $dnsTab = true;
 
                 // Generate new 'no_ca' code
                 $currentYear = date('Y');
@@ -2538,7 +2540,7 @@ class BusinessTripController extends Controller
 
                     if ($employee_id != null) {
                         $model_approval = new ca_sett_approval;
-                        $model_approval->ca_id = $dnsRecord->id;
+                        $model_approval->ca_id = $dnsRecord->id ?? $ca->id;
                         $model_approval->role_name = $data_matrix_approval->desc;
                         $model_approval->employee_id = $employee_id;
                         $model_approval->layer = $data_matrix_approval->layer;
@@ -2575,7 +2577,7 @@ class BusinessTripController extends Controller
 
                     if ($employee_id != null) {
                         $model_approval = new ca_sett_approval;
-                        $model_approval->ca_id = $entrRecord->id;
+                        $model_approval->ca_id = $entrRecord->id ?? $ca->id;
                         $model_approval->role_name = $data_matrix_approval->desc;
                         $model_approval->employee_id = $employee_id;
                         $model_approval->layer = $data_matrix_approval->layer;
