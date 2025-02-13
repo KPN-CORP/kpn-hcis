@@ -6121,11 +6121,8 @@ class BusinessTripController extends Controller
 
                 // dd($managerL2);
                 if ($managerL2) {
-                    $ca = CATransaction::where('no_sppd', $businessTrip->no_sppd)->orWhere('caonly', '!=', 'Y')->first();
-                    $entrTab = $ca->where('type_ca', 'entr')->first();
-                    $dnsTab = $ca->where('type_ca', 'dns')->first();
-                    $detail_ca = $entrTab ? json_decode($entrTab->detail_ca, true) : [];
-                    $detail_ent = $dnsTab ? json_decode($dnsTab->detail_ca, true) : [];
+                    $detail_ca = $isCa ? json_decode($isCa->detail_ca, true) : [];
+                    $detail_ent = $isEnt ? json_decode($isEnt->detail_ca, true) : [];
                     $caDetails = [
                         'total_days_perdiem' => array_sum(array_column($detail_ca['detail_perdiem'] ?? [], 'total_days')),
                         'total_amount_perdiem' => array_sum(array_column($detail_ca['detail_perdiem'] ?? [], 'nominal')),
@@ -6527,8 +6524,8 @@ class BusinessTripController extends Controller
                 ];
                 // dd($caDetails,   $detail_ca );
 
-                $declare_ca_ntf = isset($declare_ca_ntf) ? $declare_ca_ntf : [];
-                $declare_ent_ntf = isset($declare_ent_ntf) ? $declare_ent_ntf : [];
+                $declare_ca_ntf = isset($dnsNtfRe) && isset($dnsNtfRe->declare_ca) ? json_decode($dnsNtfRe->declare_ca, true) : [];
+                $declare_ent_ntf = isset($entrNtfRe) && isset($entrNtfRe->detail_ca) ? json_decode($entrNtfRe->declare_ca, true) : [];
                 $caDeclare = [
                     'total_days_perdiem' => array_sum(array_column($declare_ca_ntf['detail_perdiem'] ?? [], 'total_days')),
                     'total_amount_perdiem' => array_sum(array_column($declare_ca_ntf['detail_perdiem'] ?? [], 'nominal')),
@@ -6561,11 +6558,11 @@ class BusinessTripController extends Controller
                             $managerName,
                             $approvalLink,
                             $rejectionLink,
-                            $isEnt,
-                            $isCa,
                             $employeeName,
                             $base64Image,
                             $textNotification,
+                            $isEnt,
+                            $isCa,
                         ));
                     } catch (\Exception $e) {
                         Log::error('Email Update Status Deklarasi Bussines Trip tidak terkirim: ' . $e->getMessage());
@@ -6980,6 +6977,7 @@ class BusinessTripController extends Controller
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $employeeName = Employee::where('employee_id', $employeeId)->pluck('fullname')->first();
+            $group_company = Employee::where('employee_id', $employeeId)->pluck('group_company')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
             $textNotification = "testtstststs requesting a Declaration Bussiness Trip and waiting for your Approval with the following details :";
             // dd( $detail_ca, $caTrans);
@@ -7040,11 +7038,12 @@ class BusinessTripController extends Controller
                         $managerName,
                         $approvalLink,
                         $rejectionLink,
-                        $isEnt,
-                        $isCa,
                         $employeeName,
                         $base64Image,
                         $textNotification,
+                        $isEnt,
+                        $isCa,
+                        $group_company,
                     ));
                 } catch (\Exception $e) {
                     Log::error('Email Update Status Deklarasi Bussines Trip tidak terkirim: ' . $e->getMessage());
