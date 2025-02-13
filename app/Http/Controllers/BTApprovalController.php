@@ -511,7 +511,7 @@ class BTApprovalController extends Controller
                         $approval_tkt->id = (string) Str::uuid(); // Generate a UUID for the approval record
                         $approval_tkt->tkt_id = $tiket->id;
                         $approval_tkt->employee_id = $employeeId; // Assuming the logged-in user's employee ID is needed
-                        $approval_tkt->layer = $tiket->approval_status == 'Pending L2' ? 1 : 2; // Determine layer based on status
+                        $approval_tkt->layer = $layer;
                         $approval_tkt->approval_status = $statusValue;
                         $approval_tkt->approved_at = now();
                         $approval_tkt->save();
@@ -618,7 +618,7 @@ class BTApprovalController extends Controller
                         $approval_tkt->id = (string) Str::uuid(); // Generate a UUID for the approval record
                         $approval_tkt->tkt_id = $tiket->id;
                         $approval_tkt->employee_id = $employeeId; // Assuming the logged-in user's employee ID is needed
-                        $approval_tkt->layer = $tiket->approval_status == 'Pending L2' ? 1 : 2; // Determine layer based on status
+                        $approval_tkt->layer = $layer;
                         $approval_tkt->approval_status = $statusValue;
                         $approval_tkt->approved_at = now();
                         $approval_tkt->save();

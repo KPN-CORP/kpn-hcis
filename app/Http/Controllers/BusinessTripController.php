@@ -6045,7 +6045,7 @@ class BusinessTripController extends Controller
                         $approval_vt->employee_id = $employeeId; // Assuming the logged-in user's employee ID is needed
                         $approval_vt->role_id = $user->role_id; // Assuming role_id is in the user data
                         $approval_vt->role_name = $user->role_name; // Assuming role_name is in the user data
-                        $approval_vt->layer = $layer; // Set layer to 2 for rejected cases
+                        $approval_vt->layer = $layer;
                         $approval_vt->approval_status = $statusValue;
                         $approval_vt->by_admin = 'T';
                         $approval_vt->approved_at = now();
@@ -6065,7 +6065,7 @@ class BusinessTripController extends Controller
                             $approval_tkt->employee_id = Auth::user()->employee_id; // Assuming the logged-in user's employee ID is needed
                             $approval_tkt->role_id = Auth::user()->role_id; // Assuming role_id is in the user data
                             $approval_tkt->role_name = Auth::user()->role_name; // Assuming role_name is in the user data
-                            $approval_tkt->layer = $tiket->approval_status == 'Pending L2' ? 1 : 2; // Determine layer based on status
+                            $approval_tkt->layer = $layer;
                             $approval_tkt->approval_status = $statusValue;
                             $approval_tkt->by_admin = 'T';
                             $approval_tkt->approved_at = now();
