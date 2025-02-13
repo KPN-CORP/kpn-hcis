@@ -180,7 +180,7 @@
                                             <ul class="nav nav-tabs nav-pills mb-2" id="pills-tab" role="tablist">
                                                 {{-- @if ($dnsTab == true) --}}
                                                 <li class="nav-item" role="presentation">
-                                                    <button class="nav-link <?php echo ($entrTab && $dnsTab) || ($entrTab && !$dnsTab) || (!$entrTab && $dnsTab) || (!$entrTab && !$dnsTab) ? 'show active' : ''; ?>"
+                                                    <button class="nav-link <?php echo ($entrTab && $dnsTab) || (!$entrTab && $dnsTab) || (!$entrTab && !$dnsTab) ? 'show active' : ''; ?>"
                                                         id="pills-cashAdvanced-tab" data-bs-toggle="pill"
                                                         data-bs-target="#pills-cashAdvanced" type="button" role="tab"
                                                         aria-controls="pills-cashAdvanced" aria-selected="true">Cash

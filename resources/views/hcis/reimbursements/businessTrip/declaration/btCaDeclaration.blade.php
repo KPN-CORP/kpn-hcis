@@ -1,4 +1,4 @@
-<div class="tab-pane fade <?php echo ($entrTab && $dnsTab) || ($entrTab && !$dnsTab) || (!$entrTab && $dnsTab) || (!$entrTab && !$dnsTab) ? 'show active' : ''; ?>" id="pills-cashAdvanced" role="tabpanel" aria-labelledby="pills-cashAdvanced-tab">
+<div class="tab-pane fade <?php echo ($entrTab && $dnsTab) || (!$entrTab && $dnsTab) || (!$entrTab && !$dnsTab) ? 'show active' : ''; ?>" id="pills-cashAdvanced" role="tabpanel" aria-labelledby="pills-cashAdvanced-tab">
     <ul class="nav mb-3" id="pills-tab-inner" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="pills-perdiem-tab" data-bs-toggle="pill" data-bs-target="#pills-perdiem"
