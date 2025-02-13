@@ -130,6 +130,8 @@ class Tiket extends Model
         'jns_dinas_tkt',
         'booking_code',
         'tkt_price',
+        'manager_l1_id',
+        'manager_l2_id',
     ];
     protected $table = 'tkt_transactions';
 

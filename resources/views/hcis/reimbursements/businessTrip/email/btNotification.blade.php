@@ -102,6 +102,16 @@
                     Rp. {{ number_format($caDetails['total_amount_perdiem'] ?? 0, 0, ',', '.') }}
                 </td>
             </tr>
+            @if ($group_company !== 'KPN Plantations' && $group_company !== 'Plantations')
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">Meals</td>
+                    <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">
+                        {{ $caDetails['total_days_meals'] ?? 0 }} Days</td>
+                    <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">
+                        Rp. {{ number_format($caDetails['total_amount_meals'] ?? 0, 0, ',', '.') }}
+                    </td>
+                </tr>
+            @endif
             <tr>
                 <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">Transport</td>
                 <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">-</td>
@@ -136,7 +146,8 @@
             </tr>
             <tr style="font-weight: bold; background-color: #f5f5f5;">
                 <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Category</td>
-                <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Total Days</td>
+                <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Total Days
+                </td>
                 <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Amount</td>
             </tr>
             <tr>
@@ -240,7 +251,7 @@
             <tr>
                 <th colspan="2"
                     style="border: 1px solid #ddd; padding: 4px; background-color: #ab2f2b; color: #ffffff; font-size: 10px; font-weight: bold; white-space: nowrap; text-align: center;">
-                    <b>Voucher Details :</b>
+                    <b>Taxi/Grab Details :</b>
                 </th>
             </tr>
             <tr style="font-weight: bold; background-color: #f5f5f5;">
@@ -248,14 +259,14 @@
                 <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Value</th>
             </tr>
             <tr>
-                <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;"><b>Total Voucher</b></td>
+                <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;"><b>Total Taxi/Grab</b></td>
                 <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">{{ $taksiDetails->no_vt }}
                     Voucher</td>
             </tr>
             <tr>
-                <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;"><b>Nominal Voucher</b></td>
-                <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">Rp.
-                    {{ number_format($taksiDetails->nominal_vt, 0, ',', '.') }}</td>
+                <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;"><b>Detail Taxi/Grab</b></td>
+                <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">{{ $taksiDetails->vt_detail }}
+                </td>
             </tr>
         </table>
     @endif

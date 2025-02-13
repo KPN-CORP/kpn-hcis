@@ -275,8 +275,8 @@ class ApprovalReimburseController extends Controller
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected please discuss further with your supervisor :";
-                try{
-                    try{
+                try {
+                    try {
                         Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                             null,
                             $caTransaction,
@@ -287,10 +287,10 @@ class ApprovalReimburseController extends Controller
                             $base64Image,
                         ));
                     } catch (\Exception $e) {
-                    	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                        Log::error('Email tidak terkirim: ' . $e->getMessage());
                     }
                 } catch (\Exception $e) {
-                	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email tidak terkirim: ' . $e->getMessage());
                 }
             }
 
@@ -313,7 +313,7 @@ class ApprovalReimburseController extends Controller
             // Jika tidak ada layer yang lebih tinggi (berarti ini adalah layer tertinggi)
             if (!$nextApproval) {
                 // Set status ke Approved untuk layer tertinggi
-                $models = ca_approval::where('ca_id', $ca_id)->where('employee_id', $employeeId)->where('approval_status','<>','Rejected')->get();
+                $models = ca_approval::where('ca_id', $ca_id)->where('employee_id', $employeeId)->where('approval_status', '<>', 'Rejected')->get();
                 foreach ($models as $model) {
                     $model->approval_status = 'Approved';
                     $model->approved_at = Carbon::now(); // Simpan waktu approval sekarang
@@ -334,7 +334,7 @@ class ApprovalReimburseController extends Controller
                     $base64Image = "data:image/png;base64," . base64_encode($imageContent);
                     if ($CANotificationLayer) {
                         $textNotification = "Your Cash Advanced request has been Approved, please check your request again or can download your submission in the email attachment :";
-                        try{
+                        try {
                             Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
@@ -345,13 +345,13 @@ class ApprovalReimburseController extends Controller
                                 $base64Image,
                             ));
                         } catch (\Exception $e) {
-                        	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                            Log::error('Email tidak terkirim: ' . $e->getMessage());
                         }
                     }
                 }
             } else {
                 // Jika ada layer yang lebih tinggi, update status layer saat ini dan alihkan ke layer berikutnya
-                $models = ca_approval::where('ca_id', $ca_id)->where('employee_id', $employeeId)->where('approval_status','<>','Rejected')->get();
+                $models = ca_approval::where('ca_id', $ca_id)->where('employee_id', $employeeId)->where('approval_status', '<>', 'Rejected')->get();
                 foreach ($models as $model) {
                     $model->approval_status = 'Approved';
                     $model->approved_at = Carbon::now();
@@ -386,7 +386,7 @@ class ApprovalReimburseController extends Controller
                     ]);
 
                     // $pdfContent = $this->cashadvancedDownload (encrypt($caTransaction->id));
-                    try{
+                    try {
                         Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
@@ -397,7 +397,7 @@ class ApprovalReimburseController extends Controller
                             $base64Image,
                         ));
                     } catch (\Exception $e) {
-                    	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                        Log::error('Email tidak terkirim: ' . $e->getMessage());
                     }
                 }
             }
@@ -461,7 +461,7 @@ class ApprovalReimburseController extends Controller
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor: ";
-                try{
+                try {
                     Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
@@ -472,7 +472,7 @@ class ApprovalReimburseController extends Controller
                         $base64Image,
                     ));
                 } catch (\Exception $e) {
-                	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email tidak terkirim: ' . $e->getMessage());
                 }
             }
 
@@ -493,7 +493,7 @@ class ApprovalReimburseController extends Controller
             // Jika tidak ada layer yang lebih tinggi (berarti ini adalah layer tertinggi)
             if (!$nextApproval) {
                 // Set status ke Approved untuk layer tertinggi
-                $models = ca_approval::where('ca_id', $ca_id)->where('employee_id', $employeeId)->where('approval_status','<>','Rejected')->get();
+                $models = ca_approval::where('ca_id', $ca_id)->where('employee_id', $employeeId)->where('approval_status', '<>', 'Rejected')->get();
                 foreach ($models as $model) {
                     $model->approval_status = 'Approved';
                     $model->approved_at = Carbon::now(); // Simpan waktu approval sekarang
@@ -514,7 +514,7 @@ class ApprovalReimburseController extends Controller
                     $base64Image = "data:image/png;base64," . base64_encode($imageContent);
                     if ($CANotificationLayer) {
                         $textNotification = "Your Cash Advanced request has been Approved, please check your request again or can download your submission in the email attachment: ";
-                        try{
+                        try {
                             Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
@@ -525,7 +525,7 @@ class ApprovalReimburseController extends Controller
                                 $base64Image,
                             ));
                         } catch (\Exception $e) {
-                        	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                            Log::error('Email tidak terkirim: ' . $e->getMessage());
                         }
                     }
                 }
@@ -533,7 +533,7 @@ class ApprovalReimburseController extends Controller
                 return redirect()->route('blank.pageUn')->with('success', 'Transaction Approved, Thanks for Approving.');
             } else {
                 // Jika ada layer yang lebih tinggi, update status layer saat ini dan alihkan ke layer berikutnya
-                $models = ca_approval::where('ca_id', $ca_id)->where('employee_id', $employeeId)->where('approval_status','<>','Rejected')->get();
+                $models = ca_approval::where('ca_id', $ca_id)->where('employee_id', $employeeId)->where('approval_status', '<>', 'Rejected')->get();
                 foreach ($models as $model) {
                     $model->approval_status = 'Approved';
                     $model->approved_at = Carbon::now();
@@ -566,7 +566,7 @@ class ApprovalReimburseController extends Controller
                         'userId' => $nextApproval->employee->id, // Jika perlu, masukkan ID pengguna di sini
                         'autoOpen' => 'reject'
                     ]);
-                    try{
+                    try {
                         Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
@@ -577,7 +577,7 @@ class ApprovalReimburseController extends Controller
                             $base64Image,
                         ));
                     } catch (\Exception $e) {
-                    	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                        Log::error('Email tidak terkirim: ' . $e->getMessage());
                     }
                 }
                 return redirect()->route('blank.pageUn')->with('success', 'Transaction Approved, Thanks for Approving.');
@@ -639,7 +639,7 @@ class ApprovalReimburseController extends Controller
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor.: ";
-                try{
+                try {
                     Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
@@ -650,7 +650,7 @@ class ApprovalReimburseController extends Controller
                         $base64Image,
                     ));
                 } catch (\Exception $e) {
-                	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email tidak terkirim: ' . $e->getMessage());
                 }
             }
 
@@ -672,7 +672,7 @@ class ApprovalReimburseController extends Controller
             // Jika tidak ada layer yang lebih tinggi (berarti ini adalah layer tertinggi)
             if (!$nextApproval) {
                 // Set status ke Approved untuk layer tertinggi
-                $models = ca_approval::where('ca_id', $ca_id)->where('employee_id', $model->employee_id)->where('approval_status','<>','Rejected')->get();
+                $models = ca_approval::where('ca_id', $ca_id)->where('employee_id', $model->employee_id)->where('approval_status', '<>', 'Rejected')->get();
                 foreach ($models as $model) {
                     $model->approval_status = 'Approved';
                     $model->approved_at = Carbon::now(); // Simpan waktu approval sekarang
@@ -695,7 +695,7 @@ class ApprovalReimburseController extends Controller
                     // dd($CANotificationLayer);
                     if ($CANotificationLayer) {
                         $textNotification = "Your Cash Advanced request has been Approved, please check your request again or can download your submission in the email attachment :";
-                        try{
+                        try {
                             Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
@@ -706,13 +706,13 @@ class ApprovalReimburseController extends Controller
                                 $base64Image,
                             ));
                         } catch (\Exception $e) {
-                        	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                            Log::error('Email tidak terkirim: ' . $e->getMessage());
                         }
                     }
                 }
             } else {
                 // Jika ada layer yang lebih tinggi, update status layer saat ini dan alihkan ke layer berikutnya
-                $models = ca_approval::where('ca_id', $ca_id)->where('employee_id', $model->employee_id)->where('approval_status','<>','Rejected')->get();
+                $models = ca_approval::where('ca_id', $ca_id)->where('employee_id', $model->employee_id)->where('approval_status', '<>', 'Rejected')->get();
                 foreach ($models as $model) {
                     $model->approval_status = 'Approved';
                     $model->approved_at = Carbon::now(); // Simpan waktu approval sekarang
@@ -748,7 +748,7 @@ class ApprovalReimburseController extends Controller
                         'userId' => $nextApproval->employee->id, // Jika perlu, masukkan ID pengguna di sini
                         'autoOpen' => 'reject'
                     ]);
-                    try{
+                    try {
                         Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
@@ -759,7 +759,7 @@ class ApprovalReimburseController extends Controller
                             $base64Image,
                         ));
                     } catch (\Exception $e) {
-                    	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                        Log::error('Email tidak terkirim: ' . $e->getMessage());
                     }
                 }
             }
@@ -871,7 +871,7 @@ class ApprovalReimburseController extends Controller
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor :";
-                try{
+                try {
                     Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
@@ -882,7 +882,7 @@ class ApprovalReimburseController extends Controller
                         $base64Image,
                     ));
                 } catch (\Exception $e) {
-                	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email tidak terkirim: ' . $e->getMessage());
                 }
             }
 
@@ -904,7 +904,7 @@ class ApprovalReimburseController extends Controller
             // Jika tidak ada layer yang lebih tinggi (berarti ini adalah layer tertinggi)
             if (!$nextApproval) {
                 // Set status ke Approved untuk layer tertinggi
-                $models = ca_sett_approval::where('ca_id', $ca_id)->where('employee_id', $employeeId)->where('approval_status','<>','Rejected')->get();
+                $models = ca_sett_approval::where('ca_id', $ca_id)->where('employee_id', $employeeId)->where('approval_status', '<>', 'Rejected')->get();
                 foreach ($models as $model) {
                     $model->approval_status = 'Approved';
                     $model->approved_at = Carbon::now(); // Simpan waktu approval sekarang
@@ -925,7 +925,7 @@ class ApprovalReimburseController extends Controller
                     if ($CANotificationLayer) {
                         $textNotification = "Your Declaration Cash Advanced request has been approved, please check your request again or can download your submission in the email attachment :";
                         $declaration = "Declaration";
-                        try{
+                        try {
                             Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
@@ -936,13 +936,13 @@ class ApprovalReimburseController extends Controller
                                 $base64Image,
                             ));
                         } catch (\Exception $e) {
-                        	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                            Log::error('Email tidak terkirim: ' . $e->getMessage());
                         }
                     }
                 }
             } else {
                 // Jika ada layer yang lebih tinggi, update status layer saat ini dan alihkan ke layer berikutnya
-                $models = ca_sett_approval::where('ca_id', $ca_id)->where('employee_id', $employeeId)->where('approval_status','<>','Rejected')->get();
+                $models = ca_sett_approval::where('ca_id', $ca_id)->where('employee_id', $employeeId)->where('approval_status', '<>', 'Rejected')->get();
                 foreach ($models as $model) {
                     $model->approval_status = 'Approved';
                     $model->approved_at = Carbon::now(); // Simpan waktu approval sekarang
@@ -976,7 +976,7 @@ class ApprovalReimburseController extends Controller
                         'userId' => $nextApproval->employee->id, // Jika perlu, masukkan ID pengguna di sini
                         'autoOpen' => 'reject'
                     ]);
-                    try{
+                    try {
                         Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
@@ -987,7 +987,7 @@ class ApprovalReimburseController extends Controller
                             $base64Image,
                         ));
                     } catch (\Exception $e) {
-                    	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                        Log::error('Email tidak terkirim: ' . $e->getMessage());
                     }
                 }
             }
@@ -1043,7 +1043,7 @@ class ApprovalReimburseController extends Controller
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor :";
-                try{
+                try {
                     Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
@@ -1054,7 +1054,7 @@ class ApprovalReimburseController extends Controller
                         $base64Image,
                     ));
                 } catch (\Exception $e) {
-                	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email tidak terkirim: ' . $e->getMessage());
                 }
             }
 
@@ -1075,7 +1075,7 @@ class ApprovalReimburseController extends Controller
             // Jika tidak ada layer yang lebih tinggi (berarti ini adalah layer tertinggi)
             if (!$nextApproval) {
                 // Set status ke Approved untuk layer tertinggi
-                $models = ca_sett_approval::where('ca_id', $ca_id)->where('employee_id', $employeeId)->where('approval_status','<>','Rejected')->get();
+                $models = ca_sett_approval::where('ca_id', $ca_id)->where('employee_id', $employeeId)->where('approval_status', '<>', 'Rejected')->get();
                 foreach ($models as $model) {
                     $model->approval_status = 'Approved';
                     $model->approved_at = Carbon::now(); // Simpan waktu approval sekarang
@@ -1096,7 +1096,7 @@ class ApprovalReimburseController extends Controller
                     if ($CANotificationLayer) {
                         $textNotification = "Your Declaration Cash Advanced request has been approved, please check your request again or can download your submission in the email attachment :";
                         $declaration = "Declaration";
-                        try{
+                        try {
                             Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
@@ -1107,15 +1107,15 @@ class ApprovalReimburseController extends Controller
                                 $base64Image,
                             ));
                         } catch (\Exception $e) {
-                        	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                            Log::error('Email tidak terkirim: ' . $e->getMessage());
                         }
-                    }   
+                    }
                 }
 
                 return redirect()->route('blank.pageUn')->with('success', 'Transaction Approved, Thanks for Approving.');
             } else {
                 // Jika ada layer yang lebih tinggi, update status layer saat ini dan alihkan ke layer berikutnya
-                $models = ca_sett_approval::where('ca_id', $ca_id)->where('employee_id', $employeeId)->where('approval_status','<>','Rejected')->get();
+                $models = ca_sett_approval::where('ca_id', $ca_id)->where('employee_id', $employeeId)->where('approval_status', '<>', 'Rejected')->get();
                 foreach ($models as $model) {
                     $model->approval_status = 'Approved';
                     $model->approved_at = Carbon::now(); // Simpan waktu approval sekarang
@@ -1150,7 +1150,7 @@ class ApprovalReimburseController extends Controller
                         'userId' => $nextApproval->employee->id, // Jika perlu, masukkan ID pengguna di sini
                         'autoOpen' => 'reject'
                     ]);
-                    try{
+                    try {
                         Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
@@ -1161,7 +1161,7 @@ class ApprovalReimburseController extends Controller
                             $base64Image,
                         ));
                     } catch (\Exception $e) {
-                    	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                        Log::error('Email tidak terkirim: ' . $e->getMessage());
                     }
                 }
                 return redirect()->route('blank.pageUn')->with('success', 'Transaction Approved, Thanks for Approving.');
@@ -1214,7 +1214,7 @@ class ApprovalReimburseController extends Controller
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor :";
-                try{
+                try {
                     Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
@@ -1225,7 +1225,7 @@ class ApprovalReimburseController extends Controller
                         $base64Image,
                     ));
                 } catch (\Exception $e) {
-                	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email tidak terkirim: ' . $e->getMessage());
                 }
             }
 
@@ -1247,7 +1247,7 @@ class ApprovalReimburseController extends Controller
             // Jika tidak ada layer yang lebih tinggi (berarti ini adalah layer tertinggi)
             if (!$nextApproval) {
                 // Set status ke Approved untuk layer tertinggi
-                $models = ca_sett_approval::where('ca_id', $ca_id)->where('employee_id', $model->employee_id)->where('approval_status','<>','Rejected')->get();
+                $models = ca_sett_approval::where('ca_id', $ca_id)->where('employee_id', $model->employee_id)->where('approval_status', '<>', 'Rejected')->get();
                 foreach ($models as $model) {
                     $model->approval_status = 'Approved';
                     $model->approved_at = Carbon::now(); // Simpan waktu approval sekarang
@@ -1270,7 +1270,7 @@ class ApprovalReimburseController extends Controller
                     if ($CANotificationLayer) {
                         $textNotification = "Your Declaration Cash Advanced request has been approved, please check your request again or can download your submission in the email attachment :";
                         $declaration = "Declaration";
-                        try{
+                        try {
                             Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
@@ -1281,13 +1281,13 @@ class ApprovalReimburseController extends Controller
                                 $base64Image,
                             ));
                         } catch (\Exception $e) {
-                        	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                            Log::error('Email tidak terkirim: ' . $e->getMessage());
                         }
                     }
                 }
             } else {
                 // Jika ada layer yang lebih tinggi, update status layer saat ini dan alihkan ke layer berikutnya
-                $models = ca_sett_approval::where('ca_id', $ca_id)->where('employee_id', $model->employee_id)->where('approval_status','<>','Rejected')->get();
+                $models = ca_sett_approval::where('ca_id', $ca_id)->where('employee_id', $model->employee_id)->where('approval_status', '<>', 'Rejected')->get();
                 foreach ($models as $model) {
                     $model->approval_status = 'Approved';
                     $model->approved_at = Carbon::now(); // Simpan waktu approval sekarang
@@ -1323,7 +1323,7 @@ class ApprovalReimburseController extends Controller
                         'userId' => $nextApproval->employee->id, // Jika perlu, masukkan ID pengguna di sini
                         'autoOpen' => 'reject'
                     ]);
-                    try{
+                    try {
                         Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
@@ -1334,7 +1334,7 @@ class ApprovalReimburseController extends Controller
                             $base64Image,
                         ));
                     } catch (\Exception $e) {
-                    	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                        Log::error('Email tidak terkirim: ' . $e->getMessage());
                     }
                 }
             }
@@ -1394,7 +1394,7 @@ class ApprovalReimburseController extends Controller
         $employeeId = auth()->user()->employee_id;
         $employee_data = Employee::where('id', $userId)->first();
 
-        $model = ca_extend::where('ca_id', $id)->where('employee_id', $employeeId)->where('approval_status','<>','Rejected')->firstOrFail();
+        $model = ca_extend::where('ca_id', $id)->where('employee_id', $employeeId)->where('approval_status', '<>', 'Rejected')->firstOrFail();
 
         // Ambil semua approval yang terkait dengan ca_id
         $approvals = ca_extend::where('ca_id', $id)
@@ -1417,7 +1417,7 @@ class ApprovalReimburseController extends Controller
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor :";
-                try{
+                try {
                     Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
@@ -1428,7 +1428,7 @@ class ApprovalReimburseController extends Controller
                         $base64Image,
                     ));
                 } catch (\Exception $e) {
-                	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email tidak terkirim: ' . $e->getMessage());
                 }
             }
 
@@ -1474,7 +1474,7 @@ class ApprovalReimburseController extends Controller
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
                 if ($CANotificationLayer) {
                     $textNotification = "Your Declaration Cash Advanced request has been approved, please check your request again or can download your submission in the email attachment :";
-                    try{
+                    try {
                         Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                             null,
                             $caTransaction,
@@ -1485,7 +1485,7 @@ class ApprovalReimburseController extends Controller
                             $base64Image,
                         ));
                     } catch (\Exception $e) {
-                    	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                        Log::error('Email tidak terkirim: ' . $e->getMessage());
                     }
                 }
 
@@ -1522,7 +1522,7 @@ class ApprovalReimburseController extends Controller
                         'userId' => $nextApproval->employee->id, // Jika perlu, masukkan ID pengguna di sini
                         'autoOpen' => 'reject'
                     ]);
-                    try{
+                    try {
                         Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
@@ -1533,7 +1533,7 @@ class ApprovalReimburseController extends Controller
                             $base64Image,
                         ));
                     } catch (\Exception $e) {
-                    	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                        Log::error('Email tidak terkirim: ' . $e->getMessage());
                     }
                 }
 
@@ -1586,7 +1586,7 @@ class ApprovalReimburseController extends Controller
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor :";
-                try{
+                try {
                     Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
@@ -1597,7 +1597,7 @@ class ApprovalReimburseController extends Controller
                         $base64Image,
                     ));
                 } catch (\Exception $e) {
-                	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email tidak terkirim: ' . $e->getMessage());
                 }
             }
 
@@ -1618,7 +1618,7 @@ class ApprovalReimburseController extends Controller
             // Jika tidak ada layer yang lebih tinggi (berarti ini adalah layer tertinggi)
             if (!$nextApproval) {
                 // Set status ke Approved untuk layer tertinggi
-                $models = ca_extend::where('ca_id', $ca_id)->where('employee_id', $model->employee_id)->where('approval_status','<>','Rejected')->get();
+                $models = ca_extend::where('ca_id', $ca_id)->where('employee_id', $model->employee_id)->where('approval_status', '<>', 'Rejected')->get();
                 foreach ($models as $model) {
                     $model->approval_status = 'Approved';
                     $model->approved_at = Carbon::now(); // Simpan waktu approval sekarang
@@ -1636,7 +1636,7 @@ class ApprovalReimburseController extends Controller
                     $caTransaction->reason_extend = $req->input('ext_reason');
                     $caTransaction->save();
 
-                    
+
                     // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
                     $CANotificationLayer = "erzie.aldrian02@outlook.com";
                     $imagePath = public_path('images/kop.jpg');
@@ -1644,7 +1644,7 @@ class ApprovalReimburseController extends Controller
                     $base64Image = "data:image/png;base64," . base64_encode($imageContent);
                     if ($CANotificationLayer) {
                         $textNotification = "Your Extend Cash Advanced request has been approved, please check your request again or can download your submission in the email attachment :";
-                        try{
+                        try {
                             Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
@@ -1655,13 +1655,13 @@ class ApprovalReimburseController extends Controller
                                 $base64Image,
                             ));
                         } catch (\Exception $e) {
-                        	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                            Log::error('Email tidak terkirim: ' . $e->getMessage());
                         }
                     }
                 }
             } else {
                 // Jika ada layer yang lebih tinggi, update status layer saat ini dan alihkan ke layer berikutnya
-                $models = ca_extend::where('ca_id', $ca_id)->where('employee_id', $model->employee_id)->where('approval_status','<>','Rejected')->get();
+                $models = ca_extend::where('ca_id', $ca_id)->where('employee_id', $model->employee_id)->where('approval_status', '<>', 'Rejected')->get();
                 foreach ($models as $model) {
                     $model->approval_status = 'Approved';
                     $model->approved_at = Carbon::now(); // Simpan waktu approval sekarang
@@ -1696,7 +1696,7 @@ class ApprovalReimburseController extends Controller
                         'userId' => $nextApproval->employee->id, // Jika perlu, masukkan ID pengguna di sini
                         'autoOpen' => 'reject'
                     ]);
-                    try{
+                    try {
                         Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
@@ -1707,7 +1707,7 @@ class ApprovalReimburseController extends Controller
                             $base64Image,
                         ));
                     } catch (\Exception $e) {
-                    	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                        Log::error('Email tidak terkirim: ' . $e->getMessage());
                     }
                 }
             }
@@ -1763,7 +1763,7 @@ class ApprovalReimburseController extends Controller
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor :";
-                try{
+                try {
                     Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
@@ -1774,7 +1774,7 @@ class ApprovalReimburseController extends Controller
                         $base64Image,
                     ));
                 } catch (\Exception $e) {
-                	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email tidak terkirim: ' . $e->getMessage());
                 }
             }
 
@@ -1795,7 +1795,7 @@ class ApprovalReimburseController extends Controller
             // Jika tidak ada layer yang lebih tinggi (berarti ini adalah layer tertinggi)
             if (!$nextApproval) {
                 // Set status ke Approved untuk layer tertinggi
-                $models = ca_extend::where('ca_id', $ca_id)->where('employee_id', $employeeId)->where('approval_status','<>','Rejected')->get();
+                $models = ca_extend::where('ca_id', $ca_id)->where('employee_id', $employeeId)->where('approval_status', '<>', 'Rejected')->get();
                 foreach ($models as $model) {
                     $model->approval_status = 'Approved';
                     $model->approved_at = Carbon::now(); // Simpan waktu approval sekarang
@@ -1826,7 +1826,7 @@ class ApprovalReimburseController extends Controller
                     if ($CANotificationLayer) {
                         $textNotification = "Your Extend Cash Advanced request has been approved, please check your request again or can download your submission in the email attachment:";
                         $declaration = "Extend";
-                        try{
+                        try {
                             Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
@@ -1837,7 +1837,7 @@ class ApprovalReimburseController extends Controller
                                 $base64Image,
                             ));
                         } catch (\Exception $e) {
-                        	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                            Log::error('Email tidak terkirim: ' . $e->getMessage());
                         }
                     }
                 }
@@ -1845,7 +1845,7 @@ class ApprovalReimburseController extends Controller
                 return redirect()->route('blank.pageUn')->with('success', 'Transaction Approved, Thanks for Approving.');
             } else {
                 // Jika ada layer yang lebih tinggi, update status layer saat ini dan alihkan ke layer berikutnya
-                $models = ca_extend::where('ca_id', $ca_id)->where('employee_id', $employeeId)->where('approval_status','<>','Rejected')->get();
+                $models = ca_extend::where('ca_id', $ca_id)->where('employee_id', $employeeId)->where('approval_status', '<>', 'Rejected')->get();
                 foreach ($models as $model) {
                     $model->approval_status = 'Approved';
                     $model->approved_at = Carbon::now(); // Simpan waktu approval sekarang
@@ -1880,7 +1880,7 @@ class ApprovalReimburseController extends Controller
                         'userId' => $nextApproval->employee->id, // Jika perlu, masukkan ID pengguna di sini
                         'autoOpen' => 'reject'
                     ]);
-                    try{
+                    try {
                         Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
@@ -1891,7 +1891,7 @@ class ApprovalReimburseController extends Controller
                             $base64Image,
                         ));
                     } catch (\Exception $e) {
-                    	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                        Log::error('Email tidak terkirim: ' . $e->getMessage());
                     }
                 }
                 return redirect()->route('blank.pageUn')->with('success', 'Transaction Approved, Thanks for Approving.');
@@ -1945,12 +1945,20 @@ class ApprovalReimburseController extends Controller
         $noHtl = $hotel->no_htl;
 
         // Handle approval scenarios
-        if ($hotel->approval_status == 'Pending L1') {
+        if ($hotel->manager_l2_id == '-') {
+            Hotel::where('no_htl', $noHtl)->update(['approval_status' => 'Approved']);
+        } elseif ($hotel->approval_status == 'Pending L1') {
             Hotel::where('no_htl', $noHtl)->update(['approval_status' => 'Pending L2']);
 
             $managerId = Employee::where('id', $hotel->user_id)->value('manager_l2_id');
             $managerEmail = Employee::where('employee_id', $managerId)->value('email');
             $managerName = Employee::where('employee_id', $managerId)->value('fullname');
+            $employeeName = Employee::where('id', $hotel->user_id)->pluck('fullname')->first();
+
+            $imagePath = public_path('images/kop.jpg');
+            $imageContent = file_get_contents($imagePath);
+            $base64Image = "data:image/png;base64," . base64_encode($imageContent);
+            $textNotification = "requesting a Hotel and waiting for your Approval with the following details :";
 
             $approvalLink = route('approve.hotel', [
                 'id' => urlencode($hotel->id),
@@ -1985,7 +1993,7 @@ class ApprovalReimburseController extends Controller
                 }
 
                 // Send email with all hotel details
-                try{
+                try {
                     Mail::to($managerEmail)->send(new HotelNotification([
                         'noSppd' => $hotel->no_sppd,
                         'noHtl' => $noHtlList,
@@ -1998,9 +2006,12 @@ class ApprovalReimburseController extends Controller
                         'approvalLink' => $approvalLink,
                         'rejectionLink' => $rejectionLink,
                         'approvalStatus' => 'Pending L2',
+                        'base64Image' => $base64Image,
+                        'textNotification' => $textNotification,
+                        'employeeName' => $employeeName,
                     ]));
                 } catch (\Exception $e) {
-                	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email tidak terkirim: ' . $e->getMessage());
                 }
             }
         } elseif ($hotel->approval_status == 'Pending L2') {
@@ -2013,7 +2024,11 @@ class ApprovalReimburseController extends Controller
             $approval->id = (string) Str::uuid();
             $approval->htl_id = $hotel->id;
             $approval->employee_id = $employeeId;
-            $approval->layer = $hotel->approval_status == 'Pending L2' ? 1 : 2;
+            if ($hotel->manager_l2_id == '-') {
+                $approval->layer = 1;
+            } else {
+                $approval->layer = $hotel->approval_status == 'Pending L2' ? 1 : 2;
+            }
             $approval->approval_status = $hotel->approval_status;
             $approval->approved_at = now();
             $approval->save();
@@ -2084,11 +2099,49 @@ class ApprovalReimburseController extends Controller
         $ticketNpTkt = Tiket::where('no_tkt', $noTkt)->pluck('np_tkt');
         // dd($ticket->approval_status);
         // If not rejected, proceed with normal approval process
-        if ($ticket->approval_status == 'Pending L1') {
+        if ($ticket->manager_l2_id == '-') {
+            Tiket::where('no_tkt', $noTkt)->update(['approval_status' => 'Approved']);
+            if ($ticket->jns_dinas_tkt == 'Cuti') {
+                // Hitung total pengurangan kuota berdasarkan semua tiket
+                $totalDecrement = 0;
+
+                foreach ($ticketNpTkt as $name) {
+                    // Dapatkan type_tkt untuk setiap tiket berdasarkan nama
+                    $ticketType = Tiket::where('user_id', $ticket->user_id)
+                        ->where('no_tkt', $ticket->no_tkt)
+                        ->where('tkt_only', '=', 'Y')
+                        ->where('np_tkt', $name) // Pastikan mengambil type_tkt untuk nama saat ini
+                        ->value('type_tkt');
+
+                    // Default ke 'One Way' jika type_tkt tidak ditemukan
+                    if (!$ticketType) {
+                        $ticketType = 'One Way';
+                    }
+
+                    // Tentukan nilai pengurangan berdasarkan type_tkt
+                    $decrementValue = ($ticketType == 'One Way') ? 1 : 2;
+
+                    // Tambahkan nilai pengurangan ke total
+                    $totalDecrement += $decrementValue;
+                }
+
+                // Kurangi kuota total di HomeTrip berdasarkan employee_id
+                HomeTrip::where('employee_id', $ticketEmployeeId)
+                    ->where('period', $currentYear)
+                    ->decrement('quota', $totalDecrement);
+            }
+        } elseif ($ticket->approval_status == 'Pending L1') {
             Tiket::where('no_tkt', $noTkt)->update(['approval_status' => 'Pending L2']);
             $managerId = Employee::where('id', $ticket->user_id)->value('manager_l2_id');
             $managerEmail = Employee::where('employee_id', $managerId)->value('email');
             $managerName = Employee::where('employee_id', $managerId)->pluck('fullname')->first();
+            $employeeName = Employee::where('id', $ticket->user_id)->pluck('fullname')->first();
+
+            $imagePath = public_path('images/kop.jpg');
+            $imageContent = file_get_contents($imagePath);
+            $base64Image = "data:image/png;base64," . base64_encode($imageContent);
+            $textNotification = "requesting a Ticket and waiting for your Approval with the following details :";
+
             $approvalLink = route('approve.ticket', [
                 'id' => urlencode($ticket->id),
                 'manager_id' => $managerId,
@@ -2130,7 +2183,7 @@ class ApprovalReimburseController extends Controller
 
                 if ($ticket->jns_dinas_tkt == 'Dinas') {
                     // Send email with all hotel details
-                    try{
+                    try {
                         Mail::to($managerEmail)->send(new TicketNotification([
                             'noSppd' => $ticket->no_sppd,
                             'noTkt' => $noTktList,
@@ -2146,12 +2199,15 @@ class ApprovalReimburseController extends Controller
                             'approvalStatus' => 'Pending L2',
                             'approvalLink' => $approvalLink,
                             'rejectionLink' => $rejectionLink,
+                            'base64Image' => $base64Image,
+                            'textNotification' => $textNotification,
+                            'employeeName' => $employeeName,
                         ]));
                     } catch (\Exception $e) {
-                    	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                        Log::error('Email tidak terkirim: ' . $e->getMessage());
                     }
                 } else {
-                    try{
+                    try {
                         Mail::to($managerEmail)->send(new HomeTripNotification([
                             'noTkt' => $noTktList,
                             'namaPenumpang' => $npTkt,
@@ -2166,9 +2222,12 @@ class ApprovalReimburseController extends Controller
                             'approvalStatus' => 'Pending L2',
                             'approvalLink' => $approvalLink,
                             'rejectionLink' => $rejectionLink,
+                            'base64Image' => $base64Image,
+                            'textNotification' => $textNotification,
+                            'employeeName' => $employeeName,
                         ]));
                     } catch (\Exception $e) {
-                    	Log::error('Email tidak terkirim: ' . $e->getMessage());
+                        Log::error('Email tidak terkirim: ' . $e->getMessage());
                     }
                 }
             }
@@ -2177,7 +2236,7 @@ class ApprovalReimburseController extends Controller
             if ($ticket->jns_dinas_tkt == 'Cuti') {
                 // Hitung total pengurangan kuota berdasarkan semua tiket
                 $totalDecrement = 0;
-        
+
                 foreach ($ticketNpTkt as $name) {
                     // Dapatkan type_tkt untuk setiap tiket berdasarkan nama
                     $ticketType = Tiket::where('user_id', $ticket->user_id)
@@ -2185,19 +2244,19 @@ class ApprovalReimburseController extends Controller
                         ->where('tkt_only', '=', 'Y')
                         ->where('np_tkt', $name) // Pastikan mengambil type_tkt untuk nama saat ini
                         ->value('type_tkt');
-        
+
                     // Default ke 'One Way' jika type_tkt tidak ditemukan
                     if (!$ticketType) {
                         $ticketType = 'One Way';
                     }
-        
+
                     // Tentukan nilai pengurangan berdasarkan type_tkt
                     $decrementValue = ($ticketType == 'One Way') ? 1 : 2;
-        
+
                     // Tambahkan nilai pengurangan ke total
                     $totalDecrement += $decrementValue;
                 }
-        
+
                 // Kurangi kuota total di HomeTrip berdasarkan employee_id
                 HomeTrip::where('employee_id', $ticketEmployeeId)
                     ->where('period', $currentYear)
@@ -2212,7 +2271,11 @@ class ApprovalReimburseController extends Controller
             $approval->id = (string) Str::uuid();
             $approval->tkt_id = $ticket->id;
             $approval->employee_id = $employeeId;
-            $approval->layer = $ticket->approval_status == 'Pending L2' ? 1 : 2;
+            if ($ticket->manager_l2_id == '-') {
+                $approval->layer = 1;
+            } else {
+                $approval->layer = $ticket->approval_status == 'Pending L2' ? 1 : 2;
+            }
             $approval->approval_status = $ticket->approval_status;
             $approval->approved_at = now();
             $approval->save();
