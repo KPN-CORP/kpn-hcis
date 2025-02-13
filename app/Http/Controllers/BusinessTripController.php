@@ -1514,8 +1514,8 @@ class BusinessTripController extends Controller
         if ($caRecords->isEmpty()) {
             if ($entrTab == false && $request->totalca > 0) {
                 // Create a new CA transaction if it doesn't exist
-                $ca = new CATransaction();
-                $dnsTab = true;
+                $ent = new CATransaction();
+                $entrTab = true;
 
                 // Generate new 'no_ca' code
                 $currentYear = date('Y');
@@ -1529,54 +1529,54 @@ class BusinessTripController extends Controller
                 $newNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
                 $newNoCa = "$prefix$currentYearShort$newNumber";
 
-                $caId = $ca->id = (string) Str::uuid();
-                $ca->no_ca = $newNoCa;
-                $ca->no_sppd = $oldNoSppd;
-                $ca->unit = $request->divisi;
-                $ca->contribution_level_code = $request->bb_perusahaan;
-                $ca->user_id = $userId;
-                $ca->destination = $request->tujuan;
-                $ca->start_date = $request->mulai;
-                $ca->end_date = $request->kembali;
-                $ca->ca_needs = $request->keperluan;
-                $ca->type_ca = 'entr';
-                $ca->date_required = null;
-                $ca->declare_estimate = Carbon::parse($request->kembali)->addDays(3);
-                $ca->total_days = Carbon::parse($request->mulai)->diffInDays(Carbon::parse($request->kembali));
-                $ca->total_ca = '0';
-                $ca->total_real = (int) str_replace('.', '', $request->totalca);
-                $ca->total_cost = -1 * (int) str_replace('.', '', $ca->total_real);
+                $entId = $ent->id = (string) Str::uuid();
+                $ent->no_ca = $newNoCa;
+                $ent->no_sppd = $oldNoSppd;
+                $ent->unit = $request->divisi;
+                $ent->contribution_level_code = $request->bb_perusahaan;
+                $ent->user_id = $userId;
+                $ent->destination = $request->tujuan;
+                $ent->start_date = $request->mulai;
+                $ent->end_date = $request->kembali;
+                $ent->ca_needs = $request->keperluan;
+                $ent->type_ca = 'entr';
+                $ent->date_required = null;
+                $ent->declare_estimate = Carbon::parse($request->kembali)->addDays(3);
+                $ent->total_days = Carbon::parse($request->mulai)->diffInDays(Carbon::parse($request->kembali));
+                $ent->total_ca = '0';
+                $ent->total_real = (int) str_replace('.', '', $request->totalca);
+                $ent->total_cost = -1 * (int) str_replace('.', '', $ent->total_real);
 
-                // dd($ca->total_real, $ca->total_cost);
+                // dd($ent->total_real, $ent->total_cost);
 
                 if ($statusValue === 'Declaration Draft') {
                     // Set CA status to Draft
                     // dd($statusValue);
-                    $caStatus = $ca->approval_sett = 'Draft';
-                    // dd($caStatus);
+                    $entStatus = $ent->approval_sett = 'Draft';
+                    // dd($entStatus);
 
                 } elseif ($statusValue === 'Declaration L1') {
                     // Set CA status to Pending
-                    $caStatus = $ca->approval_sett = 'Pending';
+                    $entStatus = $ent->approval_sett = 'Pending';
                 }
 
-                $ca->approval_status = 'Approved';
-                $ca->approval_sett = $request->approval_sett;
-                $ca->approval_extend = $request->approval_extend;
-                $ca->created_by = $userId;
+                $ent->approval_status = 'Approved';
+                $ent->approval_sett = $request->approval_sett;
+                $ent->approval_extend = $request->approval_extend;
+                $ent->created_by = $userId;
 
 
                 if ($statusValue === 'Declaration L1') {
-                    $ca->approval_sett = 'Pending';
+                    $ent->approval_sett = 'Pending';
                 } elseif ($statusValue === 'Declaration Draft') {
-                    $ca->approval_sett = 'Draft';
+                    $ent->approval_sett = 'Draft';
                 } else {
-                    $ca->approval_sett = $statusValue;
+                    $ent->approval_sett = $statusValue;
                 }
 
-                $ca->declaration_at = Carbon::now();
+                $ent->declaration_at = Carbon::now();
                 $total_real = (int) str_replace('.', '', $request->totalca);
-                // $total_ca = $ca->total_ca;
+                // $total_ca = $ent->total_ca;
 
                 if ($total_real === 0) {
                     // Redirect back with a SweetAlert message
@@ -1584,8 +1584,8 @@ class BusinessTripController extends Controller
                 }
 
                 // Assign total_real and calculate total_cost
-                // $ca->total_real = $total_real;
-                // $ca->total_cost = $total_ca - $total_real;
+                // $ent->total_real = $total_real;
+                // $ent->total_cost = $total_ca - $total_real;
 
                 // Initialize arrays for details
                 $detail_e = [];
@@ -1638,11 +1638,11 @@ class BusinessTripController extends Controller
                     'relation_e' => $relation_e,
                 ];
                 $declare_ent_ntf = $declare_ca;
-                $ca->prove_declare = json_encode(array_values($existingFiles));
+                $ent->prove_declare = json_encode(array_values($existingFiles));
 
-                $ca->detail_ca = '[{"detail_e":[],"relation_e":[]}]';
-                $ca->declare_ca = json_encode($declare_ca);
-                $model = $ca;
+                $ent->detail_ca = '[{"detail_e":[],"relation_e":[]}]';
+                $ent->declare_ca = json_encode($declare_ca);
+                $model = $ent;
 
                 $model->sett_id = $managerL1;
                 // dd($ca);
@@ -1870,6 +1870,7 @@ class BusinessTripController extends Controller
                 $model->sett_id = $managerL1;
 
             }
+            $ent->save();
             $ca->save();
         }
         if ($caRecords) {
@@ -2134,6 +2135,7 @@ class BusinessTripController extends Controller
                 if ($entrTab == false && $request->totalca > 0) {
                     // Create a new CA transaction if it doesn't exist
                     $ca = new CATransaction();
+                    $entrTab = true;
 
                     // Generate new 'no_ca' code
                     $currentYear = date('Y');
@@ -2269,6 +2271,7 @@ class BusinessTripController extends Controller
                 if ($dnsTab == false && $request->totalca_ca_deklarasi > 0) {
                     // Create a new CA transaction if it doesn't exist
                     $ca = new CATransaction();
+                    $dnsTab = true;
 
                     // Generate new 'no_ca' code
                     $currentYear = date('Y');
@@ -2581,11 +2584,11 @@ class BusinessTripController extends Controller
 
                     if ($employee_id != null) {
                         $model_approval = new ca_sett_approval;
-                        $model_approval->ca_id = $entrRecord->id ?? $ca->id;
+                        $model_approval->ca_id = $entrRecord->id ?? $ent->id ?? $ca->id;
                         $model_approval->role_name = $data_matrix_approval->desc;
                         $model_approval->employee_id = $employee_id;
                         $model_approval->layer = $data_matrix_approval->layer;
-                        $model_approval->approval_status = $caStatus;
+                        $model_approval->approval_status = $caStatus ?? $entStatus;
 
                         // Simpan data ke database
                         $model_approval->save();
@@ -6124,11 +6127,8 @@ class BusinessTripController extends Controller
 
                 // dd($managerL2);
                 if ($managerL2) {
-                    $ca = CATransaction::where('no_sppd', $businessTrip->no_sppd)->orWhere('caonly', '!=', 'Y')->first();
-                    $entrTab = $ca->where('type_ca', 'entr')->first();
-                    $dnsTab = $ca->where('type_ca', 'dns')->first();
-                    $detail_ca = $entrTab ? json_decode($entrTab->detail_ca, true) : [];
-                    $detail_ent = $dnsTab ? json_decode($dnsTab->detail_ca, true) : [];
+                    $detail_ca = $isCa ? json_decode($isCa->detail_ca, true) : [];
+                    $detail_ent = $isEnt ? json_decode($isEnt->detail_ca, true) : [];
                     $caDetails = [
                         'total_days_perdiem' => array_sum(array_column($detail_ca['detail_perdiem'] ?? [], 'total_days')),
                         'total_amount_perdiem' => array_sum(array_column($detail_ca['detail_perdiem'] ?? [], 'nominal')),
@@ -6530,8 +6530,8 @@ class BusinessTripController extends Controller
                 ];
                 // dd($caDetails,   $detail_ca );
 
-                $declare_ca_ntf = isset($declare_ca_ntf) ? $declare_ca_ntf : [];
-                $declare_ent_ntf = isset($declare_ent_ntf) ? $declare_ent_ntf : [];
+                $declare_ca_ntf = isset($dnsNtfRe) && isset($dnsNtfRe->declare_ca) ? json_decode($dnsNtfRe->declare_ca, true) : [];
+                $declare_ent_ntf = isset($entrNtfRe) && isset($entrNtfRe->detail_ca) ? json_decode($entrNtfRe->declare_ca, true) : [];
                 $caDeclare = [
                     'total_days_perdiem' => array_sum(array_column($declare_ca_ntf['detail_perdiem'] ?? [], 'total_days')),
                     'total_amount_perdiem' => array_sum(array_column($declare_ca_ntf['detail_perdiem'] ?? [], 'nominal')),
@@ -6564,11 +6564,11 @@ class BusinessTripController extends Controller
                             $managerName,
                             $approvalLink,
                             $rejectionLink,
-                            $isEnt,
-                            $isCa,
                             $employeeName,
                             $base64Image,
                             $textNotification,
+                            $isEnt,
+                            $isCa,
                         ));
                     } catch (\Exception $e) {
                         Log::error('Email Update Status Deklarasi Bussines Trip tidak terkirim: ' . $e->getMessage());
@@ -6983,6 +6983,7 @@ class BusinessTripController extends Controller
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $employeeName = Employee::where('employee_id', $employeeId)->pluck('fullname')->first();
+            $group_company = Employee::where('employee_id', $employeeId)->pluck('group_company')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
             $textNotification = "testtstststs requesting a Declaration Bussiness Trip and waiting for your Approval with the following details :";
             // dd( $detail_ca, $caTrans);
@@ -7043,11 +7044,12 @@ class BusinessTripController extends Controller
                         $managerName,
                         $approvalLink,
                         $rejectionLink,
-                        $isEnt,
-                        $isCa,
                         $employeeName,
                         $base64Image,
                         $textNotification,
+                        $isEnt,
+                        $isCa,
+                        $group_company,
                     ));
                 } catch (\Exception $e) {
                     Log::error('Email Update Status Deklarasi Bussines Trip tidak terkirim: ' . $e->getMessage());
