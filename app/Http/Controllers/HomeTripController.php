@@ -22,6 +22,7 @@ use App\Models\MasterBusinessUnit;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\date_interval_create_from_string;
 use Illuminate\Support\Facades\Log;
+use App\Models\MatrixApproval;
 
 class HomeTripController extends Controller
 {
@@ -42,7 +43,7 @@ class HomeTripController extends Controller
         }
         return null;
     }
-    
+
     public function homeTrip(Request $request)
     {
         // Get the filtered tickets
@@ -95,9 +96,6 @@ class HomeTripController extends Controller
         $ticketApprovals = $ticketApprovals->keyBy('tkt_id');
         $employeeName = Employee::pluck('fullname', 'employee_id');
 
-        $managerL1Names = 'Unknown';
-        $managerL2Names = 'Unknown';
-
         $employeeIds = $tickets->pluck('user_id')->unique();
 
         $managerL1Names = 'Unknown';
@@ -148,7 +146,7 @@ class HomeTripController extends Controller
         foreach ($employees_cast as $employee) {
             $joiningDate = date_create($employee->date_of_joining);
             $monthDay = $joiningDate->format('m-d');
-            $eligibleYear = (int)$joiningDate->format('Y') + 1;
+            $eligibleYear = (int) $joiningDate->format('Y') + 1;
 
             if ($eligibleYear <= $currentYear) {
                 $dependents = Dependents::where('employee_id', $employee->employee_id)->get();
@@ -255,6 +253,11 @@ class HomeTripController extends Controller
 
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
+
+        $isJobLevel = MatrixApproval::where('modul', 'businesstrip')
+            ->where('group_company', 'like', '%' . $employee->group_company . '%')
+            ->where('job_level', 'like', '%' . $employee->job_level . '%')
+            ->get();
 
         $npTkt = array_values($request->np_tkt);
         $selectedName = $npTkt[0] ?? null;
@@ -372,7 +375,7 @@ class HomeTripController extends Controller
                 $tiket->no_sppd = $request->bisnis_numb;
                 $tiket->user_id = $userId;
                 $tiket->manager_l1_id = $managerL1;
-                $tiket->manager_l2_id = $managerL2;
+                $tiket->manager_l2_id = ($isJobLevel->count() == 1) ? '-' : $managerL2;
                 $tiket->contribution_level_code = $contribution_level_code;
                 $tiket->unit = $request->unit;
                 $tiket->jk_tkt = $gender;
@@ -411,8 +414,8 @@ class HomeTripController extends Controller
         if ($statusValue !== 'Draft') {
             $managerId = Employee::where('id', $userId)->pluck('manager_l1_id')->first();
             $employeeName = Employee::where('id', $userId)->pluck('fullname')->first();
-            // $managerEmail = Employee::where('employee_id', $managerId)->pluck('email')->first();
-            $managerEmail = "eriton.dewa@kpn-corp.com";
+            $managerEmail = Employee::where('employee_id', $managerId)->pluck('email')->first();
+            // $managerEmail = "eriton.dewa@kpn-corp.com";
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -450,7 +453,7 @@ class HomeTripController extends Controller
                         'textNotification' => $textNotification,
                         'employeeName' => $employeeName,
                         'base64Image' => $base64Image,
-                    ]));          
+                    ]));
                 } catch (\Exception $e) {
                     Log::error('Email Create Home Trip tidak terkirim: ' . $e->getMessage());
                 }
@@ -557,6 +560,11 @@ class HomeTripController extends Controller
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
 
+        $isJobLevel = MatrixApproval::where('modul', 'businesstrip')
+            ->where('group_company', 'like', '%' . $employee->group_company . '%')
+            ->where('job_level', 'like', '%' . $employee->job_level . '%')
+            ->get();
+
         $npTkt = array_values($request->np_tkt);
         $selectedName = $npTkt[0] ?? null;
         // dd($request->np_tkt, $selectedName);
@@ -647,7 +655,7 @@ class HomeTripController extends Controller
                 $ticketData = [
                     'user_id' => Auth::id(),
                     'manager_l1_id' => $managerL1,
-                    'manager_l2_id' => $managerL2,
+                    'manager_l2_id' => ($isJobLevel->count() == 1) ? '-' : $managerL2,
                     'contribution_level_code' => $contribution_level_code,
                     'unit' => $request->unit,
                     'noktp_tkt' => $request->noktp_tkt[$key] ?? null,
@@ -750,7 +758,7 @@ class HomeTripController extends Controller
                         'managerName' => $managerName,
                         'approvalLink' => $approvalLink,
                         'rejectionLink' => $rejectionLink,
-                    ]));           
+                    ]));
                 } catch (\Exception $e) {
                     Log::error('Email Update Home Trip tidak terkirim: ' . $e->getMessage());
                 }
@@ -1055,7 +1063,7 @@ class HomeTripController extends Controller
         foreach ($employees_cast as $employee) {
             $joiningDate = date_create($employee->date_of_joining);
             $monthDay = $joiningDate->format('m-d');
-            $eligibleYear = (int)$joiningDate->format('Y') + 1;
+            $eligibleYear = (int) $joiningDate->format('Y') + 1;
 
             if ($eligibleYear <= $currentYear) {
                 $dependents = Dependents::where('employee_id', $employee->employee_id)->get();
