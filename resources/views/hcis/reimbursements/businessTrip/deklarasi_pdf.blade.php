@@ -699,7 +699,7 @@
             @if (count($declareCA['detail_perdiem']) > 0 && !empty($declareCA['detail_perdiem'][0]['company_code']))
                 <table class="table-approve">
                     <tr>
-                        <th colspan="6"><b>Perdiem Plan Declaration :</b></th>
+                        <th colspan="6"><b>Perdiem Declaration :</b></th>
                     </tr>
                     <tr class="head-row">
                         <td style="width:12%">Start Date</td>
@@ -786,7 +786,7 @@
                     !empty($declareCA['detail_meals'][0]['keterangan']))
                 <table class="table-approve">
                     <tr>
-                        <th colspan="3"><b>Meals Plan Declaration :</b></th>
+                        <th colspan="3"><b>Meals Declaration :</b></th>
                     </tr>
                     <tr class="head-row">
                         <td style="width:12%">Date</td>
@@ -859,7 +859,7 @@
             @if (count($declareCA['detail_transport']) > 0 && !empty($declareCA['detail_transport'][0]['company_code']))
                 <table class="table-approve">
                     <tr>
-                        <th colspan="4"><b>Transport Plan Declaration :</b></th>
+                        <th colspan="4"><b>Transport Declaration :</b></th>
                     </tr>
                     <tr class="head-row">
                         <td style="width:12%">Date</td>
@@ -942,7 +942,7 @@
             @if (count($declareCA['detail_penginapan']) > 0 && !empty($declareCA['detail_penginapan'][0]['company_code']))
                 <table class="table-approve">
                     <tr>
-                        <th colspan="6"><b>Accomodation Plan Declaration :</b></th>
+                        <th colspan="6"><b>Accomodation Declaration :</b></th>
                     </tr>
                     <tr class="head-row">
                         <td style="width:12%">Start Date</td>
@@ -1021,7 +1021,7 @@
             @if (count($declareCA['detail_lainnya']) > 0 && !empty($declareCA['detail_lainnya'][0]['keterangan']))
                 <table class="table-approve">
                     <tr>
-                        <th colspan="3"><b>Others Plan Declaration :</b></th>
+                        <th colspan="3"><b>Others Declaration :</b></th>
                     </tr>
                     <tr class="head-row">
                         <td style="width:12%">Date</td>

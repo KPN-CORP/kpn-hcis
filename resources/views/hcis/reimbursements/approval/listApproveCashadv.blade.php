@@ -205,6 +205,46 @@
                                                             </table>
                                                         </div>
                                                     @endif
+                                                    
+                                                    @if (!empty($detailCA['detail_meals']) && $detailCA['detail_meals'][0]['tanggal'] !== null)
+                                                        <div class="table-responsive">
+                                                            <table class="table table-hover table-sm nowrap" id="lainnyaTable" width="100%" cellspacing="0">
+                                                                <thead class="thead-light">
+                                                                    <tr class="bg-primary">
+                                                                        <th colspan="4" class="text-center text-white">Meals Plan</th>
+                                                                    </tr>
+                                                                    <tr style="text-align-last: center;">
+                                                                        <th>No</th>
+                                                                        <th>Date</th>
+                                                                        <th>Information</th>
+                                                                        <th>Amount</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <?php $totalLainnya = 0; $totalDays = 0; ?>
+                                                                    @foreach ($detailCA['detail_meals'] as $lainnya)
+                                                                        <tr style="text-align-last: center;">
+                                                                            <td>{{ $loop->index + 1 }}</td>
+                                                                            <td>{{ \Carbon\Carbon::parse($lainnya['tanggal'])->format('d-M-y') }}</td>
+                                                                            <td>{{$lainnya['keterangan']}}</td>
+                                                                            <td style="text-align-last: right;">Rp. {{ number_format($lainnya['nominal'], 0, ',', '.') }}</td>
+                                                                        </tr>
+                                                                        <?php
+                                                                            $totalLainnya += $lainnya['nominal'];
+                                                                        ?>
+                                                                    @endforeach
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td colspan="3" class="text-right">Total</td>
+                                                                            <td style="text-align: right"> Rp. {{ number_format($totalLainnya, 0, ',', '.') }} </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    @endif
+
+
 
                                                     @if (!empty($detailCA['detail_transport']) && $detailCA['detail_transport'][0]['tanggal'] !== null)
                                                         <div class="table-responsive">
