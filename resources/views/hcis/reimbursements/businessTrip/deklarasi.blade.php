@@ -226,9 +226,11 @@
 
                                         <div class="col-md-12 mb-2 mt-2">
                                             <label for="prove_declare" class="form-label">Upload Document</label>
-                                            <input type="file" id="prove_declare" name="prove_declare[]"
-                                                accept="image/*, application/pdf" class="form-control mb-2" multiple
-                                                onchange="previewFiles()">
+                                            <input type="file" id="prove_declare" name="prove_declare[]"  
+                                                accept="image/*, application/pdf" class="form-control mb-2" multiple  
+                                                onchange="previewFiles()"  
+                                                {{ !((isset($dnsData->prove_declare) && is_array($dnsData->prove_declare) && count($dnsData->prove_declare) > 0) ||   
+                                                (isset($entrData->prove_declare) && is_array($entrData->prove_declare) && count($entrData->prove_declare) > 0)) ? 'required' : '' }}>  
                                             @if (
                                                 (isset($dnsData->prove_declare) && $dnsData->prove_declare) ||
                                                     (isset($entrData->prove_declare) && $entrData->prove_declare))

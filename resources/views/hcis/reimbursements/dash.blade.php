@@ -55,7 +55,7 @@
     <div class="container-fluid">
         <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 row-cols-xxl-8 text-center">
             <div class="col">
-                <a href="{{ route('approval.cashadvanced') }}">
+                <a href="{{ route('businessTrip.approval') }}">
                     <div class="card" style="height: 200px">
                         <div class="card-body">
                             <img src="{{ asset('images/menu/approval.png') }}" alt="logo">
