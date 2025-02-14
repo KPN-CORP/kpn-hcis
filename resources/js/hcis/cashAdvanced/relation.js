@@ -66,7 +66,7 @@ function addMoreFormRelationDec(event) {
                         <label class="form-label"
                             for="name">Name</label>
                         <input type="text" name="rname_e_relation[]"
-                            id="rname_e_relation_${formCountRelation}" class="form-control">
+                            id="rname_e_relation_${formCountRelation}" class="form-control" placeholder="ex: John Doe">
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label"
@@ -74,21 +74,21 @@ function addMoreFormRelationDec(event) {
                         <input type="text"
                             name="rposition_e_relation[]"
                             id="rposition_e_relation_${formCountRelation}"
-                            class="form-control">
+                            class="form-control" placeholder="ex: Head Manager">
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label"
                             for="company">Company</label>
                         <input type="text" name="rcompany_e_relation[]"
                             id="rcompany_e_relation_${formCountRelation}"
-                            class="form-control">
+                            class="form-control" placeholder="ex: Company XYZ">
                     </div>
                     <div class="col-md-12">
                         <label class="form-label"
                             for="purpose">Purpose</label>
                         <textarea name="rpurpose_e_relation[]"
                             id="rpurpose_e_relation_${formCountRelation}"
-                            class="form-control"></textarea>
+                            class="form-control" placeholder="Write your purpose ..."></textarea>
                     </div>
                 </div>
                 <br>
@@ -165,7 +165,7 @@ function addMoreFormRelationReq(event) {
                         <label class="form-label"
                             for="name">Name</label>
                         <input type="text" name="rname_e_relation[]"
-                            id="rname_e_relation_${formCountRelation}" class="form-control">
+                            id="rname_e_relation_${formCountRelation}" class="form-control" placeholder="ex: John Doe">
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label"
@@ -173,21 +173,21 @@ function addMoreFormRelationReq(event) {
                         <input type="text"
                             name="rposition_e_relation[]"
                             id="rposition_e_relation_${formCountRelation}"
-                            class="form-control">
+                            class="form-control" placeholder="ex: Head Manager">
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label"
                             for="company">Company</label>
                         <input type="text" name="rcompany_e_relation[]"
                             id="rcompany_e_relation_${formCountRelation}"
-                            class="form-control">
+                            class="form-control" placeholder="ex: Company XYZ">
                     </div>
                     <div class="col-md-12">
                         <label class="form-label"
                             for="purpose">Purpose</label>
                         <textarea name="rpurpose_e_relation[]"
                             id="rpurpose_e_relation_${formCountRelation}"
-                            class="form-control"></textarea>
+                            class="form-control" placeholder="Write your purpose ..."></textarea>
                     </div>
                 </div>
                 <br>

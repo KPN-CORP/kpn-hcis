@@ -79,12 +79,14 @@ function addMoreFormDetailDec(event) {
         .addEventListener("input", function () {
             formatInputENT(this);
             calculateTotalNominalEDetail();
+            calculateTotalNominalBTENTTotal();
             if (isCADecDetail) {
                 calculateTotalNominalBTBalance();
             }
         });
 
     calculateTotalNominalEDetail(); // Hitung total secara otomatis.
+    calculateTotalNominalBTENTTotal();
     if (isCADecDetail) {
         calculateTotalNominalBTBalance();
     }
@@ -157,12 +159,14 @@ function addMoreFormDetailReq(event) {
         .addEventListener("input", function () {
             formatInputENT(this);
             calculateTotalNominalEDetail();
+            calculateTotalNominalBTENTTotal();
             if (isCADecDetail) {
                 calculateTotalNominalBTBalance();
             }
         });
 
     calculateTotalNominalEDetail(); // Hitung total secara otomatis.
+    calculateTotalNominalBTENTTotal();
     if (isCADecDetail) {
         calculateTotalNominalBTBalance();
     }
@@ -183,12 +187,12 @@ function removeFormDetail(index, event) {
         );
         let totalCA =
             cleanNumber(
-                document.querySelector('input[name="totalca"]').value
+                document.querySelector('input[name="totalreq"]').value
             ) || 0;
         totalCA -= nominalValue;
-        document.querySelector('input[name="total_e_detail"]').value =
+        document.querySelector('input[name="total_ent_detail"]').value =
             formatNumber(totalCA);
-        document.querySelector('input[name="totalca"]').value =
+        document.querySelector('input[name="totalreq"]').value =
             formatNumber(totalCA);
 
         // Hide the form to be removed
@@ -210,12 +214,12 @@ function removeFormDetailDec(index, event) {
         );
         let totalCA =
             cleanNumber(
-                document.querySelector('input[name="totalca"]').value
+                document.querySelector('input[name="totalreq"]').value
             ) || 0;
         totalCA -= nominalValue;
-        document.querySelector('input[name="total_e_detail"]').value =
+        document.querySelector('input[name="total_ent_detail"]').value =
             formatNumber(totalCA);
-        document.querySelector('input[name="totalca"]').value =
+        document.querySelector('input[name="totalreq"]').value =
             formatNumber(totalCA);
 
         // Hide the form to be removed
@@ -237,12 +241,12 @@ function clearFormDetail(index, event) {
         );
         let totalCA =
             cleanNumber(
-                document.querySelector('input[name="totalca"]').value
+                document.querySelector('input[name="totalreq"]').value
             ) || 0;
         totalCA -= nominalValue;
-        document.querySelector('input[name="total_e_detail"]').value =
+        document.querySelector('input[name="total_ent_detail"]').value =
             formatNumber(totalCA);
-        document.querySelector('input[name="totalca"]').value =
+        document.querySelector('input[name="totalreq"]').value =
             formatNumber(totalCA);
 
         let formContainer = document.getElementById(
@@ -283,9 +287,23 @@ function calculateTotalNominalEDetail() {
         .forEach((input) => {
             total += parseNumber(input.value);
         });
-    document.querySelector('input[name="total_e_detail"]').value =
+    document.querySelector('input[name="total_ent_detail"]').value =
         formatNumber(total);
-    document.getElementById("totalca").value = formatNumber(total);
+    document.getElementById("totalreq").value = formatNumber(total);
+}
+
+function calculateTotalNominalBTENTTotal() {
+    let total = 0;
+    document.querySelectorAll('input[name="totalca"]').forEach((input) => {
+        total += parseNumber(input.value);
+    });
+    document
+        .querySelectorAll('input[name="total_ent_detail"]')
+        .forEach((input) => {
+            total += parseNumber(input.value);
+        });
+    document.querySelector('input[name="totalreq"]').value =
+        formatNumber(total);
 }
 
 function updateCheckboxVisibility() {
@@ -340,6 +358,7 @@ document.addEventListener("DOMContentLoaded", function () {
             input.addEventListener("input", function () {
                 formatInputENT(this);
                 calculateTotalNominalEDetail(); // Ensure we calculate total here
+                calculateTotalNominalBTENTTotal();
                 if (isCADecDetail) {
                     calculateTotalNominalBTBalance();
                 }
@@ -354,6 +373,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
     calculateTotalNominalEDetail();
+    calculateTotalNominalBTENTTotal();
     if (isCADecDetail) {
         calculateTotalNominalBTBalance();
     }
@@ -369,6 +389,7 @@ function formatInputENT(input) {
         input.value = formatNumber(0);
     }
     calculateTotalNominalEDetail();
+    calculateTotalNominalBTENTTotal();
     if (isCADecDetail) {
         calculateTotalNominalBTBalance();
     }
