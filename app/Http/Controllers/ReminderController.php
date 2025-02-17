@@ -36,7 +36,7 @@ class ReminderController extends Controller
         if ($ca_transaction->isNotEmpty()) {   
             foreach ($ca_transaction as $transaction) {  
                 // $CANotificationLayer = Employee::where('id', $transaction->user_id)->pluck('email')->first();
-                $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                $CANotificationLayer = "eriton.dewa@kpn-corp.com";
                 // Jika $transaction tidak null, coba akses employee_id  
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);

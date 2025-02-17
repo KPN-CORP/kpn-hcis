@@ -258,7 +258,111 @@ class BTApprovalController extends Controller
         $employeeId = $manager_id;
 
         // Determine the new status and layer based on the action and manager's role
-        if ($status == 'Pending L2') {
+        if ($businessTrip->manager_l2_id == '-') {
+            $statusValue = 'Approved';
+            $layer = 1;
+            if ($businessTrip->hotel == 'Ya') {
+                $hotels = Hotel::where('no_sppd', $businessTrip->no_sppd)->get();
+                foreach ($hotels as $hotel) {
+                    if ($hotel->hotel_only != 'Y') {
+                        // Update the existing hotel record with the new approval status
+                        $hotel->update([
+                            'approval_status' => $statusValue,
+                        ]);
+                        $approval_htl = new HotelApproval();
+                        $approval_htl->id = (string) Str::uuid(); // Generate a UUID for the approval record
+                        $approval_htl->htl_id = $hotel->id;
+                        $approval_htl->employee_id = $employeeId; // Assuming the logged-in user's employee ID is needed
+                        $approval_htl->layer = $layer; // Set layer to 2 for rejected cases
+                        $approval_htl->approval_status = $statusValue;
+                        $approval_htl->approved_at = now();
+                        $approval_htl->save();
+                    }
+                }
+            }
+            if ($businessTrip->taksi == 'Ya') {
+                $taksi = Taksi::where('no_sppd', $businessTrip->no_sppd)->first();
+                if ($taksi) {
+                    // Update the existing hotel record with the new approval status
+                    $taksi->update([
+                        'approval_status' => $statusValue,
+                    ]);
+                    $approval_vt = new TaksiApproval();
+                    $approval_vt->id = (string) Str::uuid(); // Generate a UUID for the approval record
+                    $approval_vt->vt_id = $taksi->id;
+                    $approval_vt->employee_id = $employeeId; // Assuming the logged-in user's employee ID is needed
+                    $approval_vt->layer = $layer; // Set layer to 2 for rejected cases
+                    $approval_vt->approval_status = $statusValue;
+                    $approval_vt->approved_at = now();
+                    $approval_vt->save();
+                }
+            }
+            if ($businessTrip->tiket == 'Ya') {
+                $tikets = Tiket::where('no_sppd', $businessTrip->no_sppd)->get();
+                foreach ($tikets as $tiket) {
+                    if ($tiket->tkt_only != 'Y') {
+                        $tiket->update([
+                            'approval_status' => $statusValue,
+                        ]);
+                        $approval_tkt = new TiketApproval();
+                        $approval_tkt->id = (string) Str::uuid(); // Generate a UUID for the approval record
+                        $approval_tkt->tkt_id = $tiket->id;
+                        $approval_tkt->employee_id = $employeeId; // Assuming the logged-in user's employee ID is needed
+                        $approval_tkt->layer = $layer;
+                        $approval_tkt->approval_status = $statusValue;
+                        $approval_tkt->approved_at = now();
+                        $approval_tkt->save();
+                    }
+                }
+            }
+            if ($businessTrip->ca == 'Ya') {
+                $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+                foreach ($caTransaction as $caTransactions) {
+                    if ($caTransactions && $caTransactions->caonly != 'Y' && $caTransactions->caonly == null) {
+                        // Update CA approval status for L1
+                        $caApproval = ca_approval::where([
+                            'ca_id' => $caTransactions->id,
+                            'layer' => $layer
+                        ])->first();
+
+                        if ($caApproval) {
+                            // Only update if the record exists
+                            $caApproval->update([
+                                'approval_status' => 'Approved',
+                                'approved_at' => now(),
+                            ]);
+                        }
+
+                        // Find the next approver (Layer 2) from ca_approval
+                        $nextApproval = ca_approval::where('ca_id', $caTransactions->id)
+                            ->where('layer', $layer + 1)
+                            ->first();
+
+                        if ($nextApproval) {
+                            $updateCa = CATransaction::where('id', $caTransactions->id)->first();
+                            $updateCa->status_id = $nextApproval->employee_id;
+                            $updateCa->save();
+                        } else {
+                            // No next layer, so mark as Approved
+                            $caTransactions->update(['approval_status' => 'Approved']);
+                        }
+                    }
+                }
+            }
+            // Update the status in the BusinessTrip table
+            $businessTrip->update(['status' => $statusValue]);
+
+            // Record the approval or rejection in the BTApproval table
+            $approval->bt_id = $businessTrip->id;
+            $approval->layer = $layer;
+            $approval->approval_status = $statusValue;
+            $approval->approved_at = now();
+            $approval->reject_info = null;
+            $approval->employee_id = $employeeId;
+
+            // Save the approval record
+            $approval->save();
+        } elseif ($status == 'Pending L2') {
             $statusValue = 'Pending L2';
             $layer = 1;
             $managerL2 = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('email')->first();
@@ -407,7 +511,7 @@ class BTApprovalController extends Controller
                         $approval_tkt->id = (string) Str::uuid(); // Generate a UUID for the approval record
                         $approval_tkt->tkt_id = $tiket->id;
                         $approval_tkt->employee_id = $employeeId; // Assuming the logged-in user's employee ID is needed
-                        $approval_tkt->layer = $tiket->approval_status == 'Pending L2' ? 1 : 2; // Determine layer based on status
+                        $approval_tkt->layer = $layer;
                         $approval_tkt->approval_status = $statusValue;
                         $approval_tkt->approved_at = now();
                         $approval_tkt->save();
@@ -514,7 +618,7 @@ class BTApprovalController extends Controller
                         $approval_tkt->id = (string) Str::uuid(); // Generate a UUID for the approval record
                         $approval_tkt->tkt_id = $tiket->id;
                         $approval_tkt->employee_id = $employeeId; // Assuming the logged-in user's employee ID is needed
-                        $approval_tkt->layer = $tiket->approval_status == 'Pending L2' ? 1 : 2; // Determine layer based on status
+                        $approval_tkt->layer = $layer;
                         $approval_tkt->approval_status = $statusValue;
                         $approval_tkt->approved_at = now();
                         $approval_tkt->save();
@@ -615,8 +719,47 @@ class BTApprovalController extends Controller
 
         // Find the business trip by ID
         $businessTrip = BusinessTrip::findOrFail($id);
+        if ($businessTrip->manager_l2_id == '-') {
+            $statusValue = 'Declaration Approved';
+            $layer = 1;
 
-        if ($employeeId == $businessTrip->manager_l1_id) {
+            // Handle CA approval for L2
+
+            $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+            foreach ($caTransaction as $caTransactions) {
+                if ($caTransactions && $caTransactions->caonly != 'Y' && $caTransactions->caonly == null) {
+                    // Update CA approval status for L1
+                    $caApproval = ca_sett_approval::where([
+                        'ca_id' => $caTransactions->id,
+                        'layer' => $layer
+                    ])->where('approval_status', '!=', 'Rejected')->first();
+
+                    if ($caApproval) {
+                        // Only update if the record exists
+                        $caApproval->update([
+                            'approval_status' => 'Approved',
+                            'approved_at' => now(),
+                        ]);
+                    }
+
+                    // Find the next approver (Layer 2) from ca_sett_approval
+                    $nextApproval = ca_sett_approval::where('ca_id', $caTransactions->id)
+                        ->where('layer', $layer + 1)
+                        ->where('approval_status', '!=', 'Rejected')
+                        ->first();
+
+                    if ($nextApproval) {
+                        $updateCa = CATransaction::where('id', $caTransactions->id)->first();
+                        $updateCa->sett_id = $nextApproval->employee_id;
+                        $updateCa->save();
+                    } else {
+                        // No next layer, so mark as Approved
+                        $caTransactions->update(['approval_sett' => 'Approved']);
+                    }
+                }
+            }
+
+        } elseif ($employeeId == $businessTrip->manager_l1_id) {
             $statusValue = 'Declaration L2';
             $layer = 1;
             $managerL2 = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('email')->first();

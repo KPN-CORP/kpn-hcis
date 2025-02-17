@@ -2182,6 +2182,12 @@ class ReimburseController extends Controller
 
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
+
+        $isJobLevel = MatrixApproval::where('modul', 'businesstrip')
+            ->where('group_company', 'like', '%' . $employee_data->group_company . '%')
+            ->where('job_level', 'like', '%' . $employee_data->job_level . '%')
+            ->get();
+
         // Prepare the hotel data arrays
         $hotelData = [
             'nama_htl' => $req->nama_htl,
@@ -2212,7 +2218,7 @@ class ReimburseController extends Controller
                 $model->id = (string) Str::uuid();
                 $model->no_htl = $noSppdHtl;
                 $model->manager_l1_id = $managerL1;
-                $model->manager_l2_id = $managerL2;
+                $model->manager_l2_id = ($isJobLevel->count() == 1) ? '-' : $managerL2;
                 $model->contribution_level_code = $req->contribution_level_code;
                 $model->no_sppd = $req->bisnis_numb;
                 $model->no_sppd_htl = '-';
@@ -2231,15 +2237,15 @@ class ReimburseController extends Controller
                 $model->created_by = $userId;
                 $model->save();
 
-                if ($statusValue == 'Pending L1') {
-                    $employee = Employee::where('id', $userId)->first();
-                    // $HTLNotificationSubmit = Employee::where('employee_id', $employee->manager_l1_id)->pluck('email')->first();
-                    $HTLNotificationSubmit = "eriton.dewa@kpn-corp.com";
-                    if ($HTLNotificationSubmit) {
-                        // Kirim email ke pengguna transaksi (employee pada layer terakhir)
-                        // Mail::to($HTLNotificationSubmit)->send(new HotelNotification($hotelData));
-                    }
-                }
+                // if ($statusValue == 'Pending L1') {
+                //     $employee = Employee::where('id', $userId)->first();
+                //     $HTLNotificationSubmit = Employee::where('employee_id', $employee->manager_l1_id)->pluck('email')->first();
+                //     // $HTLNotificationSubmit = "eriton.dewa@kpn-corp.com";
+                //     if ($HTLNotificationSubmit) {
+                //         // Kirim email ke pengguna transaksi (employee pada layer terakhir)
+                //         Mail::to($HTLNotificationSubmit)->send(new HotelNotification($hotelData));
+                //     }
+                // }
                 $namaHtl[] = $hotelData['nama_htl'][$key];
                 $lokasiHtl[] = $hotelData['lokasi_htl'][$key];
                 $tglMasukHtl[] = $hotelData['tgl_masuk_htl'][$key];
@@ -2570,7 +2576,10 @@ class ReimburseController extends Controller
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
 
-        // Get the no_htl from the first existing hotel record
+        $isJobLevel = MatrixApproval::where('modul', 'businesstrip')
+            ->where('group_company', 'like', '%' . $employee_data->group_company . '%')
+            ->where('job_level', 'like', '%' . $employee_data->job_level . '%')
+            ->get();
 
         // dd($noHtl);
         $noHtlList = [];
@@ -2590,7 +2599,7 @@ class ReimburseController extends Controller
                 $hotelData = [
                     'unit' => $req->unit,
                     'manager_l1_id' => $managerL1,
-                    'manager_l2_id' => $managerL2,
+                    'manager_l2_id' => ($isJobLevel->count() == 1) ? '-' : $managerL2,
                     'no_sppd' => $req->bisnis_numb,
                     'nama_htl' => $req->nama_htl[$index],
                     'lokasi_htl' => $req->lokasi_htl[$index],
@@ -2620,7 +2629,7 @@ class ReimburseController extends Controller
                         'user_id' => $userId,
                         'created_by' => $userId,
                         'manager_l1_id' => $managerL1,
-                        'manager_l2_id' => $managerL2,
+                        'manager_l2_id' => ($isJobLevel->count() == 1) ? '-' : $managerL2,
                         'contribution_level_code' => $req->contribution_level_code,
                         'no_sppd_htl' => '-',
                     ]));
@@ -3023,7 +3032,9 @@ class ReimburseController extends Controller
         }
 
         // Handle approval scenarios
-        if ($hotel->approval_status == 'Pending L1') {
+        if ($hotel->manager_l2_id == '-') {
+            Hotel::where('no_htl', $noHtl)->update(['approval_status' => 'Approved']);
+        } elseif ($hotel->approval_status == 'Pending L1') {
             Hotel::where('no_htl', $noHtl)->update(['approval_status' => 'Pending L2']);
 
             $managerId = Employee::where('id', $hotel->user_id)->value('manager_l2_id');
@@ -3104,7 +3115,11 @@ class ReimburseController extends Controller
             $approval->id = (string) Str::uuid();
             $approval->htl_id = $hotel->id;
             $approval->employee_id = $employeeId;
-            $approval->layer = $hotel->approval_status == 'Pending L2' ? 1 : 2;
+            if ($hotel->manager_l2_id == '-') {
+                $approval->layer = 1;
+            } else {
+                $approval->layer = $hotel->approval_status == 'Pending L2' ? 1 : 2;
+            }
             $approval->approval_status = $hotel->approval_status;
             $approval->approved_at = now();
             $approval->save();
@@ -3158,7 +3173,9 @@ class ReimburseController extends Controller
         }
 
         // Handle approval scenarios
-        if ($hotel->approval_status == 'Pending L1') {
+        if ($hotel->manager_l2_id == '-') {
+            Hotel::where('no_htl', $noHtl)->update(['approval_status' => 'Approved']);
+        } elseif ($hotel->approval_status == 'Pending L1') {
             Hotel::where('no_htl', $noHtl)->update(['approval_status' => 'Pending L2']);
 
             $managerId = Employee::where('id', $hotel->user_id)->value('manager_l2_id');
@@ -3239,7 +3256,11 @@ class ReimburseController extends Controller
             $approval->id = (string) Str::uuid();
             $approval->htl_id = $hotel->id;
             $approval->employee_id = $employeeId;
-            $approval->layer = $hotel->approval_status == 'Pending L2' ? 1 : 2;
+            if ($hotel->manager_l2_id == '-') {
+                $approval->layer = 1;
+            } else {
+                $approval->layer = $hotel->approval_status == 'Pending L2' ? 1 : 2;
+            }
             $approval->approval_status = $hotel->approval_status;
             $approval->approved_at = now();
             $approval->by_admin = 'T';
@@ -3673,6 +3694,11 @@ class ReimburseController extends Controller
             return $newNoTkt;
         }
 
+        $isJobLevel = MatrixApproval::where('modul', 'businesstrip')
+            ->where('group_company', 'like', '%' . $employee_data->group_company . '%')
+            ->where('job_level', 'like', '%' . $employee_data->job_level . '%')
+            ->get();
+
         // Determine the ticket type from the request
         $ticketType = $req->jns_dinas_tkt == 'Dinas' ? 'Dinas' : 'Cuti';
         // Generate the ticket number for the entire submission
@@ -3726,7 +3752,7 @@ class ReimburseController extends Controller
                 $userId = Auth::id();
                 $tiket->no_sppd = $req->bisnis_numb;
                 $tiket->manager_l1_id = $managerL1;
-                $tiket->manager_l2_id = $managerL2;
+                $tiket->manager_l2_id = ($isJobLevel->count() == 1) ? '-' : $managerL2;
                 $tiket->user_id = $userId;
                 $tiket->unit = $req->unit;
                 $tiket->contribution_level_code = $req->contribution_level_code;
@@ -4098,6 +4124,11 @@ class ReimburseController extends Controller
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
 
+        $isJobLevel = MatrixApproval::where('modul', 'businesstrip')
+            ->where('group_company', 'like', '%' . $employee_data->group_company . '%')
+            ->where('job_level', 'like', '%' . $employee_data->job_level . '%')
+            ->get();
+
         if ($req->has('action_draft')) {
             $statusValue = 'Draft';  // When "Save as Draft" is clicked
         } elseif ($req->has('action_submit')) {
@@ -4122,7 +4153,7 @@ class ReimburseController extends Controller
                 $ticketData = [
                     'no_sppd' => $req->bisnis_numb,
                     'manager_l1_id' => $managerL1,
-                    'manager_l2_id' => $managerL2,
+                    'manager_l2_id' => ($isJobLevel->count() == 1) ? '-' : $managerL2,
                     'user_id' => Auth::id(),
                     'unit' => $req->unit,
                     'contribution_level_code' => $req->contribution_level_code,
@@ -4160,7 +4191,7 @@ class ReimburseController extends Controller
                         'id' => (string) Str::uuid(),
                         'noktp_tkt' => $value,
                         'manager_l1_id' => $managerL1,
-                        'manager_l2_id' => $managerL2,
+                        'manager_l2_id' => ($isJobLevel->count() == 1) ? '-' : $managerL2,
                         'contribution_level_code' => $req->contribution_level_code,
                         'tkt_only' => 'Y',
                     ]));
@@ -4613,7 +4644,38 @@ class ReimburseController extends Controller
 
         // dd($ticket->approval_status);
         // If not rejected, proceed with normal approval process
-        if ($ticket->approval_status == 'Pending L1') {
+        if ($ticket->manager_l2_id == '-') {
+            Tiket::where('no_tkt', $noTkt)->update(['approval_status' => 'Approved']);
+            if ($ticket->jns_dinas_tkt == 'Cuti') {
+                // Hitung total pengurangan kuota berdasarkan semua tiket
+                $totalDecrement = 0;
+
+                foreach ($ticketNpTkt as $name) {
+                    // Dapatkan type_tkt untuk setiap tiket berdasarkan nama
+                    $ticketType = Tiket::where('user_id', $ticket->user_id)
+                        ->where('no_tkt', $ticket->no_tkt)
+                        ->where('tkt_only', '=', 'Y')
+                        ->where('np_tkt', $name) // Pastikan mengambil type_tkt untuk nama saat ini
+                        ->value('type_tkt');
+
+                    // Default ke 'One Way' jika type_tkt tidak ditemukan
+                    if (!$ticketType) {
+                        $ticketType = 'One Way';
+                    }
+
+                    // Tentukan nilai pengurangan berdasarkan type_tkt
+                    $decrementValue = ($ticketType == 'One Way') ? 1 : 2;
+
+                    // Tambahkan nilai pengurangan ke total
+                    $totalDecrement += $decrementValue;
+                }
+
+                // Kurangi kuota total di HomeTrip berdasarkan employee_id
+                HomeTrip::where('employee_id', $ticketEmployeeId)
+                    ->where('period', $currentYear)
+                    ->decrement('quota', $totalDecrement);
+            }
+        } elseif ($ticket->approval_status == 'Pending L1') {
             Tiket::where('no_tkt', $noTkt)->update(['approval_status' => 'Pending L2']);
             $managerId = Employee::where('id', $ticket->user_id)->value('manager_l2_id');
             // $managerEmail = Employee::where('employee_id', $managerId)->value('email');
@@ -4755,7 +4817,11 @@ class ReimburseController extends Controller
             $approval->id = (string) Str::uuid();
             $approval->tkt_id = $ticket->id;
             $approval->employee_id = $employeeId;
-            $approval->layer = $ticket->approval_status == 'Pending L2' ? 1 : 2;
+            if ($ticket->manager_l2_id == '-') {
+                $approval->layer = 1;
+            } else {
+                $approval->layer = $ticket->approval_status == 'Pending L2' ? 1 : 2;
+            }
             $approval->approval_status = $ticket->approval_status;
             $approval->approved_at = now();
             $approval->save();
@@ -4820,10 +4886,39 @@ class ReimburseController extends Controller
             // Redirect to the ticket approval page instead of back to the same page
             return redirect()->route('ticket.admin')->with('success', 'Request rejected successfully.');
         }
-
-        // dd($ticket->approval_status);
         // If not rejected, proceed with normal approval process
-        if ($ticket->approval_status == 'Pending L1') {
+        if ($ticket->manager_l2_id == '-') {
+            Tiket::where('no_tkt', $noTkt)->update(['approval_status' => 'Approved']);
+            if ($ticket->jns_dinas_tkt == 'Cuti') {
+                // Hitung total pengurangan kuota berdasarkan semua tiket
+                $totalDecrement = 0;
+
+                foreach ($ticketNpTkt as $name) {
+                    // Dapatkan type_tkt untuk setiap tiket berdasarkan nama
+                    $ticketType = Tiket::where('user_id', $ticket->user_id)
+                        ->where('no_tkt', $ticket->no_tkt)
+                        ->where('tkt_only', '=', 'Y')
+                        ->where('np_tkt', $name) // Pastikan mengambil type_tkt untuk nama saat ini
+                        ->value('type_tkt');
+
+                    // Default ke 'One Way' jika type_tkt tidak ditemukan
+                    if (!$ticketType) {
+                        $ticketType = 'One Way';
+                    }
+
+                    // Tentukan nilai pengurangan berdasarkan type_tkt
+                    $decrementValue = ($ticketType == 'One Way') ? 1 : 2;
+
+                    // Tambahkan nilai pengurangan ke total
+                    $totalDecrement += $decrementValue;
+                }
+
+                // Kurangi kuota total di HomeTrip berdasarkan employee_id
+                HomeTrip::where('employee_id', $ticketEmployeeId)
+                    ->where('period', $currentYear)
+                    ->decrement('quota', $totalDecrement);
+            }
+        } elseif ($ticket->approval_status == 'Pending L1') {
             Tiket::where('no_tkt', $noTkt)->update(['approval_status' => 'Pending L2']);
             $managerId = Employee::where('id', $ticket->user_id)->value('manager_l2_id');
             // $managerEmail = Employee::where('employee_id', $managerId)->value('email');
@@ -4924,6 +5019,7 @@ class ReimburseController extends Controller
                 }
             }
         } elseif ($ticket->approval_status == 'Pending L2') {
+            // dd($ticket->approval_status);
             Tiket::where('no_tkt', $noTkt)->update(['approval_status' => 'Approved']);
             if ($ticket->jns_dinas_tkt == 'Cuti') {
                 // Hitung total pengurangan kuota berdasarkan semua tiket
@@ -4965,7 +5061,11 @@ class ReimburseController extends Controller
             $approval->id = (string) Str::uuid();
             $approval->tkt_id = $ticket->id;
             $approval->employee_id = $employeeId;
-            $approval->layer = $ticket->approval_status == 'Pending L2' ? 1 : 2;
+            if ($ticket->manager_l2_id == '-') {
+                $approval->layer = 1;
+            } else {
+                $approval->layer = $ticket->approval_status == 'Pending L2' ? 1 : 2;
+            }
             $approval->approval_status = $ticket->approval_status;
             $approval->approved_at = now();
             $approval->by_admin = 'T';
