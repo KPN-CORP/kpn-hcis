@@ -155,92 +155,7 @@
                                 @if ($transactions->type_ca == 'dns')
                                     <div class="col-md-12">
                                         <div class="table-responsive-sm">
-                                            @if($transactions->employee->group_company != 'Plantations')
-                                            <div class="row mb-3">
-
-                                                <div class="col-md-6">
-                                                    <div class="text-bg-primary fw-bold p-1 text-center" style="margin-bottom:-20px">Meals :</div>
-                                                    <div class="table-responsive">
-                                                        <table class="table table-hover table-sm nowrap" id="mealsTable" width="100%" cellspacing="0">
-                                                            <thead class="thead-light">
-                                                                <tr style="text-align-last: center;">
-                                                                    <th>No</th>
-                                                                    <th>Date</th>
-                                                                    <th>Information</th>
-                                                                    <th>Amount</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                <?php $totalLainnya = 0; $totalDays = 0; ?>
-                                                                @if(isset($detailCA['detail_meals']))
-                                                                @foreach ($detailCA['detail_meals'] as $lainnya)
-                                                                    <tr style="text-align-last: center;">
-                                                                        <td>{{ $loop->index + 1 }}</td>
-                                                                        <td>{{ \Carbon\Carbon::parse($lainnya['tanggal'])->format('d-M-y') }}</td>
-                                                                        <td>{{$lainnya['keterangan']}}</td>
-                                                                        <td style="text-align-last: right;">Rp. {{ number_format($lainnya['nominal'], 0, ',', '.') }}</td>
-                                                                    </tr>
-                                                                    <?php
-                                                                        $totalLainnya += $lainnya['nominal'];
-                                                                    ?>
-                                                                @endforeach
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td colspan="3" class="text-right">Total</td>
-                                                                        <td style="text-align: right"> Rp. {{ number_format($totalLainnya, 0, ',', '.') }} </td>
-                                                                    </tr>
-                                                                </tbody>
-                                                                @else
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td colspan="4" class="text-right">No data available</td>
-                                                                    </tr>
-                                                                </tbody>
-                                                                @endif
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-6">
-                                                    <div class="text-bg-primary fw-bold p-1 text-center" style="margin-bottom:-20px">Meals Declaration :</div>
-                                                    <div class="table-responsive">
-                                                        <table class="table table-hover table-sm nowrap" id="mealsTableDec" width="100%" cellspacing="0">
-                                                            <thead class="thead-light">
-                                                                <tr style="text-align-last: center;">
-                                                                    <th>No</th>
-                                                                    <th>Date</th>
-                                                                    <th>Information</th>
-                                                                    <th>Amount</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                <?php $totalLainnya = 0; $totalDays = 0; ?>
-                                                                @foreach ($declareCA['detail_meals'] as $lainnya)
-                                                                    <tr style="text-align-last: center;">
-                                                                        <td>{{ $loop->index + 1 }}</td>
-                                                                        <td>{{ \Carbon\Carbon::parse($lainnya['tanggal'])->format('d-M-y') }}</td>
-                                                                        <td>{{$lainnya['keterangan']}}</td>
-                                                                        <td style="text-align-last: right;">Rp. {{ number_format($lainnya['nominal'], 0, ',', '.') }}</td>
-                                                                    </tr>
-                                                                    <?php
-                                                                        $totalLainnya += $lainnya['nominal'];
-                                                                    ?>
-                                                                @endforeach
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td colspan="3" class="text-right">Total</td>
-                                                                        <td style="text-align: right"> Rp. {{ number_format($totalLainnya, 0, ',', '.') }} </td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            @endif
-
-
+                                            
                                             <div class="row mb-3">
 
                                                 <div class="col-md-6">
@@ -351,6 +266,90 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            @if($transactions->employee->group_company != 'Plantations')
+                                            <div class="row mb-3">
+
+                                                <div class="col-md-6">
+                                                    <div class="text-bg-primary fw-bold p-1 text-center" style="margin-bottom:-20px">Meals :</div>
+                                                    <div class="table-responsive">
+                                                        <table class="table table-hover table-sm nowrap" id="mealsTable" width="100%" cellspacing="0">
+                                                            <thead class="thead-light">
+                                                                <tr style="text-align-last: center;">
+                                                                    <th>No</th>
+                                                                    <th>Date</th>
+                                                                    <th>Information</th>
+                                                                    <th>Amount</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <?php $totalLainnya = 0; $totalDays = 0; ?>
+                                                                @if(isset($detailCA['detail_meals']))
+                                                                @foreach ($detailCA['detail_meals'] as $lainnya)
+                                                                    <tr style="text-align-last: center;">
+                                                                        <td>{{ $loop->index + 1 }}</td>
+                                                                        <td>{{ \Carbon\Carbon::parse($lainnya['tanggal'])->format('d-M-y') }}</td>
+                                                                        <td>{{$lainnya['keterangan']}}</td>
+                                                                        <td style="text-align-last: right;">Rp. {{ number_format($lainnya['nominal'], 0, ',', '.') }}</td>
+                                                                    </tr>
+                                                                    <?php
+                                                                        $totalLainnya += $lainnya['nominal'];
+                                                                    ?>
+                                                                @endforeach
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="3" class="text-right">Total</td>
+                                                                        <td style="text-align: right"> Rp. {{ number_format($totalLainnya, 0, ',', '.') }} </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                @else
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="4" class="text-right">No data available</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                @endif
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="text-bg-primary fw-bold p-1 text-center" style="margin-bottom:-20px">Meals Declaration :</div>
+                                                    <div class="table-responsive">
+                                                        <table class="table table-hover table-sm nowrap" id="mealsTableDec" width="100%" cellspacing="0">
+                                                            <thead class="thead-light">
+                                                                <tr style="text-align-last: center;">
+                                                                    <th>No</th>
+                                                                    <th>Date</th>
+                                                                    <th>Information</th>
+                                                                    <th>Amount</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <?php $totalLainnya = 0; $totalDays = 0; ?>
+                                                                @foreach ($declareCA['detail_meals'] as $lainnya)
+                                                                    <tr style="text-align-last: center;">
+                                                                        <td>{{ $loop->index + 1 }}</td>
+                                                                        <td>{{ \Carbon\Carbon::parse($lainnya['tanggal'])->format('d-M-y') }}</td>
+                                                                        <td>{{$lainnya['keterangan']}}</td>
+                                                                        <td style="text-align-last: right;">Rp. {{ number_format($lainnya['nominal'], 0, ',', '.') }}</td>
+                                                                    </tr>
+                                                                    <?php
+                                                                        $totalLainnya += $lainnya['nominal'];
+                                                                    ?>
+                                                                @endforeach
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="3" class="text-right">Total</td>
+                                                                        <td style="text-align: right"> Rp. {{ number_format($totalLainnya, 0, ',', '.') }} </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @endif
                                             <div class="row mb-3">
                                                 <div class="col-md-6">
                                                     <div class="text-bg-primary fw-bold p-1 text-center" style="margin-bottom:-20px">Meals :</div>

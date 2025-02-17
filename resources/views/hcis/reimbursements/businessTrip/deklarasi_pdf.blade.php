@@ -178,7 +178,7 @@
             <td class="label">Start Date</td>
             <td class="colon">:</td>
             <td class="value">{{ \Carbon\Carbon::parse($transactions->start_date)->format('d-M-y') }} to
-                {{ \Carbon\Carbon::parse($transactions->end_date)->format('d-M-y') }} ({{ $transactions->total_days }}
+                {{ \Carbon\Carbon::parse($transactions->end_date)->format('d-M-y') }} ({{ $transactions->total_days + 1 }}
                 days)</td>
         </tr>
         <tr>

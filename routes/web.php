@@ -68,6 +68,7 @@ Route::get('update-designtaion', [DesignationController::class, 'UpdateDesignati
 // Route::get('backup-daily-attendance', [AttendanceController::class, 'BackupDailyAttendance']);
 // Route::get('add-backdated-attendance', [AttendanceController::class, 'AddBackdatedAttendance']);
 Route::get('update-bt-to-db', [AttendanceController::class, 'UpdateBTtoDB']);
+Route::get('update-bt-to-db-nextstep', [AttendanceController::class, 'UpdateBTtoDBnextstep']);
 
 Route::get('/test-email', function () {
     $messages = '<p>This is a test message with <strong>bold</strong> text.</p>';

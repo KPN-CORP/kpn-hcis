@@ -65,7 +65,7 @@
                                         <option value="" disabled selected>--- Choose Disease ---</option>
                                         @foreach ($diseases as $disease)
                                             <option value="{{ $disease->disease_name }}">
-                                                {{ $disease->disease_name }}
+                                                {{ $disease->disease_name_detail }}
                                             </option>
                                         @endforeach
                                     </select>
