@@ -327,7 +327,7 @@ class MedicalController extends Controller
             ->where('employee_id', $employee_id)
             ->first();
 
-        $diseases = MasterDisease::orderBy('disease_name', 'asc')->where('active', 'T')->get();
+        $diseases = MasterDisease::orderBy('id', 'asc')->where('active', 'T')->get();
         $parentLink = 'Medical';
         $link = 'Add Medical Coverage Usage';
 
@@ -482,7 +482,7 @@ class MedicalController extends Controller
         // Fetch related data as before
         $families = Dependents::orderBy('date_of_birth', 'desc')->where('employee_id', $employee_id)->get();
         $employee_name = Employee::select('fullname')->where('employee_id', $employee_id)->first();
-        $diseases = MasterDisease::orderBy('disease_name', 'asc')->where('active', 'T')->get();
+        $diseases = MasterDisease::orderBy('id', 'asc')->where('active', 'T')->get();
 
         $parentLink = 'Medical';
         $link = 'Edit Medical Coverage Usage';
@@ -710,7 +710,7 @@ class MedicalController extends Controller
         // Fetch related data as before
         $families = Dependents::orderBy('date_of_birth', 'desc')->get();
         $employee_name = Employee::select('fullname')->first();
-        $diseases = MasterDisease::orderBy('disease_name', 'asc')->where('active', 'T')->get();
+        $diseases = MasterDisease::orderBy('id', 'asc')->where('active', 'T')->get();
 
         $parentLink = 'Medical (Admin)';
         $link = 'Medical Details';
@@ -1027,7 +1027,7 @@ class MedicalController extends Controller
         // Fetch related data as before
         $families = Dependents::orderBy('date_of_birth', 'desc')->get();
         $employee_name = Employee::select('fullname')->first();
-        $diseases = MasterDisease::orderBy('disease_name', 'asc')->where('active', 'T')->get();
+        $diseases = MasterDisease::orderBy('id', 'asc')->where('active', 'T')->get();
 
         $parentLink = 'Medical Approval';
         $link = 'Medical Details';
@@ -1558,7 +1558,7 @@ class MedicalController extends Controller
             ->where('employee_id', $employee_id)
             ->first();
 
-        $diseases = MasterDisease::orderBy('disease_name', 'asc')->where('active', 'T')->get();
+        $diseases = MasterDisease::orderBy('id', 'asc')->where('active', 'T')->get();
         $parentLink = 'Medical';
         $link = 'Add Medical Coverage Usage';
 

@@ -70,7 +70,7 @@
                                         @foreach ($diseases as $disease)
                                             <option value="{{ $disease->disease_name }}"
                                                 {{ $disease->disease_name === $selectedDisease ? 'selected' : '' }}>
-                                                {{ $disease->disease_name }}
+                                                {{ $disease->disease_name_detail }}
                                             </option>
                                         @endforeach
                                     </select>
