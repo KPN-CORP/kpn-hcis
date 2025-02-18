@@ -522,7 +522,8 @@
     </div>
 
     <!-- JavaScript Part -->
-    <script src="{{ asset('/js/editBusinessTrip.js') }}"></script>
+    {{-- <script src="{{ asset('/js/editBusinessTrip.js') }}"></script> --}}
+    @include('js.hcis.editBusinessTrip')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>

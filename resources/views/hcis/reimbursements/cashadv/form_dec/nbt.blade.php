@@ -1,4 +1,5 @@
-<script src="{{ asset('/js/cashAdvanced/nonBusinessTrip.js') }}"></script>
+{{-- <script src="{{ asset('/js/cashAdvanced/nonBusinessTrip.js') }}"></script> --}}
+@include('js.hcis.cashAdvanced.nonBusinessTrip')
 
 @if (!empty($detailCA) && $detailCA[0]['nominal_nbt'] !== null)
     <div id="form-container-nonb">

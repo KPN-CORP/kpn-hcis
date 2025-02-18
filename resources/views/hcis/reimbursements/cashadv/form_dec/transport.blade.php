@@ -1,4 +1,5 @@
-<script src="{{ asset('/js/cashAdvanced/transport.js') }}"></script>
+{{-- <script src="{{ asset('/js/cashAdvanced/transport.js') }}"></script> --}}
+@include('js.hcis.cashAdvanced.transport')
 
 <script>
     function addMoreFormTransportDec(event) {

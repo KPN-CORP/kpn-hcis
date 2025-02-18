@@ -1,4 +1,5 @@
-<script src="{{ asset('/js/btCashAdvanced/others.js') }}"></script>
+{{-- <script src="{{ asset('/js/btCashAdvanced/others.js') }}"></script> --}}
+@include('js.hcis.btCashAdvanced.others')
 <script>
     var formCountOthers = 0;
 

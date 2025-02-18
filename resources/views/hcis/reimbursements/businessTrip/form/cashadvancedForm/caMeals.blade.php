@@ -1,4 +1,5 @@
-<script src="{{ asset('/js/btCashAdvanced/meals.js') }}"></script>
+{{-- <script src="{{ asset('/js/btCashAdvanced/meals.js') }}"></script> --}}
+@include('js.hcis.btCashAdvanced.meals')
 
 <script>
     function addMoreFormMealsReq(event) {
