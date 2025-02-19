@@ -8,7 +8,7 @@ $(document).ready(function () {
             : null;
         const selectedTypes = $("#medical_type").val();
         const balanceContainer = $("#balanceContainer");
-        console.log(selectedYear);
+
         balanceContainer.empty(); // Clear previous balances
 
         if (selectedYear && selectedTypes && selectedTypes.length > 0) {

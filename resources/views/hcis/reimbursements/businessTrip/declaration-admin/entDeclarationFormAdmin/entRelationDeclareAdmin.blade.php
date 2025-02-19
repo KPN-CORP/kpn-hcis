@@ -1,4 +1,5 @@
-<script src="{{ asset('/js/cashAdvanced/relation.js') }}"></script>
+{{-- <script src="{{ asset('/js/cashAdvanced/relation.js') }}"></script> --}}
+@include('js.hcis.cashAdvanced.relation')
 
 @if (!empty($caDetail['relation_e']) && $caDetail['relation_e'][0]['name'] !== null)
     <div id="form-container-relation">

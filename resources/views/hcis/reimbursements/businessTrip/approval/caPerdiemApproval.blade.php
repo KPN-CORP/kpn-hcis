@@ -1,4 +1,5 @@
-<script src="{{ asset('/js/btCashAdvanced/perdiem.js') }}"></script>
+{{-- <script src="{{ asset('/js/btCashAdvanced/perdiem.js') }}"></script> --}}
+@include('js.hcis.btCashAdvanced.perdiem')
 
 <script>
     function addMoreFormPerdiemReq(event) {

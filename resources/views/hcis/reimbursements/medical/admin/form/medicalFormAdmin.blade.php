@@ -176,7 +176,8 @@
         </div>
     </div>
 
-    <script src="{{ asset('/js/medical/medical.js') }}"></script>
+    {{-- <script src="{{ asset('/js/medical/medical.js') }}"></script> --}}
+    @include('js.hcis.medical.medical')
     <script>
         var medicalTypeData = @json($medical_type);
         var typeToBalanceMap = @json($balanceData);
