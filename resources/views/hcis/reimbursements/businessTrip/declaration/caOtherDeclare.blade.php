@@ -19,11 +19,21 @@
                 <div class="card-body bg-light p-2 mb-3">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Others Declaration</p>
                     <div class="row">
-                        <div class="col-md-6 mb-2">
+                        <div class="col-md-4 mb-2">
                             <label class="form-label">Date</label>
                             <input type="date" name="tanggal_bt_lainnya[]" class="form-control" placeholder="mm/dd/yyyy">
                         </div>
-                        <div class="col-md-6 mb-2">
+                        <div class="col-md-4 mb-2">
+                                <label class="form-label" for="name">Type of Others</label>
+                                <select class="form-control select2" id="type_bt_lainnya_${formCountOthers}" name="type_bt_lainnya[]">
+                                    <option value="">Select Type...</option>
+                                    <option value="Laundry">Laundry</option>
+                                    <option value="Airport Tax">Airport Tax</option>
+                                    <option value="Porter">Porter</option>
+                                    <option value="Excess Baggage">Excess Baggage</option>
+                                </select>
+                            </div>
+                        <div class="col-md-4 mb-2">
                             <label class="form-label">Amount</label>
                             <div class="input-group mb-3">
                                 <div class="input-group-append">
@@ -62,11 +72,21 @@
                 <div class="card-body bg-light p-2 mb-3">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Others Declaration</p>
                     <div class="row">
-                        <div class="col-md-6 mb-2">
+                        <div class="col-md-4 mb-2">
                             <label class="form-label">Date</label>
                             <input type="date" name="tanggal_bt_lainnya[]" class="form-control" placeholder="mm/dd/yyyy">
                         </div>
-                        <div class="col-md-6 mb-2">
+                        <div class="col-md-4 mb-2">
+                                <label class="form-label" for="name">Type of Others</label>
+                                <select class="form-control select2" id="type_bt_lainnya_${formCountOthers}" name="type_bt_lainnya[]">
+                                    <option value="">Select Type...</option>
+                                    <option value="Laundry">Laundry</option>
+                                    <option value="Airport Tax">Airport Tax</option>
+                                    <option value="Porter">Porter</option>
+                                    <option value="Excess Baggage">Excess Baggage</option>
+                                </select>
+                            </div>
+                        <div class="col-md-4 mb-2">
                             <label class="form-label">Amount</label>
                             <div class="input-group mb-3">
                                 <div class="input-group-append">
@@ -165,6 +185,11 @@
                                     <td>{{ $lainnya['tanggal'] }}</td>
                                 </tr>
                                 <tr>
+                                    <th>Type of Others</th>
+                                    <td class="block">:</td>
+                                    <td>{{ $lainnya['type'] }}</td>
+                                </tr>
+                                <tr>
                                     <th>Amount</th>
                                     <td class="block">:</td>
                                     <td> Rp {{ number_format($lainnya['nominal'], 0, ',', '.') }}</td>
@@ -186,11 +211,21 @@
                         @endphp
                         <div class="row">
                             <!-- Lainnya Date -->
-                            <div class="col-md-6 mb-2">
+                            <div class="col-md-4 mb-2">
                                 <label class="form-label">Date</label>
                                 <input type="date" name="tanggal_bt_lainnya[]" class="form-control" value="{{$lainnya_dec['tanggal']}}" placeholder="mm/dd/yyyy">
                             </div>
-                            <div class="col-md-6 mb-2">
+                            <div class="col-md-4 mb-2">  
+                                <label class="form-label" for="name">Type of Others</label>  
+                                <select class="form-control select2" id="type_bt_lainnya_{{ $loop->index + 1 }}" name="type_bt_lainnya[]">  
+                                    <option value="">Select Type...</option>  
+                                    <option value="Laundry" {{ $lainnya_dec['type'] == 'Laundry' ? 'selected' : '' }}>Laundry</option>  
+                                    <option value="Airport Tax" {{ $lainnya_dec['type'] == 'Airport Tax' ? 'selected' : '' }}>Airport Tax</option>  
+                                    <option value="Porter" {{ $lainnya_dec['type'] == 'Porter' ? 'selected' : '' }}>Porter</option>  
+                                    <option value="Excess Baggage" {{ $lainnya_dec['type'] == 'Excess Baggage' ? 'selected' : '' }}>Excess Baggage</option>  
+                                </select>  
+                            </div>
+                            <div class="col-md-4 mb-2">
                                 <label class="form-label">Amount</label>
                                 <div class="input-group mb-3">
                                     <div class="input-group-append">
@@ -226,11 +261,21 @@
                         <p class="fs-5 text-primary" style="font-weight: bold; ">Others Declaration</p>
                         <div class="row">
                             <!-- Lainnya Date -->
-                            <div class="col-md-6 mb-2">
+                            <div class="col-md-4 mb-2">
                                 <label class="form-label">Date</label>
                                 <input type="date" name="tanggal_bt_lainnya[]" class="form-control" value="{{$lainnya_dec['tanggal']}}" placeholder="mm/dd/yyyy">
                             </div>
-                            <div class="col-md-6 mb-2">
+                            <div class="col-md-4 mb-2">  
+                                <label class="form-label" for="name">Type of Others</label>  
+                                <select class="form-control select2" id="type_bt_lainnya_{{ $loop->index + 1 }}" name="type_bt_lainnya[]">  
+                                    <option value="">Select Type...</option>  
+                                    <option value="Laundry" {{ $lainnya_dec['type'] == 'Laundry' ? 'selected' : '' }}>Laundry</option>  
+                                    <option value="Airport Tax" {{ $lainnya_dec['type'] == 'Airport Tax' ? 'selected' : '' }}>Airport Tax</option>  
+                                    <option value="Porter" {{ $lainnya_dec['type'] == 'Porter' ? 'selected' : '' }}>Porter</option>  
+                                    <option value="Excess Baggage" {{ $lainnya_dec['type'] == 'Excess Baggage' ? 'selected' : '' }}>Excess Baggage</option>  
+                                </select>  
+                            </div>
+                            <div class="col-md-4 mb-2">
                                 <label class="form-label">Amount</label>
                                 <div class="input-group mb-3">
                                     <div class="input-group-append">
@@ -283,11 +328,21 @@
                         <p class="fs-5 text-primary" style="font-weight: bold;">Others Declaration</p>
                         <div class="row">
                             <!-- Lainnya Date -->
-                            <div class="col-md-6 mb-2">
+                            <div class="col-md-4 mb-2">
                                 <label class="form-label">Date</label>
                                 <input type="date" name="tanggal_bt_lainnya[]" class="form-control" value="{{$lainnya_dec['tanggal']}}" placeholder="mm/dd/yyyy">
                             </div>
-                            <div class="col-md-6 mb-2">
+                            <div class="col-md-4 mb-2">  
+                                <label class="form-label" for="name">Type of Others</label>  
+                                <select class="form-control select2" id="type_bt_lainnya_{{ $loop->index + 1 }}" name="type_bt_lainnya[]">  
+                                    <option value="">Select Type...</option>  
+                                    <option value="Laundry" {{ $lainnya_dec['type'] == 'Laundry' ? 'selected' : '' }}>Laundry</option>  
+                                    <option value="Airport Tax" {{ $lainnya_dec['type'] == 'Airport Tax' ? 'selected' : '' }}>Airport Tax</option>  
+                                    <option value="Porter" {{ $lainnya_dec['type'] == 'Porter' ? 'selected' : '' }}>Porter</option>  
+                                    <option value="Excess Baggage" {{ $lainnya_dec['type'] == 'Excess Baggage' ? 'selected' : '' }}>Excess Baggage</option>  
+                                </select>  
+                            </div>
+                            <div class="col-md-4 mb-2">
                                 <label class="form-label">Amount</label>
                                 <div class="input-group mb-3">
                                     <div class="input-group-append">
@@ -338,11 +393,21 @@
                 <p class="fs-5 text-primary" style="font-weight: bold;">Others Declaration</p>
                 <div class="row">
                     <!-- Lainnya Date -->
-                    <div class="col-md-6 mb-2">
+                    <div class="col-md-4 mb-2">
                         <label class="form-label">Date</label>
                         <input type="date" name="tanggal_bt_lainnya[]" class="form-control" placeholder="mm/dd/yyyy">
                     </div>
-                    <div class="col-md-6 mb-2">
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label" for="name">Type of Others</label>
+                        <select class="form-control select2" id="type_bt_lainnya_1" name="type_bt_lainnya[]">
+                            <option value="">Select Type...</option>
+                            <option value="Laundry">Laundry</option>
+                            <option value="Airport Tax">Airport Tax</option>
+                            <option value="Porter">Porter</option>
+                            <option value="Excess Baggage">Excess Baggage</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-2">
                         <label class="form-label">Amount</label>
                         <div class="input-group mb-3">
                             <div class="input-group-append">

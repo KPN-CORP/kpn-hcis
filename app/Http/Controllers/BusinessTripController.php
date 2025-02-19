@@ -883,12 +883,14 @@ class BusinessTripController extends Controller
             if ($request->has('tanggal_bt_lainnya')) {
                 foreach ($request->tanggal_bt_lainnya as $key => $tanggal) {
                     $keterangan = $request->keterangan_bt_lainnya[$key] ?? '';
+                    $type = $request->type_bt_lainnya[$key] ?? '';
                     $nominal = str_replace('.', '', $request->nominal_bt_lainnya[$key] ?? '0');
 
                     if (!empty($tanggal) && !empty($nominal)) {
                         $detail_lainnya[] = [
                             'tanggal' => $tanggal,
                             'keterangan' => $keterangan,
+                            'type' => $type,
                             'nominal' => $nominal,
                         ];
                     }
@@ -1820,12 +1822,14 @@ class BusinessTripController extends Controller
                 if ($request->has('tanggal_bt_lainnya')) {
                     foreach ($request->tanggal_bt_lainnya as $key => $tanggal) {
                         $keterangan = $request->keterangan_bt_lainnya[$key] ?? '';
+                        $type = $request->type_bt_lainnya[$key] ?? '';
                         $nominal = str_replace('.', '', $request->nominal_bt_lainnya[$key] ?? '0');
-
+    
                         if (!empty($tanggal) && !empty($nominal)) {
                             $detail_lainnya[] = [
                                 'tanggal' => $tanggal,
                                 'keterangan' => $keterangan,
+                                'type' => $type,
                                 'nominal' => $nominal,
                             ];
                         }
@@ -2007,6 +2011,7 @@ class BusinessTripController extends Controller
                     if ($request->has('tanggal_bt_lainnya')) {
                         foreach ($request->tanggal_bt_lainnya as $key => $tanggal) {
                             $keterangan = $request->keterangan_bt_lainnya[$key] ?? '';
+                            $type = $request->type_bt_lainnya[$key] ?? '';
                             $nominal = str_replace('.', '', $request->nominal_bt_lainnya[$key] ?? '0');
                             $totalLainnya = str_replace('.', '', $request->total_bt_lainnya[$key] ?? '0');
 
@@ -2014,6 +2019,7 @@ class BusinessTripController extends Controller
                                 $detail_lainnya[] = [
                                     'tanggal' => $tanggal,
                                     'keterangan' => $keterangan,
+                                    'type' => $type,
                                     'nominal' => $nominal,
                                     'totalLainnya' => $totalLainnya,
                                 ];
@@ -2440,12 +2446,14 @@ class BusinessTripController extends Controller
                     if ($request->has('tanggal_bt_lainnya')) {
                         foreach ($request->tanggal_bt_lainnya as $key => $tanggal) {
                             $keterangan = $request->keterangan_bt_lainnya[$key] ?? '';
+                            $type = $request->type_bt_lainnya[$key] ?? '';
                             $nominal = str_replace('.', '', $request->nominal_bt_lainnya[$key] ?? '0');
 
                             if (!empty($tanggal) && !empty($nominal)) {
                                 $detail_lainnya[] = [
                                     'tanggal' => $tanggal,
                                     'keterangan' => $keterangan,
+                                    'type' => $type,
                                     'nominal' => $nominal,
                                 ];
                             }
@@ -2679,7 +2687,7 @@ class BusinessTripController extends Controller
                     'total_amount_ent' => array_sum(array_column($declare_ent_ntf['detail_e'] ?? [], 'nominal')),
                 ];
                 // Send email to the manager
-                // try {
+                try {
                 Mail::to($managerEmail)->send(new DeclarationNotification(
                     $n,
                     $caDetails,
@@ -2696,9 +2704,9 @@ class BusinessTripController extends Controller
                     $isCa,
                     $group_company,
                 ));
-                // } catch (\Exception $e) {
-                //     Log::error('Email Deklarasi Create Bussines Trip tidak terkirim: ' . $e->getMessage());
-                // }
+                } catch (\Exception $e) {
+                    Log::error('Email Deklarasi Create Bussines Trip tidak terkirim: ' . $e->getMessage());
+                }
             }
         }
 
@@ -3966,12 +3974,14 @@ class BusinessTripController extends Controller
             if ($request->has('tanggal_bt_lainnya')) {
                 foreach ($request->tanggal_bt_lainnya as $key => $tanggal) {
                     $keterangan = $request->keterangan_bt_lainnya[$key] ?? '';
+                    $type = $request->type_bt_lainnya[$key] ?? '';
                     $nominal = str_replace('.', '', $request->nominal_bt_lainnya[$key] ?? '0');
 
                     if (!empty($tanggal) && !empty($nominal)) {
                         $detail_lainnya[] = [
                             'tanggal' => $tanggal,
                             'keterangan' => $keterangan,
+                            'type' => $type,
                             'nominal' => $nominal,
                         ];
                     }

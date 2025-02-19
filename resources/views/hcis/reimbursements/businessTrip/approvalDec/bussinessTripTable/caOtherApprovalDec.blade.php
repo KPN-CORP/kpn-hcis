@@ -17,6 +17,7 @@
                         <tr style="text-align-last: center;">
                             <th>No</th>
                             <th>Date</th>
+                            <th>Type of Others</th>
                             <th>Information</th>
                             <th>Amount</th>
                         </tr>
@@ -38,6 +39,7 @@
                                         <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ isset($lainnya['tanggal']) ? \Carbon\Carbon::parse($lainnya['tanggal'])->format('d-M-y') : '-' }}
                                         </td>
+                                        <td>{{ $lainnya['type'] ?? '-' }}</td>
                                         <td>{{ $lainnya['keterangan'] ?? '-' }}</td>
                                         <td style="text-align-last: right;">Rp.
                                             {{ number_format(floatval($lainnya['nominal'] ?? 0), 0, ',', '.') }}
@@ -46,19 +48,19 @@
                                 @endforeach
                             @else
                                 <tr>
-                                    <td colspan="4" class="text-center">No data
+                                    <td colspan="5" class="text-center">No data
                                         available
                                     </td>
                                 </tr>
                             @endif
                         @else
                             <tr>
-                                <td colspan="4" class="text-center">No data
+                                <td colspan="5" class="text-center">No data
                                     available</td>
                             </tr>
                         @endif
                     <tfoot>
-                        <td colspan="3" class="text-right"><b>Total</b></td>
+                        <td colspan="4" class="text-right"><b>Total</b></td>
                         <td style="text-align: right"><b>Rp.
                                 {{ number_format($totalLainnya, 0, ',', '.') }}</b></td>
                     </tfoot>
@@ -84,6 +86,7 @@
                         <tr style="text-align-last: center;">
                             <th>No</th>
                             <th>Date</th>
+                            <th>Type of Others</th>
                             <th>Information</th>
                             <th>Amount</th>
                         </tr>
@@ -105,6 +108,7 @@
                                         <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ isset($lainnya['tanggal']) ? \Carbon\Carbon::parse($lainnya['tanggal'])->format('d-M-y') : '-' }}
                                         </td>
+                                        <td>{{ $lainnya['type'] ?? '-' }}</td>
                                         <td>{{ $lainnya['keterangan'] ?? '-' }}
                                         </td>
                                         <td style="text-align-last: right;">Rp.
@@ -114,20 +118,20 @@
                                 @endforeach
                             @else
                                 <tr>
-                                    <td colspan="4" class="text-center">No
+                                    <td colspan="5" class="text-center">No
                                         data
                                         available</td>
                                 </tr>
                             @endif
                         @else
                             <tr>
-                                <td colspan="4" class="text-center">No data
+                                <td colspan="5" class="text-center">No data
                                     available
                                 </td>
                             </tr>
                         @endif
                     <tfoot>
-                        <td colspan="3" class="text-right"><b>Total</b></td>
+                        <td colspan="4" class="text-right"><b>Total</b></td>
                         <td style="text-align: right"><b>Rp.
                                 {{ number_format($totalLainnya, 0, ',', '.') }}</b>
                         </td>
