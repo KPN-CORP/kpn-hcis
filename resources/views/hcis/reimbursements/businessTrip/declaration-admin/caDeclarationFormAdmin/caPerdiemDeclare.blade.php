@@ -1,5 +1,5 @@
 {{-- <script src="{{ asset('/js/btCashAdvanced/perdiemDeklarasi.js') }}"></script> --}}
-@include('js.hcis.btCashAdvanced.perdiemDeklarasi')
+@include('js.hcis.btCashAdvanced.perdiemDeklarasiAdmin')
 <script>
     function addMoreFormPerdiemDec(event) {
         event.preventDefault();
@@ -50,13 +50,13 @@
                     <!-- Start Perdiem -->
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Start </label>
-                        <input type="date" name="start_bt_perdiem[]" class="form-control form-control-sm start-perdiem" placeholder="mm/dd/yyyy" onchange="calculateTotalDaysPerdiem(this, ${formCountPerdiem})">
+                        <input type="date" name="start_bt_perdiem[]" class="form-control form-control-sm start-perdiem" placeholder="mm/dd/yyyy" onchange="calculateTotalDaysPerdiem(this)">
                     </div>
 
                     <!-- End Perdiem -->
                     <div class="col-md-4 mb-2">
                         <label class="form-label">End </label>
-                        <input type="date" name="end_bt_perdiem[]" class="form-control form-control-sm end-perdiem" placeholder="mm/dd/yyyy" onchange="calculateTotalDaysPerdiem(this, ${formCountPerdiem})">
+                        <input type="date" name="end_bt_perdiem[]" class="form-control form-control-sm end-perdiem" placeholder="mm/dd/yyyy" onchange="calculateTotalDaysPerdiem(this)">
                     </div>
 
                     <!-- Total Days -->
@@ -691,5 +691,5 @@
 @endif
 
 <script>
-    document.addEventListener("DOMContentLoaded", initializeDateInputs);
+    // document.addEventListener("DOMContentLoaded", initializeDateInputs);
 </script>
