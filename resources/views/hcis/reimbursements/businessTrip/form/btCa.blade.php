@@ -50,7 +50,7 @@
                         {{-- ca perdiem content --}}
                         @include('hcis.reimbursements.businessTrip.form.cashadvancedForm.caPerdiem')
                     </div>
-                    @if ($group_company !== 'KPN Plantations' && $group_company !== 'Plantations')
+                    @if (($group_company !== 'KPN Plantations' && $group_company !== 'Plantations') || $job_level_number >= 8)
                         <div class="tab-pane fade" id="pills-meals" role="tabpanel" aria-labelledby="pills-meals-tab">
                             {{-- ca transport content --}}
                             @include('hcis.reimbursements.businessTrip.form.cashadvancedForm.caMeals')

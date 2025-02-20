@@ -1339,7 +1339,6 @@ class BusinessTripController extends Controller
                 $declareCa = array_merge($declareCa, $currentDeclare);
             }
         }
-        dd($declareCa);
 
         // Safely access nominalPerdiem with default '0' if caDetail is empty
         $nominalPerdiem = isset($caDetail['detail_perdiem'][0]['nominal']) ? $caDetail['detail_perdiem'][0]['nominal'] : '0';
