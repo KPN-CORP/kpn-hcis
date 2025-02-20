@@ -20,7 +20,7 @@
                             data-bs-target="#pills-perdiem" type="button" role="tab" aria-controls="pills-perdiem"
                             aria-selected="true">{{ $allowance }}</button>
                     </li>
-                    @if ($group_company !== 'KPN Plantations' && $group_company !== 'Plantations')
+                    @if (($group_company !== 'KPN Plantations' && $group_company !== 'Plantations') || $job_level_number >= 8)
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="pills-meals-tab" data-bs-toggle="pill"
                                 data-bs-target="#pills-meals" type="button" role="tab" aria-controls="pills-meals"

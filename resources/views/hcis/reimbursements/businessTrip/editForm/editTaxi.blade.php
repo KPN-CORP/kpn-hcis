@@ -7,7 +7,7 @@
     </label>
     <div class="row">
         <div class="col-md-12 mb-2" id="taksi_div">
-            <label class="form-label">Total Ticket</label>
+            <label class="form-label">Total Voucher</label>
             <div class="input-group input-group-sm">
                 <input class="form-control" name="no_vt" id="no_vt" type="number" min="0"
                     placeholder="ex: 2" value="{{ $taksiLuarKota->no_vt ?? '' }}">

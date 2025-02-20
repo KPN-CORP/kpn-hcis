@@ -54,9 +54,6 @@
                                 <option value="">Select Transportation Type</option>
                                 <option value="Train"
                                     {{ $ticket && $ticket['jenis_tkt'] == 'Train' ? 'selected' : '' }}>Train</option>
-                                <option value="Airplane"
-                                    {{ $ticket && $ticket['jenis_tkt'] == 'Airplane' ? 'selected' : '' }}>Airplane
-                                </option>
                                 <option value="Ferry"
                                     {{ $ticket && $ticket['jenis_tkt'] == 'Ferry' ? 'selected' : '' }}>Ferry</option>
                             </select>

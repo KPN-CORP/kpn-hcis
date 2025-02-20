@@ -275,6 +275,7 @@ class BusinessTripController extends Controller
         $perdiem = ListPerdiem::where('grade', $employee_data->job_level)
             ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')->first();
         $job_level = Employee::where('id', $userId)->pluck('job_level')->first();
+        $job_level_number = (int) preg_replace('/[^0-9]/', '', $job_level);
 
         if ($job_level) {
             // Extract numeric part of the job level
@@ -361,6 +362,7 @@ class BusinessTripController extends Controller
             'link' => $link,
             'isAllowed' => $isAllowed,
             'bt_sppd' => $bt_sppd,
+            'job_level_number' => $job_level_number,
         ]);
     }
 
@@ -1201,7 +1203,7 @@ class BusinessTripController extends Controller
             $imageContent = file_get_contents($imagePath);
             $employeeName = Employee::where('id', $n->user_id)->pluck('fullname')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "requesting a Bussiness Trip and waiting for your Approval with the following details :";
+            $textNotification = "requesting a Business Trip and waiting for your Approval with the following details :";
             $isEnt = $request->ent === 'Ya';
             $isCa = $request->ca === 'Ya';
 
@@ -3544,6 +3546,7 @@ class BusinessTripController extends Controller
             ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')->first();
 
         $job_level = Employee::where('id', $userId)->pluck('job_level')->first();
+        $job_level_number = (int) preg_replace('/[^0-9]/', '', $job_level);
 
         // dd($employee_data, $companies, $perdiem);
 
@@ -3553,6 +3556,7 @@ class BusinessTripController extends Controller
             $allowance = "Allowance";
         }
         $group_company = Employee::where('id', $employee_data->id)->pluck('group_company')->first();
+        // dd($group_company, $job_level_number);
         // dd($group_company);
         if ($job_level) {
             // Extract numeric part of the job level
@@ -3576,6 +3580,7 @@ class BusinessTripController extends Controller
                 'link' => $link,
                 'isAllowed' => $isAllowed,
                 'allowance' => $allowance,
+                'job_level_number' => $job_level_number,
                 'group_company' => $employee_data->group_company,
             ]
         );
@@ -5117,7 +5122,7 @@ class BusinessTripController extends Controller
 
                     if ($ca->total_cost <= 0 && $request->input('accept_status') === 'Return/Refund') {
                         return redirect()->back()->with('error', 'Cannot set status to Return/Refund when the Total Cost is negative.');
-                    } 
+                    }
                     if ($ca->total_cost > 0 && $request->input('accept_status') === 'Return/Refund') {
                         $employeeEmail = Employee::where('id', $n->user_id)->pluck('email')->first();
                         // $employeeEmail = "erzie.aldrian02@gmail.com";
