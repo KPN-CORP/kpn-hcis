@@ -251,6 +251,10 @@ class BusinessTripController extends Controller
         $group_company = Employee::where('id', $userId)->pluck('group_company')->first();
         $bt_sppd = BusinessTrip::where('status', '!=', 'Done')->where('status', '!=', 'Rejected')->where('status', '!=', 'Draft')->orderBy('no_sppd', 'desc')->get();
 
+        $isApproved = CATransaction::where('user_id', $userId)->where('approval_status', '!=', 'Done')->where('approval_status', '!=', 'Rejected')->get();
+
+        $isDisabled = $isApproved->count() >= 1;
+
         if ($employee_data->group_company == 'Plantations' || $employee_data->group_company == 'KPN Plantations') {
             $allowance = "Perdiem";
         } else {
@@ -363,6 +367,7 @@ class BusinessTripController extends Controller
             'isAllowed' => $isAllowed,
             'bt_sppd' => $bt_sppd,
             'job_level_number' => $job_level_number,
+            'isDisabled' => $isDisabled,
         ]);
     }
 
@@ -2690,22 +2695,22 @@ class BusinessTripController extends Controller
                 ];
                 // Send email to the manager
                 try {
-                Mail::to($managerEmail)->send(new DeclarationNotification(
-                    $n,
-                    $caDetails,
-                    $caDeclare,
-                    $entDetails,
-                    $entDeclare,
-                    $managerName,
-                    $approvalLink,
-                    $rejectionLink,
-                    $employeeName,
-                    $base64Image,
-                    $textNotification,
-                    $isEnt,
-                    $isCa,
-                    $group_company,
-                ));
+                    Mail::to($managerEmail)->send(new DeclarationNotification(
+                        $n,
+                        $caDetails,
+                        $caDeclare,
+                        $entDetails,
+                        $entDeclare,
+                        $managerName,
+                        $approvalLink,
+                        $rejectionLink,
+                        $employeeName,
+                        $base64Image,
+                        $textNotification,
+                        $isEnt,
+                        $isCa,
+                        $group_company,
+                    ));
                 } catch (\Exception $e) {
                     Log::error('Email Deklarasi Create Business Trip tidak terkirim: ' . $e->getMessage());
                 }
@@ -3545,8 +3550,12 @@ class BusinessTripController extends Controller
         $perdiem = ListPerdiem::where('grade', $employee_data->job_level)
             ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')->first();
 
+        $isApproved = CATransaction::where('user_id', $userId)->where('approval_status', '!=', 'Done')->where('approval_status', '!=', 'Rejected')->get();
+
         $job_level = Employee::where('id', $userId)->pluck('job_level')->first();
         $job_level_number = (int) preg_replace('/[^0-9]/', '', $job_level);
+
+        $isDisabled = $isApproved->count() >= 1;
 
         // dd($employee_data, $companies, $perdiem);
 
@@ -3582,6 +3591,7 @@ class BusinessTripController extends Controller
                 'allowance' => $allowance,
                 'job_level_number' => $job_level_number,
                 'group_company' => $employee_data->group_company,
+                'isDisabled' => $isDisabled,
             ]
         );
     }
