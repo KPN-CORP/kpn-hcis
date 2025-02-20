@@ -7,7 +7,7 @@
     </label>
     <div class="row">
         <div class="col-md-12 mb-2" id="taksi_div_dalam_kota">
-            <label class="form-label">Total Ticket</label>
+            <label class="form-label">Total Voucher</label>
             <div class="input-group input-group-sm">
                 <input class="form-control" name="no_vt_dalam_kota" id="no_vt_dalam_kota" type="number" min="0"
                     placeholder="ex: 2">

@@ -377,7 +377,8 @@
                                                         value="{{ $showCashAdvanced ? 'Ya' : 'Tidak' }}">
                                                     <input class="form-check-input" type="checkbox"
                                                         id="cashAdvancedCheckbox" value="Ya"
-                                                        onchange="updateCAValue()" @checked($showCashAdvanced)>
+                                                        onchange="updateCAValue()" @checked($showCashAdvanced)
+                                                        {{ $isDisabled ? 'disabled' : '' }}>
                                                     <label class="form-check-label" for="cashAdvancedCheckbox">Cash
                                                         Advanced</label>
                                                 </div>
@@ -388,7 +389,8 @@
                                                         value="{{ $showEntertain ? 'Ya' : 'Tidak' }}">
                                                     <input class="form-check-input" type="checkbox"
                                                         id="caEntertainCheckbox" name="ent" value="Ya"
-                                                        onchange="updateCAValue()" @checked($showEntertain)>
+                                                        onchange="updateCAValue()" @checked($showEntertain)
+                                                        {{ $isDisabled ? 'disabled' : '' }}>
                                                     <label class="form-check-label" for="caEntertainCheckbox">CA
                                                         Entertain</label>
                                                 </div>

@@ -60,7 +60,7 @@
                             <div class="row">
                                 <div class="col-md-5">
                                     <div class="mb-2">
-                                        <label class="form-label" for="bisnis_numb">Company Cost</label>
+                                        <label class="form-label" for="bisnis_numb">Business Trip Number</label>
                                         <select class="form-control select2 form-select-sm" id="bisnis_numb"
                                             name="bisnis_numb">
                                             <option value="-">No Business Trip</option>

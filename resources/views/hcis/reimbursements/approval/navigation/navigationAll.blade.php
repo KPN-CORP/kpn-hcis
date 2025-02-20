@@ -4,7 +4,7 @@
             <a href="{{ route('businessTrip.approval') }}" style="border-radius: 10px 10px 0px 0px"
                 class="nav-link {{ request()->routeIs('businessTrip.approval') ? 'active' : '' }}"
                 id="pills-cashAdvanced-tab" role="tab" aria-controls="pills-cashAdvanced" aria-selected="false">
-                Bussiness Trip
+                Business Trip
                 @if ($totalBTCount >= 1)
                     <span
                         class="badge bg-danger position-absolute top-10 start-10 mx-2 translate-middle rounded-circle">{{ $totalBTCount }}</span>

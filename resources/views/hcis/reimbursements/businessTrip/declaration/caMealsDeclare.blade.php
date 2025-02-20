@@ -454,7 +454,6 @@
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px"
                                 onclick="clearFormMeals({{ $loop->index + 1 }}, event)">Reset</button>
-                            {{-- <button class="btn btn-warning mr-2" onclick="removeFormMeals({{ $loop->index + 1 }}, event)">Delete</button> --}}
                         </div>
                     </div>
                 </div>
