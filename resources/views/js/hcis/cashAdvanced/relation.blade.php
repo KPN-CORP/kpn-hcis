@@ -16,13 +16,13 @@ function addMoreFormRelationDec(event) {
     newForm.className = "card-body p-2 mb-3";
     newForm.style.backgroundColor = "#f8f8f8";
     newForm.innerHTML = `
-            <p class="fs-4 text-primary" style="font-weight: bold; ">Relation Entertainment ${formCountRelation}</p>
+            <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Receiver ${formCountRelation}</p>
             <div class="card-body bg-light p-2 mb-3">
-                <p class="fs-5 text-primary" style="font-weight: bold;">Relation Declaration</p>
+                <p class="fs-5 text-primary" style="font-weight: bold;">Detail Receiver Declaration</p>
                 <div class="row">
                     <!-- Relation Date -->
                     <div class="col-md-12 mb-2">
-                        <label class="form-label">Relation Type</label>
+                        <label class="form-label">Receiver Type</label>
                         <div class="form-check">
                             <input class="form-check-input"
                                 type="checkbox"
@@ -115,13 +115,13 @@ function addMoreFormRelationReq(event) {
     newForm.className = "card-body p-2 mb-3";
     newForm.style.backgroundColor = "#f8f8f8";
     newForm.innerHTML = `
-            <p class="fs-4 text-primary" style="font-weight: bold; ">Relation Entertainment ${formCountRelation}</p>
+            <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Receiver ${formCountRelation}</p>
             <div class="card-body bg-light p-2 mb-3">
-                <p class="fs-5 text-primary" style="font-weight: bold;">Relation Request</p>
+                <p class="fs-5 text-primary" style="font-weight: bold;">Detail Receiver Request</p>
                 <div class="row">
                     <!-- Relation Date -->
                     <div class="col-md-12 mb-2">
-                        <label class="form-label">Relation Type</label>
+                        <label class="form-label">Receiver Type</label>
                         <div class="form-check">
                             <input class="form-check-input"
                                 type="checkbox"

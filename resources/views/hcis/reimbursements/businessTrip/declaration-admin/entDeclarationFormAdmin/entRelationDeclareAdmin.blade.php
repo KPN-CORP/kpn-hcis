@@ -9,15 +9,15 @@
             @endphp
             <div id="form-container-e-relation-{{ $loop->index + 1 }}" class="p-2 mb-4 rounded-3"
                 style="background-color: #f8f8f8">
-                <p class="fs-4 text-primary" style="font-weight: bold; ">Relation Entertainment {{ $loop->index + 1 }}</p>
+                <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Receiver {{ $loop->index + 1 }}</p>
                 <div id="form-container-e-relation-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3"
                     style="border-radius: 1%;">
                     <div class="row">
-                        <p class="fs-4 text-primary" style="font-weight: bold;">Relation Entertainment Request</p>
+                        <p class="fs-4 text-primary" style="font-weight: bold;">Detail Receiver Request</p>
                         <div class="col-md-6">
                             <table width="100%">
                                 <tr>
-                                    <th width="40%">Relation Type</th>
+                                    <th width="40%">Receiver Type</th>
                                     <td class="block">:</td>
                                     <td>
                                         @php
@@ -71,7 +71,7 @@
                 </div>
                 <div id="form-container-e-relation-dec-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3"
                     style="border-radius: 1%;">
-                    <p class="fs-5 text-primary" style="font-weight: bold;">Relation Entertainment Declaration</p>
+                    <p class="fs-5 text-primary" style="font-weight: bold;">Detail Receiver Declaration</p>
                     @if (isset($declareCa['relation_e'][$index]))
                         @php
                             $relation_dec = $declareCa['relation_e'][$index];
@@ -79,7 +79,7 @@
                         <div class="row">
                             <!-- Relation Date -->
                             <div class="col-md-12 mb-2">
-                                <label class="form-label">Relation Type</label>
+                                <label class="form-label">Receiver Type</label>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox"
                                         name="accommodation_e_relation[{{ $loop->index }}]"
@@ -160,12 +160,12 @@
             @if (!isset($caDetail['relation_e'][$index]))
                 <div id="form-container-e-relation-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3"
                     style="border-radius: 1%;">
-                    <p class="fs-4 text-primary" style="font-weight: bold; ">Relation Entertainment
+                    <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Receiver
                         {{ $loop->index + 1 }}</p>
                     <div class="row">
                         <!-- Relation Date -->
                         <div class="col-md-12 mb-2">
-                            <label class="form-label">Relation Type</label>
+                            <label class="form-label">Receiver Type</label>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox"
                                     name="accommodation_e_relation[{{ $loop->index }}]"
@@ -258,12 +258,12 @@
                 @endphp
                 <div id="form-container-e-relation-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3"
                     style="border-radius: 1%;">
-                    <p class="fs-4 text-primary" style="font-weight: bold; ">Relation Entertainment
+                    <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Receiver
                         {{ $loop->index + 1 }}</p>
                     <div class="row">
                         <!-- Relation Date -->
                         <div class="col-md-12 mb-2">
-                            <label class="form-label">Relation Type</label>
+                            <label class="form-label">Receiver Type</label>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox"
                                     name="accommodation_e_relation[{{ $loop->index }}]"
@@ -350,13 +350,13 @@
 @else
     <div id="form-container-relation">
         <div id="form-container-e-relation-1" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
-            <p class="fs-4 text-primary" style="font-weight: bold; ">Relation Entertainment 1</p>
+            <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Receiver 1</p>
             <div id="form-container-e-relation-dec-1" class="card-body bg-light p-2 mb-3">
-                <p class="fs-5 text-primary" style="font-weight: bold;">Relation Entertainment Declaration</p>
+                <p class="fs-5 text-primary" style="font-weight: bold;">Detail Receiver Declaration</p>
                 <div class="row">
                     <!-- Relation Date -->
                     <div class="col-md-12 mb-2">
-                        <label class="form-label">Relation Type</label>
+                        <label class="form-label">Receiver Type</label>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="accommodation_e_relation[0]"
                                 id="accommodation_e_relation_0" value="accommodation">
