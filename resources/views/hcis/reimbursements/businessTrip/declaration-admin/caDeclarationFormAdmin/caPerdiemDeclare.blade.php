@@ -50,13 +50,13 @@
                     <!-- Start Perdiem -->
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Start </label>
-                        <input type="date" name="start_bt_perdiem[]" class="form-control form-control-sm start-perdiem" placeholder="mm/dd/yyyy" onchange="calculateTotalDaysPerdiem(this)">
+                        <input type="date" name="start_bt_perdiem[]" class="form-control form-control-sm start-perdiem" placeholder="mm/dd/yyyy" onchange="calculateTotalDaysPerdiem(this, ${formCountPerdiem})">
                     </div>
 
                     <!-- End Perdiem -->
                     <div class="col-md-4 mb-2">
                         <label class="form-label">End </label>
-                        <input type="date" name="end_bt_perdiem[]" class="form-control form-control-sm end-perdiem" placeholder="mm/dd/yyyy" onchange="calculateTotalDaysPerdiem(this)">
+                        <input type="date" name="end_bt_perdiem[]" class="form-control form-control-sm end-perdiem" placeholder="mm/dd/yyyy" onchange="calculateTotalDaysPerdiem(this, ${formCountPerdiem})">
                     </div>
 
                     <!-- Total Days -->
@@ -78,13 +78,22 @@
                 <div class="input-group-append">
                     <span class="input-group-text">Rp</span>
                 </div>
-                <input class="form-control form-control-sm ${groupCompany === 'KPN Plantations' || groupCompany === 'Plantations' ? '' : 'bg-light'}"
-                    name="nominal_bt_perdiem[]"
-                    id="nominal_bt_perdiem_${formCountPerdiem}"
-                    type="text"
-                    value="0"
-                    onchange="onNominalChange()"
-                    ${groupCompany === 'KPN Plantations' || groupCompany === 'Plantations' ? '' : 'readonly'}>
+                @if ($group_company === 'KPN Plantations' || $group_company === 'Plantations')
+                    <input
+                        class="form-control"
+                        name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_${formCountPerdiem}"
+                        type="text"
+                        value="0"
+                        oninput="formatInput(this)">
+                @else
+                    <input
+                        class="form-control bg-light"
+                        name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_${formCountPerdiem}"
+                        type="text"
+                        value="0"
+                        onchange="onNominalChange()"
+                        readonly>
+                @endif
             </div>
                 <!-- Action Buttons -->
                 <div class="row mt-3">
@@ -264,13 +273,22 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
-                                    <input
-                                        class="form-control {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? '' : 'bg-light' }}"
-                                        name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}"
-                                        type="text"
-                                        value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
-                                        onchange="onNominalChange()"
-                                        {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? '' : 'readonly' }}>
+                                    @if ($group_company === 'KPN Plantations' || $group_company === 'Plantations')
+                                        <input
+                                            class="form-control"
+                                            name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}"
+                                            type="text"
+                                            value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
+                                            oninput="formatInput(this)">
+                                    @else
+                                        <input
+                                            class="form-control bg-light"
+                                            name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}"
+                                            type="text"
+                                            value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
+                                            onchange="onNominalChange()"
+                                            readonly>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -366,13 +384,22 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
-                                    <input
-                                        class="form-control {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? '' : 'bg-light' }}"
-                                        name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}"
-                                        type="text"
-                                        value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
-                                        onchange="onNominalChange()"
-                                        {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? '' : 'readonly' }}>
+                                    @if ($group_company === 'KPN Plantations' || $group_company === 'Plantations')
+                                        <input
+                                            class="form-control"
+                                            name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}"
+                                            type="text"
+                                            value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
+                                            oninput="formatInput(this)">
+                                    @else
+                                        <input
+                                            class="form-control bg-light"
+                                            name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}"
+                                            type="text"
+                                            value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
+                                            onchange="onNominalChange()"
+                                            readonly>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -490,13 +517,22 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
-                                    <input
-                                        class="form-control {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? '' : 'bg-light' }}"
-                                        name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}"
-                                        type="text"
-                                        value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
-                                        onchange="onNominalChange()"
-                                        {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? '' : 'readonly' }}>
+                                    @if ($group_company === 'KPN Plantations' || $group_company === 'Plantations')
+                                        <input
+                                            class="form-control"
+                                            name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}"
+                                            type="text"
+                                            value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
+                                            oninput="formatInput(this)">
+                                    @else
+                                        <input
+                                            class="form-control bg-light"
+                                            name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}"
+                                            type="text"
+                                            value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
+                                            onchange="onNominalChange()"
+                                            readonly>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -608,11 +644,22 @@
                     <div class="input-group-append">
                         <span class="input-group-text">Rp</span>
                     </div>
-                    <input
-                        class="form-control form-control-sm {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? '' : 'bg-light' }}"
-                        name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_1" type="text" value="0"
-                        onchange="onNominalChange()"
-                        {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? '' : 'readonly' }}>
+                    @if ($group_company === 'KPN Plantations' || $group_company === 'Plantations')
+                        <input
+                            class="form-control"
+                            name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}"
+                            type="text"
+                            value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
+                            oninput="formatInput(this)">
+                    @else
+                        <input
+                            class="form-control bg-light"
+                            name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}"
+                            type="text"
+                            value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
+                            onchange="onNominalChange()"
+                            readonly>
+                    @endif
                 </div>
                 <br>
                 <div class="row mt-3">

@@ -310,16 +310,16 @@
         });
     });
 
-    function initializeDateInputs() {
-        const startDateInput = document.getElementById("mulai");
-        const endDateInput = document.getElementById("kembali");
+    // function initializeDateInputs() {
+    //     const startDateInput = document.getElementById("mulai");
+    //     const endDateInput = document.getElementById("kembali");
 
-        // If there are existing values, set the min attribute and handle initial validation
-        if (startDateInput.value) {
-            endDateInput.min = startDateInput.value;
-        }
-        handleDateChange(); // Initial call to update related fields
-    }
+    //     // If there are existing values, set the min attribute and handle initial validation
+    //     if (startDateInput.value) {
+    //         endDateInput.min = startDateInput.value;
+    //     }
+    //     handleDateChange(); // Initial call to update related fields
+    // }
 
     document.getElementById("mulai").addEventListener("change", handleDateChange);
     document.getElementById("kembali").addEventListener("change", handleDateChange);
@@ -361,5 +361,5 @@
                 calculateTotalDaysPerdiem(input);
             });
     }
-    document.addEventListener("DOMContentLoaded", initializeDateInputs);
+    // document.addEventListener("DOMContentLoaded", initializeDateInputs);
 </script>

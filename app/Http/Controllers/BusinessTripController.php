@@ -4880,6 +4880,7 @@ class BusinessTripController extends Controller
 
         $accNum = Company::where('contribution_level_code', $n->bb_perusahaan)->pluck('account_number')->first();
         $ca_note = $request->ca_note;
+        $employeeEmail = null;
 
         // Initialize default values
 
@@ -5116,11 +5117,13 @@ class BusinessTripController extends Controller
 
                     if ($ca->total_cost <= 0 && $request->input('accept_status') === 'Return/Refund') {
                         return redirect()->back()->with('error', 'Cannot set status to Return/Refund when the Total Cost is negative.');
-                    } elseif ($ca->total_cost > 0 && $request->input('accept_status') === 'Return/Refund') {
+                    } 
+                    if ($ca->total_cost > 0 && $request->input('accept_status') === 'Return/Refund') {
                         $employeeEmail = Employee::where('id', $n->user_id)->pluck('email')->first();
                         // $employeeEmail = "erzie.aldrian02@gmail.com";
                         $employeeName = Employee::where('id', $n->user_id)->pluck('fullname')->first();
                     }
+                    dd($employeeEmail);
                 }
                 $ca->save();
             }
