@@ -2640,7 +2640,7 @@ class BusinessTripController extends Controller
                 $imageContent = file_get_contents($imagePath);
                 $employeeName = Employee::where('id', $n->user_id)->pluck('fullname')->first();
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-                $textNotification = "requesting a Declaration Bussiness Trip and waiting for your Approval with the following details :";
+                $textNotification = "requesting a Declaration Business Trip and waiting for your Approval with the following details :";
                 // dd( $detail_ca, $caTrans);
 
                 // dd($caTrans, $n->no_sppd);
@@ -4274,7 +4274,7 @@ class BusinessTripController extends Controller
             $imageContent = file_get_contents($imagePath);
             $employeeName = Employee::where('id', $userId)->pluck('fullname')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "requesting a Bussiness Trip and waiting for your Approval with the following details :";
+            $textNotification = "requesting a Business Trip and waiting for your Approval with the following details :";
             $managerName = Employee::where('employee_id', $managerL1)->pluck('fullname')->first();
             $isEnt = $request->ent === 'Ya';
             $isCa = $request->ca === 'Ya';
@@ -5731,7 +5731,7 @@ class BusinessTripController extends Controller
             $imageContent = file_get_contents($imagePath);
             $employeeName = Employee::where('id', $businessTrip->user_id)->pluck('fullname')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "requesting a Bussiness Trip and waiting for your Approval with the following details :";
+            $textNotification = "requesting a Business Trip and waiting for your Approval with the following details :";
             $isEnt = $request->ent === 'Ya';
             $isCa = $request->ca === 'Ya';
 
@@ -6139,7 +6139,7 @@ class BusinessTripController extends Controller
                 $imageContent = file_get_contents($imagePath);
                 $employeeName = Employee::where('id', $businessTrip->user_id)->pluck('fullname')->first();
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-                $textNotification = "requesting a Bussiness Trip and waiting for your Approval with the following details :";
+                $textNotification = "requesting a Business Trip and waiting for your Approval with the following details :";
                 $isEnt = CATransaction::where('type_ca', 'entr')->first();
                 $isCa = CATransaction::where('type_ca', 'dns')->first();
 
@@ -6523,7 +6523,7 @@ class BusinessTripController extends Controller
                 $imageContent = file_get_contents($imagePath);
                 $employeeName = Employee::where('employee_id', $employeeId)->pluck('fullname')->first();
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-                $textNotification = "requesting a Declaration Bussiness Trip and waiting for your Approval with the following details :";
+                $textNotification = "requesting a Declaration Business Trip and waiting for your Approval with the following details :";
 
                 // dd($caTrans, $n->no_sppd);
                 $caDetails = [
@@ -7002,7 +7002,7 @@ class BusinessTripController extends Controller
             $employeeName = Employee::where('employee_id', $employeeId)->pluck('fullname')->first();
             $group_company = Employee::where('employee_id', $employeeId)->pluck('group_company')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "requesting a Declaration Bussiness Trip and waiting for your Approval with the following details :";
+            $textNotification = "requesting a Declaration Business Trip and waiting for your Approval with the following details :";
             // dd( $detail_ca, $caTrans);
 
             // dd($caTrans, $n->no_sppd);
