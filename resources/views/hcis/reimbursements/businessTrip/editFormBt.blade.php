@@ -507,6 +507,8 @@
                                     </div>
 
                                     <input type="hidden" name="status" value="Pending L1" id="status">
+                                    <input type="hidden" name="job_level_number" value={{ $job_level_number }}
+                                        id="job_level_number">
                                     <input type="hidden" id="formActionType" name="formActionType" value="">
                                     <div class="d-flex justify-content-end mt-3">
                                         <button type="submit"
@@ -698,6 +700,7 @@
                     }
 
                     // Retrieve the values from the input fields
+                    const jobLevelNumber = document.getElementById('job_level_number').value;
                     const dateReq = document.getElementById('date_required_1').value;
                     const dateReq2 = document.getElementById('date_required_2').value;
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
@@ -725,7 +728,6 @@
                     // Hitung total declaration
                     const totalRequest = totalBtCaNum + totalEntCaNum;
 
-                    // Format angka ke format mata uang (opsional)
                     function formatCurrency(value) {
                         return value.toLocaleString('id-ID');
                     }
@@ -757,8 +759,9 @@
                     if (caCheckbox && totalBtPerdiem == 0 && totalBtPenginapan == 0 &&
                         totalBtTransport == 0 && totalBtLainnya == 0) {
 
-                        if (group_company == 'KPN Plantations' || group_company == 'Plantations') {
-                            // Case 1: For KPN Plantations or Plantations, exclude "Meals" from the warning
+                        if ((group_company == 'KPN Plantations' || group_company ==
+                                'Plantations') && jobLevelNumber < 8) {
+                            // ✅ Case 1: Low-level Plantation users (Exclude Meals)
                             Swal.fire({
                                 title: "Warning!",
                                 text: "Cash Advanced fields (Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
@@ -766,9 +769,10 @@
                                 confirmButtonColor: "#AB2F2B",
                                 confirmButtonText: "OK",
                             });
-                            return; // Exit without showing the confirmation if all fields are zero
-                        } else if (totalBtMeals == 0) {
-                            // Case 2: For other group companies, include "Meals" in the warning
+                            return;
+                        } else if ((group_company == 'KPN Plantations' || group_company ==
+                                'Plantations') && jobLevelNumber >= 8 && totalBtMeals == 0) {
+                            // ✅ Case 2: High-level Plantation users (Include Meals)
                             Swal.fire({
                                 title: "Warning!",
                                 text: "Cash Advanced fields (Meals, Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
@@ -776,9 +780,21 @@
                                 confirmButtonColor: "#AB2F2B",
                                 confirmButtonText: "OK",
                             });
-                            return; // Exit without showing the confirmation if all fields are zero
+                            return;
+                        } else if (group_company !== 'KPN Plantations' && group_company !==
+                            'Plantations' && totalBtMeals == 0) {
+                            // ✅ Case 3: Non-Plantation Users (Include Meals)
+                            Swal.fire({
+                                title: "Warning!",
+                                text: "Cash Advanced fields (Meals, Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                icon: "warning",
+                                confirmButtonColor: "#AB2F2B",
+                                confirmButtonText: "OK",
+                            });
+                            return;
                         }
                     }
+
 
                     // if (perdiemCheckbox && totalBtPerdiem == 0) {
                     //     Swal.fire({
@@ -926,6 +942,7 @@
                     }
 
                     // Retrieve the values from the input fields
+                    const jobLevelNumber = document.getElementById('job_level_number').value;
                     const dateReq = document.getElementById('date_required_1').value;
                     const dateReq2 = document.getElementById('date_required_2').value;
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
@@ -967,8 +984,9 @@
                     if (caCheckbox && totalBtPerdiem == 0 && totalBtPenginapan == 0 &&
                         totalBtTransport == 0 && totalBtLainnya == 0) {
 
-                        if (group_company == 'KPN Plantations' || group_company == 'Plantations') {
-                            // Case 1: For KPN Plantations or Plantations, exclude "Meals" from the warning
+                        if ((group_company == 'KPN Plantations' || group_company ==
+                                'Plantations') && jobLevelNumber < 8) {
+                            // ✅ Case 1: Low-level Plantation users (Exclude Meals)
                             Swal.fire({
                                 title: "Warning!",
                                 text: "Cash Advanced fields (Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
@@ -976,9 +994,10 @@
                                 confirmButtonColor: "#AB2F2B",
                                 confirmButtonText: "OK",
                             });
-                            return; // Exit without showing the confirmation if all fields are zero
-                        } else if (totalBtMeals == 0) {
-                            // Case 2: For other group companies, include "Meals" in the warning
+                            return;
+                        } else if ((group_company == 'KPN Plantations' || group_company ==
+                                'Plantations') && jobLevelNumber >= 8 && totalBtMeals == 0) {
+                            // ✅ Case 2: High-level Plantation users (Include Meals)
                             Swal.fire({
                                 title: "Warning!",
                                 text: "Cash Advanced fields (Meals, Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
@@ -986,7 +1005,18 @@
                                 confirmButtonColor: "#AB2F2B",
                                 confirmButtonText: "OK",
                             });
-                            return; // Exit without showing the confirmation if all fields are zero
+                            return;
+                        } else if (group_company !== 'KPN Plantations' && group_company !==
+                            'Plantations' && totalBtMeals == 0) {
+                            // ✅ Case 3: Non-Plantation Users (Include Meals)
+                            Swal.fire({
+                                title: "Warning!",
+                                text: "Cash Advanced fields (Meals, Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                icon: "warning",
+                                confirmButtonColor: "#AB2F2B",
+                                confirmButtonText: "OK",
+                            });
+                            return;
                         }
                     }
                     // if (perdiemCheckbox && totalBtPerdiem == 0) {
