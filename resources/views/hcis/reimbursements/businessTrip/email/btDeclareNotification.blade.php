@@ -163,7 +163,7 @@
     @endif
 
     <hr>
-    <p>For approval or rejection of the Business Trip, you can choose the following links:</p>
+    <p>For approval or rejection of the Business Trip, you can click the following links:</p>
     <p>
         <a href="{{ $approvalLink }}" style="font-size: 20px;">Approve</a> /
         <a href="{{ $rejectionLink }}" style="font-size: 20px;">Reject</a>

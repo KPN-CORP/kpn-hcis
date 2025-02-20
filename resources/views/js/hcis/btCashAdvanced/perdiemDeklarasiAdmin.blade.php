@@ -310,56 +310,49 @@
         });
     });
 
-    function initializeDateInputs() {
+    document.addEventListener("DOMContentLoaded", function () {
         const startDateInput = document.getElementById("mulai");
         const endDateInput = document.getElementById("kembali");
+        const groupCompany = document.getElementById("group_company");
 
-        // If there are existing values, set the min attribute and handle initial validation
-        if (startDateInput.value) {
+        function handleDateChange() {
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+
+            // Set min attribute untuk endDateInput
             endDateInput.min = startDateInput.value;
-        }
-        handleDateChange(); // Initial call to update related fields
-    }
 
-    document.getElementById("mulai").addEventListener("change", handleDateChange);
-    document.getElementById("kembali").addEventListener("change", handleDateChange);
+            // Validasi tanggal
+            if (endDate < startDate) {
+                alert("End Date cannot be earlier than Start Date");
+                endDateInput.value = "";
+            }
 
-    function handleDateChange() {
-        const startDateInput = document.getElementById("mulai");
-        const endDateInput = document.getElementById("kembali");
-
-        const startDate = new Date(startDateInput.value);
-        const endDate = new Date(endDateInput.value);
-
-        // Set the min attribute of the end_date input to the selected start_date
-        endDateInput.min = startDateInput.value;
-
-        // Validate dates
-        if (endDate < startDate) {
-            alert("End Date cannot be earlier than Start Date");
-            endDateInput.value = "";
-        }
-
-        // Update min and max values for all dynamic perdiem date fields
-        document
-            .querySelectorAll('input[name="start_bt_perdiem[]"]')
-            .forEach(function(input) {
+            // Perbarui min dan max untuk input perdiem
+            document.querySelectorAll('input[name="start_bt_perdiem[]"], input[name="end_bt_perdiem[]"]').forEach(input => {
                 input.min = startDateInput.value;
                 input.max = endDateInput.value;
             });
 
-        document
-            .querySelectorAll('input[name="end_bt_perdiem[]"]')
-            .forEach(function(input) {
-                input.min = startDateInput.value;
-                input.max = endDateInput.value;
-            });
+            // Hitung total hari perdiem
+            document.querySelectorAll('input[name="total_days_bt_perdiem[]"]').forEach(calculateTotalDaysPerdiem);
+        }
 
-        document
-            .querySelectorAll('input[name="total_days_bt_perdiem[]"]')
-            .forEach(function(input) {
-                calculateTotalDaysPerdiem(input);
-            });
-    }
-    document.addEventListener("DOMContentLoaded", initializeDateInputs);
+        function initializeDateInputs() {
+            if (groupCompany.value !== "KPN Plantations") {
+                if (startDateInput.value) {
+                    endDateInput.min = startDateInput.value;
+                }
+                handleDateChange();
+            } else {
+                if (startDateInput.value) {
+                    endDateInput.min = startDateInput.value;
+                }
+            }
+        }
+
+        startDateInput.addEventListener("change", handleDateChange);
+        endDateInput.addEventListener("change", handleDateChange);
+        initializeDateInputs();
+    });
 </script>

@@ -55,6 +55,11 @@
             <td>{{ $businessTrip->bb_perusahaan }}</td>
         </tr>
         <tr>
+            <td><b>Status Changed At</b></td>
+            <td>:</td>
+            <td>{{ $businessTrip->updated_at }}</td>
+        </tr>
+        <tr>
             <td><b>Cash Advance</b></td>
             <td>:</td>
             <td>{{ $businessTrip->ca === 'Ya' ? 'Yes' : ($businessTrip->ca === 'Tidak' ? 'No' : $businessTrip->ca) }}
@@ -80,83 +85,91 @@
         </tr>
     </table>
 
-    @if ($businessTrip->ca === 'Ya')
-        @if ($isCa)
-            <table style="border-collapse: collapse; width: 60%; margin-top: 8px; font-size: 12px;">
-                <tr>
-                    <tr>
-                        <th colspan="2"
-                            style="border: 1px solid #ddd; padding: 6px; background-color: #ab2f2b; color: #ffffff; font-size: 12px; font-weight: bold; text-align: center;">
-                            Refund Details Cash Advanced
-                        </th>
-                    </tr>
-                    <tr style="font-weight: bold; background-color: #f5f5f5; text-align: center;">
-                        <td style="border: 1px solid #ddd; padding: 6px;">Description</td>
-                        <td style="border: 1px solid #ddd; padding: 6px;">Amount</td>
-                    </tr>
-                    <tr style="background-color: #f5f5f5; text-align: center;">
-                        <td style="border: 1px solid #ddd; font-weight:bold; padding: 6px;">Total CA Request</td>
-                        <td style="border: 1px solid #ddd; padding: 6px;">Rp. {{ number_format(array_sum($caDetails), 0, ',', '.') }}</td>
-                    </tr>
-                    <tr style="background-color: #f5f5f5; text-align: center;">
-                        <td style="border: 1px solid #ddd; font-weight:bold; padding: 6px;">Total CA Declaration</td>
-                        <td style="border: 1px solid #ddd; padding: 6px;">Rp. {{ number_format(array_sum($caDeclare), 0, ',', '.') }}</td>
-                    </tr>
-                    <tr style="background-color: #f5f5f5; text-align: center;">
-                        <td style="border: 1px solid #ddd; font-weight:bold; padding: 6px;">Difference (Selisih)</td>
-                        <td style="border: 1px solid #ddd; padding: 6px;">Rp. {{ number_format($selisihCa, 0, ',', '.') }}</td>
-                    </tr>
-                </tr>
-            </table>
+    {{-- @if ($businessTrip->ca === 'Ya') --}}
+    @if ($isCa)
+        <table style="border-collapse: collapse; width: 60%; margin-top: 8px; font-size: 12px;">
+            <tr>
+            <tr>
+                <th colspan="2"
+                    style="border: 1px solid #ddd; padding: 6px; background-color: #ab2f2b; color: #ffffff; font-size: 12px; font-weight: bold; text-align: center;">
+                    Refund Details Cash Advanced
+                </th>
+            </tr>
+            <tr style="font-weight: bold; background-color: #f5f5f5; text-align: center;">
+                <td style="border: 1px solid #ddd; padding: 6px;">Description</td>
+                <td style="border: 1px solid #ddd; padding: 6px;">Amount</td>
+            </tr>
+            <tr style="background-color: #f5f5f5; text-align: center;">
+                <td style="border: 1px solid #ddd; font-weight:bold; padding: 6px;">Total CA Request</td>
+                <td style="border: 1px solid #ddd; padding: 6px;">Rp.
+                    {{ number_format(array_sum($caDetails), 0, ',', '.') }}</td>
+            </tr>
+            <tr style="background-color: #f5f5f5; text-align: center;">
+                <td style="border: 1px solid #ddd; font-weight:bold; padding: 6px;">Total CA Declaration</td>
+                <td style="border: 1px solid #ddd; padding: 6px;">Rp.
+                    {{ number_format(array_sum($caDeclare), 0, ',', '.') }}</td>
+            </tr>
+            <tr style="background-color: #f5f5f5; text-align: center;">
+                <td style="border: 1px solid #ddd; font-weight:bold; padding: 6px;">Difference (Selisih)</td>
+                <td style="border: 1px solid #ddd; padding: 6px;">Rp. {{ number_format($selisihCa, 0, ',', '.') }}</td>
+            </tr>
+            </tr>
+        </table>
 
-            @if (!$isEnt)
-                <p>Kindly transfer the difference of <b>Rp. {{ number_format($selisihCa, 0, ',', '.') }}</b> to the following
-                    account number: <b>{{ $accNum }}</b></p>
-            @endif
-        @endif
-
-        @if ($isEnt)
-            <table style="border-collapse: collapse; width: 60%; margin-top: 8px; font-size: 12px;">
-                <tr>
-                    <tr>
-                        <th colspan="2"
-                            style="border: 1px solid #ddd; padding: 6px; background-color: #ab2f2b; color: #ffffff; font-size: 12px; font-weight: bold; text-align: center;">
-                            Refund Details Entertain
-                        </th>
-                    </tr>
-                    <tr style="font-weight: bold; background-color: #f5f5f5; text-align: center;">
-                        <td style="border: 1px solid #ddd; padding: 6px;">Description</td>
-                        <td style="border: 1px solid #ddd; padding: 6px;">Amount</td>
-                    </tr>
-                    <tr style="background-color: #f5f5f5; text-align: center;">
-                        <td style="border: 1px solid #ddd; font-weight:bold; padding: 6px;">Total Entertain Request</td>
-                        <td style="border: 1px solid #ddd; padding: 6px;">Rp. {{ number_format(array_sum($entDetails), 0, ',', '.') }}</td>
-                    </tr>
-                    <tr style="background-color: #f5f5f5; text-align: center;">
-                        <td style="border: 1px solid #ddd; font-weight:bold; padding: 6px;">Total Entertain Declaration</td>
-                        <td style="border: 1px solid #ddd; padding: 6px;">Rp. {{ number_format(array_sum($entDeclare), 0, ',', '.') }}</td>
-                    </tr>
-                    <tr style="background-color: #f5f5f5; text-align: center;">
-                        <td style="border: 1px solid #ddd; font-weight:bold; padding: 6px;">Difference (Selisih)</td>
-                        <td style="border: 1px solid #ddd; padding: 6px;">Rp. {{ number_format($selisihEnt, 0, ',', '.') }}</td>
-                    </tr>
-                </tr>
-            </table>
-
-            @if (!$isCa)
-                <p>Kindly transfer the difference of <b>Rp. {{ number_format($selisihEnt, 0, ',', '.') }}</b> to the following
-                    account number: <b>{{ $accNum }}</b></p>
-            @endif
-        @endif
-
-        @if ($isEnt && $isCa)
-            @php
-                $selisihTotal = $selisihCa + $selisihEnt;
-            @endphp
-            <p>Kindly transfer the difference of <b>Rp. {{ number_format($selisihTotal, 0, ',', '.') }}</b> to the following
+        @if (!$isEnt)
+            <p>Kindly transfer the difference of <b>Rp. {{ number_format($selisihCa, 0, ',', '.') }}</b> to the
+                following
                 account number: <b>{{ $accNum }}</b></p>
         @endif
     @endif
+
+    @if ($isEnt)
+        <table style="border-collapse: collapse; width: 60%; margin-top: 8px; font-size: 12px;">
+            <tr>
+            <tr>
+                <th colspan="2"
+                    style="border: 1px solid #ddd; padding: 6px; background-color: #ab2f2b; color: #ffffff; font-size: 12px; font-weight: bold; text-align: center;">
+                    Refund Details Entertain
+                </th>
+            </tr>
+            <tr style="font-weight: bold; background-color: #f5f5f5; text-align: center;">
+                <td style="border: 1px solid #ddd; padding: 6px;">Description</td>
+                <td style="border: 1px solid #ddd; padding: 6px;">Amount</td>
+            </tr>
+            <tr style="background-color: #f5f5f5; text-align: center;">
+                <td style="border: 1px solid #ddd; font-weight:bold; padding: 6px;">Total Entertain Request</td>
+                <td style="border: 1px solid #ddd; padding: 6px;">Rp.
+                    {{ number_format(array_sum($entDetails), 0, ',', '.') }}</td>
+            </tr>
+            <tr style="background-color: #f5f5f5; text-align: center;">
+                <td style="border: 1px solid #ddd; font-weight:bold; padding: 6px;">Total Entertain Declaration</td>
+                <td style="border: 1px solid #ddd; padding: 6px;">Rp.
+                    {{ number_format(array_sum($entDeclare), 0, ',', '.') }}</td>
+            </tr>
+            <tr style="background-color: #f5f5f5; text-align: center;">
+                <td style="border: 1px solid #ddd; font-weight:bold; padding: 6px;">Difference (Selisih)</td>
+                <td style="border: 1px solid #ddd; padding: 6px;">Rp. {{ number_format($selisihEnt, 0, ',', '.') }}
+                </td>
+            </tr>
+            </tr>
+        </table>
+
+        @if (!$isCa)
+            <p>Kindly transfer the difference of <b>Rp. {{ number_format($selisihEnt, 0, ',', '.') }}</b> to the
+                following
+                account number: <b>{{ $accNum }}</b></p>
+        @endif
+    @endif
+
+    @if ($isEnt && $isCa)
+        @php
+            $selisihTotal = $selisihCa + $selisihEnt;
+        @endphp
+        <p>Kindly transfer the difference of <b>Rp. {{ number_format($selisihTotal, 0, ',', '.') }}</b> to the
+            following
+            account number: <b>{{ $accNum }}</b></p>
+    @endif
+    {{-- @endif --}}
     <hr>
 
     <p>If you have any questions, please contact the respective business unit GA. </p>
