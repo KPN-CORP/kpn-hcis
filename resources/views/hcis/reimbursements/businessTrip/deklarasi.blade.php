@@ -180,10 +180,10 @@
                                             <ul class="nav nav-tabs nav-pills mb-2" id="pills-tab" role="tablist">
                                                 {{-- @if ($dnsTab == true) --}}
                                                 <li class="nav-item" role="presentation">
-                                                    <button class="nav-link <?php echo ($entrTab && $dnsTab) || (!$entrTab && $dnsTab) || (!$entrTab && !$dnsTab) ? 'show active' : ''; ?>"
-                                                        id="pills-cashAdvanced-tab" data-bs-toggle="pill"
-                                                        data-bs-target="#pills-cashAdvanced" type="button" role="tab"
-                                                        aria-controls="pills-cashAdvanced" aria-selected="true">Cash
+                                                    <button class="nav-link <?php echo ($entrTab && $dnsTab) || (!$entrTab && $dnsTab) || (!$entrTab && !$dnsTab) ? 'show active' : ''; ?>" id="pills-cashAdvanced-tab"
+                                                        data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced"
+                                                        type="button" role="tab" aria-controls="pills-cashAdvanced"
+                                                        aria-selected="true">Cash
                                                         Advanced</button>
                                                 </li>
                                                 {{-- @endif
@@ -225,12 +225,17 @@
                                         @endphp
 
                                         <div class="col-md-12 mb-2 mt-2">
-                                            <label for="prove_declare" class="form-label">Upload Document</label>
-                                            <input type="file" id="prove_declare" name="prove_declare[]"  
-                                                accept="image/*, application/pdf" class="form-control mb-2" multiple  
-                                                onchange="previewFiles()"  
-                                                {{ !((isset($dnsData->prove_declare) && is_array($dnsData->prove_declare) && count($dnsData->prove_declare) > 0) ||   
-                                                (isset($entrData->prove_declare) && is_array($entrData->prove_declare) && count($entrData->prove_declare) > 0)) ? 'required' : '' }}>  
+                                            <label for="prove_declare" class="form-label">Upload Document <span
+                                                    class="text-info fst-italic">* (Bon, Boarding Pass, Hotel, Taxi Voucher, etc.)</span></label>
+                                            <input type="file" id="prove_declare" name="prove_declare[]"
+                                                accept="image/*, application/pdf" class="form-control mb-2" multiple
+                                                onchange="previewFiles()"
+                                                {{ !(
+                                                    (isset($dnsData->prove_declare) && is_array($dnsData->prove_declare) && count($dnsData->prove_declare) > 0) ||
+                                                    (isset($entrData->prove_declare) && is_array($entrData->prove_declare) && count($entrData->prove_declare) > 0)
+                                                )
+                                                    ? 'required'
+                                                    : '' }}>
                                             @if (
                                                 (isset($dnsData->prove_declare) && $dnsData->prove_declare) ||
                                                     (isset($entrData->prove_declare) && $entrData->prove_declare))

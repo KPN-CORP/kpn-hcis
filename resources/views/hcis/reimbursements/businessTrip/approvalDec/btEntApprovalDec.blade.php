@@ -44,7 +44,7 @@
                 </div>
             </div>
             <div class="col-md-4 mb-2">
-                <label class="form-label">Total Cost</label>
+                <label class="form-label">Over Under Payment</label>
                 <div class="input-group">
                     <div class="input-group-append">
                         <span class="input-group-text">Rp</span>

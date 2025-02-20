@@ -1299,6 +1299,9 @@ class BusinessTripController extends Controller
         } else {
             $allowance = "Allowance";
         }
+
+        $job_level = Employee::where('id', $userId)->pluck('job_level')->first();
+        $job_level_number = (int) preg_replace('/[^0-9]/', '', $job_level);
         $group_company = Employee::where('id', $employee_data->id)->pluck('group_company')->first();
 
         $ca = CATransaction::where('no_sppd', $n->no_sppd)->get();
@@ -1336,6 +1339,7 @@ class BusinessTripController extends Controller
                 $declareCa = array_merge($declareCa, $currentDeclare);
             }
         }
+        dd($declareCa);
 
         // Safely access nominalPerdiem with default '0' if caDetail is empty
         $nominalPerdiem = isset($caDetail['detail_perdiem'][0]['nominal']) ? $caDetail['detail_perdiem'][0]['nominal'] : '0';
@@ -1414,6 +1418,7 @@ class BusinessTripController extends Controller
             'nominalPerdiem' => $nominalPerdiem,
             'nominalPerdiemDeclare' => $nominalPerdiemDeclare,
             'hasCaData' => $hasCaData,
+            'job_level_number' => $job_level_number,
             'perdiem' => $perdiem,
             'parentLink' => $parentLink,
             'link' => $link,
@@ -4753,7 +4758,7 @@ class BusinessTripController extends Controller
     public function deklarasiAdmin($id)
     {
         $n = BusinessTrip::find($id);
-        $userId = Auth::id();
+        $userId = $n->user_id;
         $employee_data = Employee::where('id', $n->user_id)->first();
 
         if ($employee_data->group_company == 'Plantations' || $employee_data->group_company == 'KPN Plantations') {
@@ -4766,6 +4771,9 @@ class BusinessTripController extends Controller
         $date = CATransaction::where('no_sppd', $n->no_sppd)->first();
         $dns = $ca->where('type_ca', 'dns')->first();
         $entr = $ca->where('type_ca', 'entr')->first();
+
+        $job_level = Employee::where('id', $userId)->pluck('job_level')->first();
+        $job_level_number = (int) preg_replace('/[^0-9]/', '', $job_level);
 
         $entrTab = $entr ? true : false;
         $dnsTab = $dns ? true : false;
@@ -4876,6 +4884,7 @@ class BusinessTripController extends Controller
             'hasCaData' => $hasCaData,
             'perdiem' => $perdiem,
             'group_company' => $group_company,
+            'job_level_number' => $job_level_number,
             'parentLink' => $parentLink,
             'link' => $link,
         ]);
@@ -7182,7 +7191,7 @@ class BusinessTripController extends Controller
     public function ApprovalDeklarasi($id)
     {
         $n = BusinessTrip::find($id);
-        $userId = Auth::id();
+        $userId = $n->user_id;
         $employee_data = Employee::where('id', $n->user_id)->first();
         $group_company = $employee_data->group_company;
         // dd($group_company);
@@ -7190,6 +7199,8 @@ class BusinessTripController extends Controller
         $dns = $ca->where('type_ca', 'dns')->first();
         $entr = $ca->where('type_ca', 'entr')->first();
 
+        $job_level = Employee::where('id', $userId)->pluck('job_level')->first();
+        $job_level_number = (int) preg_replace('/[^0-9]/', '', $job_level);
         // Cek apakah ada $ent dan jalankan kode jika ada
         $entrTab = $entr ? true : false;
         $dnsTab = $dns ? true : false;
@@ -7283,6 +7294,7 @@ class BusinessTripController extends Controller
             'nominalPerdiem' => $nominalPerdiem,
             'nominalPerdiemDeclare' => $nominalPerdiemDeclare,
             'hasCaData' => $hasCaData,
+            'job_level_number' => $job_level_number,
             'parentLink' => $parentLink,
             'link' => $link,
         ]);
