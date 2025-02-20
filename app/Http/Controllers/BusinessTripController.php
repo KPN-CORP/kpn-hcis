@@ -1203,7 +1203,7 @@ class BusinessTripController extends Controller
             $imageContent = file_get_contents($imagePath);
             $employeeName = Employee::where('id', $n->user_id)->pluck('fullname')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "requesting a Business Trip and waiting for your Approval with the following details :";
+            $textNotification = "requesting a Business Trip and waiting for your approval with the following details :";
             $isEnt = $request->ent === 'Ya';
             $isCa = $request->ca === 'Ya';
 
@@ -1276,7 +1276,7 @@ class BusinessTripController extends Controller
                         $entDetails,
                     ));
                 } catch (\Exception $e) {
-                    Log::error('Email Update Bussines Trip tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email Update Business Trip tidak terkirim: ' . $e->getMessage());
                 }
             }
         }
@@ -2640,7 +2640,7 @@ class BusinessTripController extends Controller
                 $imageContent = file_get_contents($imagePath);
                 $employeeName = Employee::where('id', $n->user_id)->pluck('fullname')->first();
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-                $textNotification = "requesting a Declaration Business Trip and waiting for your Approval with the following details :";
+                $textNotification = "requesting a Declaration Business Trip and waiting for your approval with the following details :";
                 // dd( $detail_ca, $caTrans);
 
                 // dd($caTrans, $n->no_sppd);
@@ -2707,7 +2707,7 @@ class BusinessTripController extends Controller
                     $group_company,
                 ));
                 } catch (\Exception $e) {
-                    Log::error('Email Deklarasi Create Bussines Trip tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email Deklarasi Create Business Trip tidak terkirim: ' . $e->getMessage());
                 }
             }
         }
@@ -4274,7 +4274,7 @@ class BusinessTripController extends Controller
             $imageContent = file_get_contents($imagePath);
             $employeeName = Employee::where('id', $userId)->pluck('fullname')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "requesting a Business Trip and waiting for your Approval with the following details :";
+            $textNotification = "requesting a Business Trip and waiting for your approval with the following details :";
             $managerName = Employee::where('employee_id', $managerL1)->pluck('fullname')->first();
             $isEnt = $request->ent === 'Ya';
             $isCa = $request->ca === 'Ya';
@@ -4351,7 +4351,7 @@ class BusinessTripController extends Controller
                         $group_company,
                     ));
                 } catch (\Exception $e) {
-                    Log::error('Email Create Bussines Trip tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email Create Business Trip tidak terkirim: ' . $e->getMessage());
                 }
             }
         }
@@ -5128,7 +5128,6 @@ class BusinessTripController extends Controller
                         // $employeeEmail = "erzie.aldrian02@gmail.com";
                         $employeeName = Employee::where('id', $n->user_id)->pluck('fullname')->first();
                     }
-                    dd($employeeEmail);
                 }
                 $ca->save();
             }
@@ -5217,7 +5216,7 @@ class BusinessTripController extends Controller
                         $base64Image,
                     ));
                 } catch (\Exception $e) {
-                    Log::error('Email Deklarasi Status Admin Bussines Trip tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email Deklarasi Status Admin Business Trip tidak terkirim: ' . $e->getMessage());
                 }
             }
         }
@@ -5731,7 +5730,7 @@ class BusinessTripController extends Controller
             $imageContent = file_get_contents($imagePath);
             $employeeName = Employee::where('id', $businessTrip->user_id)->pluck('fullname')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "requesting a Business Trip and waiting for your Approval with the following details :";
+            $textNotification = "requesting a Business Trip and waiting for your approval with the following details :";
             $isEnt = $request->ent === 'Ya';
             $isCa = $request->ca === 'Ya';
 
@@ -5803,7 +5802,7 @@ class BusinessTripController extends Controller
                         $entDetails,
                     ));
                 } catch (\Exception $e) {
-                    Log::error('Email Update Status Bussines Trip tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email Update Status Business Trip tidak terkirim: ' . $e->getMessage());
                 }
             }
 
@@ -6139,7 +6138,7 @@ class BusinessTripController extends Controller
                 $imageContent = file_get_contents($imagePath);
                 $employeeName = Employee::where('id', $businessTrip->user_id)->pluck('fullname')->first();
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-                $textNotification = "requesting a Business Trip and waiting for your Approval with the following details :";
+                $textNotification = "requesting a Business Trip and waiting for your approval with the following details :";
                 $isEnt = CATransaction::where('type_ca', 'entr')->first();
                 $isCa = CATransaction::where('type_ca', 'dns')->first();
 
@@ -6211,7 +6210,7 @@ class BusinessTripController extends Controller
                             $entDetails,
                         ));
                     } catch (\Exception $e) {
-                        Log::error('Email Update Status Bussines Trip tidak terkirim: ' . $e->getMessage());
+                        Log::error('Email Update Status Business Trip tidak terkirim: ' . $e->getMessage());
                     }
                 }
 
@@ -6523,7 +6522,7 @@ class BusinessTripController extends Controller
                 $imageContent = file_get_contents($imagePath);
                 $employeeName = Employee::where('employee_id', $employeeId)->pluck('fullname')->first();
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-                $textNotification = "requesting a Declaration Business Trip and waiting for your Approval with the following details :";
+                $textNotification = "requesting a Declaration Business Trip and waiting for your approval with the following details :";
 
                 // dd($caTrans, $n->no_sppd);
                 $caDetails = [
@@ -6588,7 +6587,7 @@ class BusinessTripController extends Controller
                             $isCa,
                         ));
                     } catch (\Exception $e) {
-                        Log::error('Email Update Status Deklarasi Bussines Trip tidak terkirim: ' . $e->getMessage());
+                        Log::error('Email Update Status Deklarasi Business Trip tidak terkirim: ' . $e->getMessage());
                     }
                 }
                 // if ($businessTrip->ca == 'Ya') {
@@ -7002,7 +7001,7 @@ class BusinessTripController extends Controller
             $employeeName = Employee::where('employee_id', $employeeId)->pluck('fullname')->first();
             $group_company = Employee::where('employee_id', $employeeId)->pluck('group_company')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "requesting a Declaration Business Trip and waiting for your Approval with the following details :";
+            $textNotification = "requesting a Declaration Business Trip and waiting for your approval with the following details :";
             // dd( $detail_ca, $caTrans);
 
             // dd($caTrans, $n->no_sppd);
@@ -7069,7 +7068,7 @@ class BusinessTripController extends Controller
                         $group_company,
                     ));
                 } catch (\Exception $e) {
-                    Log::error('Email Update Status Deklarasi Bussines Trip tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email Update Status Deklarasi Business Trip tidak terkirim: ' . $e->getMessage());
                 }
             }
             // Handle CA approval for L1
