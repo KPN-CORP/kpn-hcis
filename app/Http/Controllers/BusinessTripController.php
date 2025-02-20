@@ -1824,7 +1824,7 @@ class BusinessTripController extends Controller
                         $keterangan = $request->keterangan_bt_lainnya[$key] ?? '';
                         $type = $request->type_bt_lainnya[$key] ?? '';
                         $nominal = str_replace('.', '', $request->nominal_bt_lainnya[$key] ?? '0');
-    
+
                         if (!empty($tanggal) && !empty($nominal)) {
                             $detail_lainnya[] = [
                                 'tanggal' => $tanggal,
