@@ -263,7 +263,7 @@
                                                     <input type="hidden" name="ca" id="caHidden" value="Tidak">
                                                     <input class="form-check-input" type="checkbox"
                                                         id="cashAdvancedCheckbox" value="Ya"
-                                                        onchange="updateCAValue()" {{ $isDisabled ? 'disabled' : '' }}>
+                                                        onchange="updateCAValue()" {{ $isDisabled ? '' : 'disabled' }}>
                                                     <label class="form-check-label" for="cashAdvancedCheckbox">Cash
                                                         Advanced</label>
                                                 </div>
@@ -273,7 +273,7 @@
                                                     <input type="hidden" name="ent" id="entHidden" value="Tidak">
                                                     <input class="form-check-input" type="checkbox"
                                                         id="caEntertainCheckbox" value="Ya"
-                                                        onchange="updateCAValue()" {{ $isDisabled ? 'disabled' : '' }}>
+                                                        onchange="updateCAValue()" {{ $isDisabled ? '' : 'disabled' }}>
                                                     <label class="form-check-label" for="caEntertainCheckbox">CA
                                                         Entertain</label>
                                                 </div>

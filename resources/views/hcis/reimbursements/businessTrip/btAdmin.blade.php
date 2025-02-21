@@ -316,7 +316,7 @@
                                                                     ? 'warning'
                                                                     : ($n->status == 'Draft'
                                                                         ? 'secondary'
-                                                                        : (in_array($n->status, ['Doc Accepted'])
+                                                                        : (in_array($n->status, ['Doc Accepted', 'Request Revision', 'Declaration Revision'])
                                                                             ? 'info'
                                                                             : 'secondary')))) }}"
                                                         style="font-size: 12px; padding: 0.5rem 1rem; cursor: {{ ($n->status == 'Rejected' || $n->status == 'Declaration Rejected') && isset($btApprovals[$n->id]) ? 'pointer' : 'default' }};"
@@ -592,6 +592,41 @@
                     </div>
                 </div>
 
+                {{-- Revision Reason Modal --}}
+                <div class="modal fade" id="revisiReasonModal" tabindex="-1" aria-labelledby="revisiReasonModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow">
+                            <div class="modal-header bg-light border-bottom-0">
+                                <h5 class="modal-title" id="revisiReasonModalLabel" style="color: #333; font-weight: 600;">Revision
+                                    Reason</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body p-4">
+                                <form id="revisiReasonForm" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="_method" value="PUT">
+                                    <input type="hidden" name="status_approval" value="Request Revision">
+
+                                    <div class="mb-3">
+                                        <label for="revisi_info" class="form-label" style="color: #555; font-weight: 500;">Please
+                                            provide a reason for Revision:</label>
+                                        <textarea class="form-control border-2" name="revisi_info" id="revisi_info" rows="4" required
+                                            style="resize: vertical; min-height: 100px;"></textarea>
+                                    </div>
+
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="button" class="btn btn-outline-primary rounded-pill me-2"
+                                            data-bs-dismiss="modal" style="min-width: 100px;">Cancel</button>
+                                        <button type="submit" class="btn btn-primary rounded-pill"
+                                            style="min-width: 100px;">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
                 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
                 <script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
@@ -602,6 +637,24 @@
                         const form = this.querySelector('form');
                         if (form && btId) {
                             form.action = `/businessTrip/status/reject/${btId}`; // Update form action with correct path
+                            // Add method override for PUT request
+                            let methodInput = form.querySelector('input[name="_method"]');
+                            if (!methodInput) {
+                                methodInput = document.createElement('input');
+                                methodInput.type = 'hidden';
+                                methodInput.name = '_method';
+                                form.appendChild(methodInput);
+                            }
+                            methodInput.value = 'PUT';
+                        }
+                    });
+
+                    document.getElementById('revisiReasonModal').addEventListener('show.bs.modal', function(event) {
+                        const button = event.relatedTarget; // Button that triggered the modal
+                        const btId = button.getAttribute('data-id'); // Get the ID
+                        const form = this.querySelector('form');
+                        if (form && btId) {
+                            form.action = `/businessTrip/status/revisi/${btId}`; // Update form action with correct path
                             // Add method override for PUT request
                             let methodInput = form.querySelector('input[name="_method"]');
                             if (!methodInput) {
@@ -685,7 +738,9 @@
                                 if (status === 'Pending L1') {
                                     l1Container.innerHTML = `
                                     <button type="submit" class="btn btn-success btn-sm rounded-pill me-2" data-id="${btId}">Approve</button>
-                                    <button type="button" class="btn btn-outline-danger btn-sm rounded-pill"
+                                    <button type="button" class="btn btn-outline-info btn-sm rounded-pill me-2"
+                                            data-bs-toggle="modal" data-bs-target="#revisiReasonModal" data-id="${btId}">Revision</button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm rounded-pill me-2"
                                             data-bs-toggle="modal" data-bs-target="#rejectReasonForm" data-id="${btId}">Reject</button>
                                 `;
                                 } else {
@@ -696,6 +751,8 @@
                                 if (status === 'Pending L2') {
                                     l2Container.innerHTML = `
                                         <button type="submit" class="btn btn-success btn-sm rounded-pill me-2" data-id="${btId}">Approve</button>
+                                        <button type="button" class="btn btn-outline-info btn-sm rounded-pill me-2"
+                                                data-bs-toggle="modal" data-bs-target="#revisiReasonModal" data-id="${btId}">Revision</button>
                                         <button type="button" class="btn btn-outline-danger btn-sm rounded-pill"
                                                 data-bs-toggle="modal" data-bs-target="#rejectReasonForm" data-id="${btId}">Reject</button>
                                     `;
@@ -742,6 +799,8 @@
                                         .approval_status === 'Approved');
                                     const l1Rejections = filteredApprovals.filter(a => a.layer === 1 && a
                                         .approval_status === 'Rejected');
+                                    const l1Revision = filteredApprovals.filter(a => a.layer === 1 && a
+                                        .approval_status === 'Request Revision');
                                     if (l1ApprovalsOnce.length > 0) {
                                         approvalDataL1.innerHTML = l1ApprovalsOnce.map(approval => `
                                                         <div class="border rounded p-2 mb-2">
@@ -770,6 +829,16 @@
                                                             <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
                                                         </div>
                                                     `).join('');
+                                    } else if (l1Revision.length > 0) {
+                                        approvalDataL1.innerHTML += l1Revision.map(rejection => `
+                                          <div class="alert alert-info">
+                                                            <strong>Status:</strong> ${rejection.approval_status}<br>
+                                                            <strong>Rejected By:</strong> ${rejection.employee_id}<br>
+                                                            <strong>Rejected At:</strong> ${formatDateToCustomString(rejection.approved_at)}<br>
+                                                            <strong>Rejection Info:</strong> ${rejection.reject_info ? rejection.reject_info.replace(/\n/g, '<br>') : 'No additional info provided'}<br>
+                                                            <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                                        </div>
+                                                    `).join('');
                                     } else {
                                         approvalDataL1.innerHTML =
                                             '<p class="text-muted">No L1 Request found</p>';
@@ -781,6 +850,8 @@
                                         .approval_status === 'Approved');
                                     const l2Rejections = filteredApprovals.filter(a => a.layer === 2 && a
                                         .approval_status === 'Rejected');
+                                    const l2Revision = filteredApprovals.filter(a => a.layer === 2 && a
+                                        .approval_status === 'Request Revision');
                                     if (l2Approvals.length > 0) {
                                         approvalDataL2.innerHTML = l2Approvals.map(approval => `
                                             <div class="border rounded p-2 mb-2">
@@ -797,6 +868,16 @@
                                             <strong>Rejected By:</strong> ${rejection.employee_id}<br>
                                             <strong>Rejected At:</strong> ${formatDateToCustomString(rejection.approved_at)}<br>
                                             <strong>Rejection Info:</strong> ${rejection.reject_info || 'No additional info provided'}<br>
+                                            <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                        </div>
+                                    `).join('');
+                                    } else if (l2Revision.length > 0) {
+                                        approvalDataL2.innerHTML += l2Revision.map(rejection => `
+                                        <div class="alert alert-info">
+                                            <strong>Status:</strong> ${rejection.approval_status}<br>
+                                            <strong>Rejected By:</strong> ${rejection.employee_id}<br>
+                                            <strong>Rejected At:</strong> ${formatDateToCustomString(rejection.approved_at)}<br>
+                                            <strong>Rejection Info:</strong> ${rejection.reject_info ? rejection.reject_info.replace(/\n/g, '<br>') : 'No additional info provided'}<br>
                                             <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
                                         </div>
                                     `).join('');

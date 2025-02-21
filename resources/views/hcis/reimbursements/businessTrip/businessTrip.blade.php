@@ -310,7 +310,7 @@
                                                                 ? 'warning'
                                                                 : ($n->status == 'Draft'
                                                                     ? 'secondary'
-                                                                    : (in_array($n->status, ['Doc Accepted'])
+                                                                    : (in_array($n->status, ['Doc Accepted', 'Request Revision', 'Declaration Revision'])
                                                                         ? 'info'
                                                                         : 'secondary')))) }}"
                                                     style="font-size: 12px; padding: 0.5rem 1rem; cursor: {{ ($n->status == 'Rejected' || $n->status == 'Declaration Rejected') && isset($btApprovals[$n->id]) ? 'pointer' : 'default' }};"
@@ -324,7 +324,7 @@
                                                 </span>
                                             </td>
                                             <td style="align-content: center">
-                                                @if ($n->status == 'Draft')
+                                                @if ($n->status == 'Draft' || $n->status == 'Request Revision')
                                                     <form method="GET"
                                                         action="/businessTrip/form/update/{{ $n->id }}"
                                                         style="display: inline-block;">
@@ -360,7 +360,7 @@
                                                     @endphp
                                                     @if (
                                                         // $n->kembali < $today &&
-                                                        $n->status == 'Approved' || $n->status == 'Declaration Draft' || $n->status == 'Declaration Rejected')
+                                                        $n->status == 'Approved' || $n->status == 'Declaration Draft' || $n->status == 'Declaration Rejected' || $n->status == 'Declaration Revision')
                                                         <form method="GET"
                                                             action="/businessTrip/declaration/{{ $n->id }}"
                                                             style="display: inline-block;">

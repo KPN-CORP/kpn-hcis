@@ -93,7 +93,9 @@ Route::get('/apiemployees/{id}', [ApiEmployeeController::class, 'show']);
 //LINK APPROVAL BT
 Route::get('approve/{id}/{manager_id}/{status}', [BTApprovalController::class, 'approveFromLink'])->name('approve.business.trip');
 
+Route::get('businessTrip/revision/{id}/{manager_id}/{status}', [BTApprovalController::class, 'revisionLink'])->name('revision.link');
 Route::get('businessTrip/rejection/{id}/{manager_id}/{status}', [BTApprovalController::class, 'rejectLink'])->name('reject.link');
+Route::post('revision/{id}/{manager_id}/{status}', [BTApprovalController::class, 'revisionFromLink'])->name('revision.business.trip');
 Route::post('reject/{id}/{manager_id}/{status}', [BTApprovalController::class, 'rejectFromLink'])->name('reject.business.trip');
 
 //LINK APPROVAL Declarations
@@ -447,6 +449,7 @@ Route::middleware('auth')->group(function () {
 
     //APPROVAL ADMIN BT
     Route::put('businessTrip/status/approve/{id}', [BusinessTripController::class, 'adminApprove'])->name('admin.approve');
+    Route::put('businessTrip/status/revisi/{id}', [BusinessTripController::class, 'adminRevisi'])->name('admin.revisi');
     Route::put('businessTrip/status/reject/{id}', [BusinessTripController::class, 'adminReject'])->name('admin.reject');
 
     //PDF BT
