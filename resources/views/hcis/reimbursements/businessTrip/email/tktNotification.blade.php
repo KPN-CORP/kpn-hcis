@@ -73,6 +73,7 @@
     <p>For approval or rejection of the Ticket, you can choose the following links:</p>
     <p>
         <a href="{{ $approvalLink }}" style="font-size: 20px;">Approve</a>    /     
+        <a href="{{ $revisionLink }}" style="font-size: 20px;">Revision</a>    /     
         <a href="{{ $rejectionLink }}" style="font-size: 20px;">Reject</a>
     </p>
 

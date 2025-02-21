@@ -116,7 +116,9 @@ Route::post('reject/hotel/{id}/{manager_id}/{status}', [ApprovalReimburseControl
 Route::get('approve/ticket/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'approveTicketFromLink'])->name('approve.ticket');
 
 Route::get('ticket/rejection/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'rejectTicketLink'])->name('reject.ticket.link');
+Route::get('ticket/revision/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'revisionTicketLink'])->name('revision.ticket.link');
 Route::post('reject/ticket/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'rejectTicketFromLink'])->name('reject.ticket');
+Route::post('revision/ticket/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'revisionTicketFromLink'])->name('revision.ticket');
 
 // LINK APPROVAL CA REQUEST
 Route::get('/approval/cashadvanced/approve/email/{id}/{employeeId}', [ApprovalReimburseController::class, 'cashadvancedActionApprovalEmail'])
