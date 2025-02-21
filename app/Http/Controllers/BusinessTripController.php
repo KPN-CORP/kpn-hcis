@@ -1420,6 +1420,21 @@ class BusinessTripController extends Controller
         $locations = Location::orderBy('area')->get();
         $companies = Company::orderBy('contribution_level')->get();
 
+        $revisiInfo = null;
+        if ($n->status === 'Request Revision') {
+            $revisiInfo = BTApproval::where('bt_id', $n->id)
+                ->where('approval_status', 'Request Revision')  
+                ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru  
+                ->pluck('reject_info')  
+                ->first();
+        } if ($n->status === 'Declaration Revision') {
+            $revisiInfo = BTApproval::where('bt_id', $n->id)
+                ->where('approval_status', 'Declaration Revision')  
+                ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru  
+                ->pluck('reject_info')  
+                ->first();
+        }
+
         return view('hcis.reimbursements.businessTrip.deklarasi', [
             'n' => $n,
             'group_company' => $group_company,
@@ -1445,6 +1460,7 @@ class BusinessTripController extends Controller
             'perdiem' => $perdiem,
             'parentLink' => $parentLink,
             'link' => $link,
+            'revisiInfo' => $revisiInfo,
         ]);
     }
     public function deklarasiCreate(Request $request, $id)
@@ -2651,6 +2667,12 @@ class BusinessTripController extends Controller
                     'status' => 'Declaration L2'
                 ]);
 
+                $revisionLink = route('revision.link.declaration', [
+                    'id' => urlencode($n->id),
+                    'manager_id' => $n->manager_l1_id,
+                    'status' => 'Declaration Revision',
+                ]);
+
                 $rejectionLink = route('reject.link.declaration', [
                     'id' => urlencode($n->id),
                     'manager_id' => $n->manager_l1_id,
@@ -2731,6 +2753,7 @@ class BusinessTripController extends Controller
                         $entDeclare,
                         $managerName,
                         $approvalLink,
+                        $revisionLink,
                         $rejectionLink,
                         $employeeName,
                         $base64Image,
@@ -6656,6 +6679,12 @@ class BusinessTripController extends Controller
                     'status' => 'Declaration Approved'
                 ]);
 
+                $revisionLink = route('revision.link.declaration', [
+                    'id' => urlencode($businessTrip->id),
+                    'manager_id' => $businessTrip->manager_l1_id,
+                    'status' => 'Declaration Revision',
+                ]);
+
                 $rejectionLink = route('reject.link.declaration', [
                     'id' => urlencode($businessTrip->id),
                     'manager_id' => $businessTrip->manager_l2_id,
@@ -6736,6 +6765,7 @@ class BusinessTripController extends Controller
                             $entDeclare,
                             $managerName,
                             $approvalLink,
+                            $revisionLink,
                             $rejectionLink,
                             $employeeName,
                             $base64Image,
@@ -6992,7 +7022,7 @@ class BusinessTripController extends Controller
         }
 
         if ($businessTrip->status == 'Declaration L1' || $businessTrip->status == 'Declaration L2') {
-            $statusValue = 'Declaration Rejected';
+            $statusValue = 'Declaration Revision';
             if ($businessTrip->status == 'Declaration L1') {
                 $layer = 1;
             } elseif ($businessTrip->status == 'Declaration L2') {
@@ -7240,9 +7270,36 @@ class BusinessTripController extends Controller
         // Find the business trip by ID
         $businessTrip = BusinessTrip::findOrFail($id);
         $rejectInfo = $request->input('reject_info');
+        $revisiInfo = $request->input('revisi_info');
         // Determine the new status and layer based on the action and manager's role
         $action = $request->input('status_approval');
-        if ($action == 'Declaration Rejected') {
+        if ($action == 'Declaration Revision') {
+            $statusValue = 'Declaration Revision';
+            if ($employeeId == $businessTrip->manager_l1_id) {
+                $layer = 1;
+            } elseif ($employeeId == $businessTrip->manager_l2_id) {
+                $layer = 2;
+            } else {
+                return redirect()->back()->with('error', 'Unauthorized action.');
+            }
+            $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+            foreach ($caTransaction as $caTransactions) {
+                if ($caTransactions && $caTransactions->caonly != 'Y') {
+                    // Update rejection info for the current layer
+                    ca_sett_approval::updateOrCreate(
+                        ['ca_id' => $caTransactions->id, 'employee_id' => $employeeId, 'layer' => $layer],
+                        ['approval_status' => 'Rejected', 'approved_at' => now(), 'reject_info' => $revisiInfo]
+                    );
+
+                    // Update all records with the same ca_id to 'Rejected' status
+                    ca_sett_approval::where('ca_id', $caTransactions->id)
+                        ->update(['approval_status' => 'Rejected']);
+
+                    // Update the main CA transaction approval status
+                    $caTransactions->update(['approval_sett' => 'Revision']);
+                }
+            }
+        } elseif ($action == 'Declaration Rejected') {
             $statusValue = 'Declaration Rejected';
             if ($employeeId == $businessTrip->manager_l1_id) {
                 $layer = 1;
@@ -7316,6 +7373,12 @@ class BusinessTripController extends Controller
                 'id' => urlencode($businessTrip->id),
                 'manager_id' => $businessTrip->manager_l2_id,
                 'status' => 'Declaration Approved'
+            ]);
+
+            $revisionLink = route('revision.link.declaration', [
+                'id' => urlencode($businessTrip->id),
+                'manager_id' => $businessTrip->manager_l1_id,
+                'status' => 'Declaration Revision',
             ]);
 
             $rejectionLink = route('reject.link.declaration', [
@@ -7400,6 +7463,7 @@ class BusinessTripController extends Controller
                         $entDeclare,
                         $managerName,
                         $approvalLink,
+                        $revisionLink,
                         $rejectionLink,
                         $employeeName,
                         $base64Image,
@@ -7499,7 +7563,11 @@ class BusinessTripController extends Controller
         $approval->layer = $layer;
         $approval->approval_status = $statusValue;
         $approval->approved_at = now();
-        $approval->reject_info = $rejectInfo;
+        if ($action == 'Declaration Revision') {
+            $approval->reject_info = $revisiInfo;
+        } elseif ($action == 'Declaration Rejected') {
+            $approval->reject_info = $rejectInfo;
+        }
         $approval->employee_id = $employeeId;
 
         // Save the approval record

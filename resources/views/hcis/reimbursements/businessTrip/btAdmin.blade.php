@@ -761,10 +761,12 @@
                                 }
                                 if (status === 'Declaration L1') {
                                     l1ContainerDeclare.innerHTML = `
-                    <button type="submit" class="btn btn-success btn-sm rounded-pill me-2" data-id="${btId}">Approve Declaration</button>
-                    <button type="button" class="btn btn-outline-danger btn-sm rounded-pill"
-                            data-bs-toggle="modal" data-bs-target="#rejectReasonForm" data-id="${btId}">Reject</button>
-                `;
+                                        <button type="submit" class="btn btn-success btn-sm rounded-pill me-2" data-id="${btId}">Approve Declaration</button>
+                                        <button type="button" class="btn btn-outline-info btn-sm rounded-pill me-2"
+                                                data-bs-toggle="modal" data-bs-target="#revisiReasonModal" data-id="${btId}">Revision</button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill"
+                                                data-bs-toggle="modal" data-bs-target="#rejectReasonForm" data-id="${btId}">Reject</button>
+                                    `;
                                 } else {
                                     l1ContainerDeclare.innerHTML =
                                         `<div id="approvalDataL1Declare" class="w-100"></div>`;
@@ -773,10 +775,12 @@
                                 // Handle L2 Declaration container content
                                 if (status === 'Declaration L2') {
                                     l2ContainerDeclare.innerHTML = `
-                    <button type="submit" class="btn btn-success btn-sm rounded-pill me-2" data-id="${btId}">Approve Declaration</button>
-                    <button type="button" class="btn btn-outline-danger btn-sm rounded-pill"
-                            data-bs-toggle="modal" data-bs-target="#rejectReasonForm" data-id="${btId}">Reject</button>
-                `;
+                                        <button type="submit" class="btn btn-success btn-sm rounded-pill me-2" data-id="${btId}">Approve Declaration</button>
+                                        <button type="button" class="btn btn-outline-info btn-sm rounded-pill me-2"
+                                                data-bs-toggle="modal" data-bs-target="#revisiReasonModal" data-id="${btId}">Revision</button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill"
+                                                data-bs-toggle="modal" data-bs-target="#rejectReasonForm" data-id="${btId}">Reject</button>
+                                    `;
                                 } else {
                                     l2ContainerDeclare.innerHTML =
                                         `<div id="approvalDataL2Declare" class="w-100"></div>`;
@@ -895,6 +899,10 @@
                                         a.layer === 1 &&
                                         (a.approval_status === 'Declaration Approved')
                                     );
+                                    const l1DeclarationsRevision = filteredApprovals.filter(a =>
+                                        a.layer === 1 &&
+                                        (a.approval_status === 'Declaration Revision')
+                                    );
                                     const l1DeclarationsReject = filteredApprovals.filter(a =>
                                         a.layer === 1 &&
                                         (a.approval_status === 'Declaration Rejected')
@@ -917,7 +925,17 @@
                                             <strong>Processed By:</strong> ${approval.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
                                         </div>
                                     `).join('');
-                                    } else if (l1DeclarationsReject.length > 0) {
+                                    } else if (l1DeclarationsRevision.length > 0) {
+                                        approvalDataL1Declare.innerHTML += l1DeclarationsRevision.map(rejection => `
+                                        <div class="alert alert-info">
+                                            <strong>Status:</strong> ${rejection.approval_status}<br>
+                                            <strong>Rejected By:</strong> ${rejection.employee_id}<br>
+                                            <strong>Rejected At:</strong> ${formatDateToCustomString(rejection.approved_at)}<br>
+                                            <strong>Rejection Info:</strong> ${rejection.reject_info || 'No additional info provided'}<br>
+                                            <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                        </div>
+                                    `).join('');
+                                    }else if (l1DeclarationsReject.length > 0) {
                                         approvalDataL1Declare.innerHTML += l1DeclarationsReject.map(rejection => `
                                         <div class="border rounded p-2 mb-2 bg-warning">
                                             <strong>Status:</strong> ${rejection.approval_status}<br>
@@ -938,6 +956,10 @@
                                         a.layer === 2 &&
                                         (a.approval_status === 'Declaration Approved')
                                     );
+                                    const l2DeclarationsRevision = filteredApprovals.filter(a =>
+                                        a.layer === 2 &&
+                                        (a.approval_status === 'Declaration Revision')
+                                    );
                                     const l2DeclarationsReject = filteredApprovals.filter(a =>
                                         a.layer === 2 &&
                                         (a.approval_status === 'Declaration Rejected')
@@ -949,6 +971,16 @@
                                             <strong>Approved By:</strong> ${approval.employee_id}<br>
                                             <strong>Approved At:</strong> ${formatDateToCustomString(approval.approved_at)}<br>
                                             <strong>Processed By:</strong> ${approval.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                        </div>
+                                    `).join('');
+                                    } else if (l2DeclarationsRevision.length > 0) {
+                                        approvalDataL2Declare.innerHTML += l2DeclarationsRevision.map(rejection => `
+                                        <div class="alert alert-info">
+                                            <strong>Status:</strong> ${rejection.approval_status}<br>
+                                            <strong>Rejected By:</strong> ${rejection.employee_id}<br>
+                                            <strong>Rejected At:</strong> ${formatDateToCustomString(rejection.approved_at)}<br>
+                                            <strong>Rejection Info:</strong> ${rejection.reject_info || 'No additional info provided'}<br>
+                                            <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
                                         </div>
                                     `).join('');
                                     } else if (l2DeclarationsReject.length > 0) {

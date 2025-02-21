@@ -173,6 +173,12 @@
                                     // dd($declareCA['detail_transport']);
                                 @endphp
 
+                                @if ($n->status == 'Declaration Revision')
+                                    <div class="alert alert-info mt-4" role="alert">  
+                                        <h4 class="alert-heading">Revision Note</h4>  
+                                        {!! nl2br(e($revisiInfo)) !!}  
+                                    </div>  
+                                @endif
                                 <!-- 1st Form -->
                                 <div class="row mt-2" id="ca_div">
                                     <div class="col-md-12">

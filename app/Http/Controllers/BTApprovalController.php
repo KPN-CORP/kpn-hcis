@@ -991,6 +991,12 @@ class BTApprovalController extends Controller
                     'status' => 'Declaration Approved'
                 ]);
 
+                $revisionLink = route('revision.link.declaration', [
+                    'id' => urlencode($businessTrip->id),
+                    'manager_id' => $businessTrip->manager_l1_id,
+                    'status' => 'Declaration Revision',
+                ]);
+
                 $rejectionLink = route('reject.link.declaration', [
                     'id' => urlencode($businessTrip->id),
                     'manager_id' => $businessTrip->manager_l2_id,
@@ -1077,6 +1083,7 @@ class BTApprovalController extends Controller
                     $entDeclare,
                     $managerName,
                     $approvalLink,
+                    $revisionLink,
                     $rejectionLink,
                     $employeeName,
                     $base64Image,
@@ -1270,6 +1277,148 @@ class BTApprovalController extends Controller
             'link' => $link,
         ]);
     }
+
+    public function revisionDeclarationLink(Request $request, $id, $manager_id, $status)
+    {
+        $n = BusinessTrip::find($id);
+        $userId = Auth::id();
+        $employee_data = Employee::where('id', $n->user_id)->first();
+        // dd($employee_data);
+        $ca = CATransaction::where('no_sppd', $n->no_sppd)->first();
+
+        // Initialize caDetail with an empty array if it's null
+        $caDetail = $ca ? json_decode($ca->detail_ca, true) : [];
+        $declareCa = $ca ? json_decode($ca->declare_ca, true) : [];
+
+        // Safely access nominalPerdiem with default '0' if caDetail is empty
+        $nominalPerdiem = isset($caDetail['detail_perdiem'][0]['nominal']) ? $caDetail['detail_perdiem'][0]['nominal'] : '0';
+        $nominalPerdiemDeclare = isset($declareCa['detail_perdiem'][0]['nominal']) ? $declareCa['detail_perdiem'][0]['nominal'] : '0';
+
+        $hasCaData = $ca !== null;
+        // Retrieve the taxi data for the specific BusinessTrip
+        $taksi = Taksi::where('no_sppd', $n->no_sppd)->first();
+
+        // Retrieve all hotels for the specific BusinessTrip
+        $hotels = Hotel::where('no_sppd', $n->no_sppd)->get();
+
+        // Prepare hotel data for the view
+        $hotelData = [];
+        foreach ($hotels as $index => $hotel) {
+            $hotelData[] = [
+                'nama_htl' => $hotel->nama_htl,
+                'lokasi_htl' => $hotel->lokasi_htl,
+                'jmlkmr_htl' => $hotel->jmlkmr_htl,
+                'bed_htl' => $hotel->bed_htl,
+                'tgl_masuk_htl' => $hotel->tgl_masuk_htl,
+                'tgl_keluar_htl' => $hotel->tgl_keluar_htl,
+                'total_hari' => $hotel->total_hari,
+                'more_htl' => ($index < count($hotels) - 1) ? 'Ya' : 'Tidak'
+            ];
+        }
+
+        // Retrieve all tickets for the specific BusinessTrip
+        $tickets = Tiket::where('no_sppd', $n->no_sppd)->get();
+
+        // Prepare ticket data for the view
+        $ticketData = [];
+        foreach ($tickets as $index => $ticket) {
+            $ticketData[] = [
+                'noktp_tkt' => $ticket->noktp_tkt,
+                'dari_tkt' => $ticket->dari_tkt,
+                'ke_tkt' => $ticket->ke_tkt,
+                'tgl_brkt_tkt' => $ticket->tgl_brkt_tkt,
+                'jam_brkt_tkt' => $ticket->jam_brkt_tkt,
+                'jenis_tkt' => $ticket->jenis_tkt,
+                'type_tkt' => $ticket->type_tkt,
+                'tgl_plg_tkt' => $ticket->tgl_plg_tkt,
+                'jam_plg_tkt' => $ticket->jam_plg_tkt,
+                'ket_tkt' => $ticket->ket_tkt,
+                'more_tkt' => ($index < count($tickets) - 1) ? 'Ya' : 'Tidak'
+            ];
+        }
+
+        // Retrieve locations and companies data for the dropdowns
+        $locations = Location::orderBy('area')->get();
+        $companies = Company::orderBy('contribution_level')->get();
+
+        $parentLink = 'Business Trip Approval';
+        $link = 'Approval Details';
+
+        return view('hcis.reimbursements.businessTrip.btRevisionDeclaration', [
+            'n' => $n,
+            'hotelData' => $hotelData,
+            'taksiData' => $taksi, // Pass the taxi data
+            'ticketData' => $ticketData,
+            'employee_data' => $employee_data,
+            'companies' => $companies,
+            'locations' => $locations,
+            'caDetail' => $caDetail,
+            'declareCa' => $declareCa,
+            'ca' => $ca,
+            'nominalPerdiem' => $nominalPerdiem,
+            'nominalPerdiemDeclare' => $nominalPerdiemDeclare,
+            'hasCaData' => $hasCaData,
+            'parentLink' => $parentLink,
+            'manager_id' => $manager_id,
+            'status' => $status,
+            'link' => $link,
+        ]);
+    }
+    
+    public function revisionDeclarationFromLink(Request $request, $id, $manager_id, $status)
+    {
+        $employeeId = $manager_id;
+        $approval = new BTApproval();
+        $approval->id = (string) Str::uuid();
+
+        // Find the business trip by ID
+        $businessTrip = BusinessTrip::findOrFail($id);
+        $rejectInfo = $request->revision_info;
+
+        // Determine the new status and layer based on the action and manager's role
+        $oldStatus = $businessTrip->status;
+        $statusValue = 'Declaration Revision';
+        if ($oldStatus == 'Declaration L1') {
+            $layer = 1;
+        } elseif ($oldStatus == 'Declaration L2') {
+            $layer = 2;
+        } else {
+            return redirect()->back()->with('error', 'Unauthorized action.');
+        }
+
+        $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+        // dd($caTransaction->id);
+        // dd( $caTransaction, $caTransaction->caonly != 'Y');
+        foreach ($caTransaction as $caTransactions) {
+            if ($caTransactions && $caTransactions->caonly != 'Y' && $caTransactions->caonly == null) {
+                // Update semua CA approval status
+                ca_sett_approval::where('ca_id', $caTransactions->id)->where('approval_status', '!=', 'Rejected')->update([
+                    'approval_status' => 'Rejected',
+                    'approved_at' => now(),
+                    'reject_info' => $request->revision_info
+                ]);
+
+                CATransaction::where('id', $caTransactions->id)->update([
+                    'approval_sett' => 'Revision',
+                ]);
+            }
+        }
+
+        // Update the status in the BusinessTrip table
+        $businessTrip->update(['status' => $statusValue]);
+
+        // Record the approval or rejection in the BTApproval table
+        $approval->bt_id = $businessTrip->id;
+        $approval->layer = $layer;
+        $approval->approval_status = $statusValue;
+        $approval->approved_at = now();
+        $approval->reject_info = $rejectInfo;
+        $approval->employee_id = $employeeId;
+        $approval->save();
+
+        return redirect()->route('blank.pageUn')->with('success', 'Transaction Revision, Notification will be send to the employee.');
+    }
+
     public function rejectDeclarationFromLink(Request $request, $id, $manager_id, $status)
     {
         $employeeId = $manager_id;
