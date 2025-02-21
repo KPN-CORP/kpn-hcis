@@ -157,7 +157,7 @@
                                     Business Trip Needs <br>
                                 </label>
                                 <div class="row">
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-check">
                                             <input type="hidden" name="tiket_dalam_kota" value="Tidak">
                                             <input class="form-check-input" type="checkbox" id="ticketCheckboxDalamKota"
@@ -168,7 +168,18 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            <input type="hidden" name="mess_dalam_kota" value="Tidak">
+                                            <input class="form-check-input" type="checkbox" id="messCheckboxDalamKota"
+                                                name="mess_dalam_kota" value="Ya">
+                                            <label class="form-check-label" for="messCheckboxDalamKota">
+                                                Mess
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
                                         <div class="form-check">
                                             <input type="hidden" name="hotel_dalam_kota" value="Tidak">
                                             <input class="form-check-input" type="checkbox" id="hotelCheckboxDalamKota"
@@ -179,7 +190,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-check">
                                             <input type="hidden" name="taksi_dalam_kota" value="Tidak">
                                             <input class="form-check-input" type="checkbox" id="taksiCheckboxDalamKota"
@@ -211,6 +222,14 @@
                                                     aria-selected="false">Hotel</button>
                                             </li>
 
+                                            <li class="nav-item" role="presentation" id="nav-mess-dalam-kota"
+                                                style="display: none;">
+                                                <button class="nav-link" id="pills-mess-dalam-kota-tab"
+                                                    data-bs-toggle="pill" data-bs-target="#pills-mess-dalam-kota"
+                                                    type="button" role="tab" aria-controls="pills-mess-dalam-kota"
+                                                    aria-selected="false">Mess</button>
+                                            </li>
+
                                             <!-- Taxi Tab -->
                                             <li class="nav-item" role="presentation" id="nav-taksi-dalam-kota"
                                                 style="display: none;">
@@ -230,6 +249,12 @@
                                                 @include('hcis.reimbursements.businessTrip.form.dalam-kota.ticketDalamKota')
                                             </div>
 
+                                            <!-- mess Content -->
+                                            <div class="tab-pane fade" id="pills-mess-dalam-kota" role="tabpanel"
+                                                aria-labelledby="pills-mess-dalam-kota-tab">
+                                                {{-- mess content --}}
+                                                {{-- @include('hcis.reimbursements.businessTrip.form.dalam-kota.hotelDalamKota') --}}
+                                            </div>
                                             <!-- Hotel Content -->
                                             <div class="tab-pane fade" id="pills-hotel-dalam-kota" role="tabpanel"
                                                 aria-labelledby="pills-hotel-dalam-kota-tab">
@@ -268,7 +293,7 @@
                                                         Advanced</label>
                                                 </div>
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
                                                 <div class="form-check">
                                                     <input type="hidden" name="ent" id="entHidden" value="Tidak">
                                                     <input class="form-check-input" type="checkbox"
@@ -291,6 +316,17 @@
 
                                             <div class="col-md-2">
                                                 <div class="form-check">
+                                                    <input type="hidden" name="mess" value="Tidak">
+                                                    <input class="form-check-input" type="checkbox" id="messCheckbox"
+                                                        name="mess" value="Ya">
+                                                    <label class="form-check-label" for="messCheckbox">
+                                                        Mess
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <div class="form-check">
                                                     <input type="hidden" name="hotel" value="Tidak">
                                                     <input class="form-check-input" type="checkbox" id="hotelCheckbox"
                                                         name="hotel" value="Ya">
@@ -300,7 +336,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
                                                 <div class="form-check">
                                                     <input type="hidden" name="taksi" value="Tidak">
                                                     <input class="form-check-input" type="checkbox" id="taksiCheckbox"
@@ -345,6 +381,13 @@
                                                             type="button" role="tab" aria-controls="pills-ticket"
                                                             aria-selected="false">Ticket</button>
                                                     </li>
+                                                    <li class="nav-item" role="presentation" id="nav-mess"
+                                                        style="display: none;">
+                                                        <button class="nav-link" id="pills-mess-tab"
+                                                            data-bs-toggle="pill" data-bs-target="#pills-mess"
+                                                            type="button" role="tab" aria-controls="pills-mess"
+                                                            aria-selected="false">Mess</button>
+                                                    </li>
                                                     <li class="nav-item" role="presentation" id="nav-hotel"
                                                         style="display: none;">
                                                         <button class="nav-link" id="pills-hotel-tab"
@@ -376,6 +419,11 @@
                                                         aria-labelledby="pills-ticket-tab">
                                                         {{-- Ticket content --}}
                                                         @include('hcis.reimbursements.businessTrip.form.ticket')
+                                                    </div>
+                                                    <div class="tab-pane fade" id="pills-mess" role="tabpanel"
+                                                        aria-labelledby="pills-mess-tab">
+                                                        {{-- Mess content --}}
+                                                        {{-- @include('hcis.reimbursements.businessTrip.form.hotel') --}}
                                                     </div>
                                                     <div class="tab-pane fade" id="pills-hotel" role="tabpanel"
                                                         aria-labelledby="pills-hotel-tab">

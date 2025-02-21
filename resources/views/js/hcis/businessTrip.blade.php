@@ -92,6 +92,12 @@ function initializeTabs() {
             pane: "pills-hotel",
         },
         {
+            checkbox: "messCheckbox",
+            nav: "nav-mess",
+            tab: "pills-mess-tab",
+            pane: "pills-mess",
+        },
+        {
             checkbox: "taksiCheckbox",
             nav: "nav-taksi",
             tab: "pills-taksi-tab",
@@ -106,6 +112,12 @@ function initializeTabs() {
             nav: "nav-ticket-dalam-kota",
             tab: "pills-ticket-dalam-kota-tab",
             pane: "pills-ticket-dalam-kota",
+        },
+        {
+            checkbox: "messCheckboxDalamKota",
+            nav: "nav-mess-dalam-kota",
+            tab: "pills-mess-dalam-kota-tab",
+            pane: "pills-mess-dalam-kota",
         },
         {
             checkbox: "hotelCheckboxDalamKota",
