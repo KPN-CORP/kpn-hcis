@@ -328,7 +328,7 @@
     <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
     {{-- <script src="{{ asset('/js/cashAdvanced/adminPage.js') }}"></script> --}}
-    @include('js.hcis.cashAdvanced.adminPage')
+    {{-- @include('js.hcis.cashAdvanced.adminPage') --}}
 @endsection
 @push('scripts')
     <script>
