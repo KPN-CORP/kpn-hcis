@@ -4674,41 +4674,57 @@ class BusinessTripController extends Controller
             });
         }
 
-        $sppd = $query->get();
+        // $sppd = $query->get();
 
-        // Collect all SPPD numbers from the BusinessTrip instances
-        $sppdNos = $sppd->pluck('no_sppd');
-        $btIds = $sppd->pluck('id');
+        // // Collect all SPPD numbers from the BusinessTrip instances
+        // $sppdNos = $sppd->pluck('no_sppd');
+        // $btIds = $sppd->pluck('id');
 
-        $btApprovals = BTApproval::whereIn('bt_id', $btIds)
-            ->where(function ($query) {
-                $query->where('approval_status', 'Rejected')
-                    ->orWhere('approval_status', 'Declaration Rejected');
-            })
-            ->get();
+        // $btApprovals = BTApproval::whereIn('bt_id', $btIds)
+        //     ->where(function ($query) {
+        //         $query->where('approval_status', 'Rejected')
+        //             ->orWhere('approval_status', 'Declaration Rejected');
+        //     })
+        //     ->get();
 
-        $btApprovals = $btApprovals->keyBy('bt_id');
-        // dd($btApprovals);
-        // Log::info('BT Approvals:', $btApprovals->toArray());
+        // $btApprovals = $btApprovals->keyBy('bt_id');
+        // // dd($btApprovals);
+        // // Log::info('BT Approvals:', $btApprovals->toArray());
 
-        $btApproved = BTApproval::whereIn('bt_id', $btIds)->get();
+        // $btApproved = BTApproval::whereIn('bt_id', $btIds)->get();
 
-        // dd($btIds, $btApproved);
+        // // dd($btIds, $btApproved);
 
-        $employeeIds = $sppd->pluck('user_id')->unique();
-        $employees = Employee::whereIn('id', $employeeIds)->get()->keyBy('id');
-        $employeeName = Employee::pluck('fullname', 'employee_id');
+        // $employeeIds = $sppd->pluck('user_id')->unique();
+        // $employees = Employee::whereIn('id', $employeeIds)->get()->keyBy('id');
+        // $employeeName = Employee::pluck('fullname', 'employee_id');
 
-        // Related data
-        $caTransactions = ca_transaction::whereIn('no_sppd', $sppdNos)
-            ->whereNull('deleted_at')
-            ->get()
-            ->groupBy('no_sppd');
-        $tickets = Tiket::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
-        $hotel = Hotel::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
-        $taksi = Taksi::whereIn('no_sppd', $sppdNos)->get()->keyBy('no_sppd');
-        $managerL1Names = Employee::whereIn('employee_id', $sppd->pluck('manager_l1_id'))->pluck('fullname', 'employee_id');
-        $managerL2Names = Employee::whereIn('employee_id', $sppd->pluck('manager_l2_id'))->pluck('fullname', 'employee_id');
+        // // Related data
+        // $caTransactions = ca_transaction::whereIn('no_sppd', $sppdNos)
+        //     ->whereNull('deleted_at')
+        //     ->get()
+        //     ->groupBy('no_sppd');
+        // $tickets = Tiket::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
+        // $hotel = Hotel::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
+        // $taksi = Taksi::whereIn('no_sppd', $sppdNos)->get()->keyBy('no_sppd');
+        // $managerL1Names = Employee::whereIn('employee_id', $sppd->pluck('manager_l1_id'))->pluck('fullname', 'employee_id');
+        // $managerL2Names = Employee::whereIn('employee_id', $sppd->pluck('manager_l2_id'))->pluck('fullname', 'employee_id');
+
+        // Yg di atas di coment semua biar dia harus ngefilter dulu baru muncul data di admin
+        $sppd = [];  
+        $sppdNos = [];  
+        $btIds = [];  
+        $btApprovals = [];  
+        $btApproved = [];  
+        $employeeIds = [];  
+        $employees = [];  
+        $employeeName = [];  
+        $caTransactions = [];  
+        $tickets = [];  
+        $hotel = [];  
+        $taksi = [];  
+        $managerL1Names = [];  
+        $managerL2Names = [];  
 
         $parentLink = 'Reimbursement';
         $link = 'Business Trip (Admin)';
@@ -4778,7 +4794,7 @@ class BusinessTripController extends Controller
         $caTransactions = ca_transaction::whereIn('no_sppd', $sppdNos)
             ->whereNull('deleted_at')
             ->get()
-            ->keyBy('no_sppd');
+            ->groupBy('no_sppd');
         $tickets = Tiket::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
         $hotel = Hotel::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
         $taksi = Taksi::whereIn('no_sppd', $sppdNos)->get()->keyBy('no_sppd');
