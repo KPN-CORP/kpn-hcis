@@ -93,6 +93,14 @@
                                 </div>
                             </div>
                         </div>
+
+                        @if ($hotel->approval_status == 'Request Revision' || $hotel->approval_status == 'Declaration Revision')
+                            <div class="alert alert-info" role="alert">  
+                                <h4 class="alert-heading">Revision Note</h4>  
+                                {!! nl2br(e($revisiInfo)) !!}  
+                            </div>  
+                        @endif
+
                         <!-- Dynamic Hotel Forms Start -->
                         <div id="hotel_div">
                             <div class="d-flex flex-column gap-1" id="hotel_forms_container">

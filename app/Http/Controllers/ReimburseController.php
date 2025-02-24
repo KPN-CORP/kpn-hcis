@@ -2000,7 +2000,7 @@ class ReimburseController extends Controller
 
         // Apply filter to the query
         if ($filter === 'request') {
-            $statusFilter = ['Pending L1', 'Pending L2', 'Approved', 'Draft'];
+            $statusFilter = ['Pending L1', 'Pending L2', 'Approved', 'Draft', 'Request Revision'];
         } elseif ($filter === 'rejected') {
             $statusFilter = ['Rejected'];
         }
@@ -2283,6 +2283,12 @@ class ReimburseController extends Controller
                 'status' => 'Pending L2'
             ]);
 
+            $revisionLink = route('revision.hotel.link', [
+                'id' => urlencode($model->id),
+                'manager_id' => $managerId,
+                'status' => 'Request Revision'
+            ]);
+
             $rejectionLink = route('reject.hotel.link', [
                 'id' => urlencode($model->id),
                 'manager_id' => $managerId,
@@ -2304,6 +2310,7 @@ class ReimburseController extends Controller
                         'approvalStatus' => $statusValue,
                         'managerName' => $managerName,
                         'approvalLink' => $approvalLink,
+                        'revisionLink' => $revisionLink,
                         'rejectionLink' => $rejectionLink,
                         'base64Image' => $base64Image,
                         'textNotification' => $textNotification,
@@ -2346,6 +2353,12 @@ class ReimburseController extends Controller
                 'status' => 'Pending L2'
             ]);
 
+            $revisionLink = route('revision.hotel.link', [
+                'id' => urlencode($hotel->id),
+                'manager_id' => $managerId,
+                'status' => 'Request Revision'
+            ]);
+
             $rejectionLink = route('reject.hotel.link', [
                 'id' => urlencode($hotel->id),
                 'manager_id' => $managerId,
@@ -2384,6 +2397,7 @@ class ReimburseController extends Controller
                         'totalHari' => $totalHari,
                         'managerName' => $managerName,
                         'approvalLink' => $approvalLink,
+                        'revisionLink' => $revisionLink,
                         'rejectionLink' => $rejectionLink,
                         'approvalStatus' => 'Pending L2',
                         'base64Image' => $base64Image,
@@ -2493,6 +2507,15 @@ class ReimburseController extends Controller
             ->orderBy('no_sppd', 'asc')
             ->get();
 
+        $revisiInfo = null;
+        if ($hotel->approval_status === 'Request Revision') {
+            $revisiInfo = HotelApproval::where('htl_id', $hotel->id)
+                ->where('approval_status', 'Request Revision')  
+                ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru  
+                ->pluck('reject_info')  
+                ->first();
+        }
+
         // Prepare data for multiple forms
         $hotelData = [];
         $hotelCount = $hotels->count();
@@ -2523,6 +2546,7 @@ class ReimburseController extends Controller
             'transactions' => $hotels,
             'hotel' => $hotel,
             'hotelData' => $hotelData,
+            'revisiInfo' => $revisiInfo,
         ]);
     }
 
@@ -2647,8 +2671,8 @@ class ReimburseController extends Controller
 
         if ($statusValue !== 'Draft') {
             $managerId = Employee::where('id', $userId)->pluck('manager_l1_id')->first();
-            // $managerEmail = Employee::where('employee_id', $managerId)->pluck('email')->first();
-            $managerEmail = "eriton.dewa@kpn-corp.com";
+            $managerEmail = Employee::where('employee_id', $managerId)->pluck('email')->first();
+            // $managerEmail = "eriton.dewa@kpn-corp.com";
             $managerName = Employee::where('employee_id', $managerId)->pluck('fullname')->first();
             $employeeName = Employee::where('id', $userId)->pluck('fullname')->first();
 
@@ -2662,6 +2686,12 @@ class ReimburseController extends Controller
                 'id' => urlencode($processedHotelIds[0]),
                 'manager_id' => $managerId,
                 'status' => 'Pending L2'
+            ]);
+
+            $revisionLink = route('revision.hotel.link', [
+                'id' => urlencode($processedHotelIds[0]),
+                'manager_id' => $managerId,
+                'status' => 'Request Revision'
             ]);
 
             $rejectionLink = route('reject.hotel.link', [
@@ -2684,6 +2714,7 @@ class ReimburseController extends Controller
                         'approvalStatus' => $statusValue,
                         'managerName' => $managerName,
                         'approvalLink' => $approvalLink,
+                        'revisionLink' => $revisionLink,
                         'rejectionLink' => $rejectionLink,
                         'base64Image' => $base64Image,
                         'textNotification' => $textNotification,
@@ -3002,6 +3033,36 @@ class ReimburseController extends Controller
         $statusApproval = $request->input('status_approval');
 
         // Handle rejection scenario
+        if ($statusApproval == 'Request Revision') {
+            $revisiInfo = $request->input('revisi_info');
+            // Get the current approval status before updating it
+            $currentApprovalStatus = $hotel->approval_status;
+
+            // Update all hotels with the same no_htl to 'Rejected'
+            Hotel::where('no_htl', $noHtl)->update(['approval_status' => 'Request Revision']);
+
+            // Log the rejection into the hotel_approvals table for all hotels with the same no_htl
+            $hotels = Hotel::where('no_htl', $noHtl)->get();
+            
+            foreach ($hotels as $hotel) {
+                $rejection = new HotelApproval();
+                $rejection->id = (string) Str::uuid();
+                $rejection->htl_id = $hotel->id;
+                $rejection->employee_id = $employeeId;
+
+                // Determine the correct layer based on the hotel's approval status BEFORE rejection
+                $rejection->layer = $currentApprovalStatus == 'Pending L2' ? 2 : 1;
+
+                $rejection->approval_status = 'Request Revision';
+                $rejection->approved_at = now();
+                $rejection->reject_info = $revisiInfo;
+                $rejection->save();
+            }
+
+            return redirect('/hotel/approval')->with('success', 'Request approved successfully');
+        }
+
+        // Handle rejection scenario
         if ($statusApproval == 'Rejected') {
             $rejectInfo = $request->input('reject_info');
 
@@ -3054,6 +3115,12 @@ class ReimburseController extends Controller
                 'status' => 'Pending L2'
             ]);
 
+            $revisionLink = route('revision.hotel.link', [
+                'id' => urlencode($hotel->id),
+                'manager_id' => $managerId,
+                'status' => 'Request Revision'
+            ]);
+
             $rejectionLink = route('reject.hotel.link', [
                 'id' => urlencode($hotel->id),
                 'manager_id' => $managerId,
@@ -3092,6 +3159,7 @@ class ReimburseController extends Controller
                         'totalHari' => $totalHari,
                         'managerName' => $managerName,
                         'approvalLink' => $approvalLink,
+                        'revisionLink' => $revisionLink,                        
                         'rejectionLink' => $rejectionLink,
                         'approvalStatus' => 'Pending L2',
                         'base64Image' => $base64Image,
@@ -3140,6 +3208,37 @@ class ReimburseController extends Controller
 
         // Check the provided status_approval input
         $statusApproval = $request->input('status_approval');
+
+        // Handle revusuin scenario
+        if ($statusApproval == 'Request Revision') {
+            $rejectInfo = $request->input('revision_info');
+
+            // Get the current approval status before updating it
+            $currentApprovalStatus = $hotel->approval_status;
+
+            // Update all hotels with the same no_htl to 'Rejected'
+            Hotel::where('no_htl', $noHtl)->update(['approval_status' => 'Request Revision']);
+
+            // Log the rejection into the hotel_approvals table for all hotels with the same no_htl
+            $hotels = Hotel::where('no_htl', $noHtl)->get();
+            foreach ($hotels as $hotel) {
+                $rejection = new HotelApproval();
+                $rejection->id = (string) Str::uuid();
+                $rejection->htl_id = $hotel->id;
+                $rejection->employee_id = $employeeId;
+
+                // Determine the correct layer based on the hotel's approval status BEFORE rejection
+                $rejection->layer = $currentApprovalStatus == 'Pending L2' ? 2 : 1;
+
+                $rejection->approval_status = 'Request Revision';
+                $rejection->approved_at = now();
+                $rejection->reject_info = $rejectInfo;
+                $rejection->by_admin = 'T';
+                $rejection->save();
+            }
+
+            return redirect()->route('hotel.admin')->with('success', 'Request successfully Rejected.');
+        }
 
         // Handle rejection scenario
         if ($statusApproval == 'Rejected') {
@@ -4066,6 +4165,15 @@ class ReimburseController extends Controller
             ->get();
         $transactions = $tickets;
 
+        $revisiInfo = null;
+        if ($ticket->approval_status === 'Request Revision') {
+            $revisiInfo = TiketApproval::where('tkt_id', $ticket->id)
+                ->where('approval_status', 'Request Revision')  
+                ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru  
+                ->pluck('reject_info')  
+                ->first();
+        }
+
         $ticketData = [];
         $ticketCount = $tickets->count();
         foreach ($tickets as $index => $ticket) {
@@ -4102,6 +4210,7 @@ class ReimburseController extends Controller
             'ticket' => $ticket,
             'ticketData' => $ticketData,
             'employees' => $employees,
+            'revisiInfo' => $revisiInfo,
         ]);
     }
 

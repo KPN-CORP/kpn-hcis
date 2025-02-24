@@ -111,6 +111,8 @@ Route::get('approve/hotel/{id}/{manager_id}/{status}', [ApprovalReimburseControl
 
 Route::get('hotel/rejection/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'rejectHotelLink'])->name('reject.hotel.link');
 Route::post('reject/hotel/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'rejectHotelFromLink'])->name('reject.hotel');
+Route::get('hotel/revision/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'revisionHotelLink'])->name('revision.hotel.link');
+Route::post('revision/hotel/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'revisionHotelFromLink'])->name('revision.hotel');
 
 //LINK APPROVAL TICKETS
 Route::get('approve/ticket/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'approveTicketFromLink'])->name('approve.ticket');

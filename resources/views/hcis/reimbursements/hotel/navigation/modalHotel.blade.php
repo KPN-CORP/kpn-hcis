@@ -188,6 +188,39 @@
     </div>
 </div>
 
+{{-- Request Revision --}}
+<div class="modal fade" id="revisionApprovalModal" tabindex="-1" aria-labelledby="revisionApprovalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-light border-bottom-0">
+                <h5 class="modal-title" id="revisionApprovalModalLabel" style="color: #333; font-weight: 600;">Revision Reason - <span id="revisionhtl"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="revisionApprovalForm" method="POST"
+                    action="{{ route('changeStatus.hotel.admin', ':idrev') }}">
+                    @csrf
+                    <input type="hidden" name="status_approval" value="Request Revision">
+
+                    <div class="mb-3">
+                        <label for="revision_info" class="form-label" style="color: #555; font-weight: 500;">Please
+                            provide a reason for Revision:</label>
+                        <textarea class="form-control border-2" name="revision_info" id="revision_info" rows="4" required
+                            style="resize: vertical; min-height: 100px;"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="button" class="btn btn-outline-primary rounded-pill me-2"
+                            data-bs-dismiss="modal" style="min-width: 100px;">Cancel</button>
+                        <button type="submit" class="btn btn-primary rounded-pill"
+                            style="min-width: 100px;">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Success --}}
 @if (session('success'))
     <script>
@@ -333,6 +366,11 @@
                     if (status === `Pending ${layer}`) {
                         container.innerHTML = `
                             <button type="submit" class="btn btn-success btn-sm rounded-pill me-2">Approve</button>
+                            <button type="button" class="btn btn-outline-info btn-sm rounded-pill me-2"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#revisionApprovalModal"
+                                    data-id-rev="${htlId}"
+                                    data-no-rev="${htlNo}">Revision</button>
                             <button type="button" class="btn btn-outline-danger btn-sm rounded-pill"
                                     data-bs-toggle="modal"
                                     data-bs-target="#rejectApprovalModal"
@@ -354,36 +392,60 @@
                 // Filter data approval berdasarkan htlId
                 const filteredApprovals = approvals.filter(approval => approval.htl_id === htlId);
 
-                const approvalDataL1 = document.getElementById('approvalDataL1');
-                if (approvalDataL1) {
-                    const l1Approvals = filteredApprovals.filter(a => a.layer === 1);
-                    if (l1Approvals.length > 0) {
-                        approvalDataL1.innerHTML = l1Approvals.map(approval => `
-                            <div class="border rounded p-2 mb-2">
-                                <strong>Status:</strong> ${approval.approval_status}<br>
-                                <strong>Approved By:</strong> ${approval.employee_id} ${approval.by_admin === 'T' ? '(Admin)' : ''}<br>
-                                <strong>Approved At:</strong> ${moment(approval.approved_at).format('DD-MMM-YY')}
-                            </div>
-                        `).join('');
-                    } else {
-                        approvalDataL1.innerHTML = '<p class="text-muted">No L1 Request found</p>';
-                    }
-                }
+                const approvalDataL1 = document.getElementById('approvalDataL1');  
+                if (approvalDataL1) {  
+                    const l1Approvals = filteredApprovals.filter(a => a.layer === 1);  
+                    if (l1Approvals.length > 0) {  
+                        approvalDataL1.innerHTML = l1Approvals.map(approval => {  
+                            let alertClass = '';  
+                            // Menentukan kelas berdasarkan status approval  
+                            if (approval.approval_status === 'Request Revision') {  
+                                alertClass = 'alert alert-info';  
+                            } else if (approval.approval_status === 'Rejected') {  
+                                alertClass = 'alert alert-danger';  
+                            } else {  
+                                alertClass = 'border rounded'; // Kelas default untuk status lain  
+                            }  
 
-                const approvalDataL2 = document.getElementById('approvalDataL2');
-                if (approvalDataL2) {
-                    const l2Approvals = filteredApprovals.filter(a => a.layer === 2);
-                    if (l2Approvals.length > 0) {
-                        approvalDataL2.innerHTML = l2Approvals.map(approval => `
-                            <div class="border rounded p-2 mb-2">
-                                <strong>Status:</strong> ${approval.approval_status}<br>
-                                <strong>Approved By:</strong> ${approval.employee_id} ${approval.by_admin === 'T' ? '(Admin)' : ''}<br>
-                                <strong>Approved At:</strong> ${moment(approval.approved_at).format('DD-MMM-YY')}
-                            </div>
-                        `).join('');
-                    } else {
-                        approvalDataL2.innerHTML = '<p class="text-muted">No L2 Request found</p>';
-                    }
+                            return `  
+                                <div class="${alertClass} p-2 mb-2">  
+                                    <strong>Status:</strong> ${approval.approval_status}<br>  
+                                    <strong>Approved By:</strong> ${approval.employee_id} ${approval.by_admin === 'T' ? '(Admin)' : ''}<br>  
+                                    <strong>Approved At:</strong> ${moment(approval.approved_at).format('DD-MMM-YY')}  
+                                </div>  
+                            `;  
+                        }).join('');  
+                    } else {  
+                        approvalDataL1.innerHTML = '<p class="text-muted">No L1 Request found</p>';  
+                    }  
+                }  
+
+                const approvalDataL2 = document.getElementById('approvalDataL2');  
+                if (approvalDataL2) {  
+                    const l2Approvals = filteredApprovals.filter(a => a.layer === 2);  
+                    if (l2Approvals.length > 0) {  
+                        approvalDataL2.innerHTML = l2Approvals.map(approval => {  
+                            let alertClass = '';  
+                            // Menentukan kelas berdasarkan status approval  
+                            if (approval.approval_status === 'Request Revision') {  
+                                alertClass = 'alert alert-info';  
+                            } else if (approval.approval_status === 'Rejected') {  
+                                alertClass = 'alert alert-danger';  
+                            } else {  
+                                alertClass = 'border rounded'; // Kelas default untuk status lain  
+                            }  
+
+                            return `  
+                                <div class="${alertClass} p-2 mb-2">  
+                                    <strong>Status:</strong> ${approval.approval_status}<br>  
+                                    <strong>Approved By:</strong> ${approval.employee_id} ${approval.by_admin === 'T' ? '(Admin)' : ''}<br>  
+                                    <strong>Approved At:</strong> ${moment(approval.approved_at).format('DD-MMM-YY')}  
+                                </div>  
+                            `;  
+                        }).join('');  
+                    } else {  
+                        approvalDataL2.innerHTML = '<p class="text-muted">No L2 Request found</p>';  
+                    }  
                 }
             });
         }
@@ -405,6 +467,26 @@
 
                 let action = form.getAttribute('action');
                 form.setAttribute('action', action.replace(':id', htlId));
+            });
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const revisionApprovalModal = document.getElementById('revisionApprovalModal');
+        const formRev = document.getElementById('revisionApprovalForm'); // Tambahkan baris ini
+
+        if (revisionApprovalModal) {
+            revisionApprovalModal.addEventListener('show.bs.modal', function (event) {
+                // Ambil data dari tombol yang memicu modal
+                const button = event.relatedTarget;
+                const tktIdRev = button.getAttribute('data-id-rev');
+                const tktNoRev = button.getAttribute('data-no-rev');
+
+                // Update modal dengan data manager
+                document.getElementById('revisionhtl').textContent = tktNoRev;
+
+                let action = formRev.getAttribute('action');
+                formRev.setAttribute('action', action.replace(':idrev', tktIdRev));
             });
         }
     });

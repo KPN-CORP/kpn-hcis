@@ -211,7 +211,7 @@
                                                                     ? 'warning'
                                                                     : ($transaction->approval_status == 'Draft'
                                                                         ? 'secondary'
-                                                                        : (in_array($transaction->approval_status, ['Doc Accepted'])
+                                                                        : (in_array($transaction->approval_status, ['Doc Accepted', 'Request Revision'])
                                                                             ? 'info'
                                                                             : 'secondary')))) }}"
                                                         style="font-size: 12px; padding: 0.5rem 1rem; cursor: {{ ($transaction->approval_status == 'Rejected' || $transaction->approval_status == 'Declaration Rejected') && isset($hotelApprovals[$transaction->id]) ? 'pointer' : 'default' }};"
