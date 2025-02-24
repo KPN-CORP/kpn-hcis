@@ -3485,7 +3485,7 @@ class ReimburseController extends Controller
 
         // Apply filter to the query
         if ($filter === 'request') {
-            $statusFilter = ['Pending L1', 'Pending L2', 'Approved', 'Draft'];
+            $statusFilter = ['Pending L1', 'Pending L2', 'Approved', 'Draft', 'Request Revision'];
         } elseif ($filter === 'rejected') {
             $statusFilter = ['Rejected'];
         }
@@ -3811,6 +3811,12 @@ class ReimburseController extends Controller
                 'status' => 'Pending L2'
             ]);
 
+            $revisionLink = route('revision.ticket.link', [
+                'id' => urlencode($tiket->id),
+                'manager_id' => $managerId,
+                'status' => 'Request Revision'
+            ]);
+
             $rejectionLink = route('reject.ticket.link', [
                 'id' => urlencode($tiket->id),
                 'manager_id' => $managerId,
@@ -3834,6 +3840,7 @@ class ReimburseController extends Controller
                         'jamPlgTkt' => $jamPlgTkt,
                         'managerName' => $managerName,
                         'approvalLink' => $approvalLink,
+                        'revisionLink' => $revisionLink,                        
                         'rejectionLink' => $rejectionLink,
                         'base64Image' => $base64Image,
                         'textNotification' => $textNotification,
@@ -3875,6 +3882,12 @@ class ReimburseController extends Controller
                 'id' => urlencode($ticket->id),
                 'manager_id' => $managerId,
                 'status' => 'Pending L2'
+            ]);
+
+            $revisionLink = route('revision.ticket.link', [
+                'id' => urlencode($ticket->id),
+                'manager_id' => $managerId,
+                'status' => 'Request Revision'
             ]);
 
             $rejectionLink = route('reject.ticket.link', [
@@ -3926,6 +3939,7 @@ class ReimburseController extends Controller
                         'managerName' => $managerName,
                         'approvalStatus' => 'Pending L2',
                         'approvalLink' => $approvalLink,
+                        'revisionLink' => $revisionLink,
                         'rejectionLink' => $rejectionLink,
                         'base64Image' => $base64Image,
                         'textNotification' => $textNotification,
@@ -3951,6 +3965,8 @@ class ReimburseController extends Controller
             $approval->approved_at = now();
             $approval->save();
         }
+
+        return redirect()->route('blank.pageUn')->with('success', 'Transaction Approved, Notification will be send to the employee.');
     }
 
     public function rejectTicketLink($id, $manager_id, $status)
@@ -4011,6 +4027,8 @@ class ReimburseController extends Controller
             $rejection->reject_info = $rejectInfo;
             $rejection->save();
         }
+
+        return redirect()->route('blank.pageUn')->with('success', 'Transaction Rejected, Notification will be send to the employee.');
     }
 
 
@@ -4250,6 +4268,12 @@ class ReimburseController extends Controller
                 'status' => 'Pending L2'
             ]);
 
+            $revisionLink = route('revision.ticket.link', [
+                'id' => urlencode($ticketIdToUse),
+                'manager_id' => $managerId,
+                'status' => 'Request Revision'
+            ]);
+
             $rejectionLink = route('reject.ticket.link', [
                 'id' => urlencode($ticketIdToUse),
                 'manager_id' => $managerId,
@@ -4273,6 +4297,7 @@ class ReimburseController extends Controller
                         'approvalStatus' => $statusValue,
                         'managerName' => $managerName,
                         'approvalLink' => $approvalLink,
+                        'revisionLink' => $revisionLink,                        
                         'rejectionLink' => $rejectionLink,
                         'base64Image' => $base64Image,
                         'textNotification' => $textNotification,
@@ -4606,6 +4631,42 @@ class ReimburseController extends Controller
         // Check the provided status_approval input
         $statusApproval = $request->input('status_approval');
 
+        // Handle revision scenario
+        if ($statusApproval == 'Request Revision') {
+
+            $revisionnfo = $request->input('reject_info');
+
+            // Get the current approval status before updating it
+            $currentApprovalStatus = $ticket->approval_status;
+
+            // Update all tickets with the same no_tkt to 'Rejected'
+            Tiket::where('no_tkt', $noTkt)->update(['approval_status' => 'Request Revision']);
+
+            // Log the rejection into the tkt_approvals table for all tickets with the same no_tkt
+            $tickets = Tiket::where('no_tkt', $noTkt)->get();
+            foreach ($tickets as $ticket) {
+                $rejection = new TiketApproval();
+                $rejection->id = (string) Str::uuid();
+                $rejection->tkt_id = $ticket->id;
+                $rejection->employee_id = $employeeId;
+
+                // Determine the correct layer based on the ticket's approval status BEFORE rejection
+                if ($currentApprovalStatus == 'Pending L2') {
+                    $rejection->layer = 2; // Layer 2 if ticket was at L2
+                } else {
+                    $rejection->layer = 1; // Otherwise, it's Layer 1
+                }
+
+                $rejection->approval_status = 'Request Revision';
+                $rejection->approved_at = now();
+                $rejection->reject_info = $revisionnfo;
+                $rejection->save();
+            }
+
+            // Redirect to the ticket approval page instead of back to the same page
+            return redirect('/ticket/approval')->with('success', 'Request get Revision successfully');
+        }
+
         // Handle rejection scenario
         if ($statusApproval == 'Rejected') {
 
@@ -4693,6 +4754,12 @@ class ReimburseController extends Controller
                 'status' => 'Pending L2'
             ]);
 
+            $revisionLink = route('revision.ticket.link', [
+                'id' => urlencode($ticket->id),
+                'manager_id' => $managerId,
+                'status' => 'Request Revision'
+            ]);
+
             $rejectionLink = route('reject.ticket.link', [
                 'id' => urlencode($ticket->id),
                 'manager_id' => $managerId,
@@ -4742,6 +4809,7 @@ class ReimburseController extends Controller
                             'managerName' => $managerName,
                             'approvalStatus' => 'Pending L2',
                             'approvalLink' => $approvalLink,
+                            'revisionLink' => $revisionLink,
                             'rejectionLink' => $rejectionLink,
                             'base64Image' => $base64Image,
                             'textNotification' => $textNotification,
@@ -4765,6 +4833,7 @@ class ReimburseController extends Controller
                             'managerName' => $managerName,
                             'approvalStatus' => 'Pending L2',
                             'approvalLink' => $approvalLink,
+                            'revisionLink' => $revisionLink,
                             'rejectionLink' => $rejectionLink,
                             'base64Image' => $base64Image,
                             'textNotification' => $textNotification,
@@ -4849,6 +4918,43 @@ class ReimburseController extends Controller
 
         // Check the provided status_approval input
         $statusApproval = $request->input('status_approval');
+
+        // Handle revision scenario
+        if ($statusApproval == 'Request Revision') {
+
+            $revisionInfo = $request->input('revision_info');
+
+            // Get the current approval status before updating it
+            $currentApprovalStatus = $ticket->approval_status;
+
+            // Update all tickets with the same no_tkt to 'Rejected'
+            Tiket::where('no_tkt', $noTkt)->update(['approval_status' => 'Request Revision']);
+
+            // Log the revision into the tkt_approvals table for all tickets with the same no_tkt
+            $tickets = Tiket::where('no_tkt', $noTkt)->get();
+            foreach ($tickets as $ticket) {
+                $revision = new TiketApproval();
+                $revision->id = (string) Str::uuid();
+                $revision->tkt_id = $ticket->id;
+                $revision->employee_id = $employeeId;
+
+                // Determine the correct layer based on the ticket's approval status BEFORE revision
+                if ($currentApprovalStatus == 'Pending L2') {
+                    $revision->layer = 2; // Layer 2 if ticket was at L2
+                } else {
+                    $revision->layer = 1; // Otherwise, it's Layer 1
+                }
+
+                $revision->approval_status = 'Request Revision';
+                $revision->approved_at = now();
+                $revision->reject_info = $revisionInfo;
+                $revision->by_admin = 'T';
+                $revision->save();
+            }
+
+            // Redirect to the ticket approval page instead of back to the same page
+            return redirect()->route('ticket.admin')->with('success', 'Request rejected successfully.');
+        }
 
         // Handle rejection scenario
         if ($statusApproval == 'Rejected') {
@@ -4936,6 +5042,12 @@ class ReimburseController extends Controller
                 'status' => 'Pending L2'
             ]);
 
+            $revisionLink = route('revision.ticket.link', [
+                'id' => urlencode($ticket->id),
+                'manager_id' => $managerId,
+                'status' => 'Request Revision'
+            ]);
+
             $rejectionLink = route('reject.ticket.link', [
                 'id' => urlencode($ticket->id),
                 'manager_id' => $managerId,
@@ -4985,6 +5097,7 @@ class ReimburseController extends Controller
                             'managerName' => $managerName,
                             'approvalStatus' => 'Pending L2',
                             'approvalLink' => $approvalLink,
+                            'revisionLink' => $revisionLink,
                             'rejectionLink' => $rejectionLink,
                             'base64Image' => $base64Image,
                             'textNotification' => $textNotification,

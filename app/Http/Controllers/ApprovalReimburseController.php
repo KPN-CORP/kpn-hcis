@@ -2280,6 +2280,8 @@ class ApprovalReimburseController extends Controller
             $approval->approved_at = now();
             $approval->save();
         }
+
+        return redirect()->route('blank.pageUn')->with('success', 'Transaction Approved, Thanks for Approving.');
     }
 
     public function rejectTicketLink($id, $manager_id, $status)
@@ -2295,6 +2297,28 @@ class ApprovalReimburseController extends Controller
         // dd($tickets);
 
         return view('hcis.reimbursements.ticket.ticketReject', [
+            'userId' => $userId,
+            'id' => $id,
+            'manager_id' => $manager_id,
+            'status' => $status,
+            'tickets' => $tickets,
+            'employeeName' => $employeeName,
+            'ticketsTotal' => $ticketsTotal,
+        ]);
+    }
+    public function revisionTicketLink($id, $manager_id, $status)
+    {
+        $ticket = Tiket::where('id', $id)->first();
+
+        $userId = $ticket->user_id;
+        // dd($userId);
+        $employeeName = Employee::where('id', $userId)->pluck('fullname')->first();
+        $noTkt = $ticket->no_tkt;
+        $tickets = Tiket::where('no_tkt', $noTkt)->first();
+        $ticketsTotal = Tiket::where('no_tkt', $noTkt)->count();
+        // dd($tickets);
+
+        return view('hcis.reimbursements.ticket.ticketRevision', [
             'userId' => $userId,
             'id' => $id,
             'manager_id' => $manager_id,
@@ -2340,5 +2364,46 @@ class ApprovalReimburseController extends Controller
             $rejection->reject_info = $rejectInfo;
             $rejection->save();
         }
+
+        return redirect()->route('blank.pageUn')->with('success', 'Transaction Approved, Thanks for Approving.');
+    }
+    public function revisionTicketFromLink(Request $request, $id, $manager_id, $status)
+    {
+        $employeeId = $manager_id;
+
+        // Find the ticket by ID
+        $ticket = Tiket::findOrFail($id);
+        $noTkt = $ticket->no_tkt;
+
+        $revisionInfo = $request->revision_info;
+
+        // Get the current approval status before updating it
+        $currentApprovalStatus = $ticket->approval_status;
+
+        // Update all tickets with the same no_tkt to 'Rejected'
+        Tiket::where('no_tkt', $noTkt)->update(['approval_status' => 'Request Revision']);
+
+        // Log the revisionion into the tkt_approvals table for all tickets with the same no_tkt
+        $tickets = Tiket::where('no_tkt', $noTkt)->get();
+        foreach ($tickets as $ticket) {
+            $revision = new TiketApproval();
+            $revision->id = (string) Str::uuid();
+            $revision->tkt_id = $ticket->id;
+            $revision->employee_id = $employeeId;
+
+            // Determine the correct layer based on the ticket's approval status BEFORE revision
+            if ($currentApprovalStatus == 'Pending L2') {
+                $revision->layer = 2; // Layer 2 if ticket was at L2
+            } else {
+                $revision->layer = 1; // Otherwise, it's Layer 1
+            }
+
+            $revision->approval_status = 'Request Revision';
+            $revision->approved_at = now();
+            $revision->reject_info = $revisionInfo;
+            $revision->save();
+        }
+
+        return redirect()->route('blank.pageUn')->with('success', 'Transaction Approved, Thanks for Approving.');
     }
 }

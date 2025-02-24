@@ -261,6 +261,12 @@
                                 // Pass the PHP array into a JavaScript variable
                                 const initialDetailCA = @json($detailCA);
                             </script> --}}
+                            @if ($n->status == 'Request Revision' || $n->status == 'Declaration Revision')
+                                <div class="alert alert-info" role="alert">  
+                                    <h4 class="alert-heading">Revision Note</h4>  
+                                    {!! nl2br(e($revisiInfo)) !!}  
+                                </div>  
+                            @endif
                             <div id="additional-fields-dalam" class="row mb-3" style="display: none;">
                                 <label for="additional-fields-dalam-title" class="mb-3">
                                     Business Trip Needs <br>

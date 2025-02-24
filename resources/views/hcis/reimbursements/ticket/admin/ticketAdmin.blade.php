@@ -243,7 +243,7 @@
                                                                 ? 'warning'
                                                                 : ($transaction->approval_status == 'Draft'
                                                                     ? 'secondary'
-                                                                    : (in_array($transaction->approval_status, ['Doc Accepted'])
+                                                                    : (in_array($transaction->approval_status, ['Doc Accepted', 'Request Revision'])
                                                                         ? 'info'
                                                                         : 'secondary')))) }}"
                                                     style="font-size: 12px; padding: 0.5rem 1rem; cursor: {{ ($transaction->approval_status == 'Rejected' || $transaction->approval_status == 'Declaration Rejected') && isset($ticketApprovals[$transaction->id]) ? 'pointer' : 'default' }};"
@@ -328,7 +328,7 @@
     <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 
     {{-- <script src="{{ asset('/js/cashAdvanced/adminPage.js') }}"></script> --}}
-    @include('js.hcis.cashAdvanced.adminPage')
+    {{-- @include('js.hcis.cashAdvanced.adminPage') --}}
 @endsection
 @push('scripts')
     <script>
