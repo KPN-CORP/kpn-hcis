@@ -74,6 +74,12 @@
             </td>
         </tr>
         <tr>
+            <td><b>Mess</b></td>
+            <td>:</td>
+            <td>{{ $businessTrip->mess === 'Ya' ? 'Yes' : ($businessTrip->mess === 'Tidak' ? 'No' : $businessTrip->mess) }}
+            </td>
+        </tr>
+        <tr>
             <td><b>Voucher Taxi</b></td>
             <td>:</td>
             <td>{{ $businessTrip->taksi === 'Ya' ? 'Yes' : ($businessTrip->taksi === 'Tidak' ? 'No' : $businessTrip->taksi) }}
