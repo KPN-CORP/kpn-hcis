@@ -611,6 +611,194 @@
             });
     });
 
+    //Mess days
+    function calculateTotalDaysMess(index) {
+        const checkInInput = document.getElementById(`check-in-mess-${index}`);
+        const checkOutInput = document.getElementById(`check-out-mess-${index}`);
+        const totalDaysInput = document.getElementById(`total-days-mess-${index}`);
+
+        // Get Start Date and End Date from the main form
+        const mulaiInput = document.getElementById("mulai");
+        const kembaliInput = document.getElementById("kembali");
+
+        if (!checkInInput || !checkOutInput || !mulaiInput || !kembaliInput) {
+            return; // Ensure elements are present before proceeding
+        }
+
+        // Parse the dates
+        const checkInDate = new Date(checkInInput.value);
+        checkInDate.setHours(0, 0, 0, 0);
+        const checkOutDate = new Date(checkOutInput.value);
+        checkOutDate.setHours(0, 0, 0, 0);
+        const mulaiDate = new Date(mulaiInput.value);
+        mulaiDate.setHours(0, 0, 0, 0);
+        const kembaliDate = new Date(kembaliInput.value);
+        kembaliDate.setHours(0, 0, 0, 0);
+
+        // Validate Check In Date
+        if (checkInDate < mulaiDate) {
+            Swal.fire({
+                title: "Warning!",
+                text: "Check In date cannot be earlier than Start date.",
+                icon: "error",
+                confirmButtonColor: "#AB2F2B",
+                confirmButtonText: "OK",
+            });
+            checkInInput.value = ""; // Reset the Check In field
+            totalDaysInput.value = ""; // Clear total days
+            return;
+        }
+        if (checkInDate > kembaliDate) {
+            Swal.fire({
+                title: "Warning!",
+                text: "Check In date cannot be more than End date.",
+                icon: "error",
+                confirmButtonColor: "#AB2F2B",
+                confirmButtonText: "OK",
+            });
+            checkInInput.value = ""; // Reset the Check In field
+            totalDaysInput.value = ""; // Clear total days
+            return;
+        }
+
+        // Ensure Check Out Date is not earlier than Check In Date
+        if (checkOutDate < checkInDate) {
+            Swal.fire({
+                title: "Warning!",
+                text: "Check Out date cannot be earlier than Check In date.",
+                icon: "error",
+                confirmButtonColor: "#AB2F2B",
+                confirmButtonText: "OK",
+            });
+            checkOutInput.value = ""; // Reset the Check Out field
+            totalDaysInput.value = ""; // Clear total days
+            return;
+        }
+
+        // Calculate the total days if all validations pass
+        if (checkInDate && checkOutDate) {
+            // Check if same day
+            if (checkInDate.getTime() === checkOutDate.getTime()) {
+                totalDaysInput.value = 1;
+            } else {
+                // Calculate difference in days including both start and end dates
+                const diffTime = checkOutDate - checkInDate;
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                totalDaysInput.value = diffDays;
+            }
+        } else {
+            totalDaysInput.value = "";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".mess-form").forEach((form, index) => {
+            const i = index + 1; // Adjust for 1-based index
+
+            form.querySelector('input[name="tgl_masuk_mess[]"]').addEventListener(
+                "change",
+                () => calculateTotalDaysMess(i)
+            );
+            form.querySelector('input[name="tgl_keluar_mess[]"]').addEventListener(
+                "change",
+                () => calculateTotalDaysMess(i)
+            );
+        });
+    });
+
+    function calculateTotalDaysMessDalamKota(index) {
+        const checkInInput = document.getElementById(`check-in-mess-dalam-kota-${index}`);
+        const checkOutInput = document.getElementById(`check-out-mess-dalam-kota-${index}`);
+        const totalDaysInput = document.getElementById(`total-days-mess-dalam-kota-${index}`);
+
+        // Get Start Date and End Date from the main form
+        const mulaiInput = document.getElementById("mulai");
+        const kembaliInput = document.getElementById("kembali");
+
+        if (!checkInInput || !checkOutInput || !mulaiInput || !kembaliInput) {
+            return; // Ensure elements are present before proceeding
+        }
+
+        // Parse the dates
+        const checkInDate = new Date(checkInInput.value);
+        checkInDate.setHours(0, 0, 0, 0);
+        const checkOutDate = new Date(checkOutInput.value);
+        checkOutDate.setHours(0, 0, 0, 0);
+        const mulaiDate = new Date(mulaiInput.value);
+        mulaiDate.setHours(0, 0, 0, 0);
+        const kembaliDate = new Date(kembaliInput.value);
+        kembaliDate.setHours(0, 0, 0, 0);
+
+        // Validate Check In Date
+        if (checkInDate < mulaiDate) {
+            Swal.fire({
+                title: "Warning!",
+                text: "Check In date cannot be earlier than Start date.",
+                icon: "error",
+                confirmButtonColor: "#AB2F2B",
+                confirmButtonText: "OK",
+            });
+            checkInInput.value = ""; // Reset the Check In field
+            totalDaysInput.value = ""; // Clear total days
+            return;
+        }
+        if (checkInDate > kembaliDate) {
+            Swal.fire({
+                title: "Warning!",
+                text: "Check In date cannot be more than End date.",
+                icon: "error",
+                confirmButtonColor: "#AB2F2B",
+                confirmButtonText: "OK",
+            });
+            checkInInput.value = ""; // Reset the Check In field
+            totalDaysInput.value = ""; // Clear total days
+            return;
+        }
+
+        // Ensure Check Out Date is not earlier than Check In Date
+        if (checkOutDate < checkInDate) {
+            Swal.fire({
+                title: "Warning!",
+                text: "Check Out date cannot be earlier than Check In date.",
+                icon: "error",
+                confirmButtonColor: "#AB2F2B",
+                confirmButtonText: "OK",
+            });
+            checkOutInput.value = ""; // Reset the Check Out field
+            totalDaysInput.value = ""; // Clear total days
+            return;
+        }
+
+        // Calculate the total days if all validations pass
+        if (checkInDate && checkOutDate) {
+            // Check if same day
+            if (checkInDate.getTime() === checkOutDate.getTime()) {
+                totalDaysInput.value = 1;
+            } else {
+                // Calculate difference in days including both start and end dates
+                const diffTime = checkOutDate - checkInDate;
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                totalDaysInput.value = diffDays;
+            }
+        } else {
+            totalDaysInput.value = "";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".mess-form-dalam-kota").forEach((form, index) => {
+            const i = index + 1; // Adjust for 1-based index
+
+            form.querySelector('input[name="tgl_masuk_mess_dalam_kota[]"]').addEventListener(
+                "change",
+                () => calculateTotalDaysMessDalamKota(i)
+            );
+            form.querySelector('input[name="tgl_keluar_mess_dalam_kota[]"]').addEventListener(
+                "change",
+                () => calculateTotalDaysMessDalamKota(i)
+            );
+        });
+    });
     //RESET CHECKBOX FIELDS
     document.addEventListener("DOMContentLoaded", function() {
         const jnsDinasSelect = document.getElementById("jns_dinas");
@@ -2360,7 +2548,6 @@
                 const addedForm = messFormsContainer.lastElementChild;
                 toggleRequiredAttributes(addedForm, messCheckbox.checked);
                 updateFormNumbers();
-                initializeAllSelect2();
             } else {
                 Swal.fire({
                     title: "Warning!",
@@ -2416,17 +2603,17 @@
                     <div class="row">
                         <div class="col-md-4 mb-2">
                         <label class="form-label">Check In Date</label>
-                        <input type="date" class="form-control form-control-sm" id="check-in-${formNumber}" name="tgl_masuk_mess[]"
-                            onchange="calculateTotalDays(${formNumber})">
+                        <input type="date" class="form-control form-control-sm" id="check-in-mess-${formNumber}" name="tgl_masuk_mess[]"
+                            onchange="calculateTotalDaysMess(${formNumber})">
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Check Out Date</label>
-                        <input type="date" class="form-control form-control-sm" id="check-out-${formNumber}" name="tgl_keluar_mess[]"
-                            onchange="calculateTotalDays(${formNumber})">
+                        <input type="date" class="form-control form-control-sm" id="check-out-mess-${formNumber}" name="tgl_keluar_mess[]"
+                            onchange="calculateTotalDaysMess(${formNumber})">
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Total Nights</label>
-                        <input type="number" class="form-control form-control-sm bg-light" id="total-days-${formNumber}" name="total_hari[]"
+                        <input type="number" class="form-control form-control-sm bg-light" id="total-days-mess-${formNumber}" name="total_hari_mess[]"
                             readonly>
                     </div>
                     </div>
@@ -2446,7 +2633,7 @@
         let formMessCount = 1;
         const maxMessForms = 5;
         const messFormsContainer = document.getElementById("mess_forms_container_dalam_kota");
-        const messCheckbox = document.getElementById("messCheckbox");
+        const messCheckbox = document.getElementById("messCheckboxDalamKota");
         const addMessButton = document.querySelector(".add-mess-btn-dalam-kota");
 
         function updateFormNumbers() {
@@ -2551,7 +2738,6 @@
                 const addedForm = messFormsContainer.lastElementChild;
                 toggleRequiredAttributes(addedForm, messCheckbox.checked);
                 updateFormNumbers();
-                initializeAllSelect2();
             } else {
                 Swal.fire({
                     title: "Warning!",
@@ -2608,17 +2794,17 @@
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Check In Date</label>
                         <input type="date" class="form-control form-control-sm" name="tgl_masuk_mess_dalam_kota[]"
-                            id="check-in-dalam-kota-${formNumber}" onchange="calculateTotalDaysDalamKota(${formNumber})">
+                            id="check-in-mess-dalam-kota-${formNumber}" onchange="calculateTotalDaysMessDalamKota(${formNumber})">
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Check Out Date</label>
                         <input type="date" class="form-control form-control-sm" name="tgl_keluar_mess_dalam_kota[]"
-                            id="check-out-dalam-kota-${formNumber}" onchange="calculateTotalDaysDalamKota(${formNumber})">
+                            id="check-out-mess-dalam-kota-${formNumber}" onchange="calculateTotalDaysMessDalamKota(${formNumber})">
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Total Nights</label>
                         <input type="number" class="form-control form-control-sm bg-light"
-                            name="total_hari_mess_dalam_kota[]" id="total-days-dalam-kota-${formNumber}" readonly>
+                            name="total_hari_mess_dalam_kota[]" id="total-days-mess-dalam-kota-${formNumber}" readonly>
                     </div>
                 </div>
                 <div class="mt-2">

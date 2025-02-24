@@ -32,7 +32,7 @@ class Mess extends Model
         'bed_mess',
         'tgl_masuk_mess',
         'tgl_keluar_mess',
-        'total_hari',
+        'total_hari_mess',
         'approval_status',
         'hotel_only',
         'reject_info',
@@ -64,14 +64,14 @@ class Mess extends Model
     }
     public function latestApprovalL1()
     {
-        return $this->hasOne(HotelApproval::class, 'mess_id', 'id')
+        return $this->hasOne(MessApproval::class, 'mess_id', 'id')
             ->where('layer', 1)
             ->where('approval_status', 'Pending L2')
             ->latest('approved_at');
     }
     public function latestApprovalL2()
     {
-        return $this->hasOne(HotelApproval::class, 'mess_id', 'id')
+        return $this->hasOne(MessApproval::class, 'mess_id', 'id')
             ->where('layer', 2)
             ->where('approval_status', 'Approved')
             ->latest('approved_at');
@@ -113,6 +113,6 @@ class Mess extends Model
     }
     public function hotelApproval()
     {
-        return $this->hasOne(HotelApproval::class, 'htl_id', 'id');
+        return $this->hasOne(MessApproval::class, 'mess_id', 'id');
     }
 }

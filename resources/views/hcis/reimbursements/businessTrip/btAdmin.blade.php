@@ -193,8 +193,9 @@
                                             <th>Start</th>
                                             <th>End</th>
                                             <th>CA</th>
-                                            <th>Ticket</th>
                                             <th>Hotel</th>
+                                            <th>Mess</th>
+                                            <th>Ticket</th>
                                             <th>Taxi</th>
                                             <th>Status</th>
                                             <th style="">Approve</th>
@@ -237,6 +238,56 @@
                                                         -
                                                     @endif
                                                 </td>
+
+                                                <td style="text-align: center; align-content: center">
+                                                    @if ($n->hotel == 'Ya' && isset($hotel[$n->no_sppd]))
+                                                        <a class="text-info btn-detail" data-toggle="modal"
+                                                            data-target="#detailModal" style="cursor: pointer"
+                                                            data-hotel="{{ json_encode(
+                                                                $hotel[$n->no_sppd]->map(function ($hotel) {
+                                                                    return [
+                                                                        'No. Hotel' => $hotel->no_htl,
+                                                                        'No. SPPD' => $hotel->no_sppd,
+                                                                        'Colleague No. SPPD' => $hotel->no_sppd_htl,
+                                                                        'Unit' => $hotel->unit,
+                                                                        'Hotel Name' => $hotel->nama_htl,
+                                                                        'Location' => $hotel->lokasi_htl,
+                                                                        'Room' => $hotel->jmlkmr_htl,
+                                                                        'Bed' => $hotel->bed_htl,
+                                                                        'Check In' => date('d-M-Y', strtotime($hotel->tgl_masuk_htl)),
+                                                                        'Check Out' => date('d-M-Y', strtotime($hotel->tgl_keluar_htl)),
+                                                                        'Total Days' => $hotel->total_hari,
+                                                                    ];
+                                                                }),
+                                                            ) }}">
+                                                            <u>Details</u></a>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>
+                                                <td style="text-align: center">
+                                                    @if ($n->mess == 'Ya' && isset($mess[$n->no_sppd]))
+                                                        <a class="text-info btn-detail" data-toggle="modal"
+                                                            data-target="#detailModal" style="cursor: pointer"
+                                                            data-mess="{{ json_encode(
+                                                                $mess[$n->no_sppd]->map(function ($mess) {
+                                                                    return [
+                                                                        'No. Mess' => $mess->no_mess,
+                                                                        'No. SPPD' => $mess->no_sppd,
+                                                                        'Unit' => $mess->unit,
+                                                                        'Mess Location' => $mess->lokasi_mess,
+                                                                        'Room' => $mess->jmlkmr_mess,
+                                                                        'Check In' => date('d-M-Y', strtotime($mess->tgl_masuk_mess)),
+                                                                        'Check Out' => date('d-M-Y', strtotime($mess->tgl_keluar_mess)),
+                                                                        'Total Days' => $mess->total_hari_mess,
+                                                                    ];
+                                                                }),
+                                                            ) }}">
+                                                            <u>Details</u></a>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>
                                                 <td style="text-align: center; align-content: center">
                                                     @if ($n->tiket == 'Ya' && isset($tickets[$n->no_sppd]))
                                                         <a class="text-info btn-detail" data-toggle="modal"
@@ -265,32 +316,6 @@
                                                         -
                                                     @endif
 
-                                                </td>
-                                                <td style="text-align: center; align-content: center">
-                                                    @if ($n->hotel == 'Ya' && isset($hotel[$n->no_sppd]))
-                                                        <a class="text-info btn-detail" data-toggle="modal"
-                                                            data-target="#detailModal" style="cursor: pointer"
-                                                            data-hotel="{{ json_encode(
-                                                                $hotel[$n->no_sppd]->map(function ($hotel) {
-                                                                    return [
-                                                                        'No. Hotel' => $hotel->no_htl,
-                                                                        'No. SPPD' => $hotel->no_sppd,
-                                                                        'Colleague No. SPPD' => $hotel->no_sppd_htl,
-                                                                        'Unit' => $hotel->unit,
-                                                                        'Hotel Name' => $hotel->nama_htl,
-                                                                        'Location' => $hotel->lokasi_htl,
-                                                                        'Room' => $hotel->jmlkmr_htl,
-                                                                        'Bed' => $hotel->bed_htl,
-                                                                        'Check In' => date('d-M-Y', strtotime($hotel->tgl_masuk_htl)),
-                                                                        'Check Out' => date('d-M-Y', strtotime($hotel->tgl_keluar_htl)),
-                                                                        'Total Days' => $hotel->total_hari,
-                                                                    ];
-                                                                }),
-                                                            ) }}">
-                                                            <u>Details</u></a>
-                                                    @else
-                                                        -
-                                                    @endif
                                                 </td>
                                                 <td style="text-align: center; align-content: center">
                                                     @if ($n->taksi == 'Ya' && isset($taksi[$n->no_sppd]))
@@ -359,7 +384,7 @@
                                                         </button>
                                                     </form>
 
-                                                    <a href="{{ route('export.admin', ['id' => $n->id, 'types' => 'sppd,ca,tiket,hotel,taksi']) }}"
+                                                    <a href="{{ route('export.admin', ['id' => $n->id, 'types' => 'sppd,ca,tiket,hotel,taksi,mess']) }}"
                                                         class="btn btn-outline-info rounded-pill mb-1">
                                                         <i class="bi bi-download"></i>
                                                     </a>
@@ -1010,6 +1035,7 @@
                             var tiket = $(this).data('tiket');
                             var hotel = $(this).data('hotel');
                             var taksi = $(this).data('taksi');
+                            var mess = $(this).data('mess');
 
                             function createTableHtml(data, title) {
                                 var tableHtml = '<h5>' + title + '</h5>';
@@ -1085,6 +1111,10 @@
                                 if (taksi && taksi !== 'undefined') {
                                     var taksiData = typeof taksi === 'string' ? JSON.parse(taksi) : taksi;
                                     content += createTableHtml(taksiData, 'Taxi Detail');
+                                }
+                                if (mess && mess !== 'undefined') {
+                                    var messData = typeof mess === 'string' ? JSON.parse(mess) : mess;
+                                    content += createTableHtml(messData, 'Mess Detail');
                                 }
 
                                 if (content !== '') {

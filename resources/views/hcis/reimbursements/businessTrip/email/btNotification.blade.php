@@ -206,6 +206,43 @@
             @endforeach
         </table>
     @endif
+    @if ($businessTrip->mess === 'Ya')
+        <table style="border-collapse: collapse; width: 70%; margin-top: 8px; font-size: 10px;">
+            <tr>
+                <th colspan="7"
+                    style="border: 1px solid #ddd; padding: 4px; background-color: #ab2f2b; color: #ffffff; font-size: 10px; font-weight: bold; white-space: nowrap; text-align: center;">
+                    <b>Mess Details :</b>
+                </th>
+            </tr>
+            <tr style="font-weight: bold; background-color: #f5f5f5;">
+                <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">No</th>
+                <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">No. Mess
+                    </th>
+                <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Location Mess</th>
+                <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Check-in</th>
+                <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Check-out
+                    </th>
+                <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Total Nights
+                    </th>
+            </tr>
+            @foreach ($messDetails as $index => $mess)
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">{{ $index + 1 }}</td>
+                    <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">{{ $mess->no_mess }}</td>
+                    <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">{{ $mess->lokasi_mess }}
+                    </td>
+                    <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">
+                        {{ \Carbon\Carbon::parse($hotel->tgl_masuk_mes)->format('d M Y') }}
+                    </td>
+                    <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">
+                        {{ \Carbon\Carbon::parse($hotel->tgl_keluar_mess)->format('d M Y') }}
+                    </td>
+                    <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">{{ $hotel->total_hari_mess }}
+                        Nights</td>
+                </tr>
+            @endforeach
+        </table>
+    @endif
     @if ($businessTrip->hotel === 'Ya')
         <table style="border-collapse: collapse; width: 70%; margin-top: 8px; font-size: 10px;">
             <tr>

@@ -367,7 +367,7 @@
                                             <div class="tab-pane fade" id="pills-mess-dalam-kota" role="tabpanel"
                                                 aria-labelledby="pills-mess-dalam-kota-tab">
                                                 {{-- mess content --}}
-                                                {{-- @include('hcis.reimbursements.businessTrip.editForm.dalam-kota.editHotelDalamKota') --}}
+                                                @include('hcis.reimbursements.businessTrip.editForm.dalam-kota.editMessDalamKota')
                                             </div>
 
                                             <!-- Hotel Content -->
@@ -541,7 +541,7 @@
                                                     <div class="tab-pane fade" id="pills-mess" role="tabpanel"
                                                         aria-labelledby="pills-mess-tab">
                                                         {{-- Mess content --}}
-                                                        {{-- @include('hcis.reimbursements.businessTrip.editForm.editHotel') --}}
+                                                        @include('hcis.reimbursements.businessTrip.editForm.editMess')
                                                     </div>
                                                     <div class="tab-pane fade" id="pills-hotel" role="tabpanel"
                                                         aria-labelledby="pills-hotel-tab">
