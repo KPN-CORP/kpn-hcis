@@ -310,15 +310,15 @@ class BusinessTripController extends Controller
         $revisiInfo = null;
         if ($n->status === 'Request Revision') {
             $revisiInfo = BTApproval::where('bt_id', $n->id)
-                ->where('approval_status', 'Request Revision')  
-                ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru  
-                ->pluck('reject_info')  
+                ->where('approval_status', 'Request Revision')
+                ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru
+                ->pluck('reject_info')
                 ->first();
         } if ($n->status === 'Declaration Revision') {
             $revisiInfo = BTApproval::where('bt_id', $n->id)
-                ->where('approval_status', 'Declaration Revision')  
-                ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru  
-                ->pluck('reject_info')  
+                ->where('approval_status', 'Declaration Revision')
+                ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru
+                ->pluck('reject_info')
                 ->first();
         }
 
@@ -1538,15 +1538,15 @@ class BusinessTripController extends Controller
         $revisiInfo = null;
         if ($n->status === 'Request Revision') {
             $revisiInfo = BTApproval::where('bt_id', $n->id)
-                ->where('approval_status', 'Request Revision')  
-                ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru  
-                ->pluck('reject_info')  
+                ->where('approval_status', 'Request Revision')
+                ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru
+                ->pluck('reject_info')
                 ->first();
         } if ($n->status === 'Declaration Revision') {
             $revisiInfo = BTApproval::where('bt_id', $n->id)
-                ->where('approval_status', 'Declaration Revision')  
-                ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru  
-                ->pluck('reject_info')  
+                ->where('approval_status', 'Declaration Revision')
+                ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru
+                ->pluck('reject_info')
                 ->first();
         }
 
@@ -5687,6 +5687,8 @@ class BusinessTripController extends Controller
         $employees = Employee::orderBy('ktp')->get();
         $group_company = Employee::where('id', $employee_data->id)->pluck('group_company')->first();
         $bt_sppd = BusinessTrip::where('status', '!=', 'Done')->where('status', '!=', 'Rejected')->where('status', '!=', 'Draft')->orderBy('no_sppd', 'desc')->get();
+        $job_level = Employee::where('id', $employee_data)->pluck('job_level')->first();
+        $job_level_number = (int) preg_replace('/[^0-9]/', '', $job_level);
 
         if ($employee_data->group_company == 'Plantations' || $employee_data->group_company == 'KPN Plantations') {
             $allowance = "Perdiem";
@@ -5791,6 +5793,7 @@ class BusinessTripController extends Controller
             'taksiLuarKota' => $taksiLuarKota,
             'taksiDalamKota' => $taksiDalamKota,
             'bt_sppd' => $bt_sppd,
+            'job_level_number' => $job_level_number,
         ]);
     }
 
