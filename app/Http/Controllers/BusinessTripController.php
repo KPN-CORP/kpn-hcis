@@ -20,6 +20,7 @@ use App\Models\ca_sett_approval;
 use App\Models\ListPerdiem;
 use App\Models\TiketApproval;
 use App\Models\HotelApproval;
+use App\Models\MessApproval;
 use App\Models\TaksiApproval;
 use App\Models\HealthCoverage;
 use Carbon\Carbon;
@@ -314,7 +315,8 @@ class BusinessTripController extends Controller
                 ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru
                 ->pluck('reject_info')
                 ->first();
-        } if ($n->status === 'Declaration Revision') {
+        }
+        if ($n->status === 'Declaration Revision') {
             $revisiInfo = BTApproval::where('bt_id', $n->id)
                 ->where('approval_status', 'Declaration Revision')
                 ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru
@@ -1417,10 +1419,12 @@ class BusinessTripController extends Controller
                         $isEnt,
                         $isCa,
                         $entDetails,
+                        $group_company,
                         $messDetails,
                     ));
                 } catch (\Exception $e) {
-                    Log::error('Email Update Business Trip tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email Create Business Trip tidak terkirim: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
+                    Log::info('messDetails: ' . json_encode($messDetails));
                 }
             }
         }
@@ -1542,7 +1546,8 @@ class BusinessTripController extends Controller
                 ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru
                 ->pluck('reject_info')
                 ->first();
-        } if ($n->status === 'Declaration Revision') {
+        }
+        if ($n->status === 'Declaration Revision') {
             $revisiInfo = BTApproval::where('bt_id', $n->id)
                 ->where('approval_status', 'Declaration Revision')
                 ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru
@@ -4611,7 +4616,8 @@ class BusinessTripController extends Controller
                         $messDetails,
                     ));
                 } catch (\Exception $e) {
-                    Log::error('Email Create Business Trip tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email Create Business Trip tidak terkirim: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
+                    Log::info('messDetails: ' . json_encode($messDetails));
                 }
             }
         }
@@ -5672,12 +5678,13 @@ class BusinessTripController extends Controller
             ->groupBy('no_sppd');
         $tickets = Tiket::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
         $hotel = Hotel::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
+        $mess = Mess::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
         $taksi = Taksi::whereIn('no_sppd', $sppdNos)->get()->keyBy('no_sppd');
 
         $parentLink = 'Approval';
         $link = 'Business Trip';
 
-        return view('hcis.reimbursements.businessTrip.btApproval', compact('bt_all', 'bt_request', 'bt_declaration', 'parentLink', 'link', 'caTransactions', 'tickets', 'hotel', 'taksi', 'requestCount', 'declarationCount', 'totalBTCount', 'totalPendingCount', 'totalTKTCount', 'totalHTLCount', 'totalMDCCount'));
+        return view('hcis.reimbursements.businessTrip.btApproval', compact('bt_all', 'bt_request', 'bt_declaration', 'parentLink', 'link', 'caTransactions', 'tickets', 'hotel', 'taksi', 'requestCount', 'declarationCount', 'totalBTCount', 'totalPendingCount', 'totalTKTCount', 'totalHTLCount', 'totalMDCCount', 'mess'));
     }
     public function approvalDetail($id)
     {
@@ -5763,6 +5770,18 @@ class BusinessTripController extends Controller
             ];
         }
 
+        $messes = Mess::where('no_sppd', $n->no_sppd)->get();
+        $messData = [];
+        foreach ($messes as $index => $mess) {
+            $messData[] = [
+                'lokasi_mess' => $mess->lokasi_mess,
+                'jmlkmr_mess' => $mess->jmlkmr_mess,
+                'tgl_masuk_mess' => $mess->tgl_masuk_mess,
+                'tgl_keluar_mess' => $mess->tgl_keluar_mess,
+                'total_hari_mess' => $mess->total_hari_mess,
+            ];
+        }
+
         // Retrieve locations and companies data for the dropdowns
         $locations = Location::orderBy('area')->get();
         $companies = Company::orderBy('contribution_level')->get();
@@ -5794,6 +5813,7 @@ class BusinessTripController extends Controller
             'taksiDalamKota' => $taksiDalamKota,
             'bt_sppd' => $bt_sppd,
             'job_level_number' => $job_level_number,
+            'messData' => $messData,
         ]);
     }
 
@@ -5877,6 +5897,29 @@ class BusinessTripController extends Controller
                         $approval_htl->approved_at = now();
                         $approval_htl->reject_info = $revisiInfo;
                         $approval_htl->save();
+                    }
+                }
+            }
+            if ($businessTrip->mess == 'Ya') {
+                $messes = Mess::where('no_sppd', $businessTrip->no_sppd)->get();
+                foreach ($messes as $mess) {
+                    if ($mess->mess_only != 'Y') {
+                        $mess->update([
+                            'approval_status' => $statusValue,
+                        ]);
+
+                        // Record the rejection in MessApproval
+                        $approval_mess = new MessApproval();
+                        $approval_mess->id = (string) Str::uuid(); // Generate a UUID for the approval record
+                        $approval_mess->mess_id = $mess->id;
+                        $approval_mess->employee_id = $employeeId; // Assuming the logged-in user's employee ID is needed
+                        $approval_mess->role_id = $user->role_id; // Assuming role_id is in the user data
+                        $approval_mess->role_name = $user->role_name; // Assuming role_name is in the user data
+                        $approval_mess->layer = $layer; // Set layer to 2 for rejected cases
+                        $approval_mess->approval_status = $statusValue;
+                        $approval_mess->approved_at = now();
+                        $approval_mess->reject_info = $revisiInfo;
+                        $approval_mess->save();
                     }
                 }
             }
@@ -5969,6 +6012,29 @@ class BusinessTripController extends Controller
                     }
                 }
             }
+            if ($businessTrip->mess == 'Ya') {
+                $messes = Mess::where('no_sppd', $businessTrip->no_sppd)->get();
+                foreach ($messes as $mess) {
+                    if ($mess->mess_only != 'Y') {
+                        $mess->update([
+                            'approval_status' => $statusValue,
+                        ]);
+
+                        // Record the rejection in MessApproval
+                        $approval_mess = new MessApproval();
+                        $approval_mess->id = (string) Str::uuid(); // Generate a UUID for the approval record
+                        $approval_mess->mess_id = $mess->id;
+                        $approval_mess->employee_id = $employeeId; // Assuming the logged-in user's employee ID is needed
+                        $approval_mess->role_id = $user->role_id; // Assuming role_id is in the user data
+                        $approval_mess->role_name = $user->role_name; // Assuming role_name is in the user data
+                        $approval_mess->layer = $layer; // Set layer to 2 for rejected cases
+                        $approval_mess->approval_status = $statusValue;
+                        $approval_mess->approved_at = now();
+                        $approval_mess->reject_info = $rejectInfo;
+                        $approval_mess->save();
+                    }
+                }
+            }
             if ($businessTrip->taksi == 'Ya') {
                 $taksi = Taksi::where('no_sppd', $businessTrip->no_sppd)->first();
                 if ($taksi) {
@@ -6009,6 +6075,28 @@ class BusinessTripController extends Controller
                         $approval_htl->approval_status = $statusValue;
                         $approval_htl->approved_at = now();
                         $approval_htl->save();
+                    }
+                }
+            }
+            if ($businessTrip->mess == 'Ya') {
+                $messes = Mess::where('no_sppd', $businessTrip->no_sppd)->get();
+                foreach ($messes as $mess) {
+                    if ($mess->mess_only != 'Y') {
+                        $mess->update([
+                            'approval_status' => $statusValue,
+                        ]);
+
+                        // Record the rejection in MessApproval
+                        $approval_mess = new MessApproval();
+                        $approval_mess->id = (string) Str::uuid(); // Generate a UUID for the approval record
+                        $approval_mess->mess_id = $mess->id;
+                        $approval_mess->employee_id = $employeeId; // Assuming the logged-in user's employee ID is needed
+                        $approval_mess->role_id = $user->role_id; // Assuming role_id is in the user data
+                        $approval_mess->role_name = $user->role_name; // Assuming role_name is in the user data
+                        $approval_mess->layer = $layer; // Set layer to 2 for rejected cases
+                        $approval_mess->approval_status = $statusValue;
+                        $approval_mess->approved_at = now();
+                        $approval_mess->save();
                     }
                 }
             }
@@ -6084,6 +6172,7 @@ class BusinessTripController extends Controller
             $managerL2 = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('email')->first();
             // $managerL2 = "erzie.aldrian02@gmail.com";
             $managerName = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('fullname')->first();
+            $group_company = Employee::where('id', $businessTrip->user_id)->pluck('group_company')->first();
 
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
@@ -6127,6 +6216,12 @@ class BusinessTripController extends Controller
                             ->orWhereNull('hotel_only'); // This handles the case where hotel_only is null
                     })
                     ->get();
+                $messDetails = Mess::where('no_sppd', $businessTrip->no_sppd)
+                    ->where(function ($query) {
+                        $query->where('mess_only', '!=', 'Y')
+                            ->orWhereNull('mess_only'); // This handles the case where hotel_only is null
+                    })
+                    ->get();
 
                 $taksiDetails = Taksi::where('no_sppd', $businessTrip->no_sppd)->first();
                 // dd($taksiDetails);
@@ -6166,6 +6261,8 @@ class BusinessTripController extends Controller
                         $isEnt,
                         $isCa,
                         $entDetails,
+                        $group_company,
+                        $messDetails,
                     ));
                 } catch (\Exception $e) {
                     Log::error('Email Update Status Business Trip tidak terkirim: ' . $e->getMessage());
@@ -6189,6 +6286,28 @@ class BusinessTripController extends Controller
                         $approval_htl->approval_status = $statusValue;
                         $approval_htl->approved_at = now();
                         $approval_htl->save();
+                    }
+                }
+            }
+            if ($businessTrip->mess == 'Ya') {
+                $messes = Mess::where('no_sppd', $businessTrip->no_sppd)->get();
+                foreach ($messes as $mess) {
+                    if ($mess->mess_only != 'Y') {
+                        $mess->update([
+                            'approval_status' => $statusValue,
+                        ]);
+
+                        // Record the rejection in MessApproval
+                        $approval_mess = new MessApproval();
+                        $approval_mess->id = (string) Str::uuid(); // Generate a UUID for the approval record
+                        $approval_mess->mess_id = $mess->id;
+                        $approval_mess->employee_id = $employeeId; // Assuming the logged-in user's employee ID is needed
+                        $approval_mess->role_id = $user->role_id; // Assuming role_id is in the user data
+                        $approval_mess->role_name = $user->role_name; // Assuming role_name is in the user data
+                        $approval_mess->layer = $layer; // Set layer to 2 for rejected cases
+                        $approval_mess->approval_status = $statusValue;
+                        $approval_mess->approved_at = now();
+                        $approval_mess->save();
                     }
                 }
             }
@@ -6279,6 +6398,28 @@ class BusinessTripController extends Controller
                         $approval_htl->approval_status = $statusValue;
                         $approval_htl->approved_at = now();
                         $approval_htl->save();
+                    }
+                }
+            }
+            if ($businessTrip->mess == 'Ya') {
+                $messes = Mess::where('no_sppd', $businessTrip->no_sppd)->get();
+                foreach ($messes as $mess) {
+                    if ($mess->mess_only != 'Y') {
+                        $mess->update([
+                            'approval_status' => $statusValue,
+                        ]);
+
+                        // Record the rejection in MessApproval
+                        $approval_mess = new MessApproval();
+                        $approval_mess->id = (string) Str::uuid(); // Generate a UUID for the approval record
+                        $approval_mess->mess_id = $mess->id;
+                        $approval_mess->employee_id = $employeeId; // Assuming the logged-in user's employee ID is needed
+                        $approval_mess->role_id = $user->role_id; // Assuming role_id is in the user data
+                        $approval_mess->role_name = $user->role_name; // Assuming role_name is in the user data
+                        $approval_mess->layer = $layer; // Set layer to 2 for rejected cases
+                        $approval_mess->approval_status = $statusValue;
+                        $approval_mess->approved_at = now();
+                        $approval_mess->save();
                     }
                 }
             }
@@ -6419,6 +6560,29 @@ class BusinessTripController extends Controller
                         }
                     }
                 }
+                if ($businessTrip->mess == 'Ya') {
+                    $messes = Mess::where('no_sppd', $businessTrip->no_sppd)->get();
+                    foreach ($messes as $mess) {
+                        if ($mess->mess_only != 'Y') {
+                            $mess->update([
+                                'approval_status' => $statusValue,
+                            ]);
+
+                            // Record the rejection in MessApproval
+                            $approval_mess = new MessApproval();
+                            $approval_mess->id = (string) Str::uuid(); // Generate a UUID for the approval record
+                            $approval_mess->mess_id = $mess->id;
+                            $approval_mess->employee_id = $employeeId; // Assuming the logged-in user's employee ID is needed
+                            $approval_mess->role_id = $user->role_id; // Assuming role_id is in the user data
+                            $approval_mess->role_name = $user->role_name; // Assuming role_name is in the user data
+                            $approval_mess->layer = $layer; // Set layer to 2 for rejected cases
+                            $approval_mess->approval_status = $statusValue;
+                            $approval_mess->approved_at = now();
+                            $approval_mess->by_admin = 'T';
+                            $approval_mess->save();
+                        }
+                    }
+                }
                 if ($businessTrip->taksi == 'Ya') {
                     $taksi = Taksi::where('no_sppd', $businessTrip->no_sppd)->first();
                     if ($taksi) {
@@ -6503,6 +6667,7 @@ class BusinessTripController extends Controller
                 $managerL2 = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('email')->first();
                 // $managerL2 = "erzie.aldrian02@gmail.com";
                 $managerName = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('fullname')->first();
+                $group_company = Employee::where('id', $businessTrip->id)->pluck('group_company')->first();
 
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
@@ -6546,6 +6711,12 @@ class BusinessTripController extends Controller
                                 ->orWhereNull('hotel_only'); // This handles the case where hotel_only is null
                         })
                         ->get();
+                    $messDetails = Mess::where('no_sppd', $businessTrip->no_sppd)
+                        ->where(function ($query) {
+                            $query->where('mess_only', '!=', 'Y')
+                                ->orWhereNull('mess_only');
+                        })
+                        ->get();
 
                     $taksiDetails = Taksi::where('no_sppd', $businessTrip->no_sppd)->first();
                     // dd($taksiDetails);
@@ -6585,6 +6756,8 @@ class BusinessTripController extends Controller
                             $isEnt,
                             $isCa,
                             $entDetails,
+                            $group_company,
+                            $messDetails,
                         ));
                     } catch (\Exception $e) {
                         Log::error('Email Update Status Business Trip tidak terkirim: ' . $e->getMessage());
@@ -6609,6 +6782,29 @@ class BusinessTripController extends Controller
                             $approval_htl->by_admin = 'T';
                             $approval_htl->approved_at = now();
                             $approval_htl->save();
+                        }
+                    }
+                }
+                if ($businessTrip->mess == 'Ya') {
+                    $messes = Mess::where('no_sppd', $businessTrip->no_sppd)->get();
+                    foreach ($messes as $mess) {
+                        if ($mess->mess_only != 'Y') {
+                            $mess->update([
+                                'approval_status' => $statusValue,
+                            ]);
+
+                            // Record the rejection in MessApproval
+                            $approval_mess = new MessApproval();
+                            $approval_mess->id = (string) Str::uuid(); // Generate a UUID for the approval record
+                            $approval_mess->mess_id = $mess->id;
+                            $approval_mess->employee_id = $employeeId; // Assuming the logged-in user's employee ID is needed
+                            $approval_mess->role_id = $user->role_id; // Assuming role_id is in the user data
+                            $approval_mess->role_name = $user->role_name; // Assuming role_name is in the user data
+                            $approval_mess->layer = $layer; // Set layer to 2 for rejected cases
+                            $approval_mess->approval_status = $statusValue;
+                            $approval_mess->approved_at = now();
+                            $approval_mess->by_admin = 'T';
+                            $approval_mess->save();
                         }
                     }
                 }
@@ -6712,6 +6908,29 @@ class BusinessTripController extends Controller
                             $approval_htl->by_admin = 'T';
                             $approval_htl->approved_at = now();
                             $approval_htl->save();
+                        }
+                    }
+                }
+                if ($businessTrip->mess == 'Ya') {
+                    $messes = Mess::where('no_sppd', $businessTrip->no_sppd)->get();
+                    foreach ($messes as $mess) {
+                        if ($mess->mess_only != 'Y') {
+                            $mess->update([
+                                'approval_status' => $statusValue,
+                            ]);
+
+                            // Record the rejection in MessApproval
+                            $approval_mess = new MessApproval();
+                            $approval_mess->id = (string) Str::uuid(); // Generate a UUID for the approval record
+                            $approval_mess->mess_id = $mess->id;
+                            $approval_mess->employee_id = $employeeId; // Assuming the logged-in user's employee ID is needed
+                            $approval_mess->role_id = $user->role_id; // Assuming role_id is in the user data
+                            $approval_mess->role_name = $user->role_name; // Assuming role_name is in the user data
+                            $approval_mess->layer = $layer; // Set layer to 2 for rejected cases
+                            $approval_mess->approval_status = $statusValue;
+                            $approval_mess->approved_at = now();
+                            $approval_mess->by_admin = 'T';
+                            $approval_mess->save();
                         }
                     }
                 }
@@ -7158,6 +7377,28 @@ class BusinessTripController extends Controller
                     }
                 }
             }
+            if ($businessTrip->mess == 'Ya') {
+                $messes = Mess::where('no_sppd', $businessTrip->no_sppd)->get();
+                foreach ($messes as $mess) {
+                    if ($mess->mess_only != 'Y') {
+                        $mess->update([
+                            'approval_status' => $statusValue,
+                        ]);
+
+                        // Record the rejection in MessApproval
+                        $approval_mess = new MessApproval();
+                        $approval_mess->id = (string) Str::uuid(); // Generate a UUID for the approval record
+                        $approval_mess->mess_id = $mess->id;
+                        $approval_mess->employee_id = $employeeId; // Assuming the logged-in user's employee ID is needed
+                        $approval_mess->layer = $layer; // Set layer to 2 for rejected cases
+                        $approval_mess->approval_status = $statusValue;
+                        $approval_mess->approved_at = now();
+                        $approval_mess->reject_info = $request->revision_info;
+                        $approval_mess->by_admin = 'T';
+                        $approval_mess->save();
+                    }
+                }
+            }
             if ($businessTrip->hotel == 'Ya') {
                 $hotels = Hotel::where('no_sppd', $businessTrip->no_sppd)->get();
                 foreach ($hotels as $hotel) {
@@ -7364,6 +7605,28 @@ class BusinessTripController extends Controller
                         $approval_htl->reject_info = $rejectInfo;
                         $approval_htl->by_admin = 'T';
                         $approval_htl->save();
+                    }
+                }
+            }
+            if ($businessTrip->mess == 'Ya') {
+                $messes = Mess::where('no_sppd', $businessTrip->no_sppd)->get();
+                foreach ($messes as $mess) {
+                    if ($mess->mess_only != 'Y') {
+                        $mess->update([
+                            'approval_status' => $statusValue,
+                        ]);
+
+                        // Record the rejection in MessApproval
+                        $approval_mess = new MessApproval();
+                        $approval_mess->id = (string) Str::uuid(); // Generate a UUID for the approval record
+                        $approval_mess->mess_id = $mess->id;
+                        $approval_mess->employee_id = $employeeId; // Assuming the logged-in user's employee ID is needed
+                        $approval_mess->layer = $layer; // Set layer to 2 for rejected cases
+                        $approval_mess->approval_status = $statusValue;
+                        $approval_mess->approved_at = now();
+                        $approval_mess->reject_info = $request->reject_info;
+                        $approval_mess->by_admin = 'T';
+                        $approval_mess->save();
                     }
                 }
             }

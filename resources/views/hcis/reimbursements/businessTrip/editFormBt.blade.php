@@ -262,10 +262,10 @@
                                 const initialDetailCA = @json($detailCA);
                             </script> --}}
                             @if ($n->status == 'Request Revision' || $n->status == 'Declaration Revision')
-                                <div class="alert alert-info" role="alert">  
-                                    <h4 class="alert-heading">Revision Note</h4>  
-                                    {!! nl2br(e($revisiInfo)) !!}  
-                                </div>  
+                                <div class="alert alert-info" role="alert">
+                                    <h4 class="alert-heading">Revision Note</h4>
+                                    {!! nl2br(e($revisiInfo)) !!}
+                                </div>
                             @endif
                             <div id="additional-fields-dalam" class="row mb-3" style="display: none;">
                                 <label for="additional-fields-dalam-title" class="mb-3">
@@ -274,15 +274,16 @@
                                 <div class="row">
                                     <div class="col-md-3">
                                         <div class="form-check">
-                                            <input type="hidden" name="tiket_dalam_kota" value="Tidak">
-                                            <input class="form-check-input" type="checkbox" id="ticketCheckboxDalamKota"
-                                                name="tiket_dalam_kota" value="Ya"
-                                                <?= $n->jns_dinas === 'dalam kota' && $n->tiket === 'Ya' ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="ticketCheckboxDalamKota">
-                                                Ticket
+                                            <input type="hidden" name="hotel_dalam_kota" value="Tidak">
+                                            <input class="form-check-input" type="checkbox" id="hotelCheckboxDalamKota"
+                                                name="hotel_dalam_kota" value="Ya"
+                                                <?= $n->jns_dinas === 'dalam kota' && $n->hotel === 'Ya' ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="hotelCheckboxDalamKota">
+                                                Hotel
                                             </label>
                                         </div>
                                     </div>
+
 
                                     <div class="col-md-3">
                                         <div class="form-check">
@@ -298,12 +299,12 @@
 
                                     <div class="col-md-3">
                                         <div class="form-check">
-                                            <input type="hidden" name="hotel_dalam_kota" value="Tidak">
-                                            <input class="form-check-input" type="checkbox" id="hotelCheckboxDalamKota"
-                                                name="hotel_dalam_kota" value="Ya"
-                                                <?= $n->jns_dinas === 'dalam kota' && $n->hotel === 'Ya' ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="hotelCheckboxDalamKota">
-                                                Hotel
+                                            <input type="hidden" name="tiket_dalam_kota" value="Tidak">
+                                            <input class="form-check-input" type="checkbox" id="ticketCheckboxDalamKota"
+                                                name="tiket_dalam_kota" value="Ya"
+                                                <?= $n->jns_dinas === 'dalam kota' && $n->tiket === 'Ya' ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="ticketCheckboxDalamKota">
+                                                Ticket
                                             </label>
                                         </div>
                                     </div>
@@ -429,14 +430,15 @@
                                                         Entertain</label>
                                                 </div>
                                             </div>
+
                                             <div class="col-md-2">
                                                 <div class="form-check">
-                                                    <input type="hidden" name="tiket" value="Tidak">
-                                                    <input class="form-check-input" type="checkbox" id="ticketCheckbox"
-                                                        name="tiket" value="Ya"
-                                                        <?= $n->jns_dinas === 'luar kota' && $n->tiket == 'Ya' ? 'checked' : '' ?>>
-                                                    <label class="form-check-label" for="ticketCheckbox">
-                                                        Ticket
+                                                    <input type="hidden" name="hotel" value="Tidak">
+                                                    <input class="form-check-input" type="checkbox" id="hotelCheckbox"
+                                                        name="hotel" value="Ya"
+                                                        <?= $n->jns_dinas === 'luar kota' && $n->hotel == 'Ya' ? 'checked' : '' ?>>
+                                                    <label class="form-check-label" for="hotelCheckbox">
+                                                        Hotel
                                                     </label>
                                                 </div>
                                             </div>
@@ -455,12 +457,12 @@
 
                                             <div class="col-md-2">
                                                 <div class="form-check">
-                                                    <input type="hidden" name="hotel" value="Tidak">
-                                                    <input class="form-check-input" type="checkbox" id="hotelCheckbox"
-                                                        name="hotel" value="Ya"
-                                                        <?= $n->jns_dinas === 'luar kota' && $n->hotel == 'Ya' ? 'checked' : '' ?>>
-                                                    <label class="form-check-label" for="hotelCheckbox">
-                                                        Hotel
+                                                    <input type="hidden" name="tiket" value="Tidak">
+                                                    <input class="form-check-input" type="checkbox" id="ticketCheckbox"
+                                                        name="tiket" value="Ya"
+                                                        <?= $n->jns_dinas === 'luar kota' && $n->tiket == 'Ya' ? 'checked' : '' ?>>
+                                                    <label class="form-check-label" for="ticketCheckbox">
+                                                        Ticket
                                                     </label>
                                                 </div>
                                             </div>

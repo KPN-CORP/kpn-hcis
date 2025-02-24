@@ -265,7 +265,7 @@
                                                         -
                                                     @endif
                                                 </td>
-                                                <td style="text-align: center">
+                                                <td style="text-align: center; align-content: center">
                                                     @if ($n->mess == 'Ya' && isset($mess[$n->no_sppd]))
                                                         <a class="text-info btn-detail" data-toggle="modal"
                                                             data-target="#detailModal" style="cursor: pointer"

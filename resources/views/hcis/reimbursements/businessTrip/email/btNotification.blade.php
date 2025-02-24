@@ -238,12 +238,12 @@
                     <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">{{ $mess->lokasi_mess }}
                     </td>
                     <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">
-                        {{ \Carbon\Carbon::parse($hotel->tgl_masuk_mes)->format('d M Y') }}
+                        {{ \Carbon\Carbon::parse($mess->tgl_masuk_mess)->format('d M Y') }}
                     </td>
                     <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">
-                        {{ \Carbon\Carbon::parse($hotel->tgl_keluar_mess)->format('d M Y') }}
+                        {{ \Carbon\Carbon::parse($mess->tgl_keluar_mess)->format('d M Y') }}
                     </td>
-                    <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">{{ $hotel->total_hari_mess }}
+                    <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">{{ $mess->total_hari_mess }}
                         Nights</td>
                 </tr>
             @endforeach
