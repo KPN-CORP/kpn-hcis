@@ -48,6 +48,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Mail\TestEmail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return redirect('reimbursements');
@@ -387,6 +388,16 @@ Route::middleware('auth')->group(function () {
         Route::put('/medical/admin/form-update/update/{id}', [MedicalController::class, 'medicalAdminUpdate'])->name('medical-admin-form.put');
         Route::delete('/medical/admin/delete/{id}', [MedicalController::class, 'medicalAdminDelete'])->name('medical-admin.delete');
         Route::delete('/medical/admin/delete/report/{id}', [MedicalController::class, 'medicalReportAdminDelete'])->name('medicalReport-admin.delete');
+        Route::post('/delete-failed-import', function (Request $request) {
+            $filePath = str_replace(asset('storage/'), '', $request->file_path); // Ambil path relatif
+        
+            if (Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
+                return response()->json(['message' => 'File deleted successfully']);
+            }
+        
+            return response()->json(['message' => 'File not found'], 404);
+        })->name('delete.failed.import');
     });
 
     //Medical Approval
