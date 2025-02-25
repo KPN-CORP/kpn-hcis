@@ -335,7 +335,7 @@
                                                     <span
                                                         class="badge rounded-pill bg-{{ $n->status == 'Approved' || $n->status == 'Declaration Approved' || $n->status == 'Verified'
                                                             ? 'success'
-                                                            : ($n->status == 'Rejected' || $n->status == 'Declaration Rejected' || $n->status == 'Return/Refund'
+                                                            : ($n->status == 'Rejected' || $n->status == 'Return/Refund' || $n->status == 'Declaration Rejected'
                                                                 ? 'danger'
                                                                 : (in_array($n->status, ['Pending L1', 'Pending L2', 'Declaration L1', 'Declaration L2', 'Waiting Submitted'])
                                                                     ? 'warning'
@@ -344,14 +344,16 @@
                                                                         : (in_array($n->status, ['Doc Accepted', 'Request Revision', 'Declaration Revision'])
                                                                             ? 'info'
                                                                             : 'secondary')))) }}"
-                                                        style="font-size: 12px; padding: 0.5rem 1rem; cursor: {{ ($n->status == 'Rejected' || $n->status == 'Declaration Rejected') && isset($btApprovals[$n->id]) ? 'pointer' : 'default' }};"
+                                                        style="font-size: 12px; padding: 0.5rem 1rem; cursor: pointer;"
                                                         @if (($n->status == 'Rejected' || $n->status == 'Declaration Rejected') && isset($btApprovals[$n->id])) onclick="showRejectInfo('{{ $n->id }}')"
-                                                         title="Click to see rejection reason" @endif
-                                                        @if ($n->status == 'Pending L1') title="L1 Manager: {{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}"
+                                                        @elseif ($n->status == 'Pending L1')
+                                                            onclick="showManagerInfo('L1 Manager', '{{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}')"
                                                         @elseif ($n->status == 'Pending L2')
-                                                            title="L2 Manager: {{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}"
-                                                            @elseif($n->status == 'Declaration L1') title="L1 Manager: {{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}"
-                                                        @elseif($n->status == 'Declaration L2') title="L2 Manager: {{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}" @endif>
+                                                            onclick="showManagerInfo('L2 Manager', '{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}')"
+                                                        @elseif ($n->status == 'Declaration L1')
+                                                            onclick="showManagerInfo('L1 Manager', '{{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}')"
+                                                        @elseif ($n->status == 'Declaration L2')
+                                                            onclick="showManagerInfo('L2 Manager', '{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}')" @endif>
                                                         {{ $n->status == 'Approved' ? 'Request Approved' : $n->status }}
                                                     </span>
                                                 </td>
@@ -623,9 +625,11 @@
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content border-0 shadow">
                             <div class="modal-header bg-light border-bottom-0">
-                                <h5 class="modal-title" id="revisiReasonModalLabel" style="color: #333; font-weight: 600;">Revision
+                                <h5 class="modal-title" id="revisiReasonModalLabel"
+                                    style="color: #333; font-weight: 600;">Revision
                                     Reason</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
                             </div>
                             <div class="modal-body p-4">
                                 <form id="revisiReasonForm" method="POST">
@@ -634,7 +638,8 @@
                                     <input type="hidden" name="status_approval" value="Request Revision">
 
                                     <div class="mb-3">
-                                        <label for="revisi_info" class="form-label" style="color: #555; font-weight: 500;">Please
+                                        <label for="revisi_info" class="form-label"
+                                            style="color: #555; font-weight: 500;">Please
                                             provide a reason for Revision:</label>
                                         <textarea class="form-control border-2" name="revisi_info" id="revisi_info" rows="4" required
                                             style="resize: vertical; min-height: 100px;"></textarea>
@@ -656,6 +661,15 @@
                 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
                 <script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
                 <script>
+                    function showManagerInfo(managerType, managerName) {
+                        Swal.fire({
+                            title: managerType,
+                            text: managerName,
+                            icon: 'info',
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'OK'
+                        });
+                    }
                     document.getElementById('rejectReasonForm').addEventListener('show.bs.modal', function(event) {
                         const button = event.relatedTarget; // Button that triggered the modal
                         const btId = button.getAttribute('data-id'); // Get the ID
@@ -960,7 +974,7 @@
                                             <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
                                         </div>
                                     `).join('');
-                                    }else if (l1DeclarationsReject.length > 0) {
+                                    } else if (l1DeclarationsReject.length > 0) {
                                         approvalDataL1Declare.innerHTML += l1DeclarationsReject.map(rejection => `
                                         <div class="border rounded p-2 mb-2 bg-warning">
                                             <strong>Status:</strong> ${rejection.approval_status}<br>
