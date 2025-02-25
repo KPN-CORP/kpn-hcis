@@ -213,10 +213,10 @@
                                         @if ($entrTab == true || $dnsTab == true)
                                             <div class="mb-3">
                                                 <label class="form-label">Change Note</label>
-                                                @if($caNote)
+                                                {{-- @if($caNote) --}}
                                                 <textarea class="form-control form-control-sm" id="ca_note" name="ca_note" rows="3"
                                                     placeholder="Add note if you do any changes">{{ $caNote }}</textarea>
-                                                @endif
+                                                {{-- @endif --}}
                                             </div>
                                         @endif
                                         <div class="mb-3">
@@ -972,7 +972,7 @@
                     if (parseFloat(totalBtCa) > 0) {
                         inputSummary += `
                             <tr>
-                                <th style="width: 45%; text-align: left; padding: 8px;">Total Cash Advanced Declaration</th>
+                                <th style="width: 45%; text-align: left; padding: 8px;">Total Declaration</th>
                                 <td style="width: 5%; text-align: right; padding: 8px;">:</td>
                                 <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtCa}</strong></td>
                             </tr>

@@ -30,7 +30,8 @@ class ReminderController extends Controller
             ->where('deleted_at', null) // Deleted_at harus NULL
             ->where('approval_status', 'Approved') // Hanya yang sudah di-approve
             ->where('approval_sett', '') // approval_sett harus kosong
-            ->where('declare_estimate', '<=', $tomorrow) // Hari ini atau besok
+            //->where('declare_estimate', '<=', $tomorrow) // Hari ini atau besok 2025-02-19
+            ->where('declare_estimate', '2025-02-19')
             ->get();
 
         if ($ca_transaction->isNotEmpty()) {   
@@ -43,7 +44,9 @@ class ReminderController extends Controller
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
 
                 if ($CANotificationLayer) {
-                    $textNotification = "{$transaction->employee->fullname} Submit an Extend Service with the following details :";
+                    //$textNotification = "{$transaction->employee->fullname} Submit an Extend Service with the following details :";
+                    $textNotification = "Here are the details of the undeclared cash advance application :";
+                    
                     $reminder = "Extend";
                     $declaration = "Declaration";
 

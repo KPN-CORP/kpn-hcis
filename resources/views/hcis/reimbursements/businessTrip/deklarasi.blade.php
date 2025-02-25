@@ -229,6 +229,7 @@
                                                     class="text-info fst-italic">* (Bon, Boarding Pass, Hotel, Taxi Voucher, etc.)</span></label>
                                             <input type="file" id="prove_declare" name="prove_declare[]"
                                                 accept="image/*, application/pdf" class="form-control mb-2" multiple
+
                                                 onchange="previewFiles()"
                                                 {{ !(
                                                     (isset($dnsData->prove_declare) && is_array($dnsData->prove_declare) && count($dnsData->prove_declare) > 0) ||
@@ -236,6 +237,7 @@
                                                 )
                                                     ? 'required'
                                                     : '' }}>
+
                                             @if (
                                                 (isset($dnsData->prove_declare) && $dnsData->prove_declare) ||
                                                     (isset($entrData->prove_declare) && $entrData->prove_declare))
