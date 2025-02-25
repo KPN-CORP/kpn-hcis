@@ -1,4 +1,5 @@
-<script src="{{ asset('/js/btCashAdvanced/others.js') }}"></script>
+{{-- <script src="{{ asset('/js/btCashAdvanced/others.js') }}"></script> --}}
+@include('js.hcis.btCashAdvanced.others')
 
 <script>
     function addMoreFormLainnyaReq(event) {
@@ -16,6 +17,16 @@
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">Date</label>
                                 <input type="date" name="tanggal_bt_lainnya[]" class="form-control" placeholder="mm/dd/yyyy">
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label" for="name">Type of Others</label>
+                                <select class="form-control select2" id="type_bt_lainnya_${formCountOthers}" name="type_bt_lainnya[]" disabled>
+                                    <option value="">Select Type...</option>
+                                    <option value="Laundry">Laundry</option>
+                                    <option value="Airport Tax">Airport Tax</option>
+                                    <option value="Porter">Porter</option>
+                                    <option value="Excess Baggage">Excess Baggage</option>
+                                </select>
                             </div>
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">Amount</label>
@@ -55,12 +66,22 @@
                     <p class="fs-5 text-primary" style="font-weight: bold;">Others Request</p>
                     <div class="row">
                         <!-- Lainnya Date -->
-                        <div class="col-md-6 mb-2">
+                        <div class="col-md-4 mb-2">
                             <label class="form-label">Date</label>
                             <input type="date" name="tanggal_bt_lainnya[]" class="form-control bg-light"
                                 value="{{ $lainnya['tanggal'] }}" placeholder="mm/dd/yyyy" readonly>
                         </div>
-                        <div class="col-md-6 mb-2">
+                        <div class="col-md-4 mb-2">  
+                            <label class="form-label" for="name">Type of Others</label>  
+                            <select class="form-control select2" id="type_bt_lainnya_{{ $loop->index + 1 }}" name="type_bt_lainnya[]" disabled>  
+                                <option value="">Select Type...</option>  
+                                <option value="Laundry" {{ $lainnya['type'] == 'Laundry' ? 'selected' : '' }}>Laundry</option>  
+                                <option value="Airport Tax" {{ $lainnya['type'] == 'Airport Tax' ? 'selected' : '' }}>Airport Tax</option>  
+                                <option value="Porter" {{ $lainnya['type'] == 'Porter' ? 'selected' : '' }}>Porter</option>  
+                                <option value="Excess Baggage" {{ $lainnya['type'] == 'Excess Baggage' ? 'selected' : '' }}>Excess Baggage</option>  
+                            </select>  
+                        </div>
+                        <div class="col-md-4 mb-2">
                             <label class="form-label">Amount</label>
                             <div class="input-group mb-3">
                                 <div class="input-group-append">
@@ -108,12 +129,22 @@
                 <p class="fs-5 text-primary" style="font-weight: bold;">Others Request</p>
                 <div class="row">
                     <!-- Lainnya Date -->
-                    <div class="col-md-6 mb-2">
+                    <div class="col-md-4 mb-2">
                         <label class="form-label">Date</label>
                         <input type="date" name="tanggal_bt_lainnya[]" class="form-control bg-light"
                             placeholder="mm/dd/yyyy" readonly>
                     </div>
-                    <div class="col-md-6 mb-2">
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label" for="name">Type of Others</label>
+                        <select class="form-control select2" id="type_bt_lainnya_1" name="type_bt_lainnya[]" disabled>
+                            <option value="">Select Type...</option>
+                            <option value="Laundry">Laundry</option>
+                            <option value="Airport Tax">Airport Tax</option>
+                            <option value="Porter">Porter</option>
+                            <option value="Excess Baggage">Excess Baggage</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-2">
                         <label class="form-label">Amount</label>
                         <div class="input-group mb-3">
                             <div class="input-group-append">

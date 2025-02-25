@@ -1,5 +1,5 @@
-<script src="{{ asset('/js/cashAdvanced/perdiem.js') }}"></script>
-
+{{-- <script src="{{ asset('/js/cashAdvanced/perdiem.js') }}"></script> --}}
+@include('js.hcis.cashAdvanced.perdiem')
 <script>
     function addMoreFormPerdiemReq(event) {
         event.preventDefault();

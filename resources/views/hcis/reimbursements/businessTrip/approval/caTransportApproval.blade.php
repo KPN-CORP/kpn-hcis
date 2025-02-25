@@ -1,5 +1,5 @@
-<script src="{{ asset('/js/btCashAdvanced/transport.js') }}"></script>
-
+{{-- <script src="{{ asset('/js/btCashAdvanced/transport.js') }}"></script> --}}
+@include('js.hcis.btCashAdvanced.transport')
 <script>
     function addMoreFormTransportReq(event) {
         event.preventDefault();

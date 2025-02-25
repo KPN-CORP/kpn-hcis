@@ -1,4 +1,5 @@
-<script src="{{ asset('/js/cashAdvanced/penginapan.js') }}"></script>
+{{-- <script src="{{ asset('/js/cashAdvanced/penginapan.js') }}"></script> --}}
+@include('js.hcis.cashAdvanced.penginapan')
 
 <script>
     function addMoreFormPenginapanReq(event) {
