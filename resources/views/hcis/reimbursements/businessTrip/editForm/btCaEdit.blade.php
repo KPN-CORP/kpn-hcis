@@ -21,19 +21,19 @@
             </div>
             <div class="d-flex flex-column">
                 <ul class="nav mb-2" id="pills-tab" role="tablist">
-                    <li class="nav-item" role="presentation">
+                    <li class="nav-item" role="presentation" id="perdiem-tab-li">
                         <button class="nav-link active" id="pills-perdiem-tab" data-bs-toggle="pill"
                             data-bs-target="#pills-perdiem" type="button" role="tab" aria-controls="pills-perdiem"
                             aria-selected="true">{{ $allowance }}</button>
                     </li>
                     @if (($group_company !== 'KPN Plantations' && $group_company !== 'Plantations') || $job_level_number >= 8)
-                        <li class="nav-item" role="presentation">
+                        <li class="nav-item" role="presentation" id="meals-tab-li">
                             <button class="nav-link" id="pills-meals-tab" data-bs-toggle="pill"
                                 data-bs-target="#pills-meals" type="button" role="tab" aria-controls="pills-meals"
                                 aria-selected="false">Meals</button>
                         </li>
                     @endif
-                    <li class="nav-item" role="presentation">
+                    <li class="nav-item" role="presentation" id="transport-tab-li">
                         <button class="nav-link" id="pills-transport-tab" data-bs-toggle="pill"
                             data-bs-target="#pills-transport" type="button" role="tab"
                             aria-controls="pills-transport" aria-selected="false">Transport</button>

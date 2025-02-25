@@ -191,9 +191,10 @@
                                                 <th>Start</th>
                                                 <th>End</th>
                                                 <th>CA</th>
-                                                <th>Ticket</th>
-                                                <th>Hotel</th>
-                                                <th>Taxi</th>
+                                                    <th>Hotel</th>
+                                                <th>Mess</th>
+                                            <th>Ticket</th>
+                                            <th>Taxi</th>
                                                 <th>Status</th>
                                                 <th style="">Approve</th>
                                                 <th style="width: 270px;">Action</th>
@@ -201,133 +202,159 @@
                                         </thead>
                                         <tbody>
 
-                                            @foreach ($sppd as $idx => $n)
-                                                <tr>
-                                                    <td scope="row" style="text-align: center;">
-                                                        {{ $loop->iteration }}
-                                                    </td>
-                                                    <td class="sticky-col">{{ $n->no_sppd }}</td>
-                                                    <td>{{ $n->nama }}</td>
-                                                    <td>{{ $n->tujuan }}</td>
-                                                    <td>{{ \Carbon\Carbon::parse($n->mulai)->format('d-M-Y') }}</td>
-                                                    <td>{{ \Carbon\Carbon::parse($n->kembali)->format('d-M-Y') }}</td>
-                                                    <td style="text-align: center; align-content: center">
-                                                        @if ($n->ca == 'Ya' && isset($caTransactions[$n->no_sppd]))
-                                                            <a class="text-info btn-detail" data-toggle="modal"
-                                                                data-target="#detailModal" style="cursor: pointer"
-                                                                data-ca="{{ json_encode(
-                                                                    $caTransactions[$n->no_sppd]->map(function ($transaction) {
-                                                                            return [
-                                                                                'No. CA' => $transaction->no_ca,
-                                                                                'No. SPPD' => $transaction->no_sppd,
-                                                                                'Type' => $transaction->type_ca === 'dns' ? 'Business Trip' : 'Entertain', // Conditional assignment
-                                                                                'Unit' => $transaction->unit,
-                                                                                'Destination' => $transaction->destination,
-                                                                                'CA Total' => 'Rp ' . number_format($transaction->total_ca, 0, ',', '.'),
-                                                                                'Total Real' => 'Rp ' . number_format($transaction->total_real, 0, ',', '.'),
-                                                                                'Total Cost' => 'Rp ' . number_format($transaction->total_cost, 0, ',', '.'),
-                                                                                'Start' => date('d-M-Y', strtotime($transaction->start_date)),
-                                                                                'End' => date('d-M-Y', strtotime($transaction->end_date)),
-                                                                            ];
-                                                                        })->values(),
-                                                                ) }}"><u>Details</u></a>
-                                                        @else
-                                                            -
-                                                        @endif
-                                                    </td>
-                                                    <td style="text-align: center; align-content: center">
-                                                        @if ($n->tiket == 'Ya' && isset($tickets[$n->no_sppd]))
-                                                            <a class="text-info btn-detail" data-toggle="modal"
-                                                                data-target="#detailModal" style="cursor: pointer"
-                                                                data-tiket="{{ json_encode(
-                                                                    $tickets[$n->no_sppd]->map(function ($ticket) {
+                                        @foreach ($sppd as $idx => $n)
+                                            <tr>
+                                                <td scope="row" style="text-align: center;">
+                                                    {{ $loop->iteration }}
+                                                </td>
+                                                <td class="sticky-col">{{ $n->no_sppd }}</td>
+                                                <td>{{ $n->nama }}</td>
+                                                <td>{{ $n->tujuan }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($n->mulai)->format('d-M-Y') }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($n->kembali)->format('d-M-Y') }}</td>
+                                                <td style="text-align: center; align-content: center">
+                                                    @if ($n->ca == 'Ya' && isset($caTransactions[$n->no_sppd]))
+                                                        <a class="text-info btn-detail" data-toggle="modal"
+                                                            data-target="#detailModal" style="cursor: pointer"
+                                                            data-ca="{{ json_encode(
+                                                                $caTransactions[$n->no_sppd]->map(function ($transaction) {
                                                                         return [
-                                                                            // 'No. Ticket' => $ticket->no_tkt ?? 'No Data',
-                                                                            'No. SPPD' => $ticket->no_sppd,
-                                                                            'Passengers Name' => $ticket->np_tkt,
-                                                                            'Unit' => $ticket->unit,
-                                                                            'Gender' => $ticket->jk_tkt,
-                                                                            'NIK' => $ticket->noktp_tkt,
-                                                                            'Phone No.' => $ticket->tlp_tkt,
-                                                                            'From' => $ticket->dari_tkt,
-                                                                            'To' => $ticket->ke_tkt,
-                                                                            'Departure Date' => date('d-M-Y', strtotime($ticket->tgl_brkt_tkt)),
-                                                                            'Time' => !empty($ticket->jam_brkt_tkt) ? date('H:i', strtotime($ticket->jam_brkt_tkt)) : 'No Data',
-                                                                            'Return Date' => isset($ticket->tgl_plg_tkt) ? date('d-M-Y', strtotime($ticket->tgl_plg_tkt)) : 'No Data',
-                                                                            'Return Time' => !empty($ticket->jam_plg_tkt) ? date('H:i', strtotime($ticket->jam_plg_tkt)) : 'No Data',
+                                                                            'No. CA' => $transaction->no_ca,
+                                                                            'No. SPPD' => $transaction->no_sppd,
+                                                                            'Type' => $transaction->type_ca === 'dns' ? 'Business Trip' : 'Entertain', // Conditional assignment
+                                                                            'Unit' => $transaction->unit,
+                                                                            'Destination' => $transaction->destination,
+                                                                            'CA Total' => 'Rp ' . number_format($transaction->total_ca, 0, ',', '.'),
+                                                                            'Total Real' => 'Rp ' . number_format($transaction->total_real, 0, ',', '.'),
+                                                                            'Total Cost' => 'Rp ' . number_format($transaction->total_cost, 0, ',', '.'),
+                                                                            'Start' => date('d-M-Y', strtotime($transaction->start_date)),
+                                                                            'End' => date('d-M-Y', strtotime($transaction->end_date)),
                                                                         ];
-                                                                    }),
-                                                                ) }}">
-                                                                <u>Details</u></a>
-                                                        @else
-                                                            -
-                                                        @endif
+                                                                    })->values(),
+                                                            ) }}"><u>Details</u></a>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>
 
-                                                    </td>
-                                                    <td style="text-align: center; align-content: center">
-                                                        @if ($n->hotel == 'Ya' && isset($hotel[$n->no_sppd]))
-                                                            <a class="text-info btn-detail" data-toggle="modal"
-                                                                data-target="#detailModal" style="cursor: pointer"
-                                                                data-hotel="{{ json_encode(
-                                                                    $hotel[$n->no_sppd]->map(function ($hotel) {
-                                                                        return [
-                                                                            'No. Hotel' => $hotel->no_htl,
-                                                                            'No. SPPD' => $hotel->no_sppd,
-                                                                            'Colleague No. SPPD' => $hotel->no_sppd_htl,
-                                                                            'Unit' => $hotel->unit,
-                                                                            'Hotel Name' => $hotel->nama_htl,
-                                                                            'Location' => $hotel->lokasi_htl,
-                                                                            'Room' => $hotel->jmlkmr_htl,
-                                                                            'Bed' => $hotel->bed_htl,
-                                                                            'Check In' => date('d-M-Y', strtotime($hotel->tgl_masuk_htl)),
-                                                                            'Check Out' => date('d-M-Y', strtotime($hotel->tgl_keluar_htl)),
-                                                                            'Total Days' => $hotel->total_hari,
-                                                                        ];
-                                                                    }),
-                                                                ) }}">
-                                                                <u>Details</u></a>
-                                                        @else
-                                                            -
-                                                        @endif
-                                                    </td>
-                                                    <td style="text-align: center; align-content: center">
-                                                        @if ($n->taksi == 'Ya' && isset($taksi[$n->no_sppd]))
-                                                            <a class="text-info btn-detail" data-toggle="modal"
-                                                                data-target="#detailModal" style="cursor: pointer"
-                                                                data-taksi="{{ json_encode([
-                                                                    'Total Voucher' => $taksi[$n->no_sppd]->no_vt . ' Voucher',
-                                                                    'No. SPPD' => $taksi[$n->no_sppd]->no_sppd,
-                                                                    'Unit' => $taksi[$n->no_sppd]->unit,
-                                                                    'Nominal' => 'Rp ' . number_format($taksi[$n->no_sppd]->nominal_vt, 0, ',', '.'),
-                                                                ]) }}"><u>Details<u></a>
-                                                        @else
-                                                            -
-                                                        @endif
-                                                    </td>
-                                                    <td style="align-content: center">
-                                                        <span
-                                                            class="badge rounded-pill bg-{{ $n->status == 'Approved' || $n->status == 'Declaration Approved' || $n->status == 'Verified'
-                                                                ? 'success'
-                                                                : ($n->status == 'Rejected' || $n->status == 'Declaration Rejected' || $n->status == 'Return/Refund'
-                                                                    ? 'danger'
-                                                                    : (in_array($n->status, ['Pending L1', 'Pending L2', 'Declaration L1', 'Declaration L2', 'Waiting Submitted'])
-                                                                        ? 'warning'
-                                                                        : ($n->status == 'Draft'
-                                                                            ? 'secondary'
-                                                                            : (in_array($n->status, ['Doc Accepted', 'Request Revision', 'Declaration Revision'])
-                                                                                ? 'info'
-                                                                                : 'secondary')))) }}"
-                                                            style="font-size: 12px; padding: 0.5rem 1rem; cursor: {{ ($n->status == 'Rejected' || $n->status == 'Declaration Rejected') && isset($btApprovals[$n->id]) ? 'pointer' : 'default' }};"
-                                                            @if (($n->status == 'Rejected' || $n->status == 'Declaration Rejected') && isset($btApprovals[$n->id])) onclick="showRejectInfo('{{ $n->id }}')"
-                                                            title="Click to see rejection reason" @endif
-                                                            @if ($n->status == 'Pending L1') title="L1 Manager: {{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}"
-                                                            @elseif ($n->status == 'Pending L2')
-                                                                title="L2 Manager: {{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}"
-                                                                @elseif($n->status == 'Declaration L1') title="L1 Manager: {{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}"
-                                                            @elseif($n->status == 'Declaration L2') title="L2 Manager: {{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}" @endif>
-                                                            {{ $n->status == 'Approved' ? 'Request Approved' : $n->status }}
-                                                        </span>
-                                                    </td>
+                                                <td style="text-align: center; align-content: center">
+                                                    @if ($n->hotel == 'Ya' && isset($hotel[$n->no_sppd]))
+                                                        <a class="text-info btn-detail" data-toggle="modal"
+                                                            data-target="#detailModal" style="cursor: pointer"
+                                                            data-hotel="{{ json_encode(
+                                                                $hotel[$n->no_sppd]->map(function ($hotel) {
+                                                                    return [
+                                                                        'No. Hotel' => $hotel->no_htl,
+                                                                        'No. SPPD' => $hotel->no_sppd,
+                                                                        'Colleague No. SPPD' => $hotel->no_sppd_htl,
+                                                                        'Unit' => $hotel->unit,
+                                                                        'Hotel Name' => $hotel->nama_htl,
+                                                                        'Location' => $hotel->lokasi_htl,
+                                                                        'Room' => $hotel->jmlkmr_htl,
+                                                                        'Bed' => $hotel->bed_htl,
+                                                                        'Check In' => date('d-M-Y', strtotime($hotel->tgl_masuk_htl)),
+                                                                        'Check Out' => date('d-M-Y', strtotime($hotel->tgl_keluar_htl)),
+                                                                        'Total Days' => $hotel->total_hari,
+                                                                    ];
+                                                                }),
+                                                            ) }}">
+                                                            <u>Details</u></a>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>
+                                                <td style="text-align: center; align-content: center">
+                                                    @if ($n->mess == 'Ya' && isset($mess[$n->no_sppd]))
+                                                        <a class="text-info btn-detail" data-toggle="modal"
+                                                            data-target="#detailModal" style="cursor: pointer"
+                                                            data-mess="{{ json_encode(
+                                                                $mess[$n->no_sppd]->map(function ($mess) {
+                                                                    return [
+                                                                        'No. Mess' => $mess->no_mess,
+                                                                        'No. SPPD' => $mess->no_sppd,
+                                                                        'Unit' => $mess->unit,
+                                                                        'Mess Location' => $mess->lokasi_mess,
+                                                                        'Room' => $mess->jmlkmr_mess,
+                                                                        'Check In' => date('d-M-Y', strtotime($mess->tgl_masuk_mess)),
+                                                                        'Check Out' => date('d-M-Y', strtotime($mess->tgl_keluar_mess)),
+                                                                        'Total Days' => $mess->total_hari_mess,
+                                                                    ];
+                                                                }),
+                                                            ) }}">
+                                                            <u>Details</u></a>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>
+                                                <td style="text-align: center; align-content: center">
+                                                    @if ($n->tiket == 'Ya' && isset($tickets[$n->no_sppd]))
+                                                        <a class="text-info btn-detail" data-toggle="modal"
+                                                            data-target="#detailModal" style="cursor: pointer"
+                                                            data-tiket="{{ json_encode(
+                                                                $tickets[$n->no_sppd]->map(function ($ticket) {
+                                                                    return [
+                                                                        // 'No. Ticket' => $ticket->no_tkt ?? 'No Data',
+                                                                        'No. SPPD' => $ticket->no_sppd,
+                                                                        'Passengers Name' => $ticket->np_tkt,
+                                                                        'Unit' => $ticket->unit,
+                                                                        'Gender' => $ticket->jk_tkt,
+                                                                        'NIK' => $ticket->noktp_tkt,
+                                                                        'Phone No.' => $ticket->tlp_tkt,
+                                                                        'From' => $ticket->dari_tkt,
+                                                                        'To' => $ticket->ke_tkt,
+                                                                        'Departure Date' => date('d-M-Y', strtotime($ticket->tgl_brkt_tkt)),
+                                                                        'Time' => !empty($ticket->jam_brkt_tkt) ? date('H:i', strtotime($ticket->jam_brkt_tkt)) : 'No Data',
+                                                                        'Return Date' => isset($ticket->tgl_plg_tkt) ? date('d-M-Y', strtotime($ticket->tgl_plg_tkt)) : 'No Data',
+                                                                        'Return Time' => !empty($ticket->jam_plg_tkt) ? date('H:i', strtotime($ticket->jam_plg_tkt)) : 'No Data',
+                                                                    ];
+                                                                }),
+                                                            ) }}">
+                                                            <u>Details</u></a>
+                                                    @else
+                                                        -
+                                                    @endif
+
+                                                </td>
+                                                <td style="text-align: center; align-content: center">
+                                                    @if ($n->taksi == 'Ya' && isset($taksi[$n->no_sppd]))
+                                                        <a class="text-info btn-detail" data-toggle="modal"
+                                                            data-target="#detailModal" style="cursor: pointer"
+                                                            data-taksi="{{ json_encode([
+                                                                'Total Voucher' => $taksi[$n->no_sppd]->no_vt . ' Voucher',
+                                                                'No. SPPD' => $taksi[$n->no_sppd]->no_sppd,
+                                                                'Unit' => $taksi[$n->no_sppd]->unit,
+                                                                'Nominal' => 'Rp ' . number_format($taksi[$n->no_sppd]->nominal_vt, 0, ',', '.'),
+                                                            ]) }}"><u>Details<u></a>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>
+                                                <td style="align-content: center">
+                                                    <span
+                                                        class="badge rounded-pill bg-{{ $n->status == 'Approved' || $n->status == 'Declaration Approved' || $n->status == 'Verified'
+                                                            ? 'success'
+                                                            : ($n->status == 'Rejected' || $n->status == 'Return/Refund' || $n->status == 'Declaration Rejected'
+                                                                ? 'danger'
+                                                                : (in_array($n->status, ['Pending L1', 'Pending L2', 'Declaration L1', 'Declaration L2', 'Waiting Submitted'])
+                                                                    ? 'warning'
+                                                                    : ($n->status == 'Draft'
+                                                                        ? 'secondary'
+                                                                        : (in_array($n->status, ['Doc Accepted', 'Request Revision', 'Declaration Revision'])
+                                                                            ? 'info'
+                                                                            : 'secondary')))) }}"
+                                                        style="font-size: 12px; padding: 0.5rem 1rem; cursor: pointer;"
+                                                        @if (($n->status == 'Rejected' || $n->status == 'Declaration Rejected') && isset($btApprovals[$n->id])) onclick="showRejectInfo('{{ $n->id }}')"
+                                                        @elseif ($n->status == 'Pending L1')
+                                                            onclick="showManagerInfo('L1 Manager', '{{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}')"
+                                                        @elseif ($n->status == 'Pending L2')
+                                                            onclick="showManagerInfo('L2 Manager', '{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}')"
+                                                        @elseif ($n->status == 'Declaration L1')
+                                                            onclick="showManagerInfo('L1 Manager', '{{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}')"
+                                                        @elseif ($n->status == 'Declaration L2')
+                                                            onclick="showManagerInfo('L2 Manager', '{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}')" @endif>
+                                                        {{ $n->status == 'Approved' ? 'Request Approved' : $n->status }}
+                                                    </span>
+                                                </td>
 
                                                     <td style="text-align: center; align-content: center">
                                                         <button type="button" class="btn btn-outline-success rounded-pill"
@@ -357,10 +384,10 @@
                                                             </button>
                                                         </form>
 
-                                                        <a href="{{ route('export.admin', ['id' => $n->id, 'types' => 'sppd,ca,tiket,hotel,taksi']) }}"
-                                                            class="btn btn-outline-info rounded-pill mb-1">
-                                                            <i class="bi bi-download"></i>
-                                                        </a>
+                                                    <a href="{{ route('export.admin', ['id' => $n->id, 'types' => 'sppd,ca,tiket,hotel,taksi,mess']) }}"
+                                                        class="btn btn-outline-info rounded-pill mb-1">
+                                                        <i class="bi bi-download"></i>
+                                                    </a>
 
                                                         @php
                                                             $today = \Carbon\Carbon::today()->format('Y-m-d');
@@ -598,9 +625,11 @@
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content border-0 shadow">
                             <div class="modal-header bg-light border-bottom-0">
-                                <h5 class="modal-title" id="revisiReasonModalLabel" style="color: #333; font-weight: 600;">Revision
+                                <h5 class="modal-title" id="revisiReasonModalLabel"
+                                    style="color: #333; font-weight: 600;">Revision
                                     Reason</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
                             </div>
                             <div class="modal-body p-4">
                                 <form id="revisiReasonForm" method="POST">
@@ -609,7 +638,8 @@
                                     <input type="hidden" name="status_approval" value="Request Revision">
 
                                     <div class="mb-3">
-                                        <label for="revisi_info" class="form-label" style="color: #555; font-weight: 500;">Please
+                                        <label for="revisi_info" class="form-label"
+                                            style="color: #555; font-weight: 500;">Please
                                             provide a reason for Revision:</label>
                                         <textarea class="form-control border-2" name="revisi_info" id="revisi_info" rows="4" required
                                             style="resize: vertical; min-height: 100px;"></textarea>
@@ -631,6 +661,15 @@
                 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
                 <script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
                 <script>
+                    function showManagerInfo(managerType, managerName) {
+                        Swal.fire({
+                            title: managerType,
+                            text: managerName,
+                            icon: 'info',
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'OK'
+                        });
+                    }
                     document.getElementById('rejectReasonForm').addEventListener('show.bs.modal', function(event) {
                         const button = event.relatedTarget; // Button that triggered the modal
                         const btId = button.getAttribute('data-id'); // Get the ID
@@ -935,7 +974,7 @@
                                             <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
                                         </div>
                                     `).join('');
-                                    }else if (l1DeclarationsReject.length > 0) {
+                                    } else if (l1DeclarationsReject.length > 0) {
                                         approvalDataL1Declare.innerHTML += l1DeclarationsReject.map(rejection => `
                                         <div class="border rounded p-2 mb-2 bg-warning">
                                             <strong>Status:</strong> ${rejection.approval_status}<br>
@@ -1123,6 +1162,7 @@
                             var tiket = $(this).data('tiket');
                             var hotel = $(this).data('hotel');
                             var taksi = $(this).data('taksi');
+                            var mess = $(this).data('mess');
 
                             function createTableHtml(data, title) {
                                 var tableHtml = '<h5>' + title + '</h5>';
@@ -1198,6 +1238,10 @@
                                 if (taksi && taksi !== 'undefined') {
                                     var taksiData = typeof taksi === 'string' ? JSON.parse(taksi) : taksi;
                                     content += createTableHtml(taksiData, 'Taxi Detail');
+                                }
+                                if (mess && mess !== 'undefined') {
+                                    var messData = typeof mess === 'string' ? JSON.parse(mess) : mess;
+                                    content += createTableHtml(messData, 'Mess Detail');
                                 }
 
                                 if (content !== '') {

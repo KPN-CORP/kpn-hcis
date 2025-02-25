@@ -92,6 +92,7 @@ class BusinessTrip extends Model
         'ca',
         'tiket',
         'hotel',
+        'mess',
         'taksi',
         'id_ca',
         'id_tiket',
