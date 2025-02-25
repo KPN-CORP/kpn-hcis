@@ -4922,6 +4922,7 @@ class BusinessTripController extends Controller
         $tickets = [];  
         $hotel = [];  
         $taksi = [];  
+        $mess = [];  
         $managerL1Names = [];  
         $managerL2Names = [];  
 
