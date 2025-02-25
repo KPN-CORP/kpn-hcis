@@ -384,11 +384,41 @@
     }
 
     // VALIDATION DATE JS SECTIONS
+    document.addEventListener('DOMContentLoaded', function() {
+        const startDateInput = document.getElementById("mulai");
+        const endDateInput = document.getElementById("kembali");
+
+        if (startDateInput && endDateInput &&
+            startDateInput.value && endDateInput.value) {
+            validateStartEndDates();
+        }
+    });
     //BT Validation Date
     function validateStartEndDates() {
         const startDateInput = document.getElementById("mulai");
         const endDateInput = document.getElementById("kembali");
 
+        // Tab elements
+        const perdiemTab = document.getElementById('perdiem-tab-li');
+        const mealsTab = document.getElementById('meals-tab-li');
+        const transportTab = document.getElementById('pills-transport-tab');
+
+        // Get all tab buttons and content panes
+        const allTabButtons = document.querySelectorAll('.nav-link');
+        const allTabPanes = document.querySelectorAll('.tab-pane');
+
+        // Content panes
+        const perdiemContent = document.getElementById('pills-perdiem');
+        const mealsContent = document.getElementById('pills-meals');
+        const transportContent = document.getElementById('pills-transport');
+
+        // Get the group company value
+        const groupCompany = document.getElementById("group_company").value;
+
+        // Check if company is a plantation type
+        const isPlantation = groupCompany === 'KPN Plantations' || groupCompany === 'Plantations';
+
+        // Basic validation for all companies
         if (startDateInput && endDateInput) {
             const startDate = new Date(startDateInput.value);
             const endDate = new Date(endDateInput.value);
@@ -401,7 +431,62 @@
                     confirmButtonColor: "#AB2F2B",
                     confirmButtonText: "OK",
                 });
-                endDateInput.value = ""; // Reset the end date if it's invalid
+                endDateInput.value = "";
+                return;
+            }
+
+            // Only apply the tab hiding logic for non-plantation companies
+            if (!isPlantation && startDateInput.value && endDateInput.value) {
+                const isSameDay = startDate.getFullYear() === endDate.getFullYear() &&
+                    startDate.getMonth() === endDate.getMonth() &&
+                    startDate.getDate() === endDate.getDate();
+
+                if (isSameDay) {
+                    // Remove active class from all tabs and content
+                    allTabButtons.forEach(button => {
+                        button.classList.remove('active');
+                        button.setAttribute('aria-selected', 'false');
+                    });
+                    allTabPanes.forEach(pane => {
+                        pane.classList.remove('show', 'active');
+                    });
+
+                    // Hide perdiem and meals
+                    perdiemTab.style.display = 'none';
+                    perdiemContent.style.display = 'none';
+
+                    if (mealsTab && mealsContent) {
+                        mealsTab.style.display = 'none';
+                        mealsContent.style.display = 'none';
+                    }
+
+                    // Activate transport tab
+                    transportTab.classList.add('active');
+                    transportTab.setAttribute('aria-selected', 'true');
+                    transportContent.classList.add('show', 'active');
+                } else {
+                    // Show perdiem and meals
+                    perdiemTab.style.display = '';
+                    perdiemContent.style.display = '';
+
+                    if (mealsTab && mealsContent) {
+                        mealsTab.style.display = '';
+                        mealsContent.style.display = '';
+                    }
+
+                    // Restore initial state (perdiem active)
+                    allTabButtons.forEach(button => {
+                        button.classList.remove('active');
+                        button.setAttribute('aria-selected', 'false');
+                    });
+                    allTabPanes.forEach(pane => {
+                        pane.classList.remove('show', 'active');
+                    });
+
+                    document.getElementById('pills-perdiem-tab').classList.add('active');
+                    document.getElementById('pills-perdiem-tab').setAttribute('aria-selected', 'true');
+                    perdiemContent.classList.add('show', 'active');
+                }
             }
         }
     }

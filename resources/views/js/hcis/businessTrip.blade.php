@@ -276,7 +276,6 @@
     }
 
     // VALIDATION DATE JS SECTIONS
-    //BT Validation Date
     function validateStartEndDates() {
         const startDateInput = document.getElementById("mulai");
         const endDateInput = document.getElementById("kembali");
@@ -295,6 +294,13 @@
         const mealsContent = document.getElementById('pills-meals');
         const transportContent = document.getElementById('pills-transport');
 
+        // Get the group company value
+        const groupCompany = document.getElementById("group_company").value;
+
+        // Check if company is a plantation type
+        const isPlantation = groupCompany === 'KPN Plantations' || groupCompany === 'Plantations';
+
+        // Basic validation for all companies
         if (startDateInput && endDateInput) {
             const startDate = new Date(startDateInput.value);
             const endDate = new Date(endDateInput.value);
@@ -311,7 +317,8 @@
                 return;
             }
 
-            if (startDateInput.value && endDateInput.value) {
+            // Only apply the tab hiding logic for non-plantation companies
+            if (!isPlantation && startDateInput.value && endDateInput.value) {
                 const isSameDay = startDate.getFullYear() === endDate.getFullYear() &&
                     startDate.getMonth() === endDate.getMonth() &&
                     startDate.getDate() === endDate.getDate();
