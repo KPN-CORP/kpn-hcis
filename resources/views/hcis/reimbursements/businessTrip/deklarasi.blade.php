@@ -228,7 +228,7 @@
                                             <label for="prove_declare" class="form-label">Upload Document</label>
                                             <input type="file" id="prove_declare" name="prove_declare[]"
                                                 accept="image/*, application/pdf" class="form-control mb-2" multiple
-                                                onchange="previewFiles()">
+                                                onchange="previewFiles()" required>
                                             @if (
                                                 (isset($dnsData->prove_declare) && $dnsData->prove_declare) ||
                                                     (isset($entrData->prove_declare) && $entrData->prove_declare))

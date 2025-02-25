@@ -4870,6 +4870,7 @@ class BusinessTripController extends Controller
 
         $accNum = Company::where('contribution_level_code', $n->bb_perusahaan)->pluck('account_number')->first();
         $ca_note = $request->ca_note;
+        $employeeEmail = null;
 
         // Initialize default values
 
@@ -7102,9 +7103,9 @@ class BusinessTripController extends Controller
                     // Update CA approval status for L1
                     $caApproval = ca_sett_approval::where([
                         'ca_id' => $caTransactions->id,
-                        'layer' => $layer
-                    ])->where('approval_status', '!=', 'Rejected')
-                        ->first();
+                        'layer' => $layer,
+                        'approval_status' => 'Pending'
+                    ])->first();
 
                     if ($caApproval) {
                         // Only update if the record exists

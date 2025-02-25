@@ -4329,7 +4329,9 @@ class ReimburseController extends Controller
                     'type_tkt' => $ticket->type_tkt,
                     'jenis_tkt' => $ticket->jenis_tkt,
                     'ket_tkt' => $ticket->ket_tkt,
-                    'company_name' => $ticket->checkcompany->contribution_level ?? $ticket->checkcompanybt->checkCompany->contribution_level,
+                    'company_name' => $ticket->jns_dinas_tkt === 'Cuti' 
+                    ? $ticket->employee->company_name 
+                    : ($ticket->checkcompany->contribution_level ?? $ticket->checkcompanybt->checkCompany->contribution_level),
                     'cost_center' => $ticket->cost_center ?? 'N/A',
                     'manager1_fullname' => $ticket->manager1_fullname, // Accessor attribute
                     'manager2_fullname' => $ticket->manager2_fullname,

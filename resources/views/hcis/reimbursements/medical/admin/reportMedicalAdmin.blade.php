@@ -148,6 +148,7 @@
                                             <button style="display: block" class="btn btn-success w-100" type="button" onclick="redirectToExportExcel()">
                                                 Export <i class="ri-file-excel-2-line"></i>
                                             </button>
+                                            {{-- block --}}
                                         @else
                                             <button style="display: none" class="btn btn-success w-100" type="button" onclick="redirectToExportExcel()">
                                                 <i class="ri-file-excel-2-line"></i> Export Excel

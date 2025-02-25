@@ -1,4 +1,5 @@
-<script src="{{ asset('/js/btCashAdvanced/perdiemDeklarasi.js') }}"></script>
+{{-- <script src="{{ asset('/js/btCashAdvanced/perdiemDeklarasi.js') }}"></script> --}}
+@include('js.hcis.btCashAdvanced.perdiemDeklarasiAdmin')
 <script>
     function addMoreFormPerdiemDec(event) {
         event.preventDefault();
@@ -204,14 +205,16 @@
                             <!-- Start Perdiem -->
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Start </label>
-                                <input type="date" name="start_bt_perdiem[]" class="form-control start-perdiem" value="{{$perdiem_dec['start_date']}}" placeholder="mm/dd/yyyy"
-                                    onchange="calculateTotalDaysPerdiem(this)">
+                                <input type="date" name="start_bt_perdiem[]" class="form-control start-perdiem {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'bg-light' : '' }}" value="{{$perdiem_dec['start_date']}}" placeholder="mm/dd/yyyy"
+                                    onchange="calculateTotalDaysPerdiem(this)"
+                                    {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'readonly' : '' }}>
                             </div>
                             <!-- End Perdiem -->
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">End </label>
-                                <input type="date" name="end_bt_perdiem[]" class="form-control end-perdiem" value="{{$perdiem_dec['end_date']}}" placeholder="mm/dd/yyyy"
-                                    onchange="calculateTotalDaysPerdiem(this)">
+                                <input type="date" name="end_bt_perdiem[]" class="form-control end-perdiem {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'bg-light' : '' }}" value="{{$perdiem_dec['end_date']}}" placeholder="mm/dd/yyyy"
+                                    onchange="calculateTotalDaysPerdiem(this)"
+                                    {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'readonly' : '' }}>
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Total Days</label>
@@ -228,7 +231,22 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
-                                    <input class="form-control bg-light" name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}" type="text" value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}" onchange="onNominalChange()" readonly>
+                                    @if ($group_company === 'KPN Plantations' || $group_company === 'Plantations')
+                                        <input
+                                            class="form-control"
+                                            name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}"
+                                            type="text"
+                                            value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
+                                            oninput="formatInput(this)">
+                                    @else
+                                        <input
+                                            class="form-control bg-light"
+                                            name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}"
+                                            type="text"
+                                            value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
+                                            onchange="onNominalChange()"
+                                            readonly>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -283,14 +301,16 @@
                             <!-- Start Perdiem -->
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Start </label>
-                                <input type="date" name="start_bt_perdiem[]" class="form-control start-perdiem" value="{{$perdiem_dec['start_date']}}" placeholder="mm/dd/yyyy"
-                                    onchange="calculateTotalDaysPerdiem(this)">
+                                <input type="date" name="start_bt_perdiem[]" class="form-control start-perdiem {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'bg-light' : '' }}" value="{{$perdiem_dec['start_date']}}" placeholder="mm/dd/yyyy"
+                                    onchange="calculateTotalDaysPerdiem(this)"
+                                    {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'readonly' : '' }}>
                             </div>
                             <!-- End Perdiem -->
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">End </label>
-                                <input type="date" name="end_bt_perdiem[]" class="form-control end-perdiem" value="{{$perdiem_dec['end_date']}}" placeholder="mm/dd/yyyy"
-                                    onchange="calculateTotalDaysPerdiem(this)">
+                                <input type="date" name="end_bt_perdiem[]" class="form-control end-perdiem {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'bg-light' : '' }}" value="{{$perdiem_dec['end_date']}}" placeholder="mm/dd/yyyy"
+                                    onchange="calculateTotalDaysPerdiem(this)"
+                                    {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'readonly' : '' }}>
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Total Days</label>
@@ -307,7 +327,22 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
-                                    <input class="form-control bg-light" name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}" type="text" value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}" onchange="onNominalChange()" readonly>
+                                    @if ($group_company === 'KPN Plantations' || $group_company === 'Plantations')
+                                        <input
+                                            class="form-control"
+                                            name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}"
+                                            type="text"
+                                            value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
+                                            oninput="formatInput(this)">
+                                    @else
+                                        <input
+                                            class="form-control bg-light"
+                                            name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}"
+                                            type="text"
+                                            value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
+                                            onchange="onNominalChange()"
+                                            readonly>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -380,14 +415,16 @@
                             <!-- Start Perdiem -->
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Start </label>
-                                <input type="date" name="start_bt_perdiem[]" class="form-control start-perdiem" value="{{$perdiem_dec['start_date']}}" placeholder="mm/dd/yyyy"
-                                    onchange="calculateTotalDaysPerdiem(this)">
+                                <input type="date" name="start_bt_perdiem[]" class="form-control start-perdiem {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'bg-light' : '' }}" value="{{$perdiem_dec['start_date']}}" placeholder="mm/dd/yyyy"
+                                    onchange="calculateTotalDaysPerdiem(this)"
+                                    {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'readonly' : '' }}>
                             </div>
                             <!-- End Perdiem -->
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">End </label>
-                                <input type="date" name="end_bt_perdiem[]" class="form-control end-perdiem" value="{{$perdiem_dec['end_date']}}" placeholder="mm/dd/yyyy"
-                                    onchange="calculateTotalDaysPerdiem(this)">
+                                <input type="date" name="end_bt_perdiem[]" class="form-control end-perdiem {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'bg-light' : '' }}" value="{{$perdiem_dec['end_date']}}" placeholder="mm/dd/yyyy"
+                                    onchange="calculateTotalDaysPerdiem(this)"
+                                    {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'readonly' : '' }}>
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Total Days</label>
@@ -404,7 +441,22 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
-                                    <input class="form-control bg-light" name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}" type="text" value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}" onchange="onNominalChange()" readonly>
+                                    @if ($group_company === 'KPN Plantations' || $group_company === 'Plantations')
+                                        <input
+                                            class="form-control"
+                                            name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}"
+                                            type="text"
+                                            value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
+                                            oninput="formatInput(this)">
+                                    @else
+                                        <input
+                                            class="form-control bg-light"
+                                            name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}"
+                                            type="text"
+                                            value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
+                                            onchange="onNominalChange()"
+                                            readonly>
+                                    @endif
                                 </div>
                             </div>
                         </div>
