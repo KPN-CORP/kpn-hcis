@@ -436,6 +436,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/businessTrip/delete/{id}', [BusinessTripController::class, 'delete'])->name('delete.bt');
     Route::post('/businessTrip/saveDraft', [BusinessTripController::class, 'saveDraft'])->name('businessTrip.saveDraft');
 
+    // Extend BT and CA
+    Route::post('/businessTrip/extend', [BusinessTripController::class, 'businessTripExtend'])->name('businessTrip.extend');
+    Route::post('/businessTrip/approval/extend', [BusinessTripController::class, 'updateStatusExtended'])->name('businessTrip.approvalExtended');
+
     //pdf BT
     Route::get('/businessTrip/pdf/{id}', [BusinessTripController::class, 'pdfDownload'])->name('pdf');
     Route::post('/businessTrip/export/{id}', [BusinessTripController::class, 'export'])->name('exportbt');
