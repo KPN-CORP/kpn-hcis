@@ -302,6 +302,10 @@
                             data-bs-target="#rejectReasonModal" style="padding: 0.5rem 1rem; margin-right: 5px">
                             Reject
                         </button>
+                        <button type="button" class="btn btn-outline-info rounded-pill" data-bs-toggle="modal"
+                            data-bs-target="#revisionReasonModal" style="padding: 0.5rem 1rem; margin-right: 5px">
+                            Revision
+                        </button>
                         <input type="hidden" id="no_sppd" value="{{ $ticket['no_tkt'] }}">
                         <!-- Approve Form -->
                         <form method="POST" action="{{ route('change.status.ticket', ['id' => $ticket['id']]) }}"
@@ -344,6 +348,42 @@
                             <label for="reject_info" class="form-label" style="color: #555; font-weight: 500;">Please
                                 provide a reason for rejection:</label>
                             <textarea class="form-control border-2" name="reject_info" id="reject_info" rows="4" required
+                                style="resize: vertical; min-height: 100px;"></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="button" class="btn btn-outline-primary rounded-pill me-2"
+                                data-bs-dismiss="modal" style="min-width: 100px;">Cancel</button>
+                            <button type="submit" class="btn btn-primary rounded-pill"
+                                style="min-width: 100px;">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revision Reason Modal -->
+    <div class="modal fade" id="revisionReasonModal" tabindex="-1" aria-labelledby="revisionReasonModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-light border-bottom-0">
+                    <h5 class="modal-title" id="revisionReasonModalLabel" style="color: #333; font-weight: 600;">Revision
+                        Reason</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="revisionReasonForm" method="POST"
+                        action="{{ route('change.status.ticket', ['id' => $ticket['id']]) }}">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="status_approval" value="Request Revision">
+
+                        <div class="mb-3">
+                            <label for="revision_info" class="form-label" style="color: #555; font-weight: 500;">Please
+                                provide a reason for revision:</label>
+                            <textarea class="form-control border-2" name="revision_info" id="revision_info" rows="4" required
                                 style="resize: vertical; min-height: 100px;"></textarea>
                         </div>
 

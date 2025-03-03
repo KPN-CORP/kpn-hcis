@@ -267,6 +267,7 @@
                     var tiket = $(this).data('tiket');
                     var hotel = $(this).data('hotel');
                     var taksi = $(this).data('taksi');
+                    var mess = $(this).data('mess');
 
                     function createTableHtml(data, title) {
                         var tableHtml = '<h5>' + title + '</h5>';
@@ -340,6 +341,10 @@
                         if (taksi && taksi !== 'undefined') {
                             var taksiData = typeof taksi === 'string' ? JSON.parse(taksi) : taksi;
                             content += createTableHtml(taksiData, 'Taxi Detail');
+                        }
+                        if (mess && mess !== 'undefined') {
+                            var messData = typeof mess === 'string' ? JSON.parse(mess) : mess;
+                            content += createTableHtml(messData, 'Mess Detail');
                         }
 
                         if (content !== '') {

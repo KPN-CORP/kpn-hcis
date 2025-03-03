@@ -7,61 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-
-
-class Hotel extends Model
+class Mess extends Model
 {
     use HasFactory, HasUuids, SoftDeletes;
+    protected $table = 'mess_transactions';
 
-    protected $fillable = [
-        'no_htl',
-        'user_id',
-        'unit',
-        'no_sppd',
-        'nama_htl',
-        'lokasi_htl',
-        'jmlkmr_htl',
-        'bed_htl',
-        'tgl_masuk_htl',
-        'tgl_keluar_htl',
-        'total_hari',
-        'approval_status',
-        'hotel_only',
-        'reject_info',
-        'manager_l1_id',
-        'manager_l2_id',
-        'contribution_level_code',
-        'no_sppd_htl',
-    ];
-    protected $table = 'htl_transactions';
-
-    protected $keyType = 'string';
-    public $incrementing = false;
-
-    protected static function boot()
-    {
-        parent::boot();
-        static::creating(function ($model) {
-            if (empty($model->{$model->getKeyName()})) {
-                $model->{$model->getKeyName()} = Str::uuid()->toString();
-            }
-        });
-    }
-
-    public function getRouteKey()
-    {
-        return encrypt($this->getKey());
-    }
-
-    public static function findByRouteKey($key)
-    {
-        try {
-            $id = decrypt($key);
-            return self::findOrFail($id);
-        } catch (\Exception $e) {
-            abort(404);
-        }
-    }
     public function employee()
     {
         return $this->belongsTo(Employee::class, 'user_id', 'id');
@@ -70,6 +20,28 @@ class Hotel extends Model
     {
         return $this->belongsTo(BusinessTrip::class, 'no_sppd', 'no_sppd');
     }
+
+    protected $fillable = [
+        'no_mess',
+        'user_id',
+        'unit',
+        'no_sppd',
+        'nama_mess',
+        'lokasi_mess',
+        'jmlkmr_mess',
+        'bed_mess',
+        'tgl_masuk_mess',
+        'tgl_keluar_mess',
+        'total_hari_mess',
+        'approval_status',
+        'hotel_only',
+        'reject_info',
+        'manager_l1_id',
+        'manager_l2_id',
+        'contribution_level_code',
+        'no_sppd_mess',
+    ];
+
     public function getManager1FullnameAttribute()
     {
         // Get the associated BusinessTrip record
@@ -92,14 +64,14 @@ class Hotel extends Model
     }
     public function latestApprovalL1()
     {
-        return $this->hasOne(HotelApproval::class, 'htl_id', 'id')
+        return $this->hasOne(MessApproval::class, 'mess_id', 'id')
             ->where('layer', 1)
             ->where('approval_status', 'Pending L2')
             ->latest('approved_at');
     }
     public function latestApprovalL2()
     {
-        return $this->hasOne(HotelApproval::class, 'htl_id', 'id')
+        return $this->hasOne(MessApproval::class, 'mess_id', 'id')
             ->where('layer', 2)
             ->where('approval_status', 'Approved')
             ->latest('approved_at');
@@ -141,6 +113,6 @@ class Hotel extends Model
     }
     public function hotelApproval()
     {
-        return $this->hasOne(HotelApproval::class, 'htl_id', 'id');
+        return $this->hasOne(MessApproval::class, 'mess_id', 'id');
     }
 }

@@ -261,24 +261,18 @@
                                 // Pass the PHP array into a JavaScript variable
                                 const initialDetailCA = @json($detailCA);
                             </script> --}}
+                            @if ($n->status == 'Request Revision' || $n->status == 'Declaration Revision')
+                                <div class="alert alert-info" role="alert">
+                                    <h4 class="alert-heading">Revision Note</h4>
+                                    {!! nl2br(e($revisiInfo)) !!}
+                                </div>
+                            @endif
                             <div id="additional-fields-dalam" class="row mb-3" style="display: none;">
                                 <label for="additional-fields-dalam-title" class="mb-3">
                                     Business Trip Needs <br>
                                 </label>
                                 <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="form-check">
-                                            <input type="hidden" name="tiket_dalam_kota" value="Tidak">
-                                            <input class="form-check-input" type="checkbox" id="ticketCheckboxDalamKota"
-                                                name="tiket_dalam_kota" value="Ya"
-                                                <?= $n->jns_dinas === 'dalam kota' && $n->tiket === 'Ya' ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="ticketCheckboxDalamKota">
-                                                Ticket
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-check">
                                             <input type="hidden" name="hotel_dalam_kota" value="Tidak">
                                             <input class="form-check-input" type="checkbox" id="hotelCheckboxDalamKota"
@@ -290,7 +284,32 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4">
+
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            <input type="hidden" name="mess_dalam_kota" value="Tidak">
+                                            <input class="form-check-input" type="checkbox" id="messCheckboxDalamKota"
+                                                name="mess_dalam_kota" value="Ya"
+                                                <?= $n->jns_dinas === 'dalam kota' && $n->mess === 'Ya' ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="messCheckboxDalamKota">
+                                                Mess
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            <input type="hidden" name="tiket_dalam_kota" value="Tidak">
+                                            <input class="form-check-input" type="checkbox" id="ticketCheckboxDalamKota"
+                                                name="tiket_dalam_kota" value="Ya"
+                                                <?= $n->jns_dinas === 'dalam kota' && $n->tiket === 'Ya' ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="ticketCheckboxDalamKota">
+                                                Ticket
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
                                         <div class="form-check">
                                             <input type="hidden" name="taksi_dalam_kota" value="Tidak">
                                             <input class="form-check-input" type="checkbox" id="taksiCheckboxDalamKota"
@@ -312,6 +331,15 @@
                                                     data-bs-toggle="pill" data-bs-target="#pills-ticket-dalam-kota"
                                                     type="button" role="tab" aria-controls="pills-ticket-dalam-kota"
                                                     aria-selected="false">Ticket</button>
+                                            </li>
+
+                                            <!-- Mess Tab -->
+                                            <li class="nav-item" role="presentation" id="nav-mess-dalam-kota"
+                                                style="display: <?= $n->jns_dinas === 'dalam kota' && $n->mess == 'Ya' ? 'block' : 'none' ?>;">
+                                                <button class="nav-link" id="pills-mess-dalam-kota-tab"
+                                                    data-bs-toggle="pill" data-bs-target="#pills-mess-dalam-kota"
+                                                    type="button" role="tab" aria-controls="pills-mess-dalam-kota"
+                                                    aria-selected="false">Mess</button>
                                             </li>
 
                                             <!-- Hotel Tab -->
@@ -340,6 +368,13 @@
                                                 aria-labelledby="pills-ticket-dalam-kota-tab">
                                                 {{-- Ticket content --}}
                                                 @include('hcis.reimbursements.businessTrip.editForm.dalam-kota.editTicketDalamKota')
+                                            </div>
+
+                                            <!-- Mess Content -->
+                                            <div class="tab-pane fade" id="pills-mess-dalam-kota" role="tabpanel"
+                                                aria-labelledby="pills-mess-dalam-kota-tab">
+                                                {{-- mess content --}}
+                                                @include('hcis.reimbursements.businessTrip.editForm.dalam-kota.editMessDalamKota')
                                             </div>
 
                                             <!-- Hotel Content -->
@@ -383,7 +418,7 @@
                                                         Advanced</label>
                                                 </div>
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
                                                 <div class="form-check">
                                                     <input type="hidden" name="ent" id="entHidden"
                                                         value="{{ $showEntertain ? 'Ya' : 'Tidak' }}">
@@ -393,17 +428,6 @@
                                                         {{ $isDisabled ? 'disabled' : '' }}>
                                                     <label class="form-check-label" for="caEntertainCheckbox">CA
                                                         Entertain</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="form-check">
-                                                    <input type="hidden" name="tiket" value="Tidak">
-                                                    <input class="form-check-input" type="checkbox" id="ticketCheckbox"
-                                                        name="tiket" value="Ya"
-                                                        <?= $n->jns_dinas === 'luar kota' && $n->tiket == 'Ya' ? 'checked' : '' ?>>
-                                                    <label class="form-check-label" for="ticketCheckbox">
-                                                        Ticket
-                                                    </label>
                                                 </div>
                                             </div>
 
@@ -419,7 +443,31 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
+                                                <div class="form-check">
+                                                    <input type="hidden" name="mess" value="Tidak">
+                                                    <input class="form-check-input" type="checkbox" id="messCheckbox"
+                                                        name="mess" value="Ya"
+                                                        <?= $n->jns_dinas === 'luar kota' && $n->mess == 'Ya' ? 'checked' : '' ?>>
+                                                    <label class="form-check-label" for="messCheckbox">
+                                                        Mess
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <div class="form-check">
+                                                    <input type="hidden" name="tiket" value="Tidak">
+                                                    <input class="form-check-input" type="checkbox" id="ticketCheckbox"
+                                                        name="tiket" value="Ya"
+                                                        <?= $n->jns_dinas === 'luar kota' && $n->tiket == 'Ya' ? 'checked' : '' ?>>
+                                                    <label class="form-check-label" for="ticketCheckbox">
+                                                        Ticket
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-2">
                                                 <div class="form-check">
                                                     <input type="hidden" name="taksi" value="Tidak">
                                                     <input class="form-check-input" type="checkbox" id="taksiCheckbox"
@@ -459,6 +507,13 @@
                                                             type="button" role="tab" aria-controls="pills-ticket"
                                                             aria-selected="false">Ticket</button>
                                                     </li>
+                                                    <li class="nav-item" role="presentation" id="nav-mess"
+                                                        style="display: <?= $n->jns_dinas === 'luar kota' && $n->mess == 'Ya' ? 'block' : 'none' ?>;">
+                                                        <button class="nav-link" id="pills-mess-tab"
+                                                            data-bs-toggle="pill" data-bs-target="#pills-mess"
+                                                            type="button" role="tab" aria-controls="pills-mess"
+                                                            aria-selected="false">Mess</button>
+                                                    </li>
                                                     <li class="nav-item" role="presentation" id="nav-hotel"
                                                         style="display: <?= $n->jns_dinas === 'luar kota' && $n->hotel == 'Ya' ? 'block' : 'none' ?>;">
                                                         <button class="nav-link" id="pills-hotel-tab"
@@ -490,6 +545,11 @@
                                                         aria-labelledby="pills-ticket-tab">
                                                         {{-- Ticket content --}}
                                                         @include('hcis.reimbursements.businessTrip.editForm.editTicket')
+                                                    </div>
+                                                    <div class="tab-pane fade" id="pills-mess" role="tabpanel"
+                                                        aria-labelledby="pills-mess-tab">
+                                                        {{-- Mess content --}}
+                                                        @include('hcis.reimbursements.businessTrip.editForm.editMess')
                                                     </div>
                                                     <div class="tab-pane fade" id="pills-hotel" role="tabpanel"
                                                         aria-labelledby="pills-hotel-tab">

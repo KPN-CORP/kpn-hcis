@@ -10,8 +10,9 @@
                 <th>Start</th>
                 <th>End</th>
                 <th>CA</th>
-                <th>Ticket</th>
+                <th>Mess</th>
                 <th>Hotel</th>
+                <th>Ticket</th>
                 <th>Taxi</th>
                 <th>Status</th>
                 <th style="width: 80px">Action</th>
@@ -32,23 +33,73 @@
                     <td>{{ \Carbon\Carbon::parse($n->kembali)->format('d-M-Y') }}</td>
                     <td style="text-align: center; align-content: center">
                         @if ($n->ca == 'Ya' && isset($caTransactions[$n->no_sppd]))
-                            <a class="text-info btn-detail" data-toggle="modal"
-                                data-target="#detailModal" style="cursor: pointer"
-                                data-ca="{{ json_encode($caTransactions->get($n->no_sppd, collect())->map(function ($transaction) {
-                                    return [
-                                        'No. CA' => $transaction->no_ca,
-                                        'No. SPPD' => $transaction->no_sppd,
-                                        'Type' => $transaction->type_ca === 'dns' ? 'Business Trip' : 'Entertain', // Conditional assignment
-                                        'Unit' => $transaction->unit,
-                                        'Destination' => $transaction->destination,
-                                        'CA Total' => 'Rp ' . number_format($transaction->total_ca, 0, ',', '.'),
-                                        'Total Real' => 'Rp ' . number_format($transaction->total_real, 0, ',', '.'),
-                                        'Total Cost' => 'Rp ' . number_format($transaction->total_cost, 0, ',', '.'),
-                                        'Start' => date('d-M-Y', strtotime($transaction->start_date)),
-                                        'End' => date('d-M-Y', strtotime($transaction->end_date)),
-                                    ];
-                                })->values()) }}"
-                                ><u>Details</u></a>
+                            <a class="text-info btn-detail" data-toggle="modal" data-target="#detailModal"
+                                style="cursor: pointer"
+                                data-ca="{{ json_encode(
+                                    $caTransactions->get($n->no_sppd, collect())->map(function ($transaction) {
+                                            return [
+                                                'No. CA' => $transaction->no_ca,
+                                                'No. SPPD' => $transaction->no_sppd,
+                                                'Type' => $transaction->type_ca === 'dns' ? 'Business Trip' : 'Entertain', // Conditional assignment
+                                                'Unit' => $transaction->unit,
+                                                'Destination' => $transaction->destination,
+                                                'CA Total' => 'Rp ' . number_format($transaction->total_ca, 0, ',', '.'),
+                                                'Total Real' => 'Rp ' . number_format($transaction->total_real, 0, ',', '.'),
+                                                'Total Cost' => 'Rp ' . number_format($transaction->total_cost, 0, ',', '.'),
+                                                'Start' => date('d-M-Y', strtotime($transaction->start_date)),
+                                                'End' => date('d-M-Y', strtotime($transaction->end_date)),
+                                            ];
+                                        })->values(),
+                                ) }}"><u>Details</u></a>
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td style="text-align: center">
+                        @if ($n->mess == 'Ya' && isset($mess[$n->no_sppd]))
+                            <a class="text-info btn-detail" data-toggle="modal" data-target="#detailModal"
+                                style="cursor: pointer"
+                                data-mess="{{ json_encode(
+                                    $mess[$n->no_sppd]->map(function ($mess) {
+                                        return [
+                                            'No. Mess' => $mess->no_mess,
+                                            'No. SPPD' => $mess->no_sppd,
+                                            'Unit' => $mess->unit,
+                                            'Mess Location' => $mess->lokasi_mess,
+                                            'Room' => $mess->jmlkmr_mess,
+                                            'Check In' => date('d-M-Y', strtotime($mess->tgl_masuk_mess)),
+                                            'Check Out' => date('d-M-Y', strtotime($mess->tgl_keluar_mess)),
+                                            'Total Days' => $mess->total_hari_mess,
+                                        ];
+                                    }),
+                                ) }}">
+                                <u>Details</u></a>
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td style="text-align: center; align-content: center">
+                        @if ($n->hotel == 'Ya' && isset($hotel[$n->no_sppd]))
+                            <a class="text-info btn-detail" data-toggle="modal" data-target="#detailModal"
+                                style="cursor: pointer"
+                                data-hotel="{{ json_encode(
+                                    $hotel[$n->no_sppd]->map(function ($hotel) {
+                                        return [
+                                            'No. Hotel' => $hotel->no_htl,
+                                            'No. SPPD' => $hotel->no_sppd,
+                                            'Colleague No. SPPD' => $hotel->no_sppd_htl,
+                                            'Unit' => $hotel->unit,
+                                            'Hotel Name' => $hotel->nama_htl,
+                                            'Location' => $hotel->lokasi_htl,
+                                            'Room' => $hotel->jmlkmr_htl,
+                                            'Bed' => $hotel->bed_htl,
+                                            'Check In' => date('d-m-Y', strtotime($hotel->tgl_masuk_htl)),
+                                            'Check Out' => date('d-m-Y', strtotime($hotel->tgl_keluar_htl)),
+                                            'Total Days' => $hotel->total_hari,
+                                        ];
+                                    }),
+                                ) }}">
+                                <u>Details</u></a>
                         @else
                             -
                         @endif
@@ -81,35 +132,8 @@
                         @else
                             -
                         @endif
-
-
                     </td>
-                    <td style="text-align: center; align-content: center">
-                        @if ($n->hotel == 'Ya' && isset($hotel[$n->no_sppd]))
-                            <a class="text-info btn-detail" data-toggle="modal" data-target="#detailModal"
-                                style="cursor: pointer"
-                                data-hotel="{{ json_encode(
-                                    $hotel[$n->no_sppd]->map(function ($hotel) {
-                                        return [
-                                            'No. Hotel' => $hotel->no_htl,
-                                            'No. SPPD' => $hotel->no_sppd,
-                                            'Colleague No. SPPD' => $hotel->no_sppd_htl,
-                                            'Unit' => $hotel->unit,
-                                            'Hotel Name' => $hotel->nama_htl,
-                                            'Location' => $hotel->lokasi_htl,
-                                            'Room' => $hotel->jmlkmr_htl,
-                                            'Bed' => $hotel->bed_htl,
-                                            'Check In' => date('d-m-Y', strtotime($hotel->tgl_masuk_htl)),
-                                            'Check Out' => date('d-m-Y', strtotime($hotel->tgl_keluar_htl)),
-                                            'Total Days' => $hotel->total_hari,
-                                        ];
-                                    }),
-                                ) }}">
-                                <u>Details</u></a>
-                        @else
-                            -
-                        @endif
-                    </td>
+
                     <td style="text-align: center; align-content: center">
                         @if ($n->taksi == 'Ya' && isset($taksi[$n->no_sppd]))
                             <a class="text-info btn-detail" data-toggle="modal" data-target="#detailModal"
