@@ -69,7 +69,7 @@
                             <div class="row mb-2">
                                 <div class="col-md-4 mb-2">
                                     <label for="norek_krywn" class="form-label">Employee Account Number</label>
-                                    <input type="number" class="form-control form-control-sm bg-light" id="norek_krywn"
+                                    <input type="text" class="form-control form-control-sm bg-light" id="norek_krywn"
                                         name="norek_krywn" value="{{ $employee_data->bank_account_number }}" readonly>
                                 </div>
                                 <div class="col-md-4 mb-2">
