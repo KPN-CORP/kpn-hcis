@@ -2045,7 +2045,7 @@ class BusinessTripController extends Controller
                 $model->sett_id = $managerL1;
 
             }
-            if ($ent->isDirty()) { 
+            if (isset($ent) && $ent->isDirty()) { 
                 $ent->save();
             }
             $ca->save();

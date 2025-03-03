@@ -151,11 +151,12 @@ class ReimburseController extends Controller
         $employee_data = Employee::where('id', $userId)->first();
 
         $disableCACount = CATransaction::where('user_id', $userId)
-            ->where(function ($query) {
-                $query->where('approval_status', 'Pending')
-                    ->orWhere('ca_status', 'Refund');
-            })
-            ->count();
+        ->whereNull('deleted_at') // Menambahkan kondisi deleted_at IS NULL
+        ->where(function ($query) {
+            $query->where('approval_status', 'Pending')
+                ->orWhere('ca_status', 'Refund');
+        })
+        ->count();
 
         $deklarasiCACount = CATransaction::where('user_id', $userId)
             ->where(function ($query) {
