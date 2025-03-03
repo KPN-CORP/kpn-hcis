@@ -251,6 +251,10 @@ class BusinessTripController extends Controller
         $group_company = Employee::where('id', $userId)->pluck('group_company')->first();
         $bt_sppd = BusinessTrip::where('status', '!=', 'Done')->where('status', '!=', 'Rejected')->where('status', '!=', 'Draft')->orderBy('no_sppd', 'desc')->get();
 
+        $isApproved = CATransaction::where('user_id', $userId)->where('approval_status', '!=', 'Done')->where('approval_status', '!=', 'Rejected')->get();
+
+        $isDisabled = $isApproved->count() >= 1;
+
         if ($employee_data->group_company == 'Plantations' || $employee_data->group_company == 'KPN Plantations') {
             $allowance = "Perdiem";
         } else {
@@ -275,6 +279,7 @@ class BusinessTripController extends Controller
         $perdiem = ListPerdiem::where('grade', $employee_data->job_level)
             ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')->first();
         $job_level = Employee::where('id', $userId)->pluck('job_level')->first();
+        $job_level_number = (int) preg_replace('/[^0-9]/', '', $job_level);
 
         if ($job_level) {
             // Extract numeric part of the job level
@@ -361,6 +366,8 @@ class BusinessTripController extends Controller
             'link' => $link,
             'isAllowed' => $isAllowed,
             'bt_sppd' => $bt_sppd,
+            'job_level_number' => $job_level_number,
+            'isDisabled' => $isDisabled,
         ]);
     }
 
@@ -883,12 +890,14 @@ class BusinessTripController extends Controller
             if ($request->has('tanggal_bt_lainnya')) {
                 foreach ($request->tanggal_bt_lainnya as $key => $tanggal) {
                     $keterangan = $request->keterangan_bt_lainnya[$key] ?? '';
+                    $type = $request->type_bt_lainnya[$key] ?? '';
                     $nominal = str_replace('.', '', $request->nominal_bt_lainnya[$key] ?? '0');
 
                     if (!empty($tanggal) && !empty($nominal)) {
                         $detail_lainnya[] = [
                             'tanggal' => $tanggal,
                             'keterangan' => $keterangan,
+                            'type' => $type,
                             'nominal' => $nominal,
                         ];
                     }
@@ -1199,7 +1208,7 @@ class BusinessTripController extends Controller
             $imageContent = file_get_contents($imagePath);
             $employeeName = Employee::where('id', $n->user_id)->pluck('fullname')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "requesting a Bussiness Trip and waiting for your Approval with the following details :";
+            $textNotification = "requesting a Business Trip and waiting for your approval with the following details :";
             $isEnt = $request->ent === 'Ya';
             $isCa = $request->ca === 'Ya';
 
@@ -1272,7 +1281,7 @@ class BusinessTripController extends Controller
                         $entDetails,
                     ));
                 } catch (\Exception $e) {
-                    Log::error('Email Update Bussines Trip tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email Update Business Trip tidak terkirim: ' . $e->getMessage());
                 }
             }
         }
@@ -1290,6 +1299,9 @@ class BusinessTripController extends Controller
         } else {
             $allowance = "Allowance";
         }
+
+        $job_level = Employee::where('id', $userId)->pluck('job_level')->first();
+        $job_level_number = (int) preg_replace('/[^0-9]/', '', $job_level);
         $group_company = Employee::where('id', $employee_data->id)->pluck('group_company')->first();
 
         $ca = CATransaction::where('no_sppd', $n->no_sppd)->get();
@@ -1405,6 +1417,7 @@ class BusinessTripController extends Controller
             'nominalPerdiem' => $nominalPerdiem,
             'nominalPerdiemDeclare' => $nominalPerdiemDeclare,
             'hasCaData' => $hasCaData,
+            'job_level_number' => $job_level_number,
             'perdiem' => $perdiem,
             'parentLink' => $parentLink,
             'link' => $link,
@@ -1820,12 +1833,14 @@ class BusinessTripController extends Controller
                 if ($request->has('tanggal_bt_lainnya')) {
                     foreach ($request->tanggal_bt_lainnya as $key => $tanggal) {
                         $keterangan = $request->keterangan_bt_lainnya[$key] ?? '';
+                        $type = $request->type_bt_lainnya[$key] ?? '';
                         $nominal = str_replace('.', '', $request->nominal_bt_lainnya[$key] ?? '0');
 
                         if (!empty($tanggal) && !empty($nominal)) {
                             $detail_lainnya[] = [
                                 'tanggal' => $tanggal,
                                 'keterangan' => $keterangan,
+                                'type' => $type,
                                 'nominal' => $nominal,
                             ];
                         }
@@ -2007,6 +2022,7 @@ class BusinessTripController extends Controller
                     if ($request->has('tanggal_bt_lainnya')) {
                         foreach ($request->tanggal_bt_lainnya as $key => $tanggal) {
                             $keterangan = $request->keterangan_bt_lainnya[$key] ?? '';
+                            $type = $request->type_bt_lainnya[$key] ?? '';
                             $nominal = str_replace('.', '', $request->nominal_bt_lainnya[$key] ?? '0');
                             $totalLainnya = str_replace('.', '', $request->total_bt_lainnya[$key] ?? '0');
 
@@ -2014,6 +2030,7 @@ class BusinessTripController extends Controller
                                 $detail_lainnya[] = [
                                     'tanggal' => $tanggal,
                                     'keterangan' => $keterangan,
+                                    'type' => $type,
                                     'nominal' => $nominal,
                                     'totalLainnya' => $totalLainnya,
                                 ];
@@ -2440,12 +2457,14 @@ class BusinessTripController extends Controller
                     if ($request->has('tanggal_bt_lainnya')) {
                         foreach ($request->tanggal_bt_lainnya as $key => $tanggal) {
                             $keterangan = $request->keterangan_bt_lainnya[$key] ?? '';
+                            $type = $request->type_bt_lainnya[$key] ?? '';
                             $nominal = str_replace('.', '', $request->nominal_bt_lainnya[$key] ?? '0');
 
                             if (!empty($tanggal) && !empty($nominal)) {
                                 $detail_lainnya[] = [
                                     'tanggal' => $tanggal,
                                     'keterangan' => $keterangan,
+                                    'type' => $type,
                                     'nominal' => $nominal,
                                 ];
                             }
@@ -2630,7 +2649,7 @@ class BusinessTripController extends Controller
                 $imageContent = file_get_contents($imagePath);
                 $employeeName = Employee::where('id', $n->user_id)->pluck('fullname')->first();
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-                $textNotification = "requesting a Declaration Bussiness Trip and waiting for your Approval with the following details :";
+                $textNotification = "requesting a Declaration Business Trip and waiting for your approval with the following details :";
                 // dd( $detail_ca, $caTrans);
 
                 // dd($caTrans, $n->no_sppd);
@@ -2679,26 +2698,26 @@ class BusinessTripController extends Controller
                     'total_amount_ent' => array_sum(array_column($declare_ent_ntf['detail_e'] ?? [], 'nominal')),
                 ];
                 // Send email to the manager
-                // try {
-                Mail::to($managerEmail)->send(new DeclarationNotification(
-                    $n,
-                    $caDetails,
-                    $caDeclare,
-                    $entDetails,
-                    $entDeclare,
-                    $managerName,
-                    $approvalLink,
-                    $rejectionLink,
-                    $employeeName,
-                    $base64Image,
-                    $textNotification,
-                    $isEnt,
-                    $isCa,
-                    $group_company,
-                ));
-                // } catch (\Exception $e) {
-                //     Log::error('Email Deklarasi Create Bussines Trip tidak terkirim: ' . $e->getMessage());
-                // }
+                try {
+                    Mail::to($managerEmail)->send(new DeclarationNotification(
+                        $n,
+                        $caDetails,
+                        $caDeclare,
+                        $entDetails,
+                        $entDeclare,
+                        $managerName,
+                        $approvalLink,
+                        $rejectionLink,
+                        $employeeName,
+                        $base64Image,
+                        $textNotification,
+                        $isEnt,
+                        $isCa,
+                        $group_company,
+                    ));
+                } catch (\Exception $e) {
+                    Log::error('Email Deklarasi Create Business Trip tidak terkirim: ' . $e->getMessage());
+                }
             }
         }
 
@@ -3535,7 +3554,12 @@ class BusinessTripController extends Controller
         $perdiem = ListPerdiem::where('grade', $employee_data->job_level)
             ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')->first();
 
+        $isApproved = CATransaction::where('user_id', $userId)->where('approval_status', '!=', 'Done')->where('approval_status', '!=', 'Rejected')->get();
+
         $job_level = Employee::where('id', $userId)->pluck('job_level')->first();
+        $job_level_number = (int) preg_replace('/[^0-9]/', '', $job_level);
+
+        $isDisabled = $isApproved->count() >= 1;
 
         // dd($employee_data, $companies, $perdiem);
 
@@ -3545,6 +3569,7 @@ class BusinessTripController extends Controller
             $allowance = "Allowance";
         }
         $group_company = Employee::where('id', $employee_data->id)->pluck('group_company')->first();
+        // dd($group_company, $job_level_number);
         // dd($group_company);
         if ($job_level) {
             // Extract numeric part of the job level
@@ -3568,7 +3593,9 @@ class BusinessTripController extends Controller
                 'link' => $link,
                 'isAllowed' => $isAllowed,
                 'allowance' => $allowance,
+                'job_level_number' => $job_level_number,
                 'group_company' => $employee_data->group_company,
+                'isDisabled' => $isDisabled,
             ]
         );
     }
@@ -3966,12 +3993,14 @@ class BusinessTripController extends Controller
             if ($request->has('tanggal_bt_lainnya')) {
                 foreach ($request->tanggal_bt_lainnya as $key => $tanggal) {
                     $keterangan = $request->keterangan_bt_lainnya[$key] ?? '';
+                    $type = $request->type_bt_lainnya[$key] ?? '';
                     $nominal = str_replace('.', '', $request->nominal_bt_lainnya[$key] ?? '0');
 
                     if (!empty($tanggal) && !empty($nominal)) {
                         $detail_lainnya[] = [
                             'tanggal' => $tanggal,
                             'keterangan' => $keterangan,
+                            'type' => $type,
                             'nominal' => $nominal,
                         ];
                     }
@@ -4259,7 +4288,7 @@ class BusinessTripController extends Controller
             $imageContent = file_get_contents($imagePath);
             $employeeName = Employee::where('id', $userId)->pluck('fullname')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "requesting a Bussiness Trip and waiting for your Approval with the following details :";
+            $textNotification = "requesting a Business Trip and waiting for your approval with the following details :";
             $managerName = Employee::where('employee_id', $managerL1)->pluck('fullname')->first();
             $isEnt = $request->ent === 'Ya';
             $isCa = $request->ca === 'Ya';
@@ -4336,7 +4365,7 @@ class BusinessTripController extends Controller
                         $group_company,
                     ));
                 } catch (\Exception $e) {
-                    Log::error('Email Create Bussines Trip tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email Create Business Trip tidak terkirim: ' . $e->getMessage());
                 }
             }
         }
@@ -4728,7 +4757,7 @@ class BusinessTripController extends Controller
     public function deklarasiAdmin($id)
     {
         $n = BusinessTrip::find($id);
-        $userId = Auth::id();
+        $userId = $n->user_id;
         $employee_data = Employee::where('id', $n->user_id)->first();
 
         if ($employee_data->group_company == 'Plantations' || $employee_data->group_company == 'KPN Plantations') {
@@ -4741,6 +4770,9 @@ class BusinessTripController extends Controller
         $date = CATransaction::where('no_sppd', $n->no_sppd)->first();
         $dns = $ca->where('type_ca', 'dns')->first();
         $entr = $ca->where('type_ca', 'entr')->first();
+
+        $job_level = Employee::where('id', $userId)->pluck('job_level')->first();
+        $job_level_number = (int) preg_replace('/[^0-9]/', '', $job_level);
 
         $entrTab = $entr ? true : false;
         $dnsTab = $dns ? true : false;
@@ -4851,6 +4883,7 @@ class BusinessTripController extends Controller
             'hasCaData' => $hasCaData,
             'perdiem' => $perdiem,
             'group_company' => $group_company,
+            'job_level_number' => $job_level_number,
             'parentLink' => $parentLink,
             'link' => $link,
         ]);
@@ -5107,7 +5140,8 @@ class BusinessTripController extends Controller
 
                     if ($ca->total_cost <= 0 && $request->input('accept_status') === 'Return/Refund') {
                         return redirect()->back()->with('error', 'Cannot set status to Return/Refund when the Total Cost is negative.');
-                    } elseif ($ca->total_cost > 0 && $request->input('accept_status') === 'Return/Refund') {
+                    }
+                    if ($ca->total_cost > 0 && $request->input('accept_status') === 'Return/Refund') {
                         $employeeEmail = Employee::where('id', $n->user_id)->pluck('email')->first();
                         // $employeeEmail = "erzie.aldrian02@gmail.com";
                         $employeeName = Employee::where('id', $n->user_id)->pluck('fullname')->first();
@@ -5200,7 +5234,7 @@ class BusinessTripController extends Controller
                         $base64Image,
                     ));
                 } catch (\Exception $e) {
-                    Log::error('Email Deklarasi Status Admin Bussines Trip tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email Deklarasi Status Admin Business Trip tidak terkirim: ' . $e->getMessage());
                 }
             }
         }
@@ -5714,7 +5748,7 @@ class BusinessTripController extends Controller
             $imageContent = file_get_contents($imagePath);
             $employeeName = Employee::where('id', $businessTrip->user_id)->pluck('fullname')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "requesting a Bussiness Trip and waiting for your Approval with the following details :";
+            $textNotification = "requesting a Business Trip and waiting for your approval with the following details :";
             $isEnt = $request->ent === 'Ya';
             $isCa = $request->ca === 'Ya';
 
@@ -5786,7 +5820,7 @@ class BusinessTripController extends Controller
                         $entDetails,
                     ));
                 } catch (\Exception $e) {
-                    Log::error('Email Update Status Bussines Trip tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email Update Status Business Trip tidak terkirim: ' . $e->getMessage());
                 }
             }
 
@@ -6122,7 +6156,7 @@ class BusinessTripController extends Controller
                 $imageContent = file_get_contents($imagePath);
                 $employeeName = Employee::where('id', $businessTrip->user_id)->pluck('fullname')->first();
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-                $textNotification = "requesting a Bussiness Trip and waiting for your Approval with the following details :";
+                $textNotification = "requesting a Business Trip and waiting for your approval with the following details :";
                 $isEnt = CATransaction::where('type_ca', 'entr')->first();
                 $isCa = CATransaction::where('type_ca', 'dns')->first();
 
@@ -6194,7 +6228,7 @@ class BusinessTripController extends Controller
                             $entDetails,
                         ));
                     } catch (\Exception $e) {
-                        Log::error('Email Update Status Bussines Trip tidak terkirim: ' . $e->getMessage());
+                        Log::error('Email Update Status Business Trip tidak terkirim: ' . $e->getMessage());
                     }
                 }
 
@@ -6506,7 +6540,7 @@ class BusinessTripController extends Controller
                 $imageContent = file_get_contents($imagePath);
                 $employeeName = Employee::where('employee_id', $employeeId)->pluck('fullname')->first();
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-                $textNotification = "requesting a Declaration Bussiness Trip and waiting for your Approval with the following details :";
+                $textNotification = "requesting a Declaration Business Trip and waiting for your approval with the following details :";
 
                 // dd($caTrans, $n->no_sppd);
                 $caDetails = [
@@ -6571,7 +6605,7 @@ class BusinessTripController extends Controller
                             $isCa,
                         ));
                     } catch (\Exception $e) {
-                        Log::error('Email Update Status Deklarasi Bussines Trip tidak terkirim: ' . $e->getMessage());
+                        Log::error('Email Update Status Deklarasi Business Trip tidak terkirim: ' . $e->getMessage());
                     }
                 }
                 // if ($businessTrip->ca == 'Ya') {
@@ -6985,7 +7019,7 @@ class BusinessTripController extends Controller
             $employeeName = Employee::where('employee_id', $employeeId)->pluck('fullname')->first();
             $group_company = Employee::where('employee_id', $employeeId)->pluck('group_company')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "requesting a Declaration Bussiness Trip and waiting for your Approval with the following details :";
+            $textNotification = "requesting a Declaration Business Trip and waiting for your approval with the following details :";
             // dd( $detail_ca, $caTrans);
 
             // dd($caTrans, $n->no_sppd);
@@ -7052,7 +7086,7 @@ class BusinessTripController extends Controller
                         $group_company,
                     ));
                 } catch (\Exception $e) {
-                    Log::error('Email Update Status Deklarasi Bussines Trip tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email Update Status Deklarasi Business Trip tidak terkirim: ' . $e->getMessage());
                 }
             }
             // Handle CA approval for L1
@@ -7156,7 +7190,7 @@ class BusinessTripController extends Controller
     public function ApprovalDeklarasi($id)
     {
         $n = BusinessTrip::find($id);
-        $userId = Auth::id();
+        $userId = $n->user_id;
         $employee_data = Employee::where('id', $n->user_id)->first();
         $group_company = $employee_data->group_company;
         // dd($group_company);
@@ -7164,6 +7198,8 @@ class BusinessTripController extends Controller
         $dns = $ca->where('type_ca', 'dns')->first();
         $entr = $ca->where('type_ca', 'entr')->first();
 
+        $job_level = Employee::where('id', $userId)->pluck('job_level')->first();
+        $job_level_number = (int) preg_replace('/[^0-9]/', '', $job_level);
         // Cek apakah ada $ent dan jalankan kode jika ada
         $entrTab = $entr ? true : false;
         $dnsTab = $dns ? true : false;
@@ -7257,6 +7293,7 @@ class BusinessTripController extends Controller
             'nominalPerdiem' => $nominalPerdiem,
             'nominalPerdiemDeclare' => $nominalPerdiemDeclare,
             'hasCaData' => $hasCaData,
+            'job_level_number' => $job_level_number,
             'parentLink' => $parentLink,
             'link' => $link,
         ]);

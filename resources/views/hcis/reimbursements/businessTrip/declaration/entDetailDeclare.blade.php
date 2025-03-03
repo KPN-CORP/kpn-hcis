@@ -1,4 +1,5 @@
-<script src="{{ asset('/js/cashAdvanced/detail.js') }}"></script>
+{{-- <script src="{{ asset('/js/cashAdvanced/detail.js') }}"></script> --}}
+@include('js.hcis.cashAdvanced.detail')
 {{-- {{dd($declareCa);}} --}}
 {{-- {{dd($caDetail);}} --}}
 @if (!empty($caDetail['detail_e']) && $caDetail['detail_e'][0]['type'] !== null)

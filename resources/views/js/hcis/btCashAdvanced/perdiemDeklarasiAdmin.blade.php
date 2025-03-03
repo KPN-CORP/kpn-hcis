@@ -314,6 +314,9 @@
         const startDateInput = document.getElementById("mulai");
         const endDateInput = document.getElementById("kembali");
 
+        const groupCompany = document.getElementById("group_company");
+
+
         function handleDateChange() {
             const startDate = new Date(startDateInput.value);
             const endDate = new Date(endDateInput.value);

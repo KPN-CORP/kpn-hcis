@@ -1,4 +1,5 @@
-<script src="{{ asset('/js/btCashAdvanced/detail.js') }}"></script>
+{{-- <script src="{{ asset('/js/btCashAdvanced/detail.js') }}"></script> --}}
+@include('js.hcis.btCashAdvanced.detail')
 
 @if (!empty($caDetail['detail_e']) && $caDetail['detail_e'][0]['type'] !== null)
     <div id="form-container-detail">

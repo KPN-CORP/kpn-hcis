@@ -1,4 +1,5 @@
-<script src="{{ asset('/js/cashAdvanced/others.js') }}"></script>
+{{-- <script src="{{ asset('/js/cashAdvanced/others.js') }}"></script> --}}
+@include('js.hcis.cashAdvanced.others')
 
 <script>
     function addMoreFormLainnyaReq(event) {

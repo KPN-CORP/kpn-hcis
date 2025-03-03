@@ -372,7 +372,7 @@ class BTApprovalController extends Controller
             $imageContent = file_get_contents($imagePath);
             $employeeName = Employee::where('id', $businessTrip->user_id)->pluck('fullname')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "requesting a Bussiness Trip and waiting for your Approval with the following details :";
+            $textNotification = "requesting a Business Trip and waiting for your Approval with the following details :";
 
             $managerName = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('fullname')->first();
 
@@ -769,7 +769,7 @@ class BTApprovalController extends Controller
             $imageContent = file_get_contents($imagePath);
             $employeeName = Employee::where('id', $businessTrip->user_id)->pluck('fullname')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "requesting a Bussiness Trip and waiting for your Approval with the following details :";
+            $textNotification = "requesting a Business Trip and waiting for your Approval with the following details :";
 
             // dd($managerL2);
             if ($managerL2) {

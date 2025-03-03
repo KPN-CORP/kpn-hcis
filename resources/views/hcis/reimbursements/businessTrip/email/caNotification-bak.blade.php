@@ -6,10 +6,10 @@
 </head>
     <body>
         <div style="width: 100%; height: auto; text-align: center;">
-            <img src="{{ $logoBase64 }}" 
-                 alt="Kop Surat" 
+            <img src="{{ $logoBase64 }}"
+                 alt="Kop Surat"
                  style="height: auto; margin-bottom: 20px; width: 15%;">
-        </div>               
+        </div>
         <h2>Reimburse Cash Advanced Notification</h2>
         @if ($nextApproval)
         {{-- {{dd($nextApproval)}} --}}
@@ -166,7 +166,7 @@
                                 <td style="border: 1px solid #ddd; padding: 4px; text-align: left; vertical-align: top;">Company Code</td>
                                 <td style="border: 1px solid #ddd; padding: 4px; text-align: left; vertical-align: top;">Total Days</td>
                             </tr>
-                        
+
                             @foreach($declareCA['detail_perdiem'] as $perdiem)
                             <tr style="text-align: center;">
                                 <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">
@@ -186,14 +186,14 @@
                                 <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">{{ $perdiem['total_days'] }} Hari</td>
                             </tr>
                             @endforeach
-                        
+
                             <tr style="font-weight: bold; background-color: #f5f5f5;">
                                 <td colspan="4" style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Total</td>
                                 <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">
                                     {{ array_sum(array_column($declareCA['detail_perdiem'], 'total_days')) }} Hari
                                 </td>
                             </tr>
-                        </table>  
+                        </table>
                     @endif
                     <table style="border-collapse: collapse; width: 70%; margin-top: 8px; font-size: 10px;">
                         <tr>
@@ -290,7 +290,7 @@
                                 Rp. {{ number_format($caTransaction->total_real, 0, ',', '.') }}
                             </td>
                         </tr>
-                    </table>                    
+                    </table>
                 @else
                     @if (count($detailCA['detail_perdiem']) > 0 && !empty($detailCA['detail_perdiem'][0]['company_code']))
                         <table style="border-collapse: collapse; width: 70%; margin-top: 8px; font-size: 10px;">
@@ -306,7 +306,7 @@
                                 <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Company Code</td>
                                 <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Total Days</td>
                             </tr>
-                        
+
                             @foreach($detailCA['detail_perdiem'] as $perdiem)
                             <tr style="text-align: center;">
                                 <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">
@@ -326,15 +326,15 @@
                                 <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">{{ $perdiem['total_days'] }} Hari</td>
                             </tr>
                             @endforeach
-                        
+
                             <tr style="font-weight: bold; background-color: #f5f5f5;">
                                 <td colspan="4" style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Total</td>
                                 <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">
                                     {{ array_sum(array_column($detailCA['detail_perdiem'], 'total_days')) }} Hari
                                 </td>
                             </tr>
-                        </table>  
-                        <br><br>                  
+                        </table>
+                        <br><br>
                     @endif
                     <table style="border-collapse: collapse; width: 50%; margin-top: 8px; font-size: 10px;">
                         <tr>
@@ -396,8 +396,8 @@
                                 Rp. {{ number_format($caTransaction->total_ca, 0, ',', '.') }}
                             </td>
                         </tr>
-                    </table> 
-                    <br>                   
+                    </table>
+                    <br>
                 @endif
             @elseif($caTransaction->type_ca === 'ndns')
                 @if ($declaration == "Declaration")
@@ -419,7 +419,7 @@
                             <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Amount</td>
                         </tr>
                         <tr>
-                            <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Non Bussiness Trip</td>
+                            <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Non Business Trip</td>
                             <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">
                                 {{ $caTransaction->total_days }} Days
                             </td>
@@ -456,7 +456,7 @@
                             <td style="border: 1px solid #ddd; padding: 4px; text-align: left; vertical-align: top;">Amount</td>
                         </tr>
                         <tr>
-                            <td style="border: 1px solid #ddd; padding: 4px; text-align: left; vertical-align: top;">Non Bussiness Trip</td>
+                            <td style="border: 1px solid #ddd; padding: 4px; text-align: left; vertical-align: top;">Non Business Trip</td>
                             <td style="border: 1px solid #ddd; padding: 4px; text-align: left; vertical-align: top;">
                                 {{ $caTransaction->total_days }} Days
                             </td>
@@ -476,9 +476,9 @@
             @if ($linkApprove)
                 <p>To Approve or Reject the Cash Advance, please select the following link :</p>
                 <p>
-                    <a href="{{ $linkApprove }}" style="font-size: 20px;">Approve</a>    /     
+                    <a href="{{ $linkApprove }}" style="font-size: 20px;">Approve</a>    /
                     <a href="{{ $linkReject }}" style="font-size: 20px;">Reject</a>
-                </p>                
+                </p>
             @else
                 <p>Cash Advanced that has been approved can be seen in the attachment</p>
             @endif

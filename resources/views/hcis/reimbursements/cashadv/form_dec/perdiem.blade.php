@@ -104,7 +104,8 @@
     }
 </script>
 
-<script src="{{ asset('/js/cashAdvanced/perdiem.js') }}"></script>
+{{-- <script src="{{ asset('/js/cashAdvanced/perdiem.js') }}"></script> --}}
+@include('js.hcis.cashAdvanced.perdiem')
 
 @if (!empty($detailCA['detail_perdiem']) && $detailCA['detail_perdiem'][0]['start_date'] !== null)
     {{-- Form Edit --}}

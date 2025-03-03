@@ -1,4 +1,5 @@
-<script src="{{ asset('/js/cashAdvanced/relation.js') }}"></script>
+{{-- <script src="{{ asset('/js/cashAdvanced/relation.js') }}"></script> --}}
+@include('js.hcis.cashAdvanced.relation')
 
 @if (!empty($caDetail['relation_e']) && $caDetail['relation_e'][0]['name'] !== null)
     <div id="form-container-relation">
@@ -8,15 +9,15 @@
             @endphp
             <div id="form-container-e-relation-{{ $loop->index + 1 }}" class="card-body p-2 mb-3"
                 style="background-color: #f8f8f8">
-                <p class="fs-4 text-primary" style="font-weight: bold; ">Relation Entertainment {{ $loop->index + 1 }}</p>
+                <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Receiver {{ $loop->index + 1 }}</p>
                 <div id="form-container-e-relation-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3">
-                    <p class="fs-5 text-primary" style="font-weight: bold;">Relation Entertainment Request</p>
+                    <p class="fs-5 text-primary" style="font-weight: bold;">Detail Receiver Request</p>
                     <div id="fordm-container-e-relation-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3"
                         style="border-radius: 1%;">
                         <div class="row">
                             <!-- Relation Date -->
                             <div class="col-md-12 mb-2">
-                                <label class="form-label">Relation Type</label>
+                                <label class="form-label">Receiver Type</label>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox"
                                         name="accommodation_e_relation[{{ $loop->index }}]"
@@ -106,13 +107,13 @@
 @else
     <div id="form-container-relation">
         <div id="form-container-e-relation-1" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
-            <p class="fs-4 text-primary" style="font-weight: bold; ">Relation Entertainment 1</p>
+            <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Receiver 1</p>
             <div id="form-container-e-relation-req-1" class="card-body bg-light p-2 mb-3">
-                <p class="fs-5 text-primary" style="font-weight: bold;">Relation Entertainment Request</p>
+                <p class="fs-5 text-primary" style="font-weight: bold;">Detail Receiver Request</p>
                 <div class="row">
                     <!-- Relation Date -->
                     <div class="col-md-12 mb-2">
-                        <label class="form-label">Relation Type</label>
+                        <label class="form-label">Receiver Type</label>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="accommodation_e_relation[0]"
                                 id="accommodation_e_relation_0" value="accommodation">
@@ -141,8 +142,8 @@
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label" for="name">Name</label>
-                        <input type="text" name="rname_e_relation[]" id="rname_e_relation_1"
-                            class="form-control" placeholder="ex: John Doe">
+                        <input type="text" name="rname_e_relation[]" id="rname_e_relation_1" class="form-control"
+                            placeholder="ex: John Doe">
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label" for="position">Position</label>

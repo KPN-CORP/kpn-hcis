@@ -17,7 +17,7 @@
     @include('hcis.reimbursements.businessTrip.approvalDec.bussinessTripTable.caPerdiemApprovalDec')
 
     {{-- MEALS TABLE --}}
-    @if ($group_company !== 'KPN Plantations' && $group_company !== 'Plantations')
+    @if (($group_company !== 'KPN Plantations' && $group_company !== 'Plantations') || $job_level_number >= 8)
         @include('hcis.reimbursements.businessTrip.approvalDec.bussinessTripTable.caMealsApprovalDec')
     @endif
 
@@ -54,7 +54,7 @@
                 </div>
             </div>
             <div class="col-md-4 mb-2">
-                <label class="form-label">Total Cost</label>
+                <label class="form-label">Over Under Payment</label>
                 <div class="input-group">
                     <div class="input-group-append">
                         <span class="input-group-text">Rp</span>

@@ -960,8 +960,8 @@ class ReimburseController extends Controller
 
             $nextApproval = ca_approval::where('ca_id', $model->id)->where('employee_id', $managerL1)->firstOrFail();
 
-            // $CANotificationLayer = Employee::where('employee_id', $managerL1)->pluck('email')->first();
-            $CANotificationLayer = "eriton.dewa@kpn-corp.com";
+            $CANotificationLayer = Employee::where('employee_id', $managerL1)->pluck('email')->first();
+            // $CANotificationLayer = "eriton.dewa@kpn-corp.com";
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -2267,8 +2267,8 @@ class ReimburseController extends Controller
 
         if ($statusValue !== 'Draft') {
             $managerId = Employee::where('id', $userId)->pluck('manager_l1_id')->first();
-            // $managerEmail = Employee::where('employee_id', $managerId)->pluck('email')->first();
-            $managerEmail = "eriton.dewa@kpn-corp.com";
+            $managerEmail = Employee::where('employee_id', $managerId)->pluck('email')->first();
+            // $managerEmail = "eriton.dewa@kpn-corp.com";
             $managerName = Employee::where('employee_id', $managerId)->pluck('fullname')->first();
             $employeeName = Employee::where('id', $userId)->pluck('fullname')->first();
 
@@ -3038,8 +3038,8 @@ class ReimburseController extends Controller
             Hotel::where('no_htl', $noHtl)->update(['approval_status' => 'Pending L2']);
 
             $managerId = Employee::where('id', $hotel->user_id)->value('manager_l2_id');
-            // $managerEmail = Employee::where('employee_id', $managerId)->value('email');
-            $managerEmail = "eriton.dewa@kpn-corp.com";
+            $managerEmail = Employee::where('employee_id', $managerId)->value('email');
+            // $managerEmail = "eriton.dewa@kpn-corp.com";
             $managerName = Employee::where('employee_id', $managerId)->value('fullname');
             $employeeName = Employee::where('id', $hotel->user_id)->pluck('fullname')->first();
 
@@ -3179,8 +3179,8 @@ class ReimburseController extends Controller
             Hotel::where('no_htl', $noHtl)->update(['approval_status' => 'Pending L2']);
 
             $managerId = Employee::where('id', $hotel->user_id)->value('manager_l2_id');
-            // $managerEmail = Employee::where('employee_id', $managerId)->value('email');
-            $managerEmail = "eriton.dewa@kpn-corp.com";
+            $managerEmail = Employee::where('employee_id', $managerId)->value('email');
+            // $managerEmail = "eriton.dewa@kpn-corp.com";
             $managerName = Employee::where('employee_id', $managerId)->value('fullname');
             $employeeName = Employee::where('id', $hotel->user_id)->pluck('fullname')->first();
 
@@ -3797,8 +3797,8 @@ class ReimburseController extends Controller
 
         if ($statusValue !== 'Draft') {
             $managerId = Employee::where('id', $userId)->pluck('manager_l1_id')->first();
-            // $managerEmail = Employee::where('employee_id', $managerId)->pluck('email')->first();
-            $managerEmail = "eriton.dewa@kpn-corp.com";
+            $managerEmail = Employee::where('employee_id', $managerId)->pluck('email')->first();
+            // $managerEmail = "eriton.dewa@kpn-corp.com";
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -3861,8 +3861,8 @@ class ReimburseController extends Controller
         if ($ticket->approval_status == 'Pending L1') {
             Tiket::where('no_tkt', $noTkt)->update(['approval_status' => 'Pending L2']);
             $managerId = Employee::where('id', $ticket->user_id)->value('manager_l2_id');
-            // $managerEmail = Employee::where('employee_id', $managerId)->value('email');
-            $managerEmail = "eriton.dewa@kpn-corp.com";
+            $managerEmail = Employee::where('employee_id', $managerId)->value('email');
+            // $managerEmail = "eriton.dewa@kpn-corp.com";
             $managerName = Employee::where('employee_id', $managerId)->pluck('fullname')->first();
             $employeeName = Employee::where('id', $ticket->user_id)->pluck('fullname')->first();
 
@@ -4234,8 +4234,8 @@ class ReimburseController extends Controller
 
         if ($statusValue !== 'Draft') {
             $managerId = Employee::where('id', Auth::id())->pluck('manager_l1_id')->first();
-            // $managerEmail = Employee::where('employee_id', $managerId)->pluck('email')->first();
-            $managerEmail = "eriton.dewa@kpn-corp.com";
+            $managerEmail = Employee::where('employee_id', $managerId)->pluck('email')->first();
+            // $managerEmail = "eriton.dewa@kpn-corp.com";
             $managerName = Employee::where('employee_id', $managerId)->pluck('fullname')->first();
             $employeeName = Employee::where('id', Auth::id())->pluck('fullname')->first();
 
@@ -4680,8 +4680,8 @@ class ReimburseController extends Controller
         } elseif ($ticket->approval_status == 'Pending L1') {
             Tiket::where('no_tkt', $noTkt)->update(['approval_status' => 'Pending L2']);
             $managerId = Employee::where('id', $ticket->user_id)->value('manager_l2_id');
-            // $managerEmail = Employee::where('employee_id', $managerId)->value('email');
-            $managerEmail = "eriton.dewa@kpn-corp.com";
+            $managerEmail = Employee::where('employee_id', $managerId)->value('email');
+            // $managerEmail = "eriton.dewa@kpn-corp.com";
             $managerName = Employee::where('employee_id', $managerId)->pluck('fullname')->first();
             $employeeName = Employee::where('id', $ticket->user_id)->pluck('fullname')->first();
 
@@ -4923,8 +4923,8 @@ class ReimburseController extends Controller
         } elseif ($ticket->approval_status == 'Pending L1') {
             Tiket::where('no_tkt', $noTkt)->update(['approval_status' => 'Pending L2']);
             $managerId = Employee::where('id', $ticket->user_id)->value('manager_l2_id');
-            // $managerEmail = Employee::where('employee_id', $managerId)->value('email');
-            $managerEmail = "eriton.dewa@kpn-corp.com";
+            $managerEmail = Employee::where('employee_id', $managerId)->value('email');
+            // $managerEmail = "eriton.dewa@kpn-corp.com";
             $managerName = Employee::where('employee_id', $managerId)->pluck('fullname')->first();
             $employeeName = Employee::where('id', $ticket->user_id)->pluck('fullname')->first();
 

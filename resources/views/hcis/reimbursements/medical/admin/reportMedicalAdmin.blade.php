@@ -271,7 +271,8 @@
     {{-- <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script> --}}
 
-    <script src="{{ asset('/js/cashAdvanced/adminPage.js') }}"></script>
+    {{-- <script src="{{ asset('/js/cashAdvanced/adminPage.js') }}"></script> --}}
+    @include('js.hcis.cashAdvanced.adminPage')
 @endsection
 @push('scripts')
     <script>
