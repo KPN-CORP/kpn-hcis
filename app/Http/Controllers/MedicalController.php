@@ -1612,13 +1612,7 @@ class MedicalController extends Controller
             foreach ($request->file('medical_proof') as $file) {
                 $filename = time() . '_' . $file->getClientOriginalName();
                 $upload_path = 'uploads/proofs/' . $employee_data->employee_id;
-                $full_path = public_path($upload_path);
-        
-                if (!is_dir($full_path)) {
-                    mkdir($full_path, 0755, true);
-                }
-        
-                $file->move($full_path, $filename);
+                $file->storeAs($upload_path, $filename, 'public');
                 $existingFiles[] = $upload_path . '/' . $filename;
             }
         }
