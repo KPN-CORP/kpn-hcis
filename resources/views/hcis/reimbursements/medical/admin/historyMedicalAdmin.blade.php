@@ -127,7 +127,14 @@
     @if (isset($item->medical_proof) && $item->medical_proof)
         @php
             // Decode JSON jika ada, jika tidak valid anggap sebagai array kosong
-            $existingFiles = json_decode($item->medical_proof, true) ?? [];
+            $decodedData = json_decode($item->medical_proof, true);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $existingFiles = $decodedData;
+            } else {
+                // Jika gagal decode, anggap sebagai string biasa
+                $existingFiles = [$item->medical_proof];
+            }
         @endphp
 
         <div class="modal fade" id="viewAttachmentModal-{{ $item->no_medic }}" tabindex="-1" aria-labelledby="viewAttachmentModalLabel-{{ $item->no_medic }}" aria-hidden="true">
