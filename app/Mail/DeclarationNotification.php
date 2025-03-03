@@ -21,6 +21,7 @@ class DeclarationNotification extends Mailable
     public $entDeclare;
     public $managerName;
     public $approvalLink;
+    public $revisionLink;
     public $rejectionLink;
     public $employeeName;
     public $base64Image;
@@ -37,6 +38,7 @@ class DeclarationNotification extends Mailable
         $entDeclare = null,
         $managerName = null,
         $approvalLink = null,
+        $revisionLink = null,
         $rejectionLink = null,
         $employeeName = null,
         $base64Image = null,
@@ -52,6 +54,7 @@ class DeclarationNotification extends Mailable
         $this->entDeclare = $entDeclare;
         $this->managerName = $managerName;
         $this->approvalLink = $approvalLink;
+        $this->revisionLink = $revisionLink;
         $this->rejectionLink = $rejectionLink;
         $this->employeeName = $employeeName;
         $this->base64Image = $base64Image;
@@ -72,6 +75,7 @@ class DeclarationNotification extends Mailable
                 'entDeclare' => $this->entDeclare,
                 'managerName' => $this->managerName,
                 'approvalLink' => $this->approvalLink,
+                'revisionLink' => $this->revisionLink,
                 'rejectionLink' => $this->rejectionLink,
                 'employeeName' => $this->employeeName,
                 'base64Image' => $this->base64Image,

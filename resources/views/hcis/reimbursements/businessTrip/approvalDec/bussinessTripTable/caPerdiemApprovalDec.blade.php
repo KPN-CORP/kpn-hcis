@@ -86,7 +86,7 @@
                     </tbody>
                     <tbody>
                         <tr>
-                            <td colspan="{{ $hasData && !$allNominalZero ? 4 : 6 }}"
+                            <td colspan="{{ $hasData && !$allNominalZero ? 3 : 4 }}"
                                 class="text-right"><b>Total</b></td>
                             <td class="text-center"><b>{{ $totalDays }} Days</b></td>
                             <td style="text-align: right"><b>Rp.
@@ -182,7 +182,7 @@
                     </tbody>
                     <tbody>
                         <tr>
-                            <td colspan="{{ $hasData && !$allNominalZero ? 4 : 6 }}"
+                            <td colspan="{{ $hasData && !$allNominalZero ? 3 : 4 }}"
                                 class="text-right"><b>Total</b></td>
                             <td class="text-center"><b>{{ $totalDays }} Days</b></td>
                             <td style="text-align: right"><b>Rp.

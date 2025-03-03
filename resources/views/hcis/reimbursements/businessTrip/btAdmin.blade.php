@@ -193,8 +193,9 @@
                                             <th>Start</th>
                                             <th>End</th>
                                             <th>CA</th>
-                                            <th>Ticket</th>
                                             <th>Hotel</th>
+                                            <th>Mess</th>
+                                            <th>Ticket</th>
                                             <th>Taxi</th>
                                             <th>Status</th>
                                             <th style="">Approve</th>
@@ -237,6 +238,56 @@
                                                         -
                                                     @endif
                                                 </td>
+
+                                                <td style="text-align: center; align-content: center">
+                                                    @if ($n->hotel == 'Ya' && isset($hotel[$n->no_sppd]))
+                                                        <a class="text-info btn-detail" data-toggle="modal"
+                                                            data-target="#detailModal" style="cursor: pointer"
+                                                            data-hotel="{{ json_encode(
+                                                                $hotel[$n->no_sppd]->map(function ($hotel) {
+                                                                    return [
+                                                                        'No. Hotel' => $hotel->no_htl,
+                                                                        'No. SPPD' => $hotel->no_sppd,
+                                                                        'Colleague No. SPPD' => $hotel->no_sppd_htl,
+                                                                        'Unit' => $hotel->unit,
+                                                                        'Hotel Name' => $hotel->nama_htl,
+                                                                        'Location' => $hotel->lokasi_htl,
+                                                                        'Room' => $hotel->jmlkmr_htl,
+                                                                        'Bed' => $hotel->bed_htl,
+                                                                        'Check In' => date('d-M-Y', strtotime($hotel->tgl_masuk_htl)),
+                                                                        'Check Out' => date('d-M-Y', strtotime($hotel->tgl_keluar_htl)),
+                                                                        'Total Days' => $hotel->total_hari,
+                                                                    ];
+                                                                }),
+                                                            ) }}">
+                                                            <u>Details</u></a>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>
+                                                <td style="text-align: center; align-content: center">
+                                                    @if ($n->mess == 'Ya' && isset($mess[$n->no_sppd]))
+                                                        <a class="text-info btn-detail" data-toggle="modal"
+                                                            data-target="#detailModal" style="cursor: pointer"
+                                                            data-mess="{{ json_encode(
+                                                                $mess[$n->no_sppd]->map(function ($mess) {
+                                                                    return [
+                                                                        'No. Mess' => $mess->no_mess,
+                                                                        'No. SPPD' => $mess->no_sppd,
+                                                                        'Unit' => $mess->unit,
+                                                                        'Mess Location' => $mess->lokasi_mess,
+                                                                        'Room' => $mess->jmlkmr_mess,
+                                                                        'Check In' => date('d-M-Y', strtotime($mess->tgl_masuk_mess)),
+                                                                        'Check Out' => date('d-M-Y', strtotime($mess->tgl_keluar_mess)),
+                                                                        'Total Days' => $mess->total_hari_mess,
+                                                                    ];
+                                                                }),
+                                                            ) }}">
+                                                            <u>Details</u></a>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>
                                                 <td style="text-align: center; align-content: center">
                                                     @if ($n->tiket == 'Ya' && isset($tickets[$n->no_sppd]))
                                                         <a class="text-info btn-detail" data-toggle="modal"
@@ -267,32 +318,6 @@
 
                                                 </td>
                                                 <td style="text-align: center; align-content: center">
-                                                    @if ($n->hotel == 'Ya' && isset($hotel[$n->no_sppd]))
-                                                        <a class="text-info btn-detail" data-toggle="modal"
-                                                            data-target="#detailModal" style="cursor: pointer"
-                                                            data-hotel="{{ json_encode(
-                                                                $hotel[$n->no_sppd]->map(function ($hotel) {
-                                                                    return [
-                                                                        'No. Hotel' => $hotel->no_htl,
-                                                                        'No. SPPD' => $hotel->no_sppd,
-                                                                        'Colleague No. SPPD' => $hotel->no_sppd_htl,
-                                                                        'Unit' => $hotel->unit,
-                                                                        'Hotel Name' => $hotel->nama_htl,
-                                                                        'Location' => $hotel->lokasi_htl,
-                                                                        'Room' => $hotel->jmlkmr_htl,
-                                                                        'Bed' => $hotel->bed_htl,
-                                                                        'Check In' => date('d-M-Y', strtotime($hotel->tgl_masuk_htl)),
-                                                                        'Check Out' => date('d-M-Y', strtotime($hotel->tgl_keluar_htl)),
-                                                                        'Total Days' => $hotel->total_hari,
-                                                                    ];
-                                                                }),
-                                                            ) }}">
-                                                            <u>Details</u></a>
-                                                    @else
-                                                        -
-                                                    @endif
-                                                </td>
-                                                <td style="text-align: center; align-content: center">
                                                     @if ($n->taksi == 'Ya' && isset($taksi[$n->no_sppd]))
                                                         <a class="text-info btn-detail" data-toggle="modal"
                                                             data-target="#detailModal" style="cursor: pointer"
@@ -310,23 +335,25 @@
                                                     <span
                                                         class="badge rounded-pill bg-{{ $n->status == 'Approved' || $n->status == 'Declaration Approved' || $n->status == 'Verified'
                                                             ? 'success'
-                                                            : ($n->status == 'Rejected' || $n->status == 'Declaration Rejected' || $n->status == 'Return/Refund'
+                                                            : ($n->status == 'Rejected' || $n->status == 'Return/Refund' || $n->status == 'Declaration Rejected'
                                                                 ? 'danger'
                                                                 : (in_array($n->status, ['Pending L1', 'Pending L2', 'Declaration L1', 'Declaration L2', 'Waiting Submitted'])
                                                                     ? 'warning'
                                                                     : ($n->status == 'Draft'
                                                                         ? 'secondary'
-                                                                        : (in_array($n->status, ['Doc Accepted'])
+                                                                        : (in_array($n->status, ['Doc Accepted', 'Request Revision', 'Declaration Revision'])
                                                                             ? 'info'
                                                                             : 'secondary')))) }}"
-                                                        style="font-size: 12px; padding: 0.5rem 1rem; cursor: {{ ($n->status == 'Rejected' || $n->status == 'Declaration Rejected') && isset($btApprovals[$n->id]) ? 'pointer' : 'default' }};"
+                                                        style="font-size: 12px; padding: 0.5rem 1rem; cursor: pointer;"
                                                         @if (($n->status == 'Rejected' || $n->status == 'Declaration Rejected') && isset($btApprovals[$n->id])) onclick="showRejectInfo('{{ $n->id }}')"
-                                                         title="Click to see rejection reason" @endif
-                                                        @if ($n->status == 'Pending L1') title="L1 Manager: {{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}"
+                                                        @elseif ($n->status == 'Pending L1')
+                                                            onclick="showManagerInfo('L1 Manager', '{{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}')"
                                                         @elseif ($n->status == 'Pending L2')
-                                                            title="L2 Manager: {{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}"
-                                                            @elseif($n->status == 'Declaration L1') title="L1 Manager: {{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}"
-                                                        @elseif($n->status == 'Declaration L2') title="L2 Manager: {{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}" @endif>
+                                                            onclick="showManagerInfo('L2 Manager', '{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}')"
+                                                        @elseif ($n->status == 'Declaration L1')
+                                                            onclick="showManagerInfo('L1 Manager', '{{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}')"
+                                                        @elseif ($n->status == 'Declaration L2')
+                                                            onclick="showManagerInfo('L2 Manager', '{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}')" @endif>
                                                         {{ $n->status == 'Approved' ? 'Request Approved' : $n->status }}
                                                     </span>
                                                 </td>
@@ -359,7 +386,7 @@
                                                         </button>
                                                     </form>
 
-                                                    <a href="{{ route('export.admin', ['id' => $n->id, 'types' => 'sppd,ca,tiket,hotel,taksi']) }}"
+                                                    <a href="{{ route('export.admin', ['id' => $n->id, 'types' => 'sppd,ca,tiket,hotel,taksi,mess']) }}"
                                                         class="btn btn-outline-info rounded-pill mb-1">
                                                         <i class="bi bi-download"></i>
                                                     </a>
@@ -592,16 +619,81 @@
                     </div>
                 </div>
 
+                {{-- Revision Reason Modal --}}
+                <div class="modal fade" id="revisiReasonModal" tabindex="-1" aria-labelledby="revisiReasonModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow">
+                            <div class="modal-header bg-light border-bottom-0">
+                                <h5 class="modal-title" id="revisiReasonModalLabel"
+                                    style="color: #333; font-weight: 600;">Revision
+                                    Reason</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body p-4">
+                                <form id="revisiReasonForm" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="_method" value="PUT">
+                                    <input type="hidden" name="status_approval" value="Request Revision">
+
+                                    <div class="mb-3">
+                                        <label for="revisi_info" class="form-label"
+                                            style="color: #555; font-weight: 500;">Please
+                                            provide a reason for Revision:</label>
+                                        <textarea class="form-control border-2" name="revisi_info" id="revisi_info" rows="4" required
+                                            style="resize: vertical; min-height: 100px;"></textarea>
+                                    </div>
+
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="button" class="btn btn-outline-primary rounded-pill me-2"
+                                            data-bs-dismiss="modal" style="min-width: 100px;">Cancel</button>
+                                        <button type="submit" class="btn btn-primary rounded-pill"
+                                            style="min-width: 100px;">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
                 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
                 <script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
                 <script>
+                    function showManagerInfo(managerType, managerName) {
+                        Swal.fire({
+                            title: managerType,
+                            text: managerName,
+                            icon: 'info',
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'OK'
+                        });
+                    }
                     document.getElementById('rejectReasonForm').addEventListener('show.bs.modal', function(event) {
                         const button = event.relatedTarget; // Button that triggered the modal
                         const btId = button.getAttribute('data-id'); // Get the ID
                         const form = this.querySelector('form');
                         if (form && btId) {
                             form.action = `/businessTrip/status/reject/${btId}`; // Update form action with correct path
+                            // Add method override for PUT request
+                            let methodInput = form.querySelector('input[name="_method"]');
+                            if (!methodInput) {
+                                methodInput = document.createElement('input');
+                                methodInput.type = 'hidden';
+                                methodInput.name = '_method';
+                                form.appendChild(methodInput);
+                            }
+                            methodInput.value = 'PUT';
+                        }
+                    });
+
+                    document.getElementById('revisiReasonModal').addEventListener('show.bs.modal', function(event) {
+                        const button = event.relatedTarget; // Button that triggered the modal
+                        const btId = button.getAttribute('data-id'); // Get the ID
+                        const form = this.querySelector('form');
+                        if (form && btId) {
+                            form.action = `/businessTrip/status/revisi/${btId}`; // Update form action with correct path
                             // Add method override for PUT request
                             let methodInput = form.querySelector('input[name="_method"]');
                             if (!methodInput) {
@@ -685,7 +777,9 @@
                                 if (status === 'Pending L1') {
                                     l1Container.innerHTML = `
                                     <button type="submit" class="btn btn-success btn-sm rounded-pill me-2" data-id="${btId}">Approve</button>
-                                    <button type="button" class="btn btn-outline-danger btn-sm rounded-pill"
+                                    <button type="button" class="btn btn-outline-info btn-sm rounded-pill me-2"
+                                            data-bs-toggle="modal" data-bs-target="#revisiReasonModal" data-id="${btId}">Revision</button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm rounded-pill me-2"
                                             data-bs-toggle="modal" data-bs-target="#rejectReasonForm" data-id="${btId}">Reject</button>
                                 `;
                                 } else {
@@ -696,6 +790,8 @@
                                 if (status === 'Pending L2') {
                                     l2Container.innerHTML = `
                                         <button type="submit" class="btn btn-success btn-sm rounded-pill me-2" data-id="${btId}">Approve</button>
+                                        <button type="button" class="btn btn-outline-info btn-sm rounded-pill me-2"
+                                                data-bs-toggle="modal" data-bs-target="#revisiReasonModal" data-id="${btId}">Revision</button>
                                         <button type="button" class="btn btn-outline-danger btn-sm rounded-pill"
                                                 data-bs-toggle="modal" data-bs-target="#rejectReasonForm" data-id="${btId}">Reject</button>
                                     `;
@@ -704,10 +800,12 @@
                                 }
                                 if (status === 'Declaration L1') {
                                     l1ContainerDeclare.innerHTML = `
-                    <button type="submit" class="btn btn-success btn-sm rounded-pill me-2" data-id="${btId}">Approve Declaration</button>
-                    <button type="button" class="btn btn-outline-danger btn-sm rounded-pill"
-                            data-bs-toggle="modal" data-bs-target="#rejectReasonForm" data-id="${btId}">Reject</button>
-                `;
+                                        <button type="submit" class="btn btn-success btn-sm rounded-pill me-2" data-id="${btId}">Approve Declaration</button>
+                                        <button type="button" class="btn btn-outline-info btn-sm rounded-pill me-2"
+                                                data-bs-toggle="modal" data-bs-target="#revisiReasonModal" data-id="${btId}">Revision</button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill"
+                                                data-bs-toggle="modal" data-bs-target="#rejectReasonForm" data-id="${btId}">Reject</button>
+                                    `;
                                 } else {
                                     l1ContainerDeclare.innerHTML =
                                         `<div id="approvalDataL1Declare" class="w-100"></div>`;
@@ -716,10 +814,12 @@
                                 // Handle L2 Declaration container content
                                 if (status === 'Declaration L2') {
                                     l2ContainerDeclare.innerHTML = `
-                    <button type="submit" class="btn btn-success btn-sm rounded-pill me-2" data-id="${btId}">Approve Declaration</button>
-                    <button type="button" class="btn btn-outline-danger btn-sm rounded-pill"
-                            data-bs-toggle="modal" data-bs-target="#rejectReasonForm" data-id="${btId}">Reject</button>
-                `;
+                                        <button type="submit" class="btn btn-success btn-sm rounded-pill me-2" data-id="${btId}">Approve Declaration</button>
+                                        <button type="button" class="btn btn-outline-info btn-sm rounded-pill me-2"
+                                                data-bs-toggle="modal" data-bs-target="#revisiReasonModal" data-id="${btId}">Revision</button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill"
+                                                data-bs-toggle="modal" data-bs-target="#rejectReasonForm" data-id="${btId}">Reject</button>
+                                    `;
                                 } else {
                                     l2ContainerDeclare.innerHTML =
                                         `<div id="approvalDataL2Declare" class="w-100"></div>`;
@@ -742,6 +842,8 @@
                                         .approval_status === 'Approved');
                                     const l1Rejections = filteredApprovals.filter(a => a.layer === 1 && a
                                         .approval_status === 'Rejected');
+                                    const l1Revision = filteredApprovals.filter(a => a.layer === 1 && a
+                                        .approval_status === 'Request Revision');
                                     if (l1ApprovalsOnce.length > 0) {
                                         approvalDataL1.innerHTML = l1ApprovalsOnce.map(approval => `
                                                         <div class="border rounded p-2 mb-2">
@@ -770,6 +872,16 @@
                                                             <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
                                                         </div>
                                                     `).join('');
+                                    } else if (l1Revision.length > 0) {
+                                        approvalDataL1.innerHTML += l1Revision.map(rejection => `
+                                          <div class="alert alert-info">
+                                                            <strong>Status:</strong> ${rejection.approval_status}<br>
+                                                            <strong>Rejected By:</strong> ${rejection.employee_id}<br>
+                                                            <strong>Rejected At:</strong> ${formatDateToCustomString(rejection.approved_at)}<br>
+                                                            <strong>Rejection Info:</strong> ${rejection.reject_info ? rejection.reject_info.replace(/\n/g, '<br>') : 'No additional info provided'}<br>
+                                                            <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                                        </div>
+                                                    `).join('');
                                     } else {
                                         approvalDataL1.innerHTML =
                                             '<p class="text-muted">No L1 Request found</p>';
@@ -781,6 +893,8 @@
                                         .approval_status === 'Approved');
                                     const l2Rejections = filteredApprovals.filter(a => a.layer === 2 && a
                                         .approval_status === 'Rejected');
+                                    const l2Revision = filteredApprovals.filter(a => a.layer === 2 && a
+                                        .approval_status === 'Request Revision');
                                     if (l2Approvals.length > 0) {
                                         approvalDataL2.innerHTML = l2Approvals.map(approval => `
                                             <div class="border rounded p-2 mb-2">
@@ -800,6 +914,16 @@
                                             <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
                                         </div>
                                     `).join('');
+                                    } else if (l2Revision.length > 0) {
+                                        approvalDataL2.innerHTML += l2Revision.map(rejection => `
+                                        <div class="alert alert-info">
+                                            <strong>Status:</strong> ${rejection.approval_status}<br>
+                                            <strong>Rejected By:</strong> ${rejection.employee_id}<br>
+                                            <strong>Rejected At:</strong> ${formatDateToCustomString(rejection.approved_at)}<br>
+                                            <strong>Rejection Info:</strong> ${rejection.reject_info ? rejection.reject_info.replace(/\n/g, '<br>') : 'No additional info provided'}<br>
+                                            <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                        </div>
+                                    `).join('');
                                     } else {
                                         approvalDataL2.innerHTML =
                                             '<p class="text-muted">No L2 Request found</p>';
@@ -813,6 +937,10 @@
                                     const l1DeclarationsOnce = filteredApprovals.filter(a =>
                                         a.layer === 1 &&
                                         (a.approval_status === 'Declaration Approved')
+                                    );
+                                    const l1DeclarationsRevision = filteredApprovals.filter(a =>
+                                        a.layer === 1 &&
+                                        (a.approval_status === 'Declaration Revision')
                                     );
                                     const l1DeclarationsReject = filteredApprovals.filter(a =>
                                         a.layer === 1 &&
@@ -836,6 +964,16 @@
                                             <strong>Processed By:</strong> ${approval.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
                                         </div>
                                     `).join('');
+                                    } else if (l1DeclarationsRevision.length > 0) {
+                                        approvalDataL1Declare.innerHTML += l1DeclarationsRevision.map(rejection => `
+                                        <div class="alert alert-info">
+                                            <strong>Status:</strong> ${rejection.approval_status}<br>
+                                            <strong>Rejected By:</strong> ${rejection.employee_id}<br>
+                                            <strong>Rejected At:</strong> ${formatDateToCustomString(rejection.approved_at)}<br>
+                                            <strong>Rejection Info:</strong> ${rejection.reject_info || 'No additional info provided'}<br>
+                                            <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                        </div>
+                                    `).join('');
                                     } else if (l1DeclarationsReject.length > 0) {
                                         approvalDataL1Declare.innerHTML += l1DeclarationsReject.map(rejection => `
                                         <div class="border rounded p-2 mb-2 bg-warning">
@@ -857,6 +995,10 @@
                                         a.layer === 2 &&
                                         (a.approval_status === 'Declaration Approved')
                                     );
+                                    const l2DeclarationsRevision = filteredApprovals.filter(a =>
+                                        a.layer === 2 &&
+                                        (a.approval_status === 'Declaration Revision')
+                                    );
                                     const l2DeclarationsReject = filteredApprovals.filter(a =>
                                         a.layer === 2 &&
                                         (a.approval_status === 'Declaration Rejected')
@@ -868,6 +1010,16 @@
                                             <strong>Approved By:</strong> ${approval.employee_id}<br>
                                             <strong>Approved At:</strong> ${formatDateToCustomString(approval.approved_at)}<br>
                                             <strong>Processed By:</strong> ${approval.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                        </div>
+                                    `).join('');
+                                    } else if (l2DeclarationsRevision.length > 0) {
+                                        approvalDataL2Declare.innerHTML += l2DeclarationsRevision.map(rejection => `
+                                        <div class="alert alert-info">
+                                            <strong>Status:</strong> ${rejection.approval_status}<br>
+                                            <strong>Rejected By:</strong> ${rejection.employee_id}<br>
+                                            <strong>Rejected At:</strong> ${formatDateToCustomString(rejection.approved_at)}<br>
+                                            <strong>Rejection Info:</strong> ${rejection.reject_info || 'No additional info provided'}<br>
+                                            <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
                                         </div>
                                     `).join('');
                                     } else if (l2DeclarationsReject.length > 0) {
@@ -1010,6 +1162,7 @@
                             var tiket = $(this).data('tiket');
                             var hotel = $(this).data('hotel');
                             var taksi = $(this).data('taksi');
+                            var mess = $(this).data('mess');
 
                             function createTableHtml(data, title) {
                                 var tableHtml = '<h5>' + title + '</h5>';
@@ -1085,6 +1238,10 @@
                                 if (taksi && taksi !== 'undefined') {
                                     var taksiData = typeof taksi === 'string' ? JSON.parse(taksi) : taksi;
                                     content += createTableHtml(taksiData, 'Taxi Detail');
+                                }
+                                if (mess && mess !== 'undefined') {
+                                    var messData = typeof mess === 'string' ? JSON.parse(mess) : mess;
+                                    content += createTableHtml(messData, 'Mess Detail');
                                 }
 
                                 if (content !== '') {

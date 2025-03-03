@@ -208,7 +208,7 @@
                                                                 ? 'warning'
                                                                 : ($transaction->approval_status == 'Draft'
                                                                     ? 'secondary'
-                                                                    : (in_array($transaction->approval_status, ['Doc Accepted'])
+                                                                    : (in_array($transaction->approval_status, ['Doc Accepted', 'Request Revision'])
                                                                         ? 'info'
                                                                         : 'secondary')))) }}"
                                                     style="font-size: 12px; padding: 0.5rem 1rem; cursor: {{ ($transaction->approval_status == 'Rejected' || $transaction->approval_status == 'Declaration Rejected') && isset($ticketApprovals[$transaction->id]) ? 'pointer' : 'default' }};"
@@ -225,7 +225,7 @@
                                                 </span>
                                             </td>
                                             <td class="text-center">
-                                                @if ($transaction->approval_status == 'Draft')
+                                                @if ($transaction->approval_status == 'Draft' || $transaction->approval_status == 'Request Revision')
                                                     <a href="{{ route('ticket.edit', encrypt($transaction->id)) }}"
                                                         class="btn btn-sm rounded-pill btn-outline-warning" title="Edit">
                                                         <i class="ri-edit-box-line"></i>

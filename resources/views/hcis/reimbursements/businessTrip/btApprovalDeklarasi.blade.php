@@ -265,6 +265,11 @@
                                 Reject
                             </button>
 
+                            <button type="button" class="btn btn-outline-info rounded-pill" data-bs-toggle="modal"
+                                data-bs-target="#revisiReasonModal" style="padding: 0.5rem 1rem; margin-right: 5px">
+                                Revisi
+                            </button>
+
                             <form method="POST" action="{{ route('confirm.deklarasi', ['id' => $n->id]) }}"
                                 style="display: inline-block; margin-right: 5px;" class="status-form"
                                 id="approve-form-{{ $n->id }}">
@@ -322,6 +327,42 @@
             </div>
         </div>
     </div>
+
+    <!-- Revisi Reason Modal -->
+    <div class="modal fade" id="revisiReasonModal" tabindex="-1" aria-labelledby="revisiReasonModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-light border-bottom-0">
+                    <h5 class="modal-title" id="revisiReasonModalLabel" style="color: #333; font-weight: 600;">Revision
+                        Reason</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="revisiReasonForm" method="POST" action="{{ route('confirm.deklarasi', ['id' => $n->id]) }}">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="status_approval" value="Declaration Revision">
+
+                        <div class="mb-3">
+                            <label for="revisi_info" class="form-label" style="color: #555; font-weight: 500;">Please
+                                provide a reason for Revision:</label>
+                            <textarea class="form-control border-2" name="revisi_info" id="revisi_info" rows="4" required
+                                style="resize: vertical; min-height: 100px;"></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="button" class="btn btn-outline-primary rounded-pill me-2"
+                                data-bs-dismiss="modal" style="min-width: 100px;">Cancel</button>
+                            <button type="submit" class="btn btn-primary rounded-pill"
+                                style="min-width: 100px;">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Success Modal -->
     <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">

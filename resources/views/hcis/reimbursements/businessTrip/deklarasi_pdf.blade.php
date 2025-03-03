@@ -178,7 +178,8 @@
             <td class="label">Start Date</td>
             <td class="colon">:</td>
             <td class="value">{{ \Carbon\Carbon::parse($transactions->start_date)->format('d-M-y') }} to
-                {{ \Carbon\Carbon::parse($transactions->end_date)->format('d-M-y') }} ({{ $transactions->total_days + 1 }}
+                {{ \Carbon\Carbon::parse($transactions->end_date)->format('d-M-y') }}
+                ({{ $transactions->total_days + 1 }}
                 days)</td>
         </tr>
         <tr>
@@ -750,17 +751,23 @@
                         !empty($detailCA['detail_meals'][0]['keterangan']))
                     <table class="table-approve">
                         <tr>
-                            <th colspan="3"><b>Meals Plan :</b></th>
+                            <th colspan="6"><b>Meals Plan :</b></th>
                         </tr>
                         <tr class="head-row">
-                            <td style="width:12%">Date</td>
+                            <td style="width:12%">Start Date</td>
+                            <td style="width:12%">End Date</td>
+                            <td style="width:12%">Company Code</td>
+                            <td style="width:12%">Total Days</td>
                             <td>Information</td>
                             <td style="width:20%">Amount</td>
                         </tr>
 
                         @foreach ($detailCA['detail_meals'] as $meals)
                             <tr style="text-align: center">
-                                <td>{{ \Carbon\Carbon::parse($meals['tanggal'])->format('d-M-y') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($meals['start_date'])->format('d-M-y') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($meals['end_date'])->format('d-M-y') }}</td>
+                                <td>{{ $perdiem['company_code'] }}</td>
+                                <td>{{ $perdiem['total_days'] }} Days</td>
                                 <td style="text-align: left">{{ $meals['keterangan'] }}</td>
                                 <td>
                                     <span style="float: left; margin-left:4px">Rp.</span>
@@ -770,7 +777,7 @@
                             </tr>
                         @endforeach
                         <tr class="total-row">
-                            <td colspan="2" class="head-row">Total</td>
+                            <td colspan="5" class="head-row">Total</td>
                             <td>
                                 <span style="float: left; margin-left:4px">Rp.</span>
                                 <span
@@ -786,17 +793,23 @@
                     !empty($declareCA['detail_meals'][0]['keterangan']))
                 <table class="table-approve">
                     <tr>
-                        <th colspan="3"><b>Meals Declaration :</b></th>
+                        <th colspan="6"><b>Meals Declaration :</b></th>
                     </tr>
                     <tr class="head-row">
-                        <td style="width:12%">Date</td>
+                        <td style="width:12%">Start Date</td>
+                        <td style="width:12%">End Date</td>
+                        <td style="width:12%">Company Code</td>
+                        <td style="width:12%">Total Days</td>
                         <td>Information</td>
                         <td style="width:20%">Amount</td>
                     </tr>
 
                     @foreach ($declareCA['detail_meals'] as $meals)
                         <tr style="text-align: center">
-                            <td>{{ \Carbon\Carbon::parse($meals['tanggal'])->format('d-M-y') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($meals['start_date'])->format('d-M-y') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($meals['end_date'])->format('d-M-y') }}</td>
+                            <td>{{ $perdiem['company_code'] }}</td>
+                            <td>{{ $perdiem['total_days'] }} Days</td>
                             <td style="text-align: left">{{ $meals['keterangan'] }}</td>
                             <td>
                                 <span style="float: left; margin-left:4px">Rp.</span>
@@ -805,7 +818,7 @@
                         </tr>
                     @endforeach
                     <tr class="total-row">
-                        <td colspan="2" class="head-row">Total</td>
+                        <td colspan="5" class="head-row">Total</td>
                         <td>
                             <span style="float: left; margin-left:4px">Rp.</span>
                             <span
