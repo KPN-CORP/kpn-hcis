@@ -89,6 +89,9 @@
                         onclick="showPendingAlert(); return false;">
                         <i class="bi bi-plus-circle"></i> Add Data
                     </a>
+                    {{-- <a href="{{ route('cashadvanced.form') }}" class="btn btn-outline-primary rounded-pill" >
+                        <i class="bi bi-plus-circle"></i> Add Data
+                    </a> --}}
                 @else
                     <a href="{{ route('cashadvanced.form') }}" class="btn btn-outline-primary rounded-pill" >
                         <i class="bi bi-plus-circle"></i> Add Data
