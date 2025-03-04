@@ -170,22 +170,13 @@
                     <td style="text-align: center; vertical-align: middle;">
                         <h1>{{ $result[$n->id]['ext_end_date'] ?? '' }}</h1>
                         @if ($n->status == 'Extend L1' || $n->status == 'Extend L2')
-                            @php
-                                // Cari transaksi terkait berdasarkan no_sppd
-                                $relatedTransactions = $caTransactions[$n->no_sppd] ?? collect();
-                                $firstTransaction = $relatedTransactions->first(); // Ambil satu transaksi pertama
-                        
-                                // Ambil ID dari transaksi pertama jika ada
-                                $ca_id = $firstTransaction->id ?? null;
-                                $extendInfo = $extendTime[$ca_id] ?? null;
-                            @endphp
                             <button type="button" class="btn btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#modalExtend" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;"
                                 data-no-id="{{ $n->id }}"
                                 data-no-ca="{{ $n->no_sppd }}"
                                 data-start-date="{{ $n->mulai }}"
                                 data-end-date="{{ $n->kembali }}"
-                                data-end-date-ext="{{ $extendInfo['ext_end_date'] ?? '' }}"  
-                                data-reason-ext="{{ $extendInfo['reason_extend'] }}"
+                                data-end-date-ext="{{ $extendTime[$n->id]['ext_end_date'] ?? '' }}"  
+                                data-reason-ext="{{ $extendTime[$n->id]['reason_extend'] }}"
                             >
                                 Act
                             </button>
