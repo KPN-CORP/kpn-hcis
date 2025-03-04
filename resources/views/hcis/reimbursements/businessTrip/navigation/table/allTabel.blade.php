@@ -6,6 +6,7 @@
                 <th>Name</th>
                 <th class="sticky-col-header">No SPPD</th>
                 <th>Destination</th>
+                <th>Purpose</th>
                 <th>Start</th>
                 <th>End</th>
                 <th>CA</th>
@@ -27,6 +28,7 @@
                     <td>{{ $n->nama }}</td>
                     <td class="sticky-col">{{ $n->no_sppd }}</td>
                     <td>{{ $n->tujuan }}</td>
+                    <td>{{ $n->keperluan }}</td>
                     <td>{{ \Carbon\Carbon::parse($n->mulai)->format('d-M-Y') }}</td>
                     <td>{{ \Carbon\Carbon::parse($n->kembali)->format('d-M-Y') }}</td>
                     <td style="text-align: center; align-content: center">

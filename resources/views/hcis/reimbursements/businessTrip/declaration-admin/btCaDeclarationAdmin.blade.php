@@ -61,7 +61,7 @@
             </div>
         </div>
         <div class="col-md-6 mb-2">
-            <label class="form-label">Total Cash Advanced Deklarasi</label>
+            <label class="form-label">Total Declaration</label>
             <div class="input-group">
                 <div class="input-group-append">
                     <span class="input-group-text">Rp</span>

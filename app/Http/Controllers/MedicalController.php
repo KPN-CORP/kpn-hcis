@@ -313,6 +313,11 @@ class MedicalController extends Controller
             ->count() >= 1;
         // dd($isProbation);
 
+        $hasScalling = HealthCoverage::where('employee_id', $employee_id)
+            ->where('period', $currentYear)
+            ->where('disease', 'Dental (Scalling)')
+            ->count() >= 1;
+
         $medicalBalances = HealthPlan::where('employee_id', $employee_id)
             // ->where('period', $currentYear)
             ->get();
@@ -331,7 +336,7 @@ class MedicalController extends Controller
         $parentLink = 'Medical';
         $link = 'Add Medical Coverage Usage';
 
-        return view('hcis.reimbursements.medical.form.medicalForm', compact('diseases', 'medical_type', 'families', 'parentLink', 'link', 'employee_name', 'balanceData', 'hasGlasses', 'isMarried', 'isProbation'));
+        return view('hcis.reimbursements.medical.form.medicalForm', compact('diseases', 'medical_type', 'families', 'parentLink', 'link', 'employee_name', 'balanceData', 'hasGlasses', 'isMarried', 'isProbation','hasScalling'));
     }
 
     public function medicalCreate(Request $request)
