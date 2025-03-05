@@ -54,7 +54,7 @@
             <!-- Amount -->
             <div class="col-md-6 mb-2">
                 <label class="form-label">Amount</label>
-                <div class="input-group mb-3">
+                <div class="input-group">
                     <div class="input-group-append">
                         <span class="input-group-text">Rp</span>
                     </div>
@@ -66,10 +66,8 @@
             </div>
             <!-- Information -->
             <div class="col-md-12">
-                <div class="mb-2">
-                    <label class="form-label">Information</label>
-                    <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ..."></textarea>
-                </div>
+                <label class="form-label">Information</label>
+                <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ..."></textarea>
             </div>
         </div>
         <!-- Buttons -->
@@ -149,13 +147,10 @@
                                     placeholder="0">
                             </div>
                         </div>
-
                         <!-- Information -->
                         <div class="col-md-12 mb-2">
-                            <div class="mb-2">
-                                <label class="form-label">Information</label>
-                                <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ...">{{ $meals['keterangan'] }}</textarea>
-                            </div>
+                            <label class="form-label">Information</label>
+                            <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ...">{{ $meals['keterangan'] }}</textarea>
                         </div>
                     </div>
                     <div class="row mt-3">
@@ -231,7 +226,7 @@
                     </div>
                     <div class="col-md-6 mb-2">
                         <label class="form-label">Amount</label>
-                        <div class="input-group mb-3">
+                        <div class="input-group">
                             <div class="input-group-append">
                                 <span class="input-group-text">Rp</span>
                             </div>
@@ -241,13 +236,10 @@
                                 oninput="formatInput(this)" onblur="formatOnBlur(this)">
                         </div>
                     </div>
-
                     <!-- Information -->
                     <div class="col-md-12">
-                        <div class="mb-2">
-                            <label class="form-label">Information</label>
-                            <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ..."></textarea>
-                        </div>
+                        <label class="form-label">Information</label>
+                        <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ..."></textarea>
                     </div>
                 </div>
                 <div class="row mt-3">
