@@ -66,7 +66,7 @@
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Amount</label>
-                            <div class="input-group mb-3">
+                            <div class="input-group">
                                 <div class="input-group-append">
                                     <span class="input-group-text">Rp</span>
                                 </div>
@@ -80,7 +80,6 @@
                             </div>
                         </div>
                     </div>
-                    <br>
                     <div class="row">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-sm btn-outline-warning" style="margin-right: 10px" onclick="clearFormPenginapan(${formCountPenginapan}, event)">Reset</button>
@@ -155,7 +154,7 @@
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Amount</label>
-                            <div class="input-group mb-3">
+                            <div class="input-group">
                                 <div class="input-group-append">
                                     <span class="input-group-text">Rp</span>
                                 </div>
@@ -167,7 +166,6 @@
                             </div>
                         </div>
                     </div>
-                    <br>
                     <div class="row">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-sm btn-outline-warning" style="margin-right: 10px"
@@ -248,7 +246,7 @@
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Amount</label>
-                        <div class="input-group mb-3">
+                        <div class="input-group">
                             <div class="input-group-append">
                                 <span class="input-group-text">Rp</span>
                             </div>
@@ -260,7 +258,6 @@
                         </div>
                     </div>
                 </div>
-                <br>
                 <div class="row">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-sm btn-outline-warning" style="margin-right: 10px"

@@ -164,7 +164,7 @@
                                                                 <a href="{{ Storage::url($file) }}" target="_blank" rel="noopener noreferrer">
                                                                     <img src="{{ Storage::url($file) }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
                                                                 </a>
-                                                            @elseif($extension === 'pdf')
+                                                                @elseif (in_array($extension, ['pdf', 'PDF']))
                                                                 <a href="{{ Storage::url($file) }}" target="_blank" rel="noopener noreferrer">
 
                                                                     <img src="{{ asset('images/pdf_icon.png') }}" alt="PDF File">

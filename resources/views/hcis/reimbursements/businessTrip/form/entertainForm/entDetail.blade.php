@@ -89,7 +89,6 @@
                         <textarea name="enter_fee_e_detail[]" class="form-control" placeholder="Write more details ..."></textarea>
                     </div>
                 </div>
-                <br>
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormDetail(1, event)">Reset</button>

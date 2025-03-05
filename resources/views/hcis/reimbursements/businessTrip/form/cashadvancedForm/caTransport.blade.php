@@ -36,7 +36,7 @@
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Amount</label>
-                                <div class="input-group mb-3">
+                                <div class="input-group">
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
@@ -51,13 +51,10 @@
                                             onblur="formatOnBlur(this)" onchange="calculateTotalNominalBTTransport()">
                                 </div>
                             </div>
-
                             <!-- Information -->
-                            <div class="col-md-12 mb-2">
-                                <div class="mb-2">
+                            <div class="col-md-12">
                                     <label class="form-label">Information</label>
                                     <textarea name="keterangan_bt_transport[]" class="form-control" placeholder="Write your information here ..."></textarea>
-                                </div>
                             </div>
                         </div>
                         <div class="row mt-3">
@@ -109,7 +106,7 @@
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Amount</label>
-                            <div class="input-group mb-3">
+                            <div class="input-group">
                                 <div class="input-group-append">
                                     <span class="input-group-text">Rp</span>
                                 </div>
@@ -120,13 +117,10 @@
                                     oninput="formatInput(this)" onblur="formatOnBlur(this)">
                             </div>
                         </div>
-
                         <!-- Information -->
-                        <div class="col-md-12 mb-2">
-                            <div class="mb-2">
-                                <label class="form-label">Information</label>
-                                <textarea name="keterangan_bt_transport[]" class="form-control" placeholder="Write your information here ...">{{ $transport['keterangan'] }}</textarea>
-                            </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Information</label>
+                            <textarea name="keterangan_bt_transport[]" class="form-control" placeholder="Write your information here ...">{{ $transport['keterangan'] }}</textarea>
                         </div>
                     </div>
                     <br>
@@ -189,7 +183,7 @@
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Amount</label>
-                        <div class="input-group mb-3">
+                        <div class="input-group">
                             <div class="input-group-append">
                                 <span class="input-group-text">Rp</span>
                             </div>
@@ -199,16 +193,12 @@
                                 oninput="formatInput(this)" onblur="formatOnBlur(this)">
                         </div>
                     </div>
-
                     <!-- Information -->
-                    <div class="col-md-12 mb-2">
-                        <div class="mb-2">
-                            <label class="form-label">Information</label>
-                            <textarea name="keterangan_bt_transport[]" class="form-control" placeholder="Write your information here ..."></textarea>
-                        </div>
+                    <div class="col-md-12">
+                        <label class="form-label">Information</label>
+                        <textarea name="keterangan_bt_transport[]" class="form-control" placeholder="Write your information here ..."></textarea>
                     </div>
                 </div>
-                <br>
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-sm btn-outline-warning" style="margin-right: 10px"
