@@ -92,7 +92,6 @@ function addMoreFormRelationDec(event) {
                             class="form-control" placeholder="Write your purpose ..."></textarea>
                     </div>
                 </div>
-                <br>
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormRelation(${formCountRelation}, event)">Reset</button>
@@ -191,7 +190,6 @@ function addMoreFormRelationReq(event) {
                             class="form-control" placeholder="Write your purpose ..."></textarea>
                     </div>
                 </div>
-                <br>
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormRelation(${formCountRelation}, event)">Reset</button>

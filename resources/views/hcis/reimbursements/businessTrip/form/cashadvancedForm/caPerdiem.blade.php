@@ -71,14 +71,14 @@
                         </div>
                     </div>
                     <!-- Amount -->
-                    <div class="mb-2">
+                    <div class="col-md-12">
                         <label class="form-label">Amount</label>
-                    </div>
                     <div class="input-group">
                         <div class="input-group-append">
                             <span class="input-group-text">Rp</span>
                         </div>
                         <input class="form-control form-control-sm bg-light" name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_${formCountPerdiem}" type="text" value="0" onchange="onNominalChange()" readonly>
+                    </div>
                     </div>
                     <!-- Action Buttons -->
                     <div class="row mt-3">
@@ -289,16 +289,15 @@
                         </div>
                     </div>
                 </div>
-                <div class="mb-2">
+                <div class="col-md-12">
                     <label class="form-label">Amount</label>
-                </div>
-                <div class="input-group">
-                    <div class="input-group-append">
-                        <span class="input-group-text">Rp</span>
+                    <div class="input-group">
+                        <div class="input-group-append">
+                            <span class="input-group-text">Rp</span>
+                        </div>
+                        <input class="form-control form-control-sm bg-light" name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_1" type="text" value="0" onchange="onNominalChange()" readonly>
                     </div>
-                    <input class="form-control form-control-sm bg-light" name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_1" type="text" value="0" onchange="onNominalChange()" readonly>
                 </div>
-                <br>
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-sm btn-outline-warning" style="margin-right: 10px" onclick="clearFormPerdiem(1, event)">Reset</button>
