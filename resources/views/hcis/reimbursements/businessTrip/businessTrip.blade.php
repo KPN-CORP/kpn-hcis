@@ -331,7 +331,7 @@
                                                         ? 'success'
                                                         : ($n->status == 'Rejected' || $n->status == 'Return/Refund' || $n->status == 'Declaration Rejected'
                                                             ? 'danger'
-                                                            : (in_array($n->status, ['Pending L1', 'Pending L2', 'Declaration L1', 'Declaration L2', 'Waiting Submitted', 'Extend L1'])
+                                                            : (in_array($n->status, ['Pending L1', 'Pending L2', 'Declaration L1', 'Declaration L2', 'Waiting Submitted', 'Extend L1', 'Extend L2'])
                                                                 ? 'warning'
                                                                 : ($n->status == 'Draft'
                                                                     ? 'secondary'
@@ -347,7 +347,12 @@
                                                     @elseif ($n->status == 'Declaration L1')
                                                         onclick="showManagerInfo('L1 Manager', '{{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}')"
                                                     @elseif ($n->status == 'Declaration L2')
-                                                        onclick="showManagerInfo('L2 Manager', '{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}')" @endif>
+                                                        onclick="showManagerInfo('L2 Manager', '{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}')" 
+                                                        @elseif ($n->status == 'Extend L1')
+                                                        onclick="showManagerInfo('L1 Manager', '{{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}')"
+                                                    @elseif ($n->status == 'Extend L2')
+                                                        onclick="showManagerInfo('L2 Manager', '{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}')" 
+                                                    @endif>
                                                     {{ $n->status == 'Approved' ? 'Request Approved' : $n->status }}
                                                 </span>
                                             </td>

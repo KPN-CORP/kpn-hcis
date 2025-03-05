@@ -335,7 +335,7 @@
                                                             ? 'success'
                                                             : ($n->status == 'Rejected' || $n->status == 'Return/Refund' || $n->status == 'Declaration Rejected'
                                                                 ? 'danger'
-                                                                : (in_array($n->status, ['Pending L1', 'Pending L2', 'Declaration L1', 'Declaration L2', 'Waiting Submitted'])
+                                                                : (in_array($n->status, ['Pending L1', 'Pending L2', 'Declaration L1', 'Declaration L2', 'Waiting Submitted', 'Extend L1', 'Extend L2'])
                                                                     ? 'warning'
                                                                     : ($n->status == 'Draft'
                                                                         ? 'secondary'
@@ -425,7 +425,7 @@
                 {{-- APPROVAL MODAL --}}
                 <div class="modal fade" id="approvalDecModal" tabindex="-1" aria-labelledby="approvalDecModalLabel"
                     aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
+                    <div class="modal-dialog modal-xl">  
                         <div class="modal-content">
                             <div class="modal-header bg-primary text-white">
                                 <h5 class="modal-title" id="approvalDecModalLabel">Approval Business Trip Update - <span
@@ -441,7 +441,7 @@
                                     <div class="modal-body">
                                         <div class="row">
                                             <!-- Manager L1 -->
-                                            <div class="col-md-6 mb-3">
+                                            <div class="col-md-4 mb-3">
                                                 <div
                                                     class="d-flex flex-column align-items-start border-danger-subtle px-2 mx-2 py-2">
                                                     <label class="col-form-label mb-2 text-dark">Approval Request:</label>
@@ -471,7 +471,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6 mb-3">
+                                            <div class="col-md-4 mb-3">
                                                 <div class="d-flex flex-column align-items-start p-2">
                                                     <label class="col-form-label mb-2 text-dark">Approval
                                                         Declaration:</label>
@@ -496,6 +496,36 @@
                                                         </div>
                                                         <div class="mt-2 d-flex justify-content-start"
                                                             id="l2ActionContainerDeclare">
+                                                            <!-- Will be populated by JavaScript -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <div
+                                                    class="d-flex flex-column align-items-start border-danger-subtle px-2 mx-2 py-2">
+                                                    <label class="col-form-label mb-2 text-dark">Extending Request:</label>
+
+                                                    <!-- Manager L1 Name & Buttons -->
+                                                    <div class="mb-3 w-100">
+                                                        <div>
+                                                            <strong>Manager L1:</strong>
+                                                            <span id="managerL1NameExtend"></span>
+                                                        </div>
+                                                        <div class="mt-2 d-flex justify-content-start"
+                                                            id="l1ActionContainerExtend">
+                                                            <!-- Will be populated by JavaScript -->
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Manager L2 Name & Buttons -->
+                                                    <div class="mb-3 w-100">
+                                                        <div>
+                                                            <strong>Manager L2:</strong>
+                                                            <span id="managerL2NameExtend"></span>
+                                                        </div>
+                                                        <div class="mt-2 d-flex justify-content-start"
+                                                            id="l2ActionContainerExtend">
                                                             <!-- Will be populated by JavaScript -->
                                                         </div>
                                                     </div>
@@ -657,6 +687,32 @@
                     </div>
                 </div>
 
+                {{-- Extend Confirm Modal --}}
+                <div class="modal fade" id="extendConfirm" tabindex="-1" aria-labelledby="extendConfirmLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow">
+                            <div class="modal-header bg-light border-bottom-0">
+                                <h5 class="modal-title" id="extendConfirmLabel" style="color: #333; font-weight: 600;">Confirmation Reject Extend</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form id="extendReasonForm" method="POST">
+                                @csrf
+                                <div class="modal-body p-3 text-center">
+                                    <div class="text-danger">
+                                        <i class="bi bi-exclamation-circle-fill" style="font-size: 8rem;"></i>
+                                        <p class="mt-2 fw-semibold">Apakah Anda yakin ingin mereject?</p>
+                                    </div>
+                                    <div class="d-flex justify-content-center mt-3">
+                                        <button type="button" class="btn btn-outline-secondary rounded-pill me-2" data-bs-dismiss="modal" style="min-width: 90px;">Cancel</button>
+                                        <button type="submit" class="btn btn-danger rounded-pill" name="action_ca_reject" value="Extend Reject" style="min-width: 90px;">Reject</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+
                 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
                 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
                 <script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
@@ -694,6 +750,24 @@
                         const form = this.querySelector('form');
                         if (form && btId) {
                             form.action = `/businessTrip/status/revisi/${btId}`; // Update form action with correct path
+                            // Add method override for PUT request
+                            let methodInput = form.querySelector('input[name="_method"]');
+                            if (!methodInput) {
+                                methodInput = document.createElement('input');
+                                methodInput.type = 'hidden';
+                                methodInput.name = '_method';
+                                form.appendChild(methodInput);
+                            }
+                            methodInput.value = 'PUT';
+                        }
+                    });
+
+                    document.getElementById('extendConfirm').addEventListener('show.bs.modal', function(event) {
+                        const button = event.relatedTarget; // Button that triggered the modal
+                        const btId = button.getAttribute('data-id'); // Get the ID
+                        const form = this.querySelector('form');
+                        if (form && btId) {
+                            form.action = `/businessTrip/status/reject/${btId}`; // Update form action with correct path
                             // Add method override for PUT request
                             let methodInput = form.querySelector('input[name="_method"]');
                             if (!methodInput) {
@@ -748,6 +822,8 @@
                                 document.getElementById('managerL2Name').textContent = managerL2;
                                 document.getElementById('managerL1NameDeclare').textContent = managerL1;
                                 document.getElementById('managerL2NameDeclare').textContent = managerL2;
+                                document.getElementById('managerL1NameExtend').textContent = managerL1;
+                                document.getElementById('managerL2NameExtend').textContent = managerL2;
 
                                 // Get the containers
                                 const l1Container = document.getElementById('l1ActionContainer');
@@ -756,12 +832,17 @@
                                 const l1ContainerDeclare = document.getElementById('l1ActionContainerDeclare');
                                 const l2ContainerDeclare = document.getElementById('l2ActionContainerDeclare');
 
+                                const l1ContainerExtend = document.getElementById('l1ActionContainerExtend');
+                                const l2ContainerExtend = document.getElementById('l2ActionContainerExtend');
+
 
                                 // Clear previous content
                                 l1Container.innerHTML = '';
                                 l2Container.innerHTML = '';
                                 l1ContainerDeclare.innerHTML = '';
                                 l2ContainerDeclare.innerHTML = '';
+                                l1ContainerExtend.innerHTML = '';
+                                l2ContainerExtend.innerHTML = '';
 
                                 approvalModal.addEventListener('click', function(e) {
                                     if (e.target.matches('.btn-success')) {
@@ -825,6 +906,29 @@
                                         `<div id="approvalDataL2Declare" class="w-100"></div>`;
                                 }
 
+                                if (status === 'Extend L1') {
+                                    l1ContainerExtend.innerHTML = `
+                                        <button type="submit" class="btn btn-success btn-sm rounded-pill me-2" data-id="${btId}">Approve Extend</button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill"
+                                            data-bs-toggle="modal" data-bs-target="#extendConfirm" data-id="${btId}">Reject</button>
+                                    `;
+                                } else {
+                                    l1ContainerExtend.innerHTML =
+                                        `<div id="approvalDataL1Extend" class="w-100"></div>`;
+                                }
+
+                                // Handle L2 Extend container content
+                                if (status === 'Extend L2') {
+                                    l2ContainerExtend.innerHTML = `
+                                        <button type="submit" class="btn btn-success btn-sm rounded-pill me-2" data-id="${btId}">Approve Extend</button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill"
+                                            data-bs-toggle="modal" data-bs-target="#extendConfirm" data-id="${btId}">Reject</button>
+                                    `;
+                                } else {
+                                    l2ContainerExtend.innerHTML =
+                                        `<div id="approvalDataL2Extend" class="w-100"></div>`;
+                                }
+
                                 // Get and display approval data
                                 const approvals = @json($btApproved);
                                 const filteredApprovals = approvals.filter(approval => approval.bt_id === btId);
@@ -834,6 +938,8 @@
                                 const approvalDataL2 = document.getElementById('approvalDataL2');
                                 const approvalDataL1Declare = document.getElementById('approvalDataL1Declare');
                                 const approvalDataL2Declare = document.getElementById('approvalDataL2Declare');
+                                const approvalDataL1Extend = document.getElementById('approvalDataL1Extend');
+                                const approvalDataL2Extend = document.getElementById('approvalDataL2Extend');
 
                                 if (approvalDataL1) {
                                     const l1Approvals = filteredApprovals.filter(a => a.layer === 1 && a
@@ -1035,6 +1141,115 @@
                                     } else {
                                         approvalDataL2Declare.innerHTML =
                                             '<p class="text-muted">No L2 declarations found</p>';
+                                    }
+                                }
+
+                                if (approvalDataL1Extend) {
+                                    const l1Extending = filteredApprovals.filter(a =>
+                                        a.layer === 1 &&
+                                        (a.approval_status === 'Extend L2')
+                                    );
+                                    const l1ExtendingOnce = filteredApprovals.filter(a =>
+                                        a.layer === 1 &&
+                                        (a.approval_status === 'Extend Approved')
+                                    );
+                                    const l1ExtendingRevision = filteredApprovals.filter(a =>
+                                        a.layer === 1 &&
+                                        (a.approval_status === 'Extend Revision')
+                                    );
+                                    const l1ExtendingReject = filteredApprovals.filter(a =>
+                                        a.layer === 1 &&
+                                        (a.approval_status === 'Extend Rejected')
+                                    );
+                                    if (l1ExtendingOnce.length > 0) {
+                                        approvalDataL1Extend.innerHTML = l1ExtendingOnce.map(approval => `
+                                        <div class="border rounded p-2 mb-2">
+                                            <strong>Status:</strong> ${approval.approval_status}<br>
+                                            <strong>Approved By:</strong> ${approval.employee_id}<br>
+                                            <strong>Approved At:</strong> ${formatDateToCustomString(approval.approved_at)}<br>
+                                            <strong>Processed By:</strong> ${approval.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                        </div>
+                                    `).join('');
+                                    } else if (l1Extending.length > 0) {
+                                        approvalDataL1Extend.innerHTML = l1Extending.map(approval => `
+                                        <div class="border rounded p-2 mb-2">
+                                            <strong>Status:</strong> ${approval.approval_status}<br>
+                                            <strong>Approved By:</strong> ${approval.employee_id}<br>
+                                            <strong>Approved At:</strong> ${formatDateToCustomString(approval.approved_at)}<br>
+                                            <strong>Processed By:</strong> ${approval.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                        </div>
+                                    `).join('');
+                                    } else if (l1ExtendingRevision.length > 0) {
+                                        approvalDataL1Extend.innerHTML += l1ExtendingRevision.map(rejection => `
+                                        <div class="alert alert-info">
+                                            <strong>Status:</strong> ${rejection.approval_status}<br>
+                                            <strong>Rejected By:</strong> ${rejection.employee_id}<br>
+                                            <strong>Rejected At:</strong> ${formatDateToCustomString(rejection.approved_at)}<br>
+                                            <strong>Rejection Info:</strong> ${rejection.reject_info || 'No additional info provided'}<br>
+                                            <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                        </div>
+                                    `).join('');
+                                    } else if (l1ExtendingReject.length > 0) {
+                                        approvalDataL1Extend.innerHTML += l1ExtendingReject.map(rejection => `
+                                        <div class="border rounded p-2 mb-2 bg-warning">
+                                            <strong>Status:</strong> ${rejection.approval_status}<br>
+                                            <strong>Rejected By:</strong> ${rejection.employee_id}<br>
+                                            <strong>Rejected At:</strong> ${formatDateToCustomString(rejection.approved_at)}<br>
+                                            <strong>Rejection Info:</strong> ${rejection.reject_info || 'No additional info provided'}<br>
+                                            <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                        </div>
+                                    `).join('');
+                                    } else {
+                                        approvalDataL1Extend.innerHTML =
+                                            '<p class="text-muted">No L1 Extending found</p>';
+                                    }
+                                }
+
+                                if (approvalDataL2Extend) {
+                                    const l2Extending = filteredApprovals.filter(a =>
+                                        a.layer === 2 &&
+                                        (a.approval_status === 'Extend Approved')
+                                    );
+                                    const l2ExtendingRevision = filteredApprovals.filter(a =>
+                                        a.layer === 2 &&
+                                        (a.approval_status === 'Extend Revision')
+                                    );
+                                    const l2ExtendingReject = filteredApprovals.filter(a =>
+                                        a.layer === 2 &&
+                                        (a.approval_status === 'Extend Rejected')
+                                    );
+                                    if (l2Extending.length > 0) {
+                                        approvalDataL2Extend.innerHTML = l2Extending.map(approval => `
+                                        <div class="border rounded p-2 mb-2">
+                                            <strong>Status:</strong> ${approval.approval_status}<br>
+                                            <strong>Approved By:</strong> ${approval.employee_id}<br>
+                                            <strong>Approved At:</strong> ${formatDateToCustomString(approval.approved_at)}<br>
+                                            <strong>Processed By:</strong> ${approval.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                        </div>
+                                    `).join('');
+                                    } else if (l2ExtendingRevision.length > 0) {
+                                        approvalDataL2Extend.innerHTML += l2ExtendingRevision.map(rejection => `
+                                        <div class="alert alert-info">
+                                            <strong>Status:</strong> ${rejection.approval_status}<br>
+                                            <strong>Rejected By:</strong> ${rejection.employee_id}<br>
+                                            <strong>Rejected At:</strong> ${formatDateToCustomString(rejection.approved_at)}<br>
+                                            <strong>Rejection Info:</strong> ${rejection.reject_info || 'No additional info provided'}<br>
+                                            <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                        </div>
+                                    `).join('');
+                                    } else if (l2ExtendingReject.length > 0) {
+                                        approvalDataL2Extend.innerHTML += l2ExtendingReject.map(rejection => `
+                                        <div class="border rounded p-2 mb-2 bg-warning">
+                                            <strong>Status:</strong> ${rejection.approval_status}<br>
+                                            <strong>Rejected By:</strong> ${rejection.employee_id}<br>
+                                            <strong>Rejected At:</strong> ${formatDateToCustomString(rejection.approved_at)}<br>
+                                            <strong>Rejection Info:</strong> ${rejection.reject_info || 'No additional info provided'}<br>
+                                            <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                        </div>
+                                    `).join('');
+                                    } else {
+                                        approvalDataL2Extend.innerHTML =
+                                            '<p class="text-muted">No L2 Extending found</p>';
                                     }
                                 }
                             });
