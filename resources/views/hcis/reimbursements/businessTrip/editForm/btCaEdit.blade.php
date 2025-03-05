@@ -1,11 +1,6 @@
 <div class="row" id="ca_bt" style="">
     <div class="col-md-12">
         <div class="table-responsive-sm">
-            <label for="additional-fields-title" class="mb-2">  
-                <span class="text-info fst-italic">  
-                    * In accordance with the company's policy on <strong>Long-Distance Business Travel</strong>, any unused cash advance must be returned to the company's cash/account no later than <strong>2 (two) days</strong> after the <strong>Business Trip Accountability Declaration</strong> is verified by the <strong>GA department</strong>. If the employee fails to return the unused cash advance within the specified time, the cash advance will be <strong>deducted from the employee's salary</strong>.  
-                </span>  
-            </label>  
             <div class="row mb-2">
                 <div class="col-md-6 mb-2">
                     <label for="date_required" class="form-label">CA Withdrawal Date</label>
@@ -19,6 +14,11 @@
                         placeholder="mm/dd/yyyy" value="{{ $date->declare_estimate ?? 0 }}" readonly>
                 </div>
             </div>
+            <label for="additional-fields-title" class="mb-2">  
+                <span class="text-info fst-italic">  
+                    * In accordance with the company's policy on <strong>Long-Distance Business Travel</strong>, any unused cash advance must be returned to the company's cash/account no later than <strong>2 (two) days</strong> after the <strong>Business Trip Accountability Declaration</strong> is verified by the <strong>GA department</strong>. If the employee fails to return the unused cash advance within the specified time, the cash advance will be <strong>deducted from the employee's salary</strong>.  
+                </span>  
+            </label>  
             <div class="d-flex flex-column">
                 <ul class="nav mb-2" id="pills-tab" role="tablist">
                     <li class="nav-item" role="presentation" id="perdiem-tab-li">
