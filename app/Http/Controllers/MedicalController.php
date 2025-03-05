@@ -1835,10 +1835,24 @@ class MedicalController extends Controller
             // Import the data
             Excel::import($import, $request->file('file'));
 
+            // Ambil data yang gagal
+            $failedRows = $import->afterImport();
+
             // After import is complete, process the batched records and send emails
             $import->afterImport();
 
-            return redirect()->route('medical.admin')->with('success', 'Transaction successfully added from Excel.');
+            if (!empty($failedRows)) {
+                // Simpan file gagal ke session (sementara)
+                $filePath = 'failed_imports/failed_import_' . time() . '.xlsx';
+                Excel::store(new \App\Exports\MedicalFailedImportExport($failedRows), $filePath, 'public');
+            
+                // Simpan path file ke session
+                session()->put('failed_import_path', asset('storage/' . $filePath));
+            
+                return redirect()->route('medical.admin')->with('failed', 'Transaction successfully added from Excel, but some of them failed.');
+            } else {
+                return redirect()->route('medical.admin')->with('success', 'Transaction successfully added from Excel.');
+            }
         } catch (\App\Exceptions\ImportDataInvalidException $e) {
             // Catch custom exception and redirect back with error message
             return redirect()->route('medical.admin')->withErrors(['import_error' => $e->getMessage()]);

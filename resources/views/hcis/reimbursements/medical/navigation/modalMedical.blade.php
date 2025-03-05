@@ -68,6 +68,46 @@
     </script>
 @endif
 
+{{-- Failed --}}
+@if (session('failed'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                title: "Warning!",
+                text: "{{ session('failed') }}",
+                icon: "warning",
+                confirmButtonColor: "#9a2a27",
+                confirmButtonText: 'OK',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let failedImportUrl = "{{ session('failed_import_path') }}";
+                    if (failedImportUrl) {
+                        // Membuka file untuk di-download
+                        let link = document.createElement('a');
+                        link.href = failedImportUrl;
+                        link.download = 'failed_import.xlsx';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+
+                        // Hapus file setelah di-download
+                        fetch("{{ route('delete.failed.import') }}", {
+                            method: "POST",
+                            headers: {
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ file_path: failedImportUrl })
+                        }).then(response => response.json())
+                          .then(data => console.log(data.message))
+                          .catch(error => console.error("Error deleting file:", error));
+                    }
+                }
+            });
+        });
+    </script>
+@endif
+
 {{-- Error --}}
 @if ($errors->any())
     <script>
