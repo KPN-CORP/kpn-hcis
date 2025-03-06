@@ -84,7 +84,7 @@
 
             <!-- Add Data Button -->
             <div class="col-md-6 mt-4 text-end">
-                @if ($disableCACount == 1)
+                @if ($disableCACount == 2)
                     <a href="#" class="btn btn-outline-primary rounded-pill"
                         onclick="showPendingAlert(); return false;">
                         <i class="bi bi-plus-circle"></i> Add Data
