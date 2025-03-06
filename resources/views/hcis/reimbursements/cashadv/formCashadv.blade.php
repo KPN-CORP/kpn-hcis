@@ -256,7 +256,7 @@
                                                 <li class="nav-item" role="presentation">
                                                     <button class="nav-link" id="pills-relation-tab" data-bs-toggle="pill"
                                                         data-bs-target="#pills-relation" type="button" role="tab"
-                                                        aria-controls="pills-relation" aria-selected="false">Relation Entertain
+                                                        aria-controls="pills-relation" aria-selected="false">Detail Receiver
                                                     </button>
                                                 </li>
                                             </ul>
