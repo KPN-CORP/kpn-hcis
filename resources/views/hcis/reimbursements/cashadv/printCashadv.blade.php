@@ -228,7 +228,7 @@
                         @endif
                     </td>
                     <td>{{ $perdiem['company_code'] }}</td>
-                    <td>{{ $perdiem['total_days'] }} Hari</td>
+                    <td>{{ $perdiem['total_days']+1 }} Hari</td>
                 </tr>
                 @endforeach
                 <tr class="total-row">
@@ -323,7 +323,7 @@
             <tr>
                 <td class="label">Non Bussiness Trip</td>
                 <td>
-                    {{ $transactions->total_days }} Days
+                    {{ $transactions->total_days+1 }} Days
                 </td>
                 <td>  
                     <span style="float: left; margin-left:4px">Rp.</span>  
@@ -354,7 +354,7 @@
             <tr>
                 <td class="label">Detail Entertain</td>
                 <td>
-                    {{ $transactions->total_days }} Days
+                    {{ $transactions->total_days+1 }} Days
                 </td>
                 <td>  
                     <span style="float: left; margin-left:4px">Rp.</span>  
