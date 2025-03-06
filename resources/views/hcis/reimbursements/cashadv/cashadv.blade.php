@@ -84,14 +84,11 @@
 
             <!-- Add Data Button -->
             <div class="col-md-6 mt-4 text-end">
-                @if ($disableCACount = 1)
+                @if ($disableCACount == 1)
                     <a href="#" class="btn btn-outline-primary rounded-pill"
                         onclick="showPendingAlert(); return false;">
                         <i class="bi bi-plus-circle"></i> Add Data
                     </a>
-                    {{-- <a href="{{ route('cashadvanced.form') }}" class="btn btn-outline-primary rounded-pill" >
-                        <i class="bi bi-plus-circle"></i> Add Data
-                    </a> --}}
                 @else
                     <a href="{{ route('cashadvanced.form') }}" class="btn btn-outline-primary rounded-pill" >
                         <i class="bi bi-plus-circle"></i> Add Data

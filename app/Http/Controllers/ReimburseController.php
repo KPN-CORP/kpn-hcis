@@ -152,11 +152,9 @@ class ReimburseController extends Controller
 
         $disableCACount = CATransaction::where('user_id', $userId)
         ->whereNull('deleted_at') // Menambahkan kondisi deleted_at IS NULL
-        ->where(function ($query) {
-            $query->where('approval_status', 'Pending')
-                ->orWhere('ca_status', 'Refund');
-        })
+        ->where('ca_status', '!=', 'Done') // Menambahkan kondisi ca_status != 'Done'
         ->count();
+        
 
         $deklarasiCACount = CATransaction::where('user_id', $userId)
             ->where(function ($query) {
@@ -173,7 +171,7 @@ class ReimburseController extends Controller
         foreach ($ca_transactions as $transaction) {
             $transaction->settName = $transaction->statusReqEmployee ? $transaction->statusReqEmployee->fullname : '';
         }
-
+        // dd($disableCACount);
         return view('hcis.reimbursements.cashadv.cashadv', [
             'deklarasiCACount' => $deklarasiCACount,
             'disableCACount' => $disableCACount,

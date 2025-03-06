@@ -9183,22 +9183,26 @@ class BusinessTripController extends Controller
         $currentMonth = date('n');
         $romanMonth = $this->getRomanMonth($currentMonth);
 
-        // Get the last transaction for the current year, including deleted ones
+        // Ambil transaksi terakhir dengan nomor terbesar dalam tahun ini
         $lastTransaction = BusinessTrip::whereYear('created_at', $currentYear)
-            ->orderBy('no_sppd', 'desc')
+            ->where('no_sppd', 'LIKE', "%/$currentYear") // Pastikan tahun cocok
+            ->orderByRaw("CAST(SUBSTRING_INDEX(no_sppd, '/', 1) AS UNSIGNED) DESC")
             ->withTrashed()
             ->first();
 
-        if ($lastTransaction && preg_match('/(\d{3})\/SPPD-HC\/([IVX]+)\/\d{4}/', $lastTransaction->no_sppd, $matches)) {
+        if ($lastTransaction && preg_match('/(\d{1,5})\/SPPD-HC\/([IVX]+)\/\d{4}/', $lastTransaction->no_sppd, $matches)) {
             $lastNumber = intval($matches[1]);
         } else {
             $lastNumber = 0;
         }
-        // dd($lastNumber);
 
-        $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
-        $newNoSppd = "$newNumber/SPPD-HC/$romanMonth/$currentYear";
-        // dd($newNoSppd);
+        // Tambah 1 ke nomor terakhir
+        $newNumber = $lastNumber + 1;
+
+        // Jika masih di bawah 1000, tambahkan padding nol (3 digit), jika lebih biarkan apa adanya
+        $formattedNumber = $newNumber < 1000 ? str_pad($newNumber, 3, '0', STR_PAD_LEFT) : $newNumber;
+
+        $newNoSppd = "$formattedNumber/SPPD-HC/$romanMonth/$currentYear";
 
         return $newNoSppd;
     }
