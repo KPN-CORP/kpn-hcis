@@ -4,9 +4,9 @@
 @if (!empty($detailCA['detail_e']) && $detailCA['detail_e'][0]['type'] !== null)
     <div id="form-container-detail">
         @foreach ($detailCA['detail_e'] as $detail)
-            <div id="form-container-e-detail-{{ $loop->index + 1 }}" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
+            <div id="form-container-e-detail-{{ $loop->index + 1 }}" class="card-body p-2" style="background-color: #f8f8f8">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Entertainment {{ $loop->index + 1 }}</p>
-                <div id="form-container-e-detail-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3">
+                <div id="form-container-e-detail-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Detail Entertainment Request</p>
                     <div class="row">
                         <div class="col-md-6 mb-2">
@@ -38,7 +38,6 @@
                             <textarea name="enter_fee_e_detail[]" class="form-control">{{ $detail['fee_detail'] }}</textarea>
                         </div>
                     </div>
-                    <br>
                     <div class="row mt-3">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormDetail({{ $loop->index + 1 }}, event)">Reset</button>
@@ -70,7 +69,7 @@
     <div id="form-container-detail">
         <div id="form-container-e-detail-1" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
             <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Entertainment 1</p>
-            <div id="form-container-e-detail-req-1" class="card-body bg-light p-2 mb-3">
+            <div id="form-container-e-detail-req-1" class="card-body bg-light p-2">
                 <p class="fs-5 text-primary" style="font-weight: bold;">Detail Entertainment Request</p>
                 <div class="row">
                     <div class="col-md-6 mb-2">
@@ -102,7 +101,6 @@
                         <textarea name="enter_fee_e_detail[]" class="form-control"></textarea>
                     </div>
                 </div>
-                <br>
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormDetail(1, event)">Reset</button>

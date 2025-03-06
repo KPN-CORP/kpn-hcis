@@ -23,9 +23,9 @@ function addMoreFormNBTReq(event) {
     newForm.className = "card-body p-2 mb-3";
     newForm.style.backgroundColor = "#f8f8f8";
     newForm.innerHTML = `
-            <p class="fs-4 text-primary" style="font-weight: bold; ">Non Bussiness Trip ${formCountNBT}</p>
-            <div id="form-container-nbt-req-${formCountNBT}" class="card-body bg-light p-2 mb-3">
-                <p class="fs-5 text-primary" style="font-weight: bold; ">Non Bussiness Trip Request</p>
+            <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Trip ${formCountNBT}</p>
+            <div id="form-container-nbt-req-${formCountNBT}" class="card-body bg-light p-2">
+                <p class="fs-5 text-primary" style="font-weight: bold; ">Non Business Trip Request</p>
                 <div class="row">
                     <div class="col-md-6 mb-2">
                         <label class="form-label">Date</label>
@@ -33,7 +33,7 @@ function addMoreFormNBTReq(event) {
                     </div>
                     <div class="col-md-6 mb-2">
                         <label class="form-label">Amount</label>
-                        <div class="input-group mb-3">
+                        <div class="input-group">
                             <div class="input-group-append">
                                 <span class="input-group-text">Rp</span>
                             </div>
@@ -43,17 +43,15 @@ function addMoreFormNBTReq(event) {
                                 >
                         </div>
                     </div>
-                    <div class="col-md-12 mb-2">
-                        <div class="mb-2">
+                    <div class="col-md-12">
                             <label class="form-label">Information</label>
                             <textarea name="keterangan_nbt[]" class="form-control"></textarea>
-                        </div>
                     </div>
                 </div>
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
-                        <button class="btn btn-danger mr-2" style="margin-right: 10px" onclick="clearFormNBT(${formCountNBT}, event)">Reset</button>
-                        <button class="btn btn-warning mr-2" onclick="removeFormNBT(${formCountNBT}, event)">Delete</button>
+                        <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormNBT(${formCountNBT}, event)">Reset</button>
+                        <button class="btn btn-outline-primary mr-2 btn-sm" onclick="removeFormNBT(${formCountNBT}, event)">Delete</button>
                     </div>
                 </div>
             </div>
@@ -85,9 +83,9 @@ function addMoreFormNBTDec(event) {
     newForm.className = "card-body p-2 mb-3";
     newForm.style.backgroundColor = "#f8f8f8";
     newForm.innerHTML = `
-            <p class="fs-4 text-primary" style="font-weight: bold; ">Non Bussiness Trip ${formCountNBT}</p>
-            <div class="card-body bg-light p-2 mb-3">
-                <p class="fs-5 text-primary" style="font-weight: bold; ">Non Bussiness Trip Declaration</p>
+            <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Trip ${formCountNBT}</p>
+            <div class="card-body bg-light p-2 ">
+                <p class="fs-5 text-primary" style="font-weight: bold; ">Non Business Trip Declaration</p>
                 <div class="row">
                     <div class="col-md-6 mb-2">
                         <label class="form-label">Date</label>
@@ -95,7 +93,7 @@ function addMoreFormNBTDec(event) {
                     </div>
                     <div class="col-md-6 mb-2">
                         <label class="form-label">Amount</label>
-                        <div class="input-group mb-3">
+                        <div class="input-group">
                             <div class="input-group-append">
                                 <span class="input-group-text">Rp</span>
                             </div>
@@ -105,17 +103,15 @@ function addMoreFormNBTDec(event) {
                                 >
                         </div>
                     </div>
-                    <div class="col-md-12 mb-2">
-                        <div class="mb-2">
+                    <div class="col-md-12">
                             <label class="form-label">Information</label>
                             <textarea name="keterangan_nbt[]" class="form-control"></textarea>
-                        </div>
                     </div>
                 </div>
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
-                        <button class="btn btn-danger mr-2" style="margin-right: 10px" onclick="clearFormNBT(${formCountNBT}, event)">Reset</button>
-                        <button class="btn btn-warning mr-2" onclick="removeFormNBT(${formCountNBT}, event)">Delete</button>
+                        <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormNBT(${formCountNBT}, event)">Reset</button>
+                        <button class="btn btn-outline-primary mr-2 btn-sm" onclick="removeFormNBT(${formCountNBT}, event)">Delete</button>
                     </div>
                 </div>
             </div>
