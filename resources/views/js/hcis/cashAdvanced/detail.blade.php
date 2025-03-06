@@ -26,7 +26,7 @@ function addMoreFormDetailDec(event) {
     newForm.style.backgroundColor = "#f8f8f8";
     newForm.innerHTML = `
             <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Entertainment ${formCountDetail}</p>
-            <div id="form-container-e-detail-dec-${formCountDetail}" class="card-body bg-light p-2 mb-3">
+            <div id="form-container-e-detail-dec-${formCountDetail}" class="card-body bg-light p-2">
                 <p class="fs-5 text-primary" style="font-weight: bold;">Detail Entertainment Declaration</p>
                 <div class="row">
                     <div class="col-md-6 mb-2">
@@ -53,12 +53,11 @@ function addMoreFormDetailDec(event) {
                                 oninput="formatInputENT(this)">
                         </div>
                     </div>
-                    <div class="col-md-12 mb-2">
+                    <div class="col-md-12">
                         <label class="form-label">Entertainment Fee Detail</label>
                         <textarea name="enter_fee_e_detail[]" class="form-control" placeholder="Write more details ..."></textarea>
                     </div>
                 </div>
-                <br>
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormDetail(${formCountDetail}, event)">Reset</button>
@@ -102,7 +101,7 @@ function addMoreFormDetailReq(event) {
     newForm.style.backgroundColor = "#f8f8f8";
     newForm.innerHTML = `
             <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Entertainment ${formCountDetail}</p>
-            <div id="form-container-e-detail-req-${formCountDetail}" class="card-body bg-light p-2 mb-3">
+            <div id="form-container-e-detail-req-${formCountDetail}" class="card-body bg-light p-2">
                 <p class="fs-5 text-primary" style="font-weight: bold;">Detail Entertainment Request</p>
                 <div class="row">
                     <div class="col-md-6 mb-2">
@@ -129,12 +128,11 @@ function addMoreFormDetailReq(event) {
                                 oninput="formatInputENT(this)">
                         </div>
                     </div>
-                    <div class="col-md-12 mb-2">
+                    <div class="col-md-12">
                         <label class="form-label">Entertainment Fee Detail</label>
                         <textarea name="enter_fee_e_detail[]" class="form-control" placeholder="Write more details ..."></textarea>
                     </div>
                 </div>
-                <br>
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px"

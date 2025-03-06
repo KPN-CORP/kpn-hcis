@@ -9,9 +9,9 @@
             @endphp
             <div id="form-container-e-relation-{{ $loop->index + 1 }}" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Receiver {{ $loop->index + 1 }}</p>
-                <div id="form-container-e-relation-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3">
+                <div id="form-container-e-relation-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Detail Receiver Request</p>
-                    <div id="fordm-container-e-relation-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
+                    <div id="fordm-container-e-relation-{{ $loop->index + 1 }}" class="card-body bg-light p-2" style="border-radius: 1%;">
                         <div class="row">
                             <!-- Relation Date -->
                             <div class="col-md-12 mb-2">
@@ -94,7 +94,6 @@
                                     class="form-control">{{ $relation['purpose'] }}</textarea>
                             </div>
                         </div>
-                        <br>
                         <div class="row mt-3">
                             <div class="d-flex justify-start w-100">
                                 <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormRelation({{ $loop->index + 1 }}, event)">Reset</button>
@@ -118,7 +117,7 @@
     <div id="form-container-relation">
         <div id="form-container-e-relation-1" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
             <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Receiver 1</p>
-            <div id="form-container-e-relation-req-1" class="card-body bg-light p-2 mb-3">
+            <div id="form-container-e-relation-req-1" class="card-body bg-light p-2">
                 <p class="fs-5 text-primary" style="font-weight: bold;">Detail Receiver Request</p>
                 <div class="row">
                     <!-- Relation Date -->
@@ -193,7 +192,6 @@
                             class="form-control"></textarea>
                     </div>
                 </div>
-                <br>
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormRelation(1, event)">Reset</button>

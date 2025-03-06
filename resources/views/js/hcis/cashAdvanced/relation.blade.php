@@ -17,7 +17,7 @@ function addMoreFormRelationDec(event) {
     newForm.style.backgroundColor = "#f8f8f8";
     newForm.innerHTML = `
             <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Receiver ${formCountRelation}</p>
-            <div class="card-body bg-light p-2 mb-3">
+            <div class="card-body bg-light p-2">
                 <p class="fs-5 text-primary" style="font-weight: bold;">Detail Receiver Declaration</p>
                 <div class="row">
                     <!-- Relation Date -->
@@ -115,7 +115,7 @@ function addMoreFormRelationReq(event) {
     newForm.style.backgroundColor = "#f8f8f8";
     newForm.innerHTML = `
             <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Receiver ${formCountRelation}</p>
-            <div class="card-body bg-light p-2 mb-3">
+            <div class="card-body bg-light p-2 ">
                 <p class="fs-5 text-primary" style="font-weight: bold;">Detail Receiver Request</p>
                 <div class="row">
                     <!-- Relation Date -->

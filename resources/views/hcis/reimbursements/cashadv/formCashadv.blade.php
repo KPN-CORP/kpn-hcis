@@ -234,7 +234,7 @@
                             <div class="row" id="ca_nbt" style="display: none;">
                                 <div class="col-md-12">
                                     <div class="table-responsive-sm">
-                                        <div class="d-flex flex-column gap-2">
+                                        <div class="d-flex flex-column">
                                             @include('hcis.reimbursements.cashadv.form.nbt')
                                             <button type="button" id="add-more" style="display: none"
                                                 class="btn btn-primary mt-3">Add More</button>
@@ -246,7 +246,7 @@
                                 <div class="col-md-12">
                                     <div class="table-responsive-sm">
                                         <div class="d-flex flex-column gap-2">
-                                            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                            <ul class="nav nav-pills" id="pills-tab" role="tablist">
                                                 <li class="nav-item" role="presentation">
                                                     <button class="nav-link active" id="pills-detail-tab"
                                                         data-bs-toggle="pill" data-bs-target="#pills-detail" type="button"
@@ -277,7 +277,7 @@
                                 </div>
                             </div>
 
-                            <br>
+                            <hr>
 
                             <div class="row">
                                 <div class="col-md-12 mb-2">
