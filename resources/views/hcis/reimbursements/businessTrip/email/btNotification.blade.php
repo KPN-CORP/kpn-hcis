@@ -327,7 +327,9 @@
     <p>For approval or rejection of the Business Trip, you can click the following links:</p>
     <p>
         <a href="{{ $approvalLink }}" style="font-size: 20px;">Approve</a> /
-        <a href="{{ $revisionLink }}" style="font-size: 20px;">Revision</a> /
+        @if ($revisionLink)
+            <a href="{{ $revisionLink }}" style="font-size: 20px;">Revision</a> /
+        @endif
         <a href="{{ $rejectionLink }}" style="font-size: 20px;">Reject</a>
     </p>
 
