@@ -744,6 +744,7 @@ class MedicalController extends Controller
 
         // Process the medical verification costs
         $medical_costs = $request->input('medical_costs', []);
+        $bpjs_costs = $request->input('bpjs_cover', []);
         $existingCoverages = HealthCoverage::where('no_medic', $no_medic)->get();
         $medicalEmployee = HealthCoverage::where('no_medic', $no_medic)->first();
 
@@ -776,10 +777,13 @@ class MedicalController extends Controller
             $existingCoverage = $existingCoverages->where('medical_type', $medical_type)->first();
 
             if ($existingCoverage) {
+                $bpjs_cost = isset($bpjs_costs[$medical_type]) ? (int) str_replace('.', '', $bpjs_costs[$medical_type]) : 0;  
+
                 $existingCoverage->update([
                     'balance_verif' => $verif_cost,
                     'verif_by' => $employee_id,
                     'status' => 'Pending',
+                    'balance_bpjs' => $bpjs_cost,
                 ]);
                 if ($medical_plan->balance < $verif_cost) {
                     $old_balance_total = $medical_plan->balance + $existingCoverage->balance; // Combine balances
@@ -1027,6 +1031,7 @@ class MedicalController extends Controller
         // Extract the medical types from medicGroup
         $selectedMedicalTypes = $medicGroup->pluck('medical_type')->unique();
         $balanceMapping = $medicGroup->pluck('balance_verif', 'medical_type');
+        $balanceBPJSMapping = $medicGroup->pluck('balance_bpjs', 'medical_type');
         $selectedDisease = $medic->disease;
 
         // Fetch related data as before
@@ -1037,7 +1042,7 @@ class MedicalController extends Controller
         $parentLink = 'Medical Approval';
         $link = 'Medical Details';
 
-        return view('hcis.reimbursements.medical.approval.medicalApprovalDetail', compact('selectedDisease', 'balanceMapping', 'medic', 'medical_type', 'diseases', 'families', 'parentLink', 'link', 'employee_name', 'medicGroup', 'selectedMedicalTypes', 'balanceData'));
+        return view('hcis.reimbursements.medical.approval.medicalApprovalDetail', compact('selectedDisease', 'balanceMapping', 'medic', 'medical_type', 'diseases', 'families', 'parentLink', 'link', 'employee_name', 'medicGroup', 'selectedMedicalTypes', 'balanceData', 'balanceBPJSMapping'));
     }
 
     public function medicalApprovalUpdate($id, Request $request)
