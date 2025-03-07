@@ -1437,7 +1437,7 @@
                     </div>
 
                     <div class="mt-2">
-                        <button type="button" class="btn btn-sm btn-outline-danger remove-ticket-btn" data-form-id="${formNumber}">Remove Data</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-ticket-btn" data-form-id="${formNumber}">Delete</button>
                     </div>
                 </div>
             </div>`;
@@ -1859,7 +1859,7 @@
                     </div>
 
                     <div class="mt-2">
-                        <button type="button" class="btn btn-sm btn-outline-danger remove-ticket-btn-dalam-kota" data-form-id="${formNumber}">Remove Data</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-ticket-btn-dalam-kota" data-form-id="${formNumber}">Delete</button>
                     </div>
                 </div>
             </div>`;
@@ -2165,7 +2165,7 @@
                     </div>
                     </div>
                     <div class="mt-2">
-                        <button type="button" class="btn btn-sm btn-outline-danger remove-hotel-btn" data-form-id="${formNumber}">Remove Data</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-hotel-btn" data-form-id="${formNumber}">Delete</button>
                     </div>
                 </div>
             </div>`;
@@ -2445,7 +2445,7 @@
                         </div>
                     </div>
                     <div class="mt-2">
-                        <button type="button" class="btn btn-sm btn-outline-danger remove-hotel-btn-dalam-kota" data-form-id="${formNumber}">Remove Data</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-hotel-btn-dalam-kota" data-form-id="${formNumber}">Delete</button>
                     </div>
                 </div>
             </div>`;
@@ -2693,7 +2693,7 @@
                     </div>
                     </div>
                     <div class="mt-2">
-                        <button type="button" class="btn btn-sm btn-outline-danger remove-mess-btn" data-form-id="${formNumber}">Remove Data</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-mess-btn" data-form-id="${formNumber}">Delete</button>
                     </div>
                 </div>
             </div>`;
@@ -2883,7 +2883,7 @@
                     </div>
                 </div>
                 <div class="mt-2">
-                    <button type="button" class="btn btn-sm btn-outline-danger remove-mess-btn-dalam-kota" data-form-id="${formNumber}">Remove Data</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-mess-btn-dalam-kota" data-form-id="${formNumber}">Delete</button>
                 </div>
             </div>
         </div>`;

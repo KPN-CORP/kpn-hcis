@@ -75,11 +75,11 @@
                 </div>
                 <div class="mt-2">
                     <button type="button" class="btn btn-sm btn-outline-danger remove-hotel-btn-dalam-kota"
-                        id="remove-hotel-btn-dalam-kota-<?php echo $i; ?>">Remove Data</button>
+                        id="remove-hotel-btn-dalam-kota-<?php echo $i; ?>">Delete</button>
                 </div>
             </div>
         </div>
     </div>
-    <button type="button" class="btn btn-sm btn-outline-primary add-hotel-btn-dalam-kota"
-        id="add-hotel-btn-dalam-kota">Add Hotel Data</button>
+    <button type="button" class="btn btn-sm btn-primary add-hotel-btn-dalam-kota"
+        id="add-hotel-btn-dalam-kota">Add More</button>
 </div>

@@ -103,10 +103,8 @@ class BusinessTripController extends Controller
         $query = BusinessTrip::where('user_id', $user->id)->orderBy('created_at', 'desc');
 
         $disableBT = BusinessTrip::where('user_id', $user->id)
-            ->where(function ($query) {
-                $query->where('status', '!=', 'Verified');
-            })
-            ->count();
+        ->whereNotIn('status', ['Verified', 'Rejected']) // Menggunakan whereNotIn()
+        ->count();
 
         // Get the filter value, default to 'all' if not provided
         $filter = $request->input('filter', 'all');
@@ -5474,7 +5472,7 @@ class BusinessTripController extends Controller
 
                 // Send email to the manager
                 try {
-                    Mail::to($employeeEmail)->send(new RefundNotification(
+                    Mail::to($employeeEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new RefundNotification(
                         $n,
                         $caDetails,
                         $caDeclare,

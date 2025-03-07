@@ -105,14 +105,13 @@
                 </div>
                 <div class="mt-2">
                     <button type="button" class="btn btn-sm btn-outline-danger remove-ticket-btn-dalam-kota"
-                        id="remove-ticket-btn-dalam-kota-<?php echo $i; ?>">Remove Data</button>
+                        id="remove-ticket-btn-dalam-kota-<?php echo $i; ?>">Delete</button>
                 </div>
             </div>
         </div>
     </div>
-    <button type="button" class="btn btn-sm btn-outline-primary add-ticket-btn-dalam-kota"
-        id="add-ticket-btn-dalam-kota">Add
-        Ticket Data</button>
+    <button type="button" class="btn btn-sm btn-primary add-ticket-btn-dalam-kota"
+        id="add-ticket-btn-dalam-kota">Add More</button>
 </div>
 
 {{-- </div> --}}

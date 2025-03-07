@@ -45,11 +45,10 @@
                     </div>
                 </div>
                 <div class="mt-2">
-                    <button type="button" class="btn btn-sm btn-outline-danger remove-mess-btn-dalam-kota">Remove
-                        Data</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-mess-btn-dalam-kota">Delete</button>
                 </div>
             </div>
         </div>
     </div>
-    <button type="button" class="btn btn-sm btn-outline-primary add-mess-btn-dalam-kota">Add Mess Data</button>
+    <button type="button" class="btn btn-sm btn-primary add-mess-btn-dalam-kota">Add More</button>
 </div>
