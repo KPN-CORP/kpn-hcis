@@ -195,7 +195,21 @@
                                                                     : (in_array($transaction->approval_status, ['Doc Accepted'])
                                                                         ? 'info'
                                                                         : 'secondary')))) }}"
-                                                    style="font-size: 12px; padding: 0.5rem 1rem;">
+                                                    style="font-size: 12px; padding: 0.5rem 1rem;"
+                                                    @if (($transaction->approval_status == 'Rejected' || $transaction->approval_status == 'Declaration Rejected') && isset($btApprovals[$transaction->id])) onclick="showRejectInfo('{{ $transaction->id }}')"
+                                                    @elseif ($transaction->approval_status == 'Pending L1')
+                                                        onclick="showManagerInfo('Next Approval L2 Manager', '{{ $managerL2Names[$transaction->manager_l2_id] ?? 'Unknown' }}')"
+                                                    @elseif ($transaction->approval_status == 'Pending L2')
+                                                        onclick="showManagerInfo('Previous Approval L1 Manager', '{{ $managerL1Names[$transaction->manager_l1_id] ?? 'Unknown' }}')"
+                                                    @elseif ($transaction->approval_status == 'Declaration L1')
+                                                        onclick="showManagerInfo('Next Approval L2 Manager', '{{ $managerL2Names[$transaction->manager_l2_id] ?? 'Unknown' }}')"
+                                                    @elseif ($transaction->approval_status == 'Declaration L2')
+                                                        onclick="showManagerInfo('Previous Approval L1 Manager', '{{ $managerL1Names[$transaction->manager_l1_id] ?? 'Unknown' }}')" 
+                                                        @elseif ($transaction->approval_status == 'Extend L1')
+                                                        onclick="showManagerInfo('Next Approval L2 Manager', '{{ $managerL2Names[$transaction->manager_l2_id] ?? 'Unknown' }}')"
+                                                    @elseif ($transaction->approval_status == 'Extend L2')
+                                                        onclick="showManagerInfo('Previous Approval L1 Manager', '{{ $managerL1Names[$transaction->manager_l1_id] ?? 'Unknown' }}')" 
+                                                    @endif>
                                                     {{ $transaction->approval_status == 'Approved' ? 'Request Approved' : $transaction->approval_status }}
                                                 </span>
                                             </td>
@@ -248,6 +262,17 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
+    <script>
+        function showManagerInfo(managerType, managerName) {
+            Swal.fire({
+                title: managerType,
+                text: managerName,
+                icon: 'info',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        }
+    </script>
     <script>
         $(document).ready(function() {
             $('.btn-detail').click(function() {

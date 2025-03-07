@@ -161,9 +161,21 @@
                                             : (in_array($n->status, ['Doc Accepted', 'verified'])
                                                 ? 'primary'
                                                 : 'secondary')))) }}"
-                            style="
-                        font-size: 12px;
-                        padding: 0.5rem 1rem;">
+                            style="font-size: 12px; padding: 0.5rem 1rem;"
+                            @if (($n->status == 'Rejected' || $n->status == 'Declaration Rejected') && isset($btApprovals[$n->id])) onclick="showRejectInfo('{{ $n->id }}')"
+                            @elseif ($n->status == 'Pending L1')
+                                onclick="showManagerInfo('Next Approval L2 Manager', '{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}')"
+                            @elseif ($n->status == 'Pending L2')
+                                onclick="showManagerInfo('Previous Approval L1 Manager', '{{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}')"
+                            @elseif ($n->status == 'Declaration L1')
+                                onclick="showManagerInfo('Next Approval L2 Manager', '{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}')"
+                            @elseif ($n->status == 'Declaration L2')
+                                onclick="showManagerInfo('Previous Approval L1 Manager', '{{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}')" 
+                                @elseif ($n->status == 'Extend L1')
+                                onclick="showManagerInfo('Next Approval L2 Manager', '{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}')"
+                            @elseif ($n->status == 'Extend L2')
+                                onclick="showManagerInfo('Previous Approval L1 Manager', '{{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}')" 
+                            @endif>
                             {{ $n->status }}
                         </span>
                     </td>

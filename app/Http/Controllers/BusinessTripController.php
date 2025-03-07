@@ -6024,6 +6024,9 @@ class BusinessTripController extends Controller
         $mess = Mess::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
         $taksi = Taksi::whereIn('no_sppd', $sppdNos)->get()->keyBy('no_sppd');
 
+        $managerL1Names = Employee::whereIn('employee_id', $bt_all->pluck('manager_l1_id'))->pluck('fullname', 'employee_id');
+        $managerL2Names = Employee::whereIn('employee_id', $bt_all->pluck('manager_l2_id'))->pluck('fullname', 'employee_id');
+
         $parentLink = 'Approval';
         $link = 'Business Trip';
 
@@ -6046,7 +6049,9 @@ class BusinessTripController extends Controller
             'totalMDCCount', 
             'mess',
             'extendData',
-            'extendTime'
+            'extendTime',
+            'managerL1Names',
+            'managerL2Names'
         ));
     }
     public function approvalDetail($id)

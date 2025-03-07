@@ -147,6 +147,17 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         <script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
         <script>
+            function showManagerInfo(managerType, managerName) {
+                Swal.fire({
+                    title: managerType,
+                    text: managerName,
+                    icon: 'info',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+            }
+        </script>
+        <script>
             window.addEventListener('resize', function() {
                 document.body.style.display = 'none';
                 document.body.offsetHeight; // Force a reflow

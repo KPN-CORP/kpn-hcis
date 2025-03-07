@@ -58,9 +58,55 @@ class ApprovalReimburseController extends Controller
         $ca_transactions_dec = CATransaction::with('employee')->where('sett_id', $employeeId)->where('approval_sett', 'Pending')->get();
         $ca_transactions_ext = CATransaction::with('employee')->where('extend_id', $employeeId)->where('approval_extend', 'Pending')->get();
 
-        $fullnames = Employee::whereIn('employee_id', $ca_transactions_ext->pluck('status_id'))
-            ->pluck('fullname', 'employee_id');
+        $fullnames_req = ca_approval::whereIn('ca_id', $ca_transactions->pluck('id'))
+            ->whereNotIn('approval_status', ['Verified', 'Rejected'])
+            ->orderBy('created_at', 'desc') // Urutkan dari tanggal terbaru ke lama
+            ->orderBy('layer', 'asc') // Urutkan layer dari kecil ke besar dalam tanggal yang sama
+            ->get()
+            ->groupBy('ca_id')
+            ->map(function ($approvals) {
+                return $approvals->map(function ($approval) {
+                    return [
+                        'role_name' => $approval->role_name,
+                        'employee_id' => $approval->employee->fullname,
+                        'approval_status' => $approval->approval_status,
+                    ];
+                })->values()->toArray();
+            });
 
+        $fullnames_dec = ca_sett_approval::whereIn('ca_id', collect($ca_transactions_dec)->pluck('id'))
+            ->whereNotIn('approval_status', ['Verified', 'Rejected'])    
+            ->orderBy('created_at', 'desc') 
+            ->orderBy('layer', 'asc') 
+            ->get()
+            ->groupBy('ca_id')
+            ->map(function ($approvals) {
+                return $approvals->map(function ($approval) {
+                    $employee = Employee::where('employee_id', $approval->employee_id)->first();
+                    return [
+                        'role_name' => $approval->role_name,
+                        'employee_id' => optional($employee)->fullname ?? 'Unknown',
+                        'approval_status' => $approval->approval_status,
+                    ];
+                })->values()->toArray();
+            });
+        
+        $fullnames_ext = ca_extend::whereIn('ca_id', $ca_transactions_ext->pluck('id'))  
+            ->whereNotIn('approval_status', ['Verified', 'Rejected']) // Menggunakan whereNotIn()    
+            ->orderBy('created_at', 'desc') // Urutkan dari tanggal terbaru ke lama
+            ->orderBy('layer', 'asc') // Urutkan layer dari kecil ke besar dalam tanggal yang sama
+            ->get()
+            ->groupBy('ca_id')
+            ->map(function ($approvals) {
+                return $approvals->map(function ($approval) {
+                    return [
+                        'role_name' => $approval->role_name,
+                        'employee_id' => $approval->employee->fullname,
+                        'approval_status' => $approval->approval_status,
+                    ];
+                })->values()->toArray();
+            });
+        
         $extendData = ca_extend::whereIn('ca_id', $ca_transactions_ext->pluck('id'))
             ->get(['ca_id', 'ext_end_date', 'ext_total_days', 'reason_extend']);
 
@@ -186,7 +232,9 @@ class ApprovalReimburseController extends Controller
             'totalTKTCount' => $totalTKTCount,
             'totalHTLCount' => $totalHTLCount,
             'totalMDCCount' => $totalMDCCount,
-            'fullnames' => $fullnames,
+            'fullnames_req' => $fullnames_req,
+            'fullnames_dec' => $fullnames_dec,
+            'fullnames_ext' => $fullnames_ext,
             'extendTime' => $extendTime,
             'extendData' => $extendData,
             'link' => $link,

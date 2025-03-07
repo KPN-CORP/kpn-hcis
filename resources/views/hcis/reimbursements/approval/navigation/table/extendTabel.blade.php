@@ -36,7 +36,7 @@
                     <td style="width: 1px">{{ $extendTime[$transaction->id]['reason_extend'] }}</td>
                     <td>
                         <p class="badge text-bg-{{ $transaction->approval_extend == 'Approved' ? 'success' : ($transaction->approval_extend == 'Declaration' ? 'info' : ($transaction->approval_extend == 'Pending' ? 'warning' : ($transaction->approval_extend == 'Rejected' ? 'danger' : ($transaction->approval_extend == 'Draft' ? 'secondary' : 'success')))) }}"
-                             title="Waiting Approve by: {{ isset($fullnames[$transaction->extend_id]) ? $fullnames[$transaction->extend_id] : 'Unknown Employee' }}">
+                            onclick="showManagerInfo('All Approval', {{ json_encode($fullnames_ext[$transaction->id] ?? []) }})">
                             {{ $transaction->approval_extend }}
                         </p>
                     </td>

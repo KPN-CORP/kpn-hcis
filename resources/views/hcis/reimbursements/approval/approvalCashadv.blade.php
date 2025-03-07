@@ -121,8 +121,62 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
+
+    <script>  
+        function showManagerInfo(managerType, managers) {
+            if (managers.length === 0) {
+                Swal.fire({
+                    title: managerType,
+                    text: 'No approval data available.',
+                    icon: 'warning',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            let tableContent = `
+                <table style="width:100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #f8f9fa; text-align: left;">
+                            <th style="padding: 8px;">Role</th>
+                            <th style="padding: 8px;">Employee ID</th>
+                            <th style="padding: 8px;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${managers.map(manager => `
+                            <tr>
+                                <td style="padding: 8px;">${manager.role_name}</td>
+                                <td style="padding: 8px;">${manager.employee_id}</td>
+                                <td style="padding: 8px;">${getStatusBadge(manager.approval_status)}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            Swal.fire({
+                title: managerType,
+                html: tableContent,
+                icon: 'info',
+                width: '600px',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            });
+        }
+
+        function getStatusBadge(status) {
+            let color = {
+                'Approved': 'green',
+                'Pending': 'orange',
+                'Rejected': 'red',
+                'Declaration': 'blue',
+                'Draft': 'gray'
+            }[status] || 'black';
+
+            return `<span style="color: ${color}; font-weight: bold;">${status}</span>`;
+        }
+
+    </script>  
 @endsection
-
-@push('scripts')
-
-@endpush
