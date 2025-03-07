@@ -2928,16 +2928,13 @@ class ReimburseController extends Controller
         $employeeIds = $hotels->pluck('user_id')->unique();
         $employees = Employee::whereIn('id', $employeeIds)->get()->keyBy('id');
 
-        // Fetch manager names for display (optional, depending on your view)
-        $managerL1Ids = $employees->pluck('manager_l1_id')->unique();
-        $managerL2Ids = $employees->pluck('manager_l2_id')->unique();
-        $managerL1Names = Employee::whereIn('id', $managerL1Ids)->pluck('fullname', 'id');
-        $managerL2Names = Employee::whereIn('id', $managerL2Ids)->pluck('fullname', 'id');
-
         // Count tickets per `no_tkt`
         $hotelCounts = $hotels->groupBy('no_htl')->mapWithKeys(function ($group, $key) {
             return [$key => ['total' => $group->count()]];
         });
+
+        $managerL1Names = Employee::whereIn('employee_id', $transactions->pluck('manager_l1_id'))->pluck('fullname', 'employee_id');
+        $managerL2Names = Employee::whereIn('employee_id', $transactions->pluck('manager_l2_id'))->pluck('fullname', 'employee_id');
 
         return view('hcis.reimbursements.hotel.hotelApproval', [
             'link' => $link,
@@ -4551,12 +4548,6 @@ class ReimburseController extends Controller
         $employeeIds = $tickets->pluck('user_id')->unique();
         $employees = Employee::whereIn('id', $employeeIds)->get()->keyBy('id');
 
-        // Fetch manager names for display (optional, depending on your view)
-        $managerL1Ids = $employees->pluck('manager_l1_id')->unique();
-        $managerL2Ids = $employees->pluck('manager_l2_id')->unique();
-        $managerL1Names = Employee::whereIn('id', $managerL1Ids)->pluck('fullname', 'id');
-        $managerL2Names = Employee::whereIn('id', $managerL2Ids)->pluck('fullname', 'id');
-
         // Count tickets per `no_tkt`
         $ticketCounts = $tickets->groupBy('no_tkt')->mapWithKeys(function ($group, $key) {
             return [$key => ['total' => $group->count()]];
@@ -4648,6 +4639,9 @@ class ReimburseController extends Controller
         }
 
         $totalMDCCount = $medical->count();
+
+        $managerL1Names = Employee::whereIn('employee_id', $transactions->pluck('manager_l1_id'))->pluck('fullname', 'employee_id');
+        $managerL2Names = Employee::whereIn('employee_id', $transactions->pluck('manager_l2_id'))->pluck('fullname', 'employee_id');
 
         return view('hcis.reimbursements.ticket.ticketApproval', [
             'link' => $link,
