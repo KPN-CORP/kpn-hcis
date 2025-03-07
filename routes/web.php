@@ -99,13 +99,16 @@ Route::get('businessTrip/rejection/{id}/{manager_id}/{status}', [BTApprovalContr
 Route::post('revision/{id}/{manager_id}/{status}', [BTApprovalController::class, 'revisionFromLink'])->name('revision.business.trip');
 Route::post('reject/{id}/{manager_id}/{status}', [BTApprovalController::class, 'rejectFromLink'])->name('reject.business.trip');
 
-//LINK APPROVAL Declarations
+//LINK APPROVAL Declarations BT
 Route::get('approve/declaration/{id}/{manager_id}/{status}', [BTApprovalController::class, 'approveFromLinkDeklarasi'])->name('approve.business.trip.declare');
 
 Route::get('businessTrip/declaration/revision/{id}/{manager_id}/{status}', [BTApprovalController::class, 'revisionDeclarationLink'])->name('revision.link.declaration');
 Route::get('businessTrip/declaration/rejection/{id}/{manager_id}/{status}', [BTApprovalController::class, 'rejectDeclarationLink'])->name('reject.link.declaration');
 Route::post('reject/declaration/{id}/{manager_id}/{status}', [BTApprovalController::class, 'rejectDeclarationFromLink'])->name('reject.business.trip.declaration');
 Route::post('revision/declaration/{id}/{manager_id}/{status}', [BTApprovalController::class, 'revisionDeclarationFromLink'])->name('revision.business.trip.declaration');
+
+// LINK APPROVAL EXTEND BT
+Route::get('approve/extend/{id}/{manager_id}/{status}', [BTApprovalController::class, 'approveFromLinkExtend'])->name('approve.business.trip.extend');
 
 //LINK APPROVAL Hotel
 Route::get('approve/hotel/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'approveHotelFromLink'])->name('approve.hotel');

@@ -2898,6 +2898,7 @@ class BusinessTripController extends Controller
     {
         $id = $req->input('no_id'); // Get the ID from the no_id input
         $userId = Auth::id();
+        $employee = Employee::where('id', $userId)->first();
         $model_bt = BusinessTrip::find($id);
         $model_ca_bt = CATransaction::where('no_sppd', $model_bt->no_sppd)->where('type_ca', 'dns')->first();
         $model_ca_ent = CATransaction::where('no_sppd', $model_bt->no_sppd)->where('type_ca', 'entr')->first();
@@ -2929,11 +2930,11 @@ class BusinessTripController extends Controller
                 return null;
             }
             $deptHeadManager = findDepartmentHead($employee_data);
+            $managerL1 = $deptHeadManager->employee_id;
+            $managerL2 = $deptHeadManager->manager_l1_id;
 
             if ($dnsTab) {
                 $model_ca_bt->approval_extend = $req->input('action_ca_submit');
-                $managerL1 = $deptHeadManager->employee_id;
-                $managerL2 = $deptHeadManager->manager_l1_id;
 
                 $model_ca_bt->extend_id = $managerL1;
                 $model_ca_bt->approval_extend = 'Pending';
@@ -2998,8 +2999,6 @@ class BusinessTripController extends Controller
 
             if ($entrTab) {
                 $model_ca_ent->approval_extend = $req->input('action_ca_submit');
-                $managerL1 = $deptHeadManager->employee_id;
-                $managerL2 = $deptHeadManager->manager_l1_id;
 
                 $model_ca_ent->extend_id = $managerL1;
                 $model_ca_ent->approval_extend = 'Pending';
@@ -3077,44 +3076,107 @@ class BusinessTripController extends Controller
                 'status' => $statusValue,
             ]);
 
-            // $nextApproval = ca_extend::where('ca_id', $id)->where('employee_id', $managerL1)->firstOrFail();
-
-            // // $CANotificationLayer = Employee::where('employee_id', $managerL1)->pluck('email')->first();
-            // $CANotificationLayer = "eriton.dewa@kpn-corp.com";
-            // $imagePath = public_path('images/kop.jpg');
-            // $imageContent = file_get_contents($imagePath);
-            // $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            // if ($CANotificationLayer) {
-            //     $textNotification = "{$model->employee->fullname} Submit an Extend Service with the following details :";
-            //     $declaration = "Extend";
-
-            //     $linkApprove = route('approval.email.approvedext', [
-            //         'id' => $model->id,
-            //         'employeeId' => $nextApproval->employee_id,
-            //         'action' => 'approve',
-            //     ]);
-            //     $linkReject = route('blank.page', [
-            //         'key' => encrypt($model->id),  // Ganti 'id' dengan 'key' sesuai dengan parameter di controller
-            //         'userId' => $nextApproval->employee->id, // Jika perlu, masukkan ID pengguna di sini
-            //         'autoOpen' => 'reject'
-            //     ]);
-
-            //     try {
-            //         Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
-            //             $nextApproval,
-            //             $model,
-            //             $textNotification,
-            //             $declaration,
-            //             $linkApprove,
-            //             $linkReject,
-            //             $base64Image,
-            //         ));
-            //     } catch (\Exception $e) {
-            //         Log::error('Email Submit Extend Cash Advance tidak terkirim: ' . $e->getMessage());
-            //     }
-            // }
-
-            // $model->save();
+            if ($statusValue == 'Extend L1') {
+                // Get manager email
+                $managerEmail = Employee::where('employee_id', $managerL1)->pluck('email')->first();
+                // $managerEmail = "eriton.dewa@kpn-corp.com";
+                $group_company = Employee::where('id', $employee->id)->pluck('group_company')->first();
+    
+                $imagePath = public_path('images/kop.jpg');
+                $imageContent = file_get_contents($imagePath);
+                $employeeName = Employee::where('id', $userId)->pluck('fullname')->first();
+                $base64Image = "data:image/png;base64," . base64_encode($imageContent);
+                $textNotification = "requesting Extend for his Business Trip and waiting for your approval with the following details :";
+                $managerName = Employee::where('employee_id', $managerL1)->pluck('fullname')->first();
+                $isEnt = $entrTab ? 'Ya' : 'Tidak';
+                $isCa = $dnsTab ? 'Ya' : 'Tidak';
+    
+                if ($managerEmail) {
+                    $detail_ca_ntf = isset($detail_ca_ntf) ? $detail_ca_ntf : [];
+                    $detail_ent = isset($detail_ent) ? $detail_ent : [];
+                    $caDetails = [
+                        'total_days_perdiem' => array_sum(array_column($detail_ca_ntf['detail_perdiem'] ?? [], 'total_days')),
+                        'total_amount_perdiem' => array_sum(array_column($detail_ca_ntf['detail_perdiem'] ?? [], 'nominal')),
+    
+                        'total_days_transport' => count($detail_ca_ntf['detail_transport'] ?? []),
+                        'total_amount_transport' => array_sum(array_column($detail_ca_ntf['detail_transport'] ?? [], 'nominal')),
+    
+                        'total_days_accommodation' => array_sum(array_column($detail_ca_ntf['detail_penginapan'] ?? [], 'total_days')),
+                        'total_amount_accommodation' => array_sum(array_column($detail_ca_ntf['detail_penginapan'] ?? [], 'nominal')),
+    
+                        'total_days_others' => count($detail_ca_ntf['detail_lainnya'] ?? []),
+                        'total_amount_others' => array_sum(array_column($detail_ca_ntf['detail_lainnya'] ?? [], 'nominal')),
+    
+                        'total_days_meals' => count($detail_ca_ntf['detail_meals'] ?? []),
+                        'total_amount_meals' => array_sum(array_column($detail_ca_ntf['detail_meals'] ?? [], 'nominal')),
+                    ];
+                    $entDetails = [
+                        'total_amount_ent' => array_sum(array_column($detail_ent['detail_e'] ?? [], 'nominal')),
+                    ];
+                    // Fetch ticket and hotel details with proper conditions
+                    $ticketDetails = Tiket::where('no_sppd', $model_bt->no_sppd)
+                        ->where(function ($query) {
+                            $query->where('tkt_only', '!=', 'Y')
+                                ->orWhereNull('tkt_only'); // This handles the case where tkt_only is null
+                        })
+                        ->get();
+    
+                    $hotelDetails = Hotel::where('no_sppd', $model_bt->no_sppd)
+                        ->where(function ($query) {
+                            $query->where('hotel_only', '!=', 'Y')
+                                ->orWhereNull('hotel_only'); // This handles the case where hotel_only is null
+                        })
+                        ->get();
+    
+                    $messDetails = Mess::where('no_sppd', $model_bt->no_sppd)
+                        ->where(function ($query) {
+                            $query->where('mess_only', '!=', 'Y')
+                                ->orWhereNull('mess_only');
+                        })
+                        ->get();
+    
+                    $taksiDetails = Taksi::where('no_sppd', $model_bt->no_sppd)->first();
+    
+                    $approvalLink = route('approve.business.trip', [
+                        'id' => urlencode($model_bt->id),
+                        'manager_id' => $model_bt->manager_l1_id,
+                        'status' => 'Pending L2'
+                    ]);
+    
+                    $rejectionLink = route('reject.link', [
+                        'id' => urlencode($model_bt->id),
+                        'manager_id' => $model_bt->manager_l1_id,
+                        'status' => 'Rejected'
+                    ]);
+    
+    
+                    // Send an email with the detailed business trip information
+                    try {
+                        Mail::to($managerEmail)->send(new BusinessTripNotification(
+                            $model_bt,
+                            $hotelDetails,
+                            $ticketDetails,
+                            $taksiDetails,
+                            $caDetails,
+                            $managerName,
+                            $approvalLink,
+                            null,
+                            $rejectionLink,
+                            $employeeName,
+                            $base64Image,
+                            $textNotification,
+                            $isEnt,
+                            $isCa,
+                            $entDetails,
+                            $group_company,
+                            $messDetails,
+                        ));
+                    } catch (\Exception $e) {
+                        Log::error('Email Create Business Trip tidak terkirim: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
+                        Log::info('messDetails: ' . json_encode($messDetails));
+                    }
+                }
+            }
 
             return redirect('/businessTrip')->with('success', 'Transaction asking for Extend, Please wait for Approval.');
         }
