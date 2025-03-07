@@ -87,14 +87,13 @@
                         <div class="card-body">
                             <form action="{{ route('hotel.admin') }}" method="GET">
                                 <div class="input-group">
-                                    <label class="col-form-label">Check in Date : </label>
-
-                                    <input type="date" class="form-control mx-2" id="start_date" name="start_date"
-                                        placeholder="Start Date" title="Start Date"
-                                        value="{{ request()->get('start_date') }}">
-                                    <label class="col-form-label"> - </label>
-                                    <input type="date" class="form-control mx-2" id="end_date" name="end_date"
-                                        placeholder="End Date" title="End Date" value="{{ request()->get('end_date') }}">
+                                    <label class="col-form-label">Check in Date : </label>  
+                                    <input type="date" class="form-control mx-2" id="start_date" name="start_date"  
+                                        placeholder="Start Date" title="Start Date"  
+                                        value="{{ request()->get('start_date') }}" onchange="updateEndDate()">  
+                                    <label class="col-form-label"> - </label>  
+                                    <input type="date" class="form-control mx-2" id="end_date" name="end_date"  
+                                        placeholder="End Date" title="End Date" value="{{ request()->get('end_date') }}" disabled> 
 
                                     <div class="input-group-append mx-2">
                                         <button class="btn btn-primary" type="submit">Filter</button>
@@ -211,7 +210,7 @@
                                                                     ? 'warning'
                                                                     : ($transaction->approval_status == 'Draft'
                                                                         ? 'secondary'
-                                                                        : (in_array($transaction->approval_status, ['Doc Accepted'])
+                                                                        : (in_array($transaction->approval_status, ['Doc Accepted', 'Request Revision'])
                                                                             ? 'info'
                                                                             : 'secondary')))) }}"
                                                         style="font-size: 12px; padding: 0.5rem 1rem; cursor: {{ ($transaction->approval_status == 'Rejected' || $transaction->approval_status == 'Declaration Rejected') && isset($hotelApprovals[$transaction->id]) ? 'pointer' : 'default' }};"
@@ -527,4 +526,42 @@
             updateDateTime();
             setInterval(updateDateTime, 1000);
         </script>
+
+        <script>  
+            function updateEndDate() {  
+                const startDateInput = document.getElementById('start_date');  
+                const endDateInput = document.getElementById('end_date');  
+                const startDate = new Date(startDateInput.value);  
+            
+                // Set min attribute for end date to the selected start date + 1 day  
+                if (startDateInput.value) {  
+                    const minDate = new Date(startDate);  
+                    minDate.setDate(minDate.getDate() + 1); // Disable the start date  
+                    
+                    // Enable end date input  
+                    endDateInput.disabled = false;  
+                    // Set min and max for end date  
+                    endDateInput.min = minDate.toISOString().split('T')[0];  
+            
+                    // Set max to 3 months from the start date  
+                    const maxDate = new Date(startDate);  
+                    maxDate.setMonth(startDate.getMonth() + 3);  
+            
+                    // Set max attribute for end date  
+                    endDateInput.max = maxDate.toISOString().split('T')[0];  
+            
+                    // Optionally reset the end date if it is before the new min date  
+                    if (new Date(endDateInput.value) < minDate) {  
+                        endDateInput.value = '';  
+                    }  
+                } else {  
+                    // Disable end date input if no start date is selected  
+                    endDateInput.disabled = true;  
+                    endDateInput.value = ''; // Clear the end date input  
+                }  
+            }  
+            
+            // Initial call to set dates if there are pre-filled values  
+            updateEndDate();  
+        </script>  
     @endsection

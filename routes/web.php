@@ -48,6 +48,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Mail\TestEmail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return redirect('reimbursements');
@@ -111,6 +112,8 @@ Route::get('approve/hotel/{id}/{manager_id}/{status}', [ApprovalReimburseControl
 
 Route::get('hotel/rejection/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'rejectHotelLink'])->name('reject.hotel.link');
 Route::post('reject/hotel/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'rejectHotelFromLink'])->name('reject.hotel');
+Route::get('hotel/revision/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'revisionHotelLink'])->name('revision.hotel.link');
+Route::post('revision/hotel/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'revisionHotelFromLink'])->name('revision.hotel');
 
 //LINK APPROVAL TICKETS
 Route::get('approve/ticket/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'approveTicketFromLink'])->name('approve.ticket');
@@ -385,6 +388,16 @@ Route::middleware('auth')->group(function () {
         Route::put('/medical/admin/form-update/update/{id}', [MedicalController::class, 'medicalAdminUpdate'])->name('medical-admin-form.put');
         Route::delete('/medical/admin/delete/{id}', [MedicalController::class, 'medicalAdminDelete'])->name('medical-admin.delete');
         Route::delete('/medical/admin/delete/report/{id}', [MedicalController::class, 'medicalReportAdminDelete'])->name('medicalReport-admin.delete');
+        Route::post('/delete-failed-import', function (Request $request) {
+            $filePath = str_replace(asset('storage/'), '', $request->file_path); // Ambil path relatif
+        
+            if (Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
+                return response()->json(['message' => 'File deleted successfully']);
+            }
+        
+            return response()->json(['message' => 'File not found'], 404);
+        })->name('delete.failed.import');
     });
 
     //Medical Approval
@@ -422,6 +435,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/businessTrip/update/{id}', [BusinessTripController::class, 'update'])->name('update.bt');
     Route::delete('/businessTrip/delete/{id}', [BusinessTripController::class, 'delete'])->name('delete.bt');
     Route::post('/businessTrip/saveDraft', [BusinessTripController::class, 'saveDraft'])->name('businessTrip.saveDraft');
+
+    // Extend BT and CA
+    Route::post('/businessTrip/extend', [BusinessTripController::class, 'businessTripExtend'])->name('businessTrip.extend');
+    Route::post('/businessTrip/approval/extend', [BusinessTripController::class, 'updateStatusExtended'])->name('businessTrip.approvalExtended');
 
     //pdf BT
     Route::get('/businessTrip/pdf/{id}', [BusinessTripController::class, 'pdfDownload'])->name('pdf');

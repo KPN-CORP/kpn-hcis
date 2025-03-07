@@ -12,13 +12,16 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use App\Exceptions\ImportDataInvalidException;
+use App\Exports\MedicalFailedImportExport;
 use App\Mail\MedicalNotification;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
 
 
 class ImportHealthCoverage implements ToModel
 {
     private $batchRecords = [];
+    private $failedRows = [];
     private $attachmentPath;
 
     public function __construct($attachmentPath = null)
@@ -50,60 +53,70 @@ class ImportHealthCoverage implements ToModel
 
     public function model(array $row)
     {
-        if ($row[0] == 'No' && $row[1] == 'Employee Name' && $row[2] == 'Employee ID' && $row[3] == 'Contribution Level Code' && $row[4] == 'No Invoice' && $row[5] == 'Hospital Name' && $row[6] == 'Patient Name' && $row[7] == 'Desease' && $row[8] == 'Date' && $row[9] == 'Coverage Detail' && $row[10] == 'Period'&& $row[11] == 'Medical Type' && $row[12] == 'Amount') {
+        if ($row[0] == 'No' && $row[1] == 'Employee Name' && $row[2] == 'Employee ID') {
             return null;
         }
 
-        // Jangan Hapus ini Code kalo ngisi Excel
         if (empty(array_filter($row))) {
             return null;
         }
 
-        $userId = Auth::id();
-        $employeeId = Employee::where('id', $userId)->first();
-        $newNoMedic = $this->generateNoMedic(); // Call the generateNoMedic() function
-        $MedicType = MasterMedical::get();
-        $isValidData = false;
-        $expectedTypes = [];
+        $errorMessage = null;
 
-        foreach ($MedicType as $type) {
-            $expectedTypes[] = $type->name;
-            
-            if ($type->name == $row[11]) {
-                $isValidData = true;
-                break;
-            }
+        // Cek apakah Employee ID ada di database
+        $employee = Employee::where('employee_id', $row[2])->first();
+        if (!$employee) {
+            $errorMessage = "Employee ID '{$row[2]}' tidak ditemukan di database.";
+        } elseif ($employee->fullname !== $row[1]) {
+            $errorMessage = "Employee Name '{$row[1]}' tidak sesuai dengan '{$employee->fullname}' yang berEmployee ID '{$row[2]}'.";
         }
 
-        if (!$isValidData) {
-            $expectedTypesString = implode(", ", $expectedTypes);
-            throw new ImportDataInvalidException("Value '$row[11]' does not match any expected Type Value ({$expectedTypesString}). Import canceled.");
+        // Validasi apakah telah ada record yang sama
+        $expectedRecord = HealthCoverage::where('no_invoice', $row[4])->where('disease', $row[7])->where('medical_type', $row[11])->first();
+        if ($expectedRecord) {
+            $errorMessage = "Transaksi Medical dengan Invoice '{$row[4]}', Desease '{$row[7]}' dan Medical Type '{$row[11]}' sudah pernah di ajukan.";
         }
 
+        // Validasi Medical Type
+        $expectedTypes = MasterMedical::pluck('name')->toArray();
+        if (!in_array($row[11], $expectedTypes)) {
+            $errorMessage = "Medical Type '{$row[11]}' tidak valid. Harus salah satu dari: " . implode(", ", $expectedTypes);
+        }
+
+        // Validasi format angka
         if (!is_numeric($row[2])) {
-            throw new ImportDataInvalidException("Invalid data format detected in column 2. Import canceled.");
+            $errorMessage = "Employee ID harus berupa angka.";
         }
         if (!is_numeric($row[12])) {
-            throw new ImportDataInvalidException("Invalid data format detected in column 12. Import canceled.");
+            $errorMessage = "Amount harus berupa angka.";
         }
 
+        // Validasi format tanggal
         if (is_numeric($row[8])) {
-            $excelDate = intval($row[8]);
-            $dateTime = Date::excelToDateTimeObject($excelDate);
+            $dateTime = Date::excelToDateTimeObject(intval($row[8]));
             $formattedDate = $dateTime->format('Y-m-d');
         } else {
             $date = \DateTime::createFromFormat('d/m/Y', $row[8]);
             if (!$date) {
-                throw new ImportDataInvalidException("Invalid date format detected. Import canceled.");
+                $errorMessage = "Format tanggal tidak valid.";
+            } else {
+                $formattedDate = $date->format('Y-m-d');
             }
-            $formattedDate = $date->format('Y-m-d');
         }
-        $contribution = Employee::where('employee_id', $row[2])->pluck('contribution_level_code')->first();
+
+        // Jika ada error, simpan ke array gagal
+        if ($errorMessage) {
+            $row[13] = $errorMessage; // Simpan error di kolom ke-14
+            $this->failedRows[] = $row;
+            return null; // Jangan simpan ke database
+        }
+
+        // Jika data valid, simpan ke database
         $healthCoverage = new HealthCoverage([
             'usage_id' => Str::uuid(),
             'employee_id' => $row[2],
-            'contribution_level_code' => $contribution,
-            'no_medic' => $newNoMedic,
+            'contribution_level_code' => $employee->contribution_level_code,
+            'no_medic' => $this->generateNoMedic(),
             'no_invoice' => $row[4],
             'hospital_name' => $row[5],
             'patient_name' => $row[6],
@@ -118,13 +131,11 @@ class ImportHealthCoverage implements ToModel
             'status' => 'Done',
             'submission_type' => 'F',
             'medical_proof' => $this->attachmentPath,
-            'created_by' => $userId,
-            'verif_by' => $employeeId->employee_id,
-            'approved_by' => $employeeId->employee_id,
-            'created_at' => date('Y-m-d H:i:s'),
+            'created_by' => Auth::id(),
+            'verif_by' => $employee->employee_id,
+            'approved_by' => $employee->employee_id,
+            'created_at' => now(),
         ]);
-
-        $this->performCalculations($healthCoverage);
 
         $this->batchRecords[] = $healthCoverage;
 
@@ -133,6 +144,8 @@ class ImportHealthCoverage implements ToModel
 
     public function afterImport()
     {
+        return $this->failedRows;  
+
         // Group records by employee_id
         $groupedRecords = collect($this->batchRecords)->groupBy('employee_id');
         // dd($base64Image);

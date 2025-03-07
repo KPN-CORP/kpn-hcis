@@ -101,11 +101,78 @@
                                     </ul>
                                 </div>
 
-                                <input type="date" class="form-control mx-2" style="{{ request()->get('from_date') || request()->get('until_date') ? 'display: none' : 'display: block' }}" id="start_date" name="start_date" placeholder="Start Date" title="Start Date" value="{{ request()->get('start_date') }}">
-                                <input type="date" class="form-control mx-2" style="{{ request()->get('from_date') || request()->get('until_date') ? 'display: block' : 'display: none' }}" id="from_date" name="from_date" placeholder="From Date" title="From Date" value="{{ request()->get('from_date') }}">
+                                <input type="date" class="form-control mx-2" style="{{ request()->get('from_date') || request()->get('until_date') ? 'display: none' : 'display: block' }}" id="start_date" name="start_date" placeholder="Start Date" title="Start Date" value="{{ request()->get('start_date') }}" onchange="updateEndDate2()">
+                                <input type="date" class="form-control mx-2" style="{{ request()->get('from_date') || request()->get('until_date') ? 'display: block' : 'display: none' }}" id="from_date" name="from_date" placeholder="From Date" title="From Date" value="{{ request()->get('from_date') }}" onchange="updateEndDate2()">
                                 <label class="col-form-label"> - </label>
-                                <input type="date" class="form-control mx-2" style="{{ request()->get('from_date') || request()->get('until_date') ? 'display: none' : 'display: block' }}" id="end_date" name="end_date" placeholder="End Date" title="End Date" value="{{ request()->get('end_date') }}">
-                                <input type="date" class="form-control mx-2" style="{{ request()->get('from_date') || request()->get('until_date') ? 'display: block' : 'display: none' }}" id="until_date" name="until_date" placeholder="Until Date" title="Until Date" value="{{ request()->get('until_date') }}">
+                                <input type="date" class="form-control mx-2" style="{{ request()->get('from_date') || request()->get('until_date') ? 'display: none' : 'display: block' }}" id="end_date" name="end_date" placeholder="End Date" title="End Date" value="{{ request()->get('end_date') }}" disabled>
+                                <input type="date" class="form-control mx-2" style="{{ request()->get('from_date') || request()->get('until_date') ? 'display: block' : 'display: none' }}" id="until_date" name="until_date" placeholder="Until Date" title="Until Date" value="{{ request()->get('until_date') }}" disabled>
+
+                                <script>  
+                                    function updateEndDate2() {  
+                                        const startDateInput = document.getElementById('start_date');  
+                                        const fromDateInput = document.getElementById('from_date');  
+                                        const endDateInput = document.getElementById('end_date');  
+                                        const untilDateInput = document.getElementById('until_date');  
+                                        const startDate = new Date(startDateInput.value);  
+                                        const fromDate = new Date(fromDateInput.value);  
+                                    
+                                        // Set min attribute for end date to the selected start date + 1 day  
+                                        if (startDateInput.value) {  
+                                            const minDate = new Date(startDate);  
+                                            minDate.setDate(minDate.getDate() + 1); // Disable the start date  
+                                            
+                                            // Enable end date input  
+                                            endDateInput.disabled = false;  
+                                            // Set min and max for end date  
+                                            endDateInput.min = minDate.toISOString().split('T')[0];  
+                                    
+                                            // Set max to 3 months from the start date  
+                                            const maxDate = new Date(startDate);  
+                                            maxDate.setMonth(startDate.getMonth() + 3);  
+                                    
+                                            // Set max attribute for end date  
+                                            endDateInput.max = maxDate.toISOString().split('T')[0];  
+                                    
+                                            // Optionally reset the end date if it is before the new min date  
+                                            if (new Date(endDateInput.value) < minDate) {  
+                                                endDateInput.value = '';  
+                                            }  
+                                        } else {  
+                                            // Disable end date input if no start date is selected  
+                                            endDateInput.disabled = true;  
+                                            endDateInput.value = ''; // Clear the end date input  
+                                        }  
+
+                                        if (fromDateInput.value) {  
+                                            const minDate = new Date(fromDate);  
+                                            minDate.setDate(minDate.getDate() + 1); // Disable the start date  
+                                            
+                                            // Enable end date input  
+                                            untilDateInput.disabled = false;  
+                                            // Set min and max for end date  
+                                            untilDateInput.min = minDate.toISOString().split('T')[0];  
+                                    
+                                            // Set max to 3 months from the start date  
+                                            const maxDate = new Date(fromDate);  
+                                            maxDate.setMonth(fromDate.getMonth() + 3);  
+                                    
+                                            // Set max attribute for end date  
+                                            untilDateInput.max = maxDate.toISOString().split('T')[0];  
+                                    
+                                            // Optionally reset the end date if it is before the new min date  
+                                            if (new Date(untilDateInput.value) < minDate) {  
+                                                untilDateInput.value = '';  
+                                            }  
+                                        } else {  
+                                            // Disable end date input if no start date is selected  
+                                            untilDateInput.disabled = true;  
+                                            untilDateInput.value = ''; // Clear the end date input  
+                                        }  
+                                    }  
+                                    
+                                    // Initial call to set dates if there are pre-filled values  
+                                    updateEndDate2();  
+                                </script>  
 
                                 <select class="form-select mx-2" aria-label="Status" id="stat" name="stat">
                                     <option value="-" {{ request()->get('stat') == '-' ? 'selected' : '' }}>All Status</option>

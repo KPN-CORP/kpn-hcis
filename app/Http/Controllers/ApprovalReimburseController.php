@@ -1966,6 +1966,12 @@ class ApprovalReimburseController extends Controller
                 'status' => 'Pending L2'
             ]);
 
+            $revisionLink = route('revision.hotel.link', [
+                'id' => urlencode($hotel->id),
+                'manager_id' => $managerId,
+                'status' => 'Request Revision'
+            ]);
+
             $rejectionLink = route('reject.hotel.link', [
                 'id' => urlencode($hotel->id),
                 'manager_id' => $managerId,
@@ -2004,6 +2010,7 @@ class ApprovalReimburseController extends Controller
                         'totalHari' => $totalHari,
                         'managerName' => $managerName,
                         'approvalLink' => $approvalLink,
+                        'revisionLink' => $revisionLink,
                         'rejectionLink' => $rejectionLink,
                         'approvalStatus' => 'Pending L2',
                         'base64Image' => $base64Image,
@@ -2055,6 +2062,27 @@ class ApprovalReimburseController extends Controller
             'hotelsTotal' => $hotelsTotal,
         ]);
     }
+    public function revisionHotelLink($id, $manager_id, $status)
+    {
+        $hotel = Hotel::where('id', $id)->first();
+        // dd($id, $hotel);
+        $userId = $hotel->user_id;
+
+        $employeeName = Employee::where('id', $userId)->pluck('fullname')->first();
+        $noHtl = $hotel->no_htl;
+        $hotels = Hotel::where('no_htl', $noHtl)->first();
+        $hotelsTotal = Hotel::where('no_htl', $noHtl)->count();
+
+        return view('hcis.reimbursements.hotel.hotelRevision', [
+            'userId' => $userId,
+            'id' => $id,
+            'manager_id' => $manager_id,
+            'status' => $status,
+            'hotels' => $hotels,
+            'employeeName' => $employeeName,
+            'hotelsTotal' => $hotelsTotal,
+        ]);
+    }
     public function rejectHotelFromLink(Request $request, $id, $manager_id, $status)
     {
         $employeeId = $manager_id;
@@ -2084,7 +2112,35 @@ class ApprovalReimburseController extends Controller
             $rejection->save();
         }
     }
+    public function revisionHotelFromLink(Request $request, $id, $manager_id, $status)
+    {
+        $employeeId = $manager_id;
 
+        $revisionInfo = $request->revision_info;
+        $hotel = Hotel::findOrFail($id);
+        $noHtl = $hotel->no_htl;
+        // Get the current approval status before updating it
+        $currentApprovalStatus = $hotel->approval_status;
+
+        Hotel::where('no_htl', $noHtl)->update(['approval_status' => 'Request Revision']);
+
+        // Log the rejection into the hotel_approvals table for all hotels with the same no_htl
+        $hotels = Hotel::where('no_htl', $noHtl)->get();
+        foreach ($hotels as $hotel) {
+            $rejection = new HotelApproval();
+            $rejection->id = (string) Str::uuid();
+            $rejection->htl_id = $hotel->id;
+            $rejection->employee_id = $employeeId;
+
+            // Determine the correct layer based on the hotel's approval status BEFORE rejection
+            $rejection->layer = $currentApprovalStatus == 'Pending L2' ? 2 : 1;
+
+            $rejection->approval_status = 'Request Revision';
+            $rejection->approved_at = now();
+            $rejection->reject_info = $revisionInfo;
+            $rejection->save();
+        }
+    }
     public function approveTicketFromLink($id, $manager_id, $status)
     {
         $employeeId = $manager_id;

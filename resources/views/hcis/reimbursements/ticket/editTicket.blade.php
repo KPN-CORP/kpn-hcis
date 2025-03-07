@@ -59,6 +59,7 @@
                                     </div>
                                 </div>
                             </div>
+
                             <!-- Business Trip Number Selection -->
                             <div class="row">
                                 <div class="col-md-5">
@@ -103,6 +104,13 @@
                                 </div>
                             </div>
                             <input type="hidden" name="no_tkt" value="{{ $ticket->no_tkt }}">
+
+                            @if ($ticket->approval_status == 'Request Revision' || $hotel->approval_status == 'Declaration Revision')
+                                <div class="alert alert-info" role="alert">  
+                                    <h4 class="alert-heading">Revision Note</h4>  
+                                    {!! nl2br(e($revisiInfo)) !!}  
+                                </div>  
+                            @endif
 
                             <div id="tiket_div">
                                 <div class="d-flex flex-column gap-1" id="ticket_forms_container">
