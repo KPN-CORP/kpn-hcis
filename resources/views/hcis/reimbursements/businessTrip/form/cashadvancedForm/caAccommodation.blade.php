@@ -8,11 +8,11 @@
 
         const newForm = document.createElement("div");
         newForm.id = `form-container-bt-penginapan-${formCountPenginapan}`;
-        newForm.className = "card-body p-2 mb-3";
-        newForm.style.backgroundColor = "#f8f8f8";
+        newForm.className = "bg-light rounded-3 card-body p-2 mb-2";
+        // newForm.style.backgroundColor = "#f8f8f8";
         newForm.innerHTML = `
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Accommodation ${formCountPenginapan}</p>
-                <div class="card-body bg-light p-2 mb-3">
+                <div class="card-body bg-white p-2 rounded-3">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Accommodation Request</p>
                     <div class="row">
                         <!-- Penginapan Date -->
@@ -56,7 +56,7 @@
                             <select class="form-control select2"
                                 id="company_bt_penginapan_${formCountPenginapan}"
                                 name="company_bt_penginapan[]">
-                                <option value="">Select Company...</option>
+                                <option ="">Select Company...</option>
                                 @foreach ($companies as $company)
                                     <option value="{{ $company->contribution_level_code }}">
                                         {{ $company->contribution_level . ' (' . $company->contribution_level_code . ')' }}
@@ -83,7 +83,7 @@
                     <div class="row">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-sm btn-outline-warning" style="margin-right: 10px" onclick="clearFormPenginapan(${formCountPenginapan}, event)">Reset</button>
-                            <button class="btn btn-sm btn-outline-primary" onclick="removeFormPenginapan(${formCountPenginapan}, event)">Delete</button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="removeFormPenginapan(${formCountPenginapan}, event)">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -99,10 +99,9 @@
 @if (!empty($caDetail['detail_penginapan']) && $caDetail['detail_penginapan'][0]['start_date'] !== null)
     <div id="form-container-penginapan">
         @foreach ($caDetail['detail_penginapan'] as $penginapan)
-            <div id="form-container-bt-penginapan-{{ $loop->index + 1 }}" class="card-body p-2 mb-3"
-                style="background-color: #f8f8f8">
+            <div id="form-container-bt-penginapan-{{ $loop->index + 1 }}" class="card-body p-2 bg-light mb-2">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Accommodation {{ $loop->index + 1 }}</p>
-                <div id="form-container-bt-penginapan-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3">
+                <div id="form-container-bt-penginapan-req-{{ $loop->index + 1 }}" class="card-body bg-white p-2">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Accommodation Request</p>
                     <div class="row">
                         <!-- Penginapan Date -->
@@ -170,7 +169,7 @@
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-sm btn-outline-warning" style="margin-right: 10px"
                                 onclick="clearFormPenginapan({{ $loop->index + 1 }}, event)">Reset</button>
-                            <button class="btn btn-sm btn-outline-primary"
+                            <button class="btn btn-sm btn-outline-danger"
                                 onclick="removeFormPenginapan({{ $loop->index + 1 }}, event)">Delete</button>
                         </div>
                     </div>
@@ -182,8 +181,8 @@
     <div class="mt-3">
         <button class="btn btn-primary btn-sm" id="addMoreButton" onclick="addMoreFormPenginapanReq(event)">Add More</button>
     </div>
-
-    <div class="mt-2">
+    <hr/>
+    <div>
         <label class="form-label">Total Accommodation</label>
         <div class="input-group">
             <div class="input-group-append">
@@ -197,9 +196,9 @@
     </div>
 @else
     <div id="form-container-penginapan">
-        <div id="form-container-bt-penginapan-1" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
+        <div id="form-container-bt-penginapan-1" class="card-body p-2 mb-2 bg-light rounded-3">
             <p class="fs-4 text-primary" style="font-weight: bold; ">Accommodation 1</p>
-            <div id="form-container-bt-penginapan-req-1" class="card-body bg-light p-2 mb-3">
+            <div id="form-container-bt-penginapan-req-1" class="card-body bg-white rounded-3 p-2">
                 <p class="fs-5 text-primary" style="font-weight: bold;">Accommodation Request</p>
                 <div class="row">
                     <!-- Penginapan Date -->
@@ -262,7 +261,7 @@
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-sm btn-outline-warning" style="margin-right: 10px"
                             onclick="clearFormPenginapan(1, event)">Reset</button>
-                        <button class="btn btn-sm btn-outline-primary" onclick="removeFormPenginapan(1, event)">Delete</button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="removeFormPenginapan(1, event)">Delete</button>
                     </div>
                 </div>
             </div>
@@ -273,8 +272,8 @@
         <button class="btn btn-primary btn-sm" id="addMoreButton" onclick="addMoreFormPenginapanReq(event)">Add
             More</button>
     </div>
-
-    <div class="mt-2">
+    <hr/>
+    <div>
         <label class="form-label">Total Accommodation</label>
         <div class="input-group">
             <div class="input-group-append">

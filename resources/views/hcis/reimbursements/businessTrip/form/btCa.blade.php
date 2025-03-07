@@ -13,12 +13,15 @@
                         placeholder="mm/dd/yyyy" readonly>
                 </div>
             </div>
-            <label for="additional-fields-title" class="mb-2">  
+            {{-- <label for="additional-fields-title" class="mb-2">  
                 <span class="text-info fst-italic">  
                     * In accordance with the company's policy on <strong>Long-Distance Business Travel</strong>, any unused cash advance must be returned to the company's cash/account no later than <strong>2 (two) days</strong> after the <strong>Business Trip Accountability Declaration</strong> is verified by the <strong>GA department</strong>. If the employee fails to return the unused cash advance within the specified time, the cash advance will be <strong>deducted from the employee's salary</strong>.  
                 </span>  
-            </label>  
-            <div class="d-flex flex-column">
+            </label>   --}}
+            <div class="alert alert-info col-md-12" role="alert">
+                *In accordance with the company's policy on <strong>Long-Distance Business Travel</strong>, any unused cash advance must be returned to the company's cash/account no later than <strong>2 (two) days</strong> after the <strong>Business Trip Accountability Declaration</strong> is verified by the <strong>GA department</strong>. If the employee fails to return the unused cash advance within the specified time, the cash advance will be <strong>deducted from the employee's salary</strong>.  
+            </div>
+            <div class="d-flex flex-column p-2 rounded-3" style="background-color: #f8f8f8">
                 <ul class="nav mb-2" id="pills-tab" role="tablist">
                     <li class="nav-item" role="presentation" id="perdiem-tab-li">
                         <button class="nav-link active" id="pills-perdiem-tab" data-bs-toggle="pill"
@@ -71,27 +74,26 @@
                         @include('hcis.reimbursements.businessTrip.form.cashadvancedForm.caOther')
                     </div>
                 </div>
-
-                <br>
-                <div class="col-md-12 mb-2">
-                    <label class="form-label">Total Cash Advanced</label>
-                    <div class="input-group">
-                        <div class="input-group-append">
-                            <span class="input-group-text">Rp</span>
-                        </div>
-                        <input class="form-control bg-light" name="totalca" id="totalca" type="text"
-                            min="0" value="0" readonly>
+               
+            </div>
+            <div class="col-md-12 mt-3">
+                <label class="form-label">Total Cash Advanced</label>
+                <div class="input-group">
+                    <div class="input-group-append">
+                        <span class="input-group-text">Rp</span>
                     </div>
+                    <input class="form-control bg-light" name="totalca" id="totalca" type="text"
+                        min="0" value="0" readonly>
                 </div>
-                <div class="col-md-12 mb-2" id="total_bt_ent" style="display:none">
-                    <label class="form-label">Total Request</label>
-                    <div class="input-group">
-                        <div class="input-group-append">
-                            <span class="input-group-text">Rp</span>
-                        </div>
-                        <input class="form-control bg-light" name="totalreq" id="totalreq" type="text"
-                            min="0" value="0" readonly>
+            </div>
+            <div class="col-md-12 mt-2" id="total_bt_ent" style="display:none">
+                <label class="form-label">Total Business Trip Request</label>
+                <div class="input-group">
+                    <div class="input-group-append">
+                        <span class="input-group-text">Rp</span>
                     </div>
+                    <input class="form-control bg-light" name="totalreq" id="totalreq" type="text"
+                        min="0" value="0" readonly>
                 </div>
             </div>
         </div>

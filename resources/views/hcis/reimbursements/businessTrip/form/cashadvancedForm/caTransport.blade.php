@@ -8,14 +8,14 @@
 
         const newForm = document.createElement("div");
         newForm.id = `form-container-bt-transport-${formCountTransport}`;
-        newForm.className = "card-body p-2 mb-3";
-        newForm.style.backgroundColor = "#f8f8f8";
+        newForm.className = "bg-light rounded-3 card-body p-2 mb-2";
+        // newForm.style.backgroundColor = "#f8f8f8";
         newForm.innerHTML = `
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Transport ${formCountTransport}</p>
                      <label for="additional-fields-title" class="mb-2">
                         <span class="text-info fst-italic">* Transport only for Bus, Train and Speedboat</span>
                     </label>
-                    <div class="card-body bg-light p-2 mb-3">
+                    <div class="card-body bg-white rounded-3 p-2">
                         <p class="fs-5 text-primary" style="font-weight: bold;">Request Transport</p>
                         <div class="row">
                             <!-- Transport Date -->
@@ -60,7 +60,7 @@
                         <div class="row mt-3">
                             <div class="d-flex justify-start w-100">
                                 <button class="btn btn-sm btn-outline-warning" style="margin-right: 10px" onclick="clearFormTransport(${formCountTransport}, event)">Reset</button>
-                                <button class="btn btn-sm btn-outline-primary" onclick="removeFormTransport(${formCountTransport}, event)">Delete</button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="removeFormTransport(${formCountTransport}, event)">Delete</button>
                             </div>
                         </div>
                     </div>
@@ -76,13 +76,12 @@
 @if (!empty($caDetail['detail_transport']) && $caDetail['detail_transport'][0]['tanggal'] !== null)
     <div id="form-container-transport">
         @foreach ($caDetail['detail_transport'] as $transport)
-            <div id="form-container-bt-transport-{{ $loop->index + 1 }}" class="card-body p-2 mb-3"
-                style="background-color: #f8f8f8">
+            <div id="form-container-bt-transport-{{ $loop->index + 1 }}" class="card-body p-2 mb-2">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Transport {{ $loop->index + 1 }}</p>
                 <label for="additional-fields-title" class="mb-2">
                     <span class="text-info fst-italic">* Transport only for Bus, Train and Speedboat</span>
                 </label>
-                <div id="form-container-bt-transport-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3">
+                <div id="form-container-bt-transport-req-{{ $loop->index + 1 }}" class="card-body bg-white p-2">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Transport Request</p>
                     <div class="row">
                         <!-- Transport Date -->
@@ -128,7 +127,7 @@
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-sm btn-outline-warning" style="margin-right: 10px"
                                 onclick="clearFormTransport({{ $loop->index + 1 }}, event)">Reset</button>
-                            <button class="btn btn-sm btn-outline-primary"
+                            <button class="btn btn-sm btn-outline-danger"
                                 onclick="removeFormTransport({{ $loop->index + 1 }}, event)">Delete</button>
                         </div>
                     </div>
@@ -141,8 +140,8 @@
         <button class="btn btn-primary btn-sm" id="addMoreButtonTransport" onclick="addMoreFormTransportReq(event)">Add
             More</button>
     </div>
-
-    <div class="mt-2">
+    <hr/>
+    <div>
         <label class="form-label">Total Transport</label>
         <div class="input-group">
             <div class="input-group-append">
@@ -156,12 +155,12 @@
     </div>
 @else
     <div id="form-container-transport">
-        <div id="form-container-bt-transport-1" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
+        <div id="form-container-bt-transport-1" class="card-body p-2 mb-2 bg-light rounded-3">
             <p class="fs-4 text-primary" style="font-weight: bold; ">Transport 1</p>
             <label for="additional-fields-title" class="mb-2">
                 <span class="text-info fst-italic">* Transport only for Bus, Train and Speedboat</span>
             </label>
-            <div id="form-container-bt-transport-req-1" class="card-body bg-light p-2 mb-3">
+            <div id="form-container-bt-transport-req-1" class="card-body bg-white rounded-3 p-2">
                 <p class="fs-5 text-primary" style="font-weight: bold;">Transport Request</p>
                 <div class="row">
                     <!-- Transport Date -->
@@ -203,7 +202,7 @@
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-sm btn-outline-warning" style="margin-right: 10px"
                             onclick="clearFormTransport(1, event)">Reset</button>
-                        <button class="btn btn-sm btn-outline-primary"
+                        <button class="btn btn-sm btn-outline-danger"
                             onclick="removeFormTransport(1, event)">Delete</button>
                     </div>
                 </div>
@@ -215,8 +214,8 @@
         <button class="btn btn-primary btn-sm" id="addMoreButtonTransport"
             onclick="addMoreFormTransportReq(event)">Add More</button>
     </div>
-
-    <div class="mt-2">
+    <hr/>
+    <div>
         <label class="form-label">Total Transport</label>
         <div class="input-group">
             <div class="input-group-append">

@@ -7,11 +7,11 @@
         formCountOthers++;
         const newForm = document.createElement("div");
         newForm.id = `form-container-bt-lainnya-${formCountOthers}`;
-        newForm.className = "card-body p-2 mb-3";
-        newForm.style.backgroundColor = "#f8f8f8";
+        newForm.className = "bg-light card-body rounded-3 p-2 mb-2";
+        // newForm.style.backgroundColor = "#f8f8f8";
         newForm.innerHTML = `
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Others ${formCountOthers}</p>
-                    <div class="card-body bg-light p-2 mb-3">
+                    <div class="card-body bg-white rounded-3 p-2">
                         <p class="fs-5 text-primary" style="font-weight: bold;">Others Request</p>
                         <div class="row">
                             <div class="col-md-4 mb-2">
@@ -45,7 +45,7 @@
                         <div class="row mt-3">
                             <div class="d-flex justify-start w-100">
                                 <button class="btn btn-sm btn-outline-warning" style="margin-right: 10px" onclick="clearFormLainnya(${formCountOthers}, event)">Reset</button>
-                                <button class="btn btn-sm btn-outline-primary" onclick="removeFormLainnya(${formCountOthers}, event)">Delete</button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="removeFormLainnya(${formCountOthers}, event)">Delete</button>
                             </div>
                         </div>
                     </div>
@@ -58,9 +58,9 @@
 @if (!empty($caDetail['detail_lainnya']) && $caDetail['detail_lainnya'][0]['tanggal'] !== null)
     <div id="form-container-lainnya">
         @foreach ($caDetail['detail_lainnya'] as $lainnya)
-            <div id="form-container-bt-lainnya-{{ $loop->index + 1 }}" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
+            <div id="form-container-bt-lainnya-{{ $loop->index + 1 }}" class="card-body p-2 mb-2" style="background-color: #f8f8f8">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Others {{ $loop->index + 1 }}</p>
-                <div id="form-container-bt-lainnya-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3">
+                <div id="form-container-bt-lainnya-req-{{ $loop->index + 1 }}" class="card-body rounded-3 bg-white p-2">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Others Request</p>
                     <div class="row">
                         <!-- Lainnya Date -->   
@@ -96,7 +96,7 @@
                     <div class="row mt-3">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-sm btn-outline-warning" style="margin-right: 10px" onclick="clearFormLainnya({{ $loop->index + 1 }}, event)">Reset</button>
-                            <button class="btn btn-sm btn-outline-primary" onclick="removeFormLainnya({{ $loop->index + 1 }}, event)">Delete</button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="removeFormLainnya({{ $loop->index + 1 }}, event)">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -107,8 +107,8 @@
     <div class="mt-3">
         <button class="btn btn-primary btn-sm" id="addMoreButtonLainnya" onclick="addMoreFormLainnyaReq(event)">Add More</button>
     </div>
-
-    <div class="mt-2">
+<hr/>
+    <div>
         <label class="form-label">Total Others</label>
         <div class="input-group">
             <div class="input-group-append">
@@ -119,9 +119,9 @@
     </div>
 @else
     <div id="form-container-lainnya">
-        <div id="form-container-bt-lainnya-1" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
+        <div id="form-container-bt-lainnya-1" class="card-body p-2 mb-2 bg-light rounded-3" style="background-color: #f8f8f8">
             <p class="fs-4 text-primary" style="font-weight: bold; ">Others 1</p>
-            <div id="form-container-bt-lainnya-req-1" class="card-body bg-light p-2 mb-3">
+            <div id="form-container-bt-lainnya-req-1" class="card-body bg-white rounded-3 p-2">
                 <p class="fs-5 text-primary" style="font-weight: bold;">Others Request</p>
                 <div class="row">
                     <!-- Lainnya Date -->
@@ -157,7 +157,7 @@
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-sm btn-outline-warning" style="margin-right: 10px" onclick="clearFormLainnya(1, event)">Reset</button>
-                        <button class="btn btn-sm btn-outline-primary" onclick="removeFormLainnya(1, event)">Delete</button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="removeFormLainnya(1, event)">Delete</button>
                     </div>
                 </div>
             </div>
@@ -166,7 +166,8 @@
     <div class="mt-3">
         <button class="btn btn-primary btn-sm" id="addMoreButton" onclick="addMoreFormLainnyaReq(event)">Add More</button>
     </div>
-    <div class="mt-2">
+    <hr/>
+    <div>
         <label class="form-label">Total Others</label>
         <div class="input-group">
             <div class="input-group-append">
