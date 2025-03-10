@@ -401,7 +401,7 @@
                                                                 $n->status != 'Declaration L2' &&
                                                                 $n->status != 'Declaration Rejected')
                                                             <form method="GET"
-                                                                action="/businessTrip/declaration/admin/{{ $n->id }}"
+                                                                action="{{ route('businessTrip.deklarasi.admin', ['id' => $n->id, 'previous_url' => request()->fullUrl()]) }}"
                                                                 style="display: inline-block;">
                                                                 <button type="submit"
                                                                     class="btn btn-outline-success rounded-pill mb-1"

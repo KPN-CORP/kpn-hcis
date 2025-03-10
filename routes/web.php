@@ -109,6 +109,7 @@ Route::post('revision/declaration/{id}/{manager_id}/{status}', [BTApprovalContro
 
 // LINK APPROVAL EXTEND BT
 Route::get('approve/extend/{id}/{manager_id}/{status}', [BTApprovalController::class, 'approveFromLinkExtend'])->name('approve.business.trip.extend');
+Route::get('reject/extend/{id}/{manager_id}/{status}', [BTApprovalController::class, 'rejectExtendFromLink'])->name('reject.business.trip.extend');
 
 //LINK APPROVAL Hotel
 Route::get('approve/hotel/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'approveHotelFromLink'])->name('approve.hotel');

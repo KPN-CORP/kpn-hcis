@@ -1316,8 +1316,12 @@ class BTApprovalController extends Controller
         $approval = new BTApproval();
         $approval->id = (string) Str::uuid();
         $businessTrip = BusinessTrip::findOrFail($id);
-        $employee = Employee::where('id', $userId)->first();
         $employeeId = $manager_id;
+
+        $extendInfo = BTApproval::where('bt_id', $id)
+            ->where('approval_status', 'Request Extend')
+            ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru
+            ->first();
 
         if ($businessTrip->manager_l2_id == '-') {
             $statusValue = 'Extend Approved';
@@ -1359,6 +1363,8 @@ class BTApprovalController extends Controller
                 }
             }
 
+            $businessTrip->update(['status' => 'Approved', 'kembali' => $extendInfo->ext_end_date]);
+
         } elseif ($employeeId == $businessTrip->manager_l1_id) {
             $statusValue = 'Extend L2';
             $layer = 1;
@@ -1370,7 +1376,7 @@ class BTApprovalController extends Controller
             $employeeName = Employee::where('id', $businessTrip->user_id)->pluck('fullname')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
             $textNotification = "requesting for Extend Business Trip and waiting for your Approval with the following details :";
-            $group_company = Employee::where('id', $employee->id)->pluck('group_company')->first();
+            $group_company = Employee::where('id', $businessTrip->user_id)->pluck('group_company')->first();
 
             // dd($managerL2);
             if ($managerL2) {
@@ -1438,7 +1444,7 @@ class BTApprovalController extends Controller
                     'status' => 'Extend Approved',
                 ]);
 
-                $rejectionLink = route('reject.link.extend', [
+                $rejectionLink = route('reject.business.trip.extend', [
                     'id' => urlencode($businessTrip->id),
                     'manager_id' => $businessTrip->manager_l2_id,
                     'status' => 'Extend Rejected',
@@ -1466,7 +1472,7 @@ class BTApprovalController extends Controller
                         $messDetails,
                     ));
                 } catch (\Exception $e) {
-                    Log::error('Link Email Approval Bussines Trip tidak terkirim: ' . $e->getMessage());
+                    Log::error('Link Email Extend Bussines Trip tidak terkirim: ' . $e->getMessage());
                 }
             }
             // Handle CA approval for L1
@@ -1504,6 +1510,8 @@ class BTApprovalController extends Controller
                     }
                 }
             }
+
+            $businessTrip->update(['status' => $statusValue]);
 
         } elseif ($employeeId == $businessTrip->manager_l2_id) {
             $statusValue = 'Extend Approved';
@@ -1545,12 +1553,11 @@ class BTApprovalController extends Controller
                 }
             }
 
+            $businessTrip->update(['status' => 'Approved', 'kembali' => $extendInfo->ext_end_date]);
+
         } else {
             return redirect()->back()->with('error', 'Unauthorized action.');
         }
-
-        // Update the status in the BusinessTrip table
-        $businessTrip->update(['status' => 'Approved']);
 
         // Record the approval or rejection in the BTApproval table
         $approval->bt_id = $businessTrip->id;
@@ -1558,6 +1565,8 @@ class BTApprovalController extends Controller
         $approval->approval_status = $statusValue;
         $approval->approved_at = now();
         $approval->employee_id = $employeeId;
+        $approval->ext_end_date = $extendInfo->ext_end_date;
+        $approval->reason_extend = $extendInfo->reason_extend;
 
         // Save the approval record
         $approval->save();
@@ -1841,6 +1850,64 @@ class BTApprovalController extends Controller
         $approval->approved_at = now();
         $approval->reject_info = $rejectInfo;
         $approval->employee_id = $employeeId;
+        $approval->save();
+
+        return redirect()->route('blank.pageUn')->with('success', 'Transaction Rejected, Notification will be send to the employee.');
+    }
+
+    public function rejectExtendFromLink($id, $manager_id, $status)
+    {
+        $employeeId = $manager_id;
+        $approval = new BTApproval();
+        $approval->id = (string) Str::uuid();
+
+        // Find the business trip by ID
+        $businessTrip = BusinessTrip::findOrFail($id);
+
+        $extendInfo = BTApproval::where('bt_id', $id)
+            ->where('approval_status', 'Request Extend')
+            ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru
+            ->first();
+
+        // Determine the new status and layer based on the action and manager's role
+        $oldStatus = $businessTrip->status;
+        $statusValue = 'Extend Rejected';
+        if ($oldStatus == 'Extend L1') {
+            $layer = 1;
+        } elseif ($oldStatus == 'Extend L2') {
+            $layer = 2;
+        } else {
+            return redirect()->back()->with('error', 'Unauthorized action.');
+        }
+
+        $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+        // dd($caTransaction->id);
+        // dd( $caTransaction, $caTransaction->caonly != 'Y');
+        foreach ($caTransaction as $caTransactions) {
+            if ($caTransactions && $caTransactions->caonly != 'Y' && $caTransactions->caonly == null) {
+                // Update semua CA approval status
+                ca_extend::where('ca_id', $caTransactions->id)->where('approval_status', '!=', 'Rejected')->update([
+                    'approval_status' => 'Rejected',
+                    'approved_at' => now(),
+                ]);
+
+                CATransaction::where('id', $caTransactions->id)->update([
+                    'approval_extend' => 'Rejected',
+                ]);
+            }
+        }
+
+        // Update the status in the BusinessTrip table
+        $businessTrip->update(['status' => 'Approved']);
+
+        // Record the approval or rejection in the BTApproval table
+        $approval->bt_id = $businessTrip->id;
+        $approval->layer = $layer;
+        $approval->approval_status = $statusValue;
+        $approval->approved_at = now();
+        $approval->employee_id = $employeeId;
+        $approval->ext_end_date = $extendInfo->ext_end_date;
+        $approval->reason_extend = $extendInfo->reason_extend;
         $approval->save();
 
         return redirect()->route('blank.pageUn')->with('success', 'Transaction Rejected, Notification will be send to the employee.');
