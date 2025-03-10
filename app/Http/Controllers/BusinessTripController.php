@@ -242,7 +242,7 @@ class BusinessTripController extends Controller
             $businessTrip->delete();
         }
 
-        return redirect()->route('businessTrip.admin')->with('success', 'Business Trip marked as deleted.');
+        return redirect()->back()->with('success', 'Business Trip marked as deleted.');
     }
 
     public function formUpdate($id)
@@ -5226,6 +5226,7 @@ class BusinessTripController extends Controller
     }
     public function filterDateAdmin(Request $request)
     {
+        session(['previous_url' => request()->fullUrl()]);
 
         $query = BusinessTrip::whereNotIn('status', ['Draft', 'Declaration Draft'])
             ->orderBy('created_at', 'desc');
@@ -5819,8 +5820,9 @@ class BusinessTripController extends Controller
         $n->status = $request->input('accept_status');
         $n->save();
 
-
-        return redirect('/businessTrip/admin')->with('success', 'Status updated successfully');
+        // return redirect('/businessTrip/admin')->with('success', 'Status updated successfully');
+        return redirect(session('previous_url', url('businessTrip/admin')))
+            ->with('success', 'Status updated successfully');
     }
 
 
@@ -7959,7 +7961,7 @@ class BusinessTripController extends Controller
         }
 
 
-        return redirect('/businessTrip/admin')->with('success', 'Request updated successfully');
+        return redirect()->back()->with('success', 'Request updated successfully');
     }
 
     public function adminRevisi(Request $request, $id)
