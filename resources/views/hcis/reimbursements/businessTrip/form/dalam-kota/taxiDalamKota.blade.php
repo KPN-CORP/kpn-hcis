@@ -1,5 +1,5 @@
 <div class="card-body bg-light rounded shadow-none" id="taksi_div_dalam_kota">
-    <div class="h5 text-uppercase">
+    <div class="h5 text-uppercase text-primary">
         <b>Taxi/Grab</b>
     </div>
     <label for="additional-fields-title" class="mb-2">

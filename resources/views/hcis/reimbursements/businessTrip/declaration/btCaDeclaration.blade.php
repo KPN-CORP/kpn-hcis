@@ -1,10 +1,8 @@
-<div class="tab-pane fade <?php echo ($entrTab && $dnsTab) || (!$entrTab && $dnsTab) || (!$entrTab && !$dnsTab) ? 'show active' : ''; ?>" id="pills-cashAdvanced" role="tabpanel"
+<div class="alert alert-info col-md-12" role="alert">
+    *In accordance with the company's policy on <strong>Long-Distance Business Travel</strong>, any unused cash advance must be returned to the company's cash/account no later than <strong>2 (two) days</strong> after the <strong>Business Trip Accountability Declaration</strong> is verified by the <strong>GA department</strong>. If the employee fails to return the unused cash advance within the specified time, the cash advance will be <strong>deducted from the employee's salary</strong>.  
+          </div>
+<div style="background-color:#f8f8f8;" class="tab-pane fade p-2 rounded-3  <?php echo ($entrTab && $dnsTab) || (!$entrTab && $dnsTab) || (!$entrTab && !$dnsTab) ? 'show active' : ''; ?>" id="pills-cashAdvanced" role="tabpanel"
     aria-labelledby="pills-cashAdvanced-tab">
-    <label for="additional-fields-title" class="mb-2">  
-        <span class="text-info fst-italic">  
-            * In accordance with the company's policy on <strong>Long-Distance Business Travel</strong>, any unused cash advance must be returned to the company's cash/account no later than <strong>2 (two) days</strong> after the <strong>Business Trip Accountability Declaration</strong> is verified by the <strong>GA department</strong>. If the employee fails to return the unused cash advance within the specified time, the cash advance will be <strong>deducted from the employee's salary</strong>.  
-        </span>  
-    </label>  
     <ul class="nav mb-3" id="pills-tab-inner" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="pills-perdiem-tab" data-bs-toggle="pill" data-bs-target="#pills-perdiem"
@@ -46,31 +44,6 @@
         </div>
         <div class="tab-pane fade" id="pills-other" role="tabpanel" aria-labelledby="pills-other-tab">
             @include('hcis.reimbursements.businessTrip.declaration.caOtherDeclare')
-        </div>
-    </div>
-
-    <div class="row mb-2">
-        <div class="col-md-6 mb-2">
-            <label class="form-label">Total Cash Advanced</label>
-            <div class="input-group">
-                <div class="input-group-append">
-                    <span class="input-group-text">Rp</span>
-                </div>
-                <input class="form-control bg-light" name="totalca_ca" id="totalca_declarasi" type="text"
-                    min="0" value="{{ number_format($dnsData->total_ca ?? '0', 0, ',', '.') }}" readonly>
-            </div>
-        </div>
-
-        <div class="col-md-6 mb-2">
-            <label class="form-label">Total Cash Advanced Deklarasi</label>
-            <div class="input-group">
-                <div class="input-group-append">
-                    <span class="input-group-text">Rp</span>
-                </div>
-                <input class="form-control bg-light" name="totalca_ca_deklarasi" id="totalca_ca_deklarasi"
-                    type="text" min="0" value="{{ number_format($dnsData->total_cost ?? '0', 0, ',', '.') }}"
-                    readonly>
-            </div>
         </div>
     </div>
 </div>

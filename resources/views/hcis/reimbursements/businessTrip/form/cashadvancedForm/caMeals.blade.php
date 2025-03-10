@@ -90,7 +90,7 @@
         @foreach ($caDetail['detail_meals'] as $meals)
             <div id="form-container-bt-meals-{{ $loop->index + 1 }}" class="bg-white card-body p-2 mb-2">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Meals {{ $loop->index + 1 }}</p>
-                <div id="form-container-bt-meals-req-{{ $loop->index + 1 }}" class="card-body bg-white p-2">
+                <div id="form-container-bt-meals-req-{{ $loop->index + 1 }}" class="card-body bg-white p-2 rounded-3">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Meals Request</p>
                     <div class="row">
                         <!-- meals Date -->
