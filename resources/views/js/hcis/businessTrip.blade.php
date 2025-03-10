@@ -1356,7 +1356,7 @@
             return `
             <div class="card bg-light shadow-none" id="ticket-form-${formNumber}" style="display: block;">
                 <div class="card-body">
-                    <div class="h5 text-uppercase">
+                    <div class="h5 text-uppercase text-primary">
                         <b>TICKET ${formNumber}</b>
                     </div>
                     <div class="row">
@@ -1778,7 +1778,7 @@
             return `
             <div class="card bg-light shadow-none" id="ticket-form-dalam-kota-${formNumber}" style="display: block;">
                 <div class="card-body">
-                    <div class="h5 text-uppercase">
+                    <div class="h5 text-uppercase text-primary">
                         <b>TICKET ${formNumber}</b>
                     </div>
                     <div class="row">
@@ -2107,7 +2107,7 @@
             return `
             <div class="card bg-light shadow-none" id="hotel-form-${formNumber}" style="display: block;">
                 <div class="card-body">
-                    <div class="h5 text-uppercase">
+                    <div class="h5 text-uppercase text-primary">
                         <b>Hotel ${formNumber}</b>
                     </div>
                     <div class="row">
@@ -2387,7 +2387,7 @@
             return `
             <div class="card bg-light shadow-none" id="hotel-form-dalam-kota-${formNumber}" style="display: block;">
                 <div class="card-body">
-                    <div class="h5 text-uppercase">
+                    <div class="h5 text-uppercase text-primary">
                         <b>Hotel ${formNumber} (Dalam Kota)</b>
                     </div>
                     <div class="row">
@@ -2658,7 +2658,7 @@
             return `
             <div class="card bg-light shadow-none" id="mess-form-${formNumber}" style="display: block;">
                 <div class="card-body">
-                    <div class="h5 text-uppercase">
+                    <div class="h5 text-uppercase text-primary">
                         <b>Mess ${formNumber}</b>
                     </div>
                     <div class="row">
@@ -2848,7 +2848,7 @@
             return `
         <div class="card bg-light shadow-none" id="mess-form-dalam-kota-${formNumber}" style="display: block;">
             <div class="card-body">
-                <div class="h5 text-uppercase">
+                <div class="h5 text-uppercase text-primary">
                     <b>Mess ${formNumber}</b>
                 </div>
                 <div class="row">

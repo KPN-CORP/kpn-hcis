@@ -1,5 +1,5 @@
     <div id="hotel_div">
-        <div class="d-flex flex-column gap-1" id="hotel_forms_container">
+        <div class="d-flex flex-column" id="hotel_forms_container">
             <?php
             $i = 1;
             // for ($i = 1; $i <= 5; $i++) :
@@ -7,7 +7,7 @@
             <div class="card bg-light shadow-none" id="hotel-form-<?php echo $i; ?>"
                 style="display: <?php echo $i === 1 ? 'block' : 'none'; ?>;">
                 <div class="card-body">
-                    <div class="h5 text-uppercase">
+                    <div class="h5 text-uppercase text-primary">
                         <b>Hotel <?php echo $i; ?></b>
                     </div>
                     <div class="row">
@@ -72,14 +72,12 @@
                         </div>
                     </div>
                     <div class="mt-2">
-                        <button type="button" class="btn btn-sm btn-outline-danger remove-hotel-btn">Remove
-                            Data</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-hotel-btn">Delete</button>
                     </div>
                 </div>
             </div>
         </div>
-        <button type="button" class="btn btn-sm btn-outline-primary add-hotel-btn">Add Hotel
-            Data</button>
+        <button type="button" class="btn btn-sm btn-outline-primary add-hotel-btn">Add More</button>
     </div>
     {{-- </div> --}}
     {{-- </div> --}}

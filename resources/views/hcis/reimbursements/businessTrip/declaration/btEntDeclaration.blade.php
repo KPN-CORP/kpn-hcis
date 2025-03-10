@@ -1,10 +1,5 @@
 <div class="tab-pane fade <?php echo (!$dnsTab && $entrTab) ? 'show active' : ''; ?>" id="pills-caEntertain" role="tabpanel"
     aria-labelledby="pills-caEntertain-tab">
-    <label for="additional-fields-title" class="mb-2">  
-        <span class="text-info fst-italic">  
-            * In accordance with the company's policy on <strong>Long-Distance Business Travel</strong>, any unused cash advance must be returned to the company's cash/account no later than <strong>2 (two) days</strong> after the <strong>Business Trip Accountability Declaration</strong> is verified by the <strong>GA department</strong>. If the employee fails to return the unused cash advance within the specified time, the cash advance will be <strong>deducted from the employee's salary</strong>.  
-        </span>  
-    </label>  
     <!-- Duplicate content for now -->
     <ul class="nav mb-3" id="pills-tab-inner" role="tablist">
         <li class="nav-item" role="presentation">

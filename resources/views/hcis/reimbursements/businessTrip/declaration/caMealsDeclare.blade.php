@@ -93,11 +93,11 @@
         formCountMeals++;
         const newForm = document.createElement("div");
         newForm.id = `form-container-bt-meals-${formCountMeals}`;
-        newForm.className = "card-body p-2 mb-3";
-        newForm.style.backgroundColor = "#f8f8f8";
+        newForm.className = "bg-light card-body rounded-3 p-2 mb-2";
+        // newForm.style.backgroundColor = "#f8f8f8";
         newForm.innerHTML = `
                   <p class="fs-4 text-primary" style="font-weight: bold;">Meals ${formCountMeals}</p>
-    <div class="card-body bg-light p-2 mb-3">
+    <div class="card-body bg-white rounded-3 p-2">
         <p class="fs-5 text-primary" style="font-weight: bold;">Meals Request</p>
         <div class="row">
             <!-- Meals Start Plan -->
@@ -140,7 +140,7 @@
             <!-- Amount -->
             <div class="col-md-6 mb-2">
                 <label class="form-label">Amount</label>
-                <div class="input-group mb-3">
+                <div class="input-group">
                     <div class="input-group-append">
                         <span class="input-group-text">Rp</span>
                     </div>
@@ -152,10 +152,8 @@
             </div>
             <!-- Information -->
             <div class="col-md-12">
-                <div class="mb-2">
                     <label class="form-label">Information</label>
                     <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ..."></textarea>
-                </div>
             </div>
         </div>
         <!-- Buttons -->
@@ -163,7 +161,7 @@
             <div class="d-flex justify-start w-100">
                 <button class="btn btn-sm btn-outline-warning" style="margin-right: 10px"
                     onclick="clearFormMeals(${formCountMeals}, event)">Reset</button>
-                <button class="btn btn-sm btn-outline-primary"
+                <button class="btn btn-sm btn-outline-danger"
                     onclick="removeFormMeals(${formCountMeals}, event)">Delete</button>
             </div>
         </div>
@@ -181,7 +179,7 @@
         newForm.style.backgroundColor = "#f8f8f8";
         newForm.innerHTML = `
                   <p class="fs-4 text-primary" style="font-weight: bold;">Meals ${formCountMeals}</p>
-    <div class="card-body bg-light p-2 mb-3">
+    <div class="card-body bg-light p-2 mb-2">
         <p class="fs-5 text-primary" style="font-weight: bold;">Meals Request</p>
         <div class="row">
             <!-- Meals Start Plan -->
@@ -224,7 +222,7 @@
             <!-- Amount -->
             <div class="col-md-6 mb-2">
                 <label class="form-label">Amount</label>
-                <div class="input-group mb-3">
+                <div class="input-group">
                     <div class="input-group-append">
                         <span class="input-group-text">Rp</span>
                     </div>
@@ -236,10 +234,8 @@
             </div>
             <!-- Information -->
             <div class="col-md-12">
-                <div class="mb-2">
                     <label class="form-label">Information</label>
                     <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ..."></textarea>
-                </div>
             </div>
         </div>
         <!-- Buttons -->
@@ -247,7 +243,7 @@
             <div class="d-flex justify-start w-100">
                 <button class="btn btn-sm btn-outline-warning" style="margin-right: 10px"
                     onclick="clearFormMeals(${formCountMeals}, event)">Reset</button>
-                <button class="btn btn-sm btn-outline-primary"
+                <button class="btn btn-sm btn-outline-danger"
                     onclick="removeFormMeals(${formCountMeals}, event)">Delete</button>
             </div>
         </div>
@@ -316,10 +312,9 @@
 @if (!empty($caDetail['detail_meals']) && $caDetail['detail_meals'][0]['start_date'] !== null)
     <div id="form-container-meals">
         @foreach ($caDetail['detail_meals'] as $index => $meals)
-            <div id="form-container-bt-meals-{{ $loop->index + 1 }}" class="p-2 mb-3 rounded-3"
-                style="background-color: #f8f8f8">
+            <div id="form-container-bt-meals-{{ $loop->index + 1 }}" class="p-2 mb-2 bg-light rounded-3">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Meals {{ $loop->index + 1 }}</p>
-                <div id="form-container-bt-meals-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3"
+                <div id="form-container-bt-meals-req-{{ $loop->index + 1 }}" class="card-body bg-white p-2 mb-2 rounded-3"
                     style="border-radius: 1%;">
                     <div class="row">
                         <p class="fs-5 text-primary" style="font-weight: bold;">Meals Request</p>
@@ -379,7 +374,7 @@
                     </div>
 
                 </div>
-                <div id="form-container-bt-meals-dec-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3">
+                <div id="form-container-bt-meals-dec-{{ $loop->index + 1 }}" class="card-body bg-white p-2 rounded-3">
                     <p class="fs-5 text-primary" style="font-weight: bold; ">Meals Declaration</p>
                     @if (isset($declareCa['detail_meals'][$index]))
                         @php
@@ -429,7 +424,7 @@
                             </div>
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">Amount</label>
-                                <div class="input-group mb-3">
+                                <div class="input-group">
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
@@ -442,11 +437,9 @@
                             </div>
 
                             <!-- Information -->
-                            <div class="col-md-12 mb-2">
-                                <div class="mb-2">
+                            <div class="col-md-12">
                                     <label class="form-label">Information</label>
                                     <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ...">{{ $meals_dec['keterangan'] }}</textarea>
-                                </div>
                             </div>
                         </div>
                     @endif
@@ -461,10 +454,9 @@
         @endforeach
         @foreach ($declareCa['detail_meals'] as $index => $meals_dec)
             @if (!isset($caDetail['detail_meals'][$index]))
-                <div id="form-container-bt-meals-{{ $loop->index + 1 }}" class="p-2 mb-3 rounded-3"
-                    style="background-color: #f8f8f8">
+                <div id="form-container-bt-meals-{{ $loop->index + 1 }}" class="p-2 mb-2 bg-light rounded-3">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Meals {{ $loop->index + 1 }}</p>
-                    <div class="fs-5 bg-light text-primary p-2">
+                    <div class="fs-5 bg-white text-primary p-2">
                         <p class="fs-5 text-primary" style="font-weight: bold; ">Meals Declaration</p>
                         <div class="row">
                             <!-- meals Date -->
@@ -510,7 +502,7 @@
                             </div>
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">Amount</label>
-                                <div class="input-group mb-3">
+                                <div class="input-group">
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
@@ -523,18 +515,16 @@
                             </div>
 
                             <!-- Information -->
-                            <div class="col-md-12 mb-2">
-                                <div class="mb-2">
+                            <div class="col-md-12">
                                     <label class="form-label">Information</label>
                                     <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ...">{{ $meals_dec['keterangan'] }}</textarea>
-                                </div>
                             </div>
                         </div>
                         <div class="row mt-3">
                             <div class="d-flex justify-start w-100">
                                 <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px"
                                     onclick="clearFormMeals({{ $loop->index + 1 }}, event)">Reset</button>
-                                <button class="btn btn-outline-primary btn-sm"
+                                <button class="btn btn-outline-danger btn-sm"
                                     onclick="removeFormMeals({{ $loop->index + 1 }}, event)">Delete</button>
                             </div>
                         </div>
@@ -543,13 +533,13 @@
             @endif
         @endforeach
     </div>
-
-    <div class="mt-1">
+    <div class="mt-3">
         <button class="btn btn-primary btn-sm" id="addMoreButtonLainnya" onclick="addMoreFormMealsDec(event)">Add
             More</button>
     </div>
+    <hr/>
 
-    <div class="mt-2 mb-2">
+    <div class="mb-2">
         <label class="form-label">Total Meals</label>
         <div class="input-group">
             <div class="input-group-append">
@@ -565,10 +555,9 @@
     <div id="form-container-meals">
         @foreach ($declareCa['detail_meals'] as $index => $meals_dec)
             @if (!isset($caDetail['detail_meals'][$index]))
-                <div id="form-container-bt-meals-{{ $loop->index + 1 }}" class="card-body p-2 mb-3"
-                    style="background-color: #f8f8f8">
+                <div id="form-container-bt-meals-{{ $loop->index + 1 }}" class="card-body p-2 mb-2 bg-light">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Meals {{ $loop->index + 1 }}</p>
-                    <div class="card-body bg-light p-2 mb-3">
+                    <div class="card-body bg-white rounded-3 p-2">
                         <p class="fs-5 text-primary" style="font-weight: bold;">Meals Declaration</p>
                         <div class="row">
                             <!-- meals Date -->
@@ -614,7 +603,7 @@
                             </div>
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">Amount</label>
-                                <div class="input-group mb-3">
+                                <div class="input-group">
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
@@ -627,18 +616,16 @@
                             </div>
 
                             <!-- Information -->
-                            <div class="col-md-12 mb-2">
-                                <div class="mb-2">
+                            <div class="col-md-12">
                                     <label class="form-label">Information</label>
                                     <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ...">{{ $meals_dec['keterangan'] }}</textarea>
-                                </div>
                             </div>
                         </div>
                         <div class="row mt-3">
                             <div class="d-flex justify-start w-100">
                                 <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px"
                                     onclick="clearFormMeals({{ $loop->index + 1 }}, event)">Reset</button>
-                                <button class="btn btn-outline-primary btn-sm"
+                                <button class="btn btn-outline-danger btn-sm"
                                     onclick="removeFormMeals({{ $loop->index + 1 }}, event)">Delete</button>
                             </div>
                         </div>
@@ -647,13 +634,12 @@
             @endif
         @endforeach
     </div>
-
     <div class="mt-3">
         <button class="btn btn-primary" id="addMoreButtonLainnya" onclick="addMoreFormMealsDec(event)">Add
             More</button>
     </div>
-
-    <div class="mt-2 mb-2">
+    <hr/>
+    <div class="mb-2">
         <label class="form-label">Total Meals</label>
         <div class="input-group">
             <div class="input-group-append">
@@ -667,9 +653,9 @@
     </div>
 @else
     <div id="form-container-meals">
-        <div id="form-container-bt-meals-1" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
+        <div id="form-container-bt-meals-1" class="bg-light card-body p-2 mb-2">
             <p class="fs-4 text-primary" style="font-weight: bold; ">Meals 1</p>
-            <div id="form-container-bt-meals-req-1" class="card-body bg-light p-2 mb-3">
+            <div id="form-container-bt-meals-req-1" class="card-body bg-white p-2 mb-2 rounded-3">
                 <p class="fs-5 text-primary" style="font-weight: bold;">Meals Request</p>
                 <div class="row">
                     <!-- meals Date -->
@@ -709,7 +695,7 @@
                     </div>
                     <div class="col-md-6 mb-2">
                         <label class="form-label">Amount</label>
-                        <div class="input-group mb-3">
+                        <div class="input-group">
                             <div class="input-group-append">
                                 <span class="input-group-text">Rp</span>
                             </div>
@@ -722,30 +708,27 @@
 
                     <!-- Information -->
                     <div class="col-md-12">
-                        <div class="mb-2">
                             <label class="form-label">Information</label>
                             <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ..."></textarea>
-                        </div>
                     </div>
                 </div>
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-sm btn-outline-warning" style="margin-right: 10px"
                             onclick="clearFormMeals(1, event)">Reset</button>
-                        <button class="btn btn-sm btn-outline-primary"
+                        <button class="btn btn-sm btn-outline-danger"
                             onclick="removeFormMeals(1, event)">Delete</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
     <div class="mt-3">
         <button class="btn btn-primary btn-sm" id="addMoreButton" onclick="addMoreFormMealsReq(event)">Add
             More</button>
     </div>
-
-    <div class="mt-2 mb-2">
+<hr/>
+    <div class="mb-2">
         <label class="form-label">Total Meals</label>
         <div class="input-group">
             <div class="input-group-append">
