@@ -313,16 +313,14 @@
                                                                         data-file="{{ $file }}"
                                                                         style="position: relative; display: inline-block; margin: 10px;">
                                                                         @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
-                                                                            <a href="{{ asset($file) }}"
-                                                                                target="_blank"
+                                                                            <a href="{{ Storage::url($file) }}" target="_blank"
                                                                                 rel="noopener noreferrer">
-                                                                                <img src="{{ asset($file) }}"
+                                                                                <img src="{{ Storage::url($file) }}"
                                                                                     alt="Proof Image"
                                                                                     style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
                                                                             </a>
                                                                         @elseif ($extension === 'pdf')
-                                                                            <a href="{{ asset($file) }}"
-                                                                                target="_blank"
+                                                                            <a href="{{ Storage::url($file) }}" target="_blank"
                                                                                 rel="noopener noreferrer">
                                                                                 <img src="{{ asset('images/pdf_icon.png') }}"
                                                                                     alt="PDF File">
@@ -350,16 +348,14 @@
                                                                         data-file="{{ $file }}"
                                                                         style="position: relative; display: inline-block; margin: 10px;">
                                                                         @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
-                                                                            <a href="{{ asset($file) }}"
-                                                                                target="_blank"
+                                                                            <a href="{{ Storage::url($file) }}" target="_blank"
                                                                                 rel="noopener noreferrer">
-                                                                                <img src="{{ asset($file) }}"
+                                                                                <img src="{{ Storage::url($file) }}"
                                                                                     alt="Proof Image"
                                                                                     style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
                                                                             </a>
                                                                         @elseif ($extension === 'pdf')
-                                                                            <a href="{{ asset($file) }}"
-                                                                                target="_blank"
+                                                                            <a href="{{ Storage::url($file) }}" target="_blank"
                                                                                 rel="noopener noreferrer">
                                                                                 <img src="{{ asset('images/pdf_icon.png') }}"
                                                                                     alt="PDF File">
