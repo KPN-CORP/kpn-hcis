@@ -1664,20 +1664,9 @@ class BusinessTripController extends Controller
             // dd($existingFiles);
             // $existingFiles = [];
             foreach ($request->file('prove_declare') as $file) {
-                if (!$file->isValid()) {
-                    dd("error");
-                    // return back()->with('error', 'One of the uploaded files is invalid.');
-                }
-
-                $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
+                $filename = time() . '_' . $file->getClientOriginalName();
                 $upload_path = 'uploads/proofs/' . $employee_data->employee_id;
-                $full_path = public_path($upload_path);
-
-                if (!is_dir($full_path)) {
-                    mkdir($full_path, 0777, true);
-                }
-
-                $file->move($full_path, $filename);
+                $file->storeAs($upload_path, $filename, 'public');
                 $existingFiles[] = $upload_path . '/' . $filename;
             }
         }
@@ -3346,7 +3335,9 @@ class BusinessTripController extends Controller
 
                             $pdfFiles = [];
 
-                            $dnsCA = $allCa->where('type_ca', 'dns')->where('approval_status', '!=', 'Rejected')->first();
+                            $dnsCA = $allCa->where('type_ca', 'dns')->where('approval_status', '!=', 'Rejected')
+                                ->whereNotNull('date_required')->whereNotNull('status_id')
+                                ->first();
                             if ($dnsCA) {
                                 $employee_data = Employee::where('id', $user->id)->first();
                                 $allowance = in_array($employee_data->group_company, ['Plantations', 'KPN Plantations'])
@@ -3384,7 +3375,9 @@ class BusinessTripController extends Controller
                                     'data' => $data
                                 ];
                             }
-                            $entrCA = $allCa->where('type_ca', 'entr')->where('approval_status', '!=', 'Rejected')->first();
+                            $entrCA = $allCa->where('type_ca', 'entr')->where('approval_status', '!=', 'Rejected')
+                                ->whereNotNull('date_required')->whereNotNull('status_id')
+                                ->first();
                             if ($entrCA) {
                                 $employee_data = Employee::where('id', $user->id)->first();
                                 $allowance = in_array($employee_data->group_company, ['Plantations', 'KPN Plantations'])
@@ -3497,8 +3490,8 @@ class BusinessTripController extends Controller
                             $data = ['taksi' => $taksi];
                             break;
                         case 'deklarasi':
-                            $ca = CATransaction::where('no_sppd', $sppd->no_sppd)->where('approval_status', '!=', 'Rejected')->first();
-                            $allCa = CATransaction::where('no_sppd', $sppd->no_sppd)->where('approval_status', '!=', 'Rejected')
+                            $ca = CATransaction::where('no_sppd', $sppd->no_sppd)->first();
+                            $allCa = CATransaction::where('no_sppd', $sppd->no_sppd)
                                 ->get();
 
                             if ($allCa->isEmpty() || in_array($sppd->status, ['Approved', 'Pending L1', 'Pending L2', 'Rejected', 'Declaration Draft'])) {
@@ -3515,7 +3508,7 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $approval = ca_approval::with('employee')
+                                $approval = ca_sett_approval::with('employee')
                                     ->where('ca_id', $dnsCA->id)
                                     ->where('approval_status', '!=', 'Rejected')
                                     ->orderBy('layer', 'asc')
@@ -3552,7 +3545,7 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $approval = ca_approval::with('employee')
+                                $approval = ca_sett_approval::with('employee')
                                     ->where('ca_id', $entrCA->id)
                                     ->where('approval_status', '!=', 'Rejected')
                                     ->orderBy('layer', 'asc')
@@ -3720,7 +3713,9 @@ class BusinessTripController extends Controller
 
                             $pdfFiles = [];
 
-                            $dnsCA = $allCa->where('type_ca', 'dns')->where('approval_status', '!=', 'Rejected')->first();
+                            $dnsCA = $allCa->where('type_ca', 'dns')->where('approval_status', '!=', 'Rejected')
+                                ->whereNotNull('date_required')->whereNotNull('status_id')    
+                                ->first();
                             if ($dnsCA) {
                                 $employee_data = Employee::where('id', $sppd->user_id)->first();
                                 $allowance = in_array($employee_data->group_company, ['Plantations', 'KPN Plantations'])
@@ -3757,7 +3752,9 @@ class BusinessTripController extends Controller
                                     'data' => $data
                                 ];
                             }
-                            $entrCA = $allCa->where('type_ca', 'entr')->where('approval_status', '!=', 'Rejected')->first();
+                            $entrCA = $allCa->where('type_ca', 'entr')->where('approval_status', '!=', 'Rejected')
+                                ->whereNotNull('date_required')->whereNotNull('status_id')
+                                ->first();
                             if ($entrCA) {
                                 $employee_data = Employee::where('id', $sppd->user_id)->first();
                                 $allowance = in_array($employee_data->group_company, ['Plantations', 'KPN Plantations'])
@@ -3868,9 +3865,10 @@ class BusinessTripController extends Controller
                             $data = ['taksi' => $taksi];
                             break;
                         case 'deklarasi':
-                            $ca = CATransaction::where('no_sppd', $sppd->no_sppd)->where('approval_status', '!=', 'Rejected')
+                            $ca = CATransaction::where('no_sppd', $sppd->no_sppd)
                                 ->first();
-                            $allCa = CATransaction::where('no_sppd', $sppd->no_sppd)->where('approval_status', '!=', 'Rejected')
+                            dd($ca);
+                            $allCa = CATransaction::where('no_sppd', $sppd->no_sppd)
                                 ->get();
 
                             if ($allCa->isEmpty() || in_array($sppd->status, ['Approved', 'Pending L1', 'Pending L2', 'Rejected', 'Declaration Draft'])) {
@@ -3887,11 +3885,12 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $approval = ca_approval::with('employee')
+                                $approval = ca_sett_approval::with('employee')
                                     ->where('ca_id', $dnsCA->id)
                                     ->where('approval_status', '!=', 'Rejected')
                                     ->orderBy('layer', 'asc')
                                     ->get();
+                                dd($approval);
 
                                 $data = [
                                     'link' => 'Cash Advanced',
@@ -3924,7 +3923,7 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $approval = ca_approval::with('employee')
+                                $approval = ca_sett_approval::with('employee')
                                     ->where('ca_id', $entrCA->id)
                                     ->where('approval_status', '!=', 'Rejected')
                                     ->orderBy('layer', 'asc')
@@ -5321,7 +5320,7 @@ class BusinessTripController extends Controller
         $parentLink = 'Reimbursement';
         $link = 'Business Trip (Admin)';
 
-        return view('hcis.reimbursements.businessTrip.btAdmin', compact('sppd', 'parentLink', 'link', 'caTransactions', 'tickets', 'hotel', 'taksi', 'managerL1Names', 'managerL2Names', 'filter', 'btApprovals', 'employeeName', 'btApproved', 'extendTime'));
+        return view('hcis.reimbursements.businessTrip.btAdmin', compact('sppd', 'parentLink', 'link', 'caTransactions', 'tickets', 'hotel', 'taksi', 'managerL1Names', 'managerL2Names', 'filter', 'btApprovals', 'employeeName', 'btApproved', 'extendTime', 'mess'));
     }
     public function deklarasiAdmin($id)
     {

@@ -24,7 +24,6 @@
                                     <option value="">Select Type...</option>
                                     <option value="Laundry">Laundry</option>
                                     <option value="Airport Tax">Airport Tax</option>
-                                    <option value="Porter">Porter</option>
                                     <option value="Excess Baggage">Excess Baggage</option>
                                 </select>
                             </div>
@@ -74,7 +73,6 @@
                                 <option value="">Select Type...</option>  
                                 <option value="Laundry" {{ $lainnya['type'] == 'Laundry' ? 'selected' : '' }}>Laundry</option>  
                                 <option value="Airport Tax" {{ $lainnya['type'] == 'Airport Tax' ? 'selected' : '' }}>Airport Tax</option>  
-                                <option value="Porter" {{ $lainnya['type'] == 'Porter' ? 'selected' : '' }}>Porter</option>  
                                 <option value="Excess Baggage" {{ $lainnya['type'] == 'Excess Baggage' ? 'selected' : '' }}>Excess Baggage</option>  
                             </select>  
                         </div>
@@ -135,7 +133,6 @@
                             <option value="">Select Type...</option>
                             <option value="Laundry">Laundry</option>
                             <option value="Airport Tax">Airport Tax</option>
-                            <option value="Porter">Porter</option>
                             <option value="Excess Baggage">Excess Baggage</option>
                         </select>
                     </div>
