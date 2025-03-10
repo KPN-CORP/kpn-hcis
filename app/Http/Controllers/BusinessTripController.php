@@ -3075,31 +3075,42 @@ class BusinessTripController extends Controller
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
                 $textNotification = "requesting Extend for his Business Trip and waiting for your approval with the following details :";
                 $managerName = Employee::where('employee_id', $managerL1)->pluck('fullname')->first();
-                $isEnt = $entrTab ? 'Ya' : 'Tidak';
-                $isCa = $dnsTab ? 'Ya' : 'Tidak';
     
                 if ($managerEmail) {
-                    $detail_ca_ntf = isset($detail_ca_ntf) ? $detail_ca_ntf : [];
-                    $detail_ent = isset($detail_ent) ? $detail_ent : [];
-                    $caDetails = [
-                        'total_days_perdiem' => array_sum(array_column($detail_ca_ntf['detail_perdiem'] ?? [], 'total_days')),
-                        'total_amount_perdiem' => array_sum(array_column($detail_ca_ntf['detail_perdiem'] ?? [], 'nominal')),
-    
-                        'total_days_transport' => count($detail_ca_ntf['detail_transport'] ?? []),
-                        'total_amount_transport' => array_sum(array_column($detail_ca_ntf['detail_transport'] ?? [], 'nominal')),
-    
-                        'total_days_accommodation' => array_sum(array_column($detail_ca_ntf['detail_penginapan'] ?? [], 'total_days')),
-                        'total_amount_accommodation' => array_sum(array_column($detail_ca_ntf['detail_penginapan'] ?? [], 'nominal')),
-    
-                        'total_days_others' => count($detail_ca_ntf['detail_lainnya'] ?? []),
-                        'total_amount_others' => array_sum(array_column($detail_ca_ntf['detail_lainnya'] ?? [], 'nominal')),
-    
-                        'total_days_meals' => count($detail_ca_ntf['detail_meals'] ?? []),
-                        'total_amount_meals' => array_sum(array_column($detail_ca_ntf['detail_meals'] ?? [], 'nominal')),
-                    ];
-                    $entDetails = [
-                        'total_amount_ent' => array_sum(array_column($detail_ent['detail_e'] ?? [], 'nominal')),
-                    ];
+                    $ca = CATransaction::where('no_sppd', $model_bt->no_sppd)->orWhere('caonly', '!=', 'Y')->get();
+                    $dns = $ca->where('type_ca', 'dns')->first();
+                    $entr = $ca->where('type_ca', 'entr')->first();
+
+                    $isEnt = $entr ? true : false;
+                    $isCa = $dns ? true : false;
+                    $caDetails = [];
+                    $entDetails = [];
+
+                    if ($isCa == true) {
+                        $detail_ca = $ca ? json_decode($dns->detail_ca, true) : [];
+                        $caDetails = [
+                            'total_days_perdiem' => array_sum(array_column($detail_ca['detail_perdiem'] ?? [], 'total_days')),
+                            'total_amount_perdiem' => array_sum(array_column($detail_ca['detail_perdiem'] ?? [], 'nominal')),
+
+                            'total_days_transport' => count($detail_ca['detail_transport'] ?? []),
+                            'total_amount_transport' => array_sum(array_column($detail_ca['detail_transport'] ?? [], 'nominal')),
+
+                            'total_days_accommodation' => array_sum(array_column($detail_ca['detail_penginapan'] ?? [], 'total_days')),
+                            'total_amount_accommodation' => array_sum(array_column($detail_ca['detail_penginapan'] ?? [], 'nominal')),
+
+                            'total_days_others' => count($detail_ca['detail_lainnya'] ?? []),
+                            'total_amount_others' => array_sum(array_column($detail_ca['detail_lainnya'] ?? [], 'nominal')),
+
+                            'total_days_meals' => count($detail_ca['detail_meals'] ?? []),
+                            'total_amount_meals' => array_sum(array_column($detail_ca['detail_meals'] ?? [], 'nominal')),
+                        ];
+                    }
+                    if ($isEnt == true) {
+                        $detail_ca = $ca ? json_decode($entr->detail_ca, true) : [];
+                        $entDetails = [
+                            'total_amount_ent' => array_sum(array_column($detail_ca['detail_e'] ?? [], 'nominal')),
+                        ];
+                    }
                     // Fetch ticket and hotel details with proper conditions
                     $ticketDetails = Tiket::where('no_sppd', $model_bt->no_sppd)
                         ->where(function ($query) {
@@ -3107,41 +3118,40 @@ class BusinessTripController extends Controller
                                 ->orWhereNull('tkt_only'); // This handles the case where tkt_only is null
                         })
                         ->get();
-    
+
                     $hotelDetails = Hotel::where('no_sppd', $model_bt->no_sppd)
                         ->where(function ($query) {
                             $query->where('hotel_only', '!=', 'Y')
                                 ->orWhereNull('hotel_only'); // This handles the case where hotel_only is null
                         })
                         ->get();
-    
+
                     $messDetails = Mess::where('no_sppd', $model_bt->no_sppd)
                         ->where(function ($query) {
                             $query->where('mess_only', '!=', 'Y')
                                 ->orWhereNull('mess_only');
                         })
                         ->get();
-    
+
                     $taksiDetails = Taksi::where('no_sppd', $model_bt->no_sppd)->first();
-    
-                    $approvalLink = route('approve.business.trip', [
+                    // dd($taksiDetails);
+                    $approvalLink = route('approve.business.trip.extend', [
                         'id' => urlencode($model_bt->id),
                         'manager_id' => $model_bt->manager_l1_id,
-                        'status' => 'Pending L2'
+                        'status' => 'Extend Approved',
                     ]);
-    
-                    $rejectionLink = route('reject.link', [
+
+                    $rejectionLink = route('reject.business.trip.extend', [
                         'id' => urlencode($model_bt->id),
                         'manager_id' => $model_bt->manager_l1_id,
-                        'status' => 'Rejected'
+                        'status' => 'Extend Rejected',
                     ]);
-    
-    
+
                     // Send an email with the detailed business trip information
                     try {
                         Mail::to($managerEmail)->send(new BusinessTripNotification(
                             $model_bt,
-                            $hotelDetails,
+                            $hotelDetails,  // Pass hotel details
                             $ticketDetails,
                             $taksiDetails,
                             $caDetails,
@@ -3159,8 +3169,7 @@ class BusinessTripController extends Controller
                             $messDetails,
                         ));
                     } catch (\Exception $e) {
-                        Log::error('Email Create Business Trip tidak terkirim: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
-                        Log::info('messDetails: ' . json_encode($messDetails));
+                        Log::error('Link Email Extend Bussines Trip tidak terkirim: ' . $e->getMessage());
                     }
                 }
             }
@@ -7697,6 +7706,7 @@ class BusinessTripController extends Controller
                         // Find the next approver (Layer 3) explicitly
                         $nextApproval = ca_extend::where('ca_id', $caTransactions->id)
                             ->where('layer', $layer + 1) // This will ensure it gets the immediate next layer (3)
+                            ->where('approval_status', '!=', 'Rejected')
                             ->first();
 
                         if ($nextApproval) {
@@ -7728,113 +7738,118 @@ class BusinessTripController extends Controller
                 $layer = 1;
                 // Handle CA approval for L1
 
+                $extendInfo = BTApproval::where('bt_id', $businessTrip->id)
+                    ->where('approval_status', 'Request Extend')
+                    ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru
+                    ->first();
+                    
                 $managerL2 = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('email')->first();
                 $managerName = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('fullname')->first();
 
-                // $approvalLink = route('approve.business.trip.declare', [
-                //     'id' => urlencode($businessTrip->id),
-                //     'manager_id' => $businessTrip->manager_l2_id,
-                //     'status' => 'Approved'
-                // ]);
+                if ($managerL2) {
+                    $imagePath = public_path('images/kop.jpg');
+                    $imageContent = file_get_contents($imagePath);
+                    $employeeName = Employee::where('id', $businessTrip->user_id)->pluck('fullname')->first();
+                    $base64Image = "data:image/png;base64," . base64_encode($imageContent);
+                    $textNotification = "requesting for Extend Business Trip and waiting for your Approval with the following details :";
+                    $group_company = Employee::where('id', $businessTrip->user_id)->pluck('group_company')->first();
 
-                // $revisionLink = route('revision.link.Extend', [
-                //     'id' => urlencode($businessTrip->id),
-                //     'manager_id' => $businessTrip->manager_l1_id,
-                //     'status' => 'Extend Revision',
-                // ]);
+                    $ca = CATransaction::where('no_sppd', $businessTrip->no_sppd)->orWhere('caonly', '!=', 'Y')->get();
+                    $dns = $ca->where('type_ca', 'dns')->first();
+                    $entr = $ca->where('type_ca', 'entr')->first();
+    
+                    $isEnt = $entr ? true : false;
+                    $isCa = $dns ? true : false;
+                    $caDetails = [];
+                    $entDetails = [];
+    
+                    if ($isCa == true) {
+                        $detail_ca = $ca ? json_decode($dns->detail_ca, true) : [];
+                        $caDetails = [
+                            'total_days_perdiem' => array_sum(array_column($detail_ca['detail_perdiem'] ?? [], 'total_days')),
+                            'total_amount_perdiem' => array_sum(array_column($detail_ca['detail_perdiem'] ?? [], 'nominal')),
+    
+                            'total_days_transport' => count($detail_ca['detail_transport'] ?? []),
+                            'total_amount_transport' => array_sum(array_column($detail_ca['detail_transport'] ?? [], 'nominal')),
+    
+                            'total_days_accommodation' => array_sum(array_column($detail_ca['detail_penginapan'] ?? [], 'total_days')),
+                            'total_amount_accommodation' => array_sum(array_column($detail_ca['detail_penginapan'] ?? [], 'nominal')),
+    
+                            'total_days_others' => count($detail_ca['detail_lainnya'] ?? []),
+                            'total_amount_others' => array_sum(array_column($detail_ca['detail_lainnya'] ?? [], 'nominal')),
+    
+                            'total_days_meals' => count($detail_ca['detail_meals'] ?? []),
+                            'total_amount_meals' => array_sum(array_column($detail_ca['detail_meals'] ?? [], 'nominal')),
+                        ];
+                    }
+                    if ($isEnt == true) {
+                        $detail_ca = $ca ? json_decode($entr->detail_ca, true) : [];
+                        $entDetails = [
+                            'total_amount_ent' => array_sum(array_column($detail_ca['detail_e'] ?? [], 'nominal')),
+                        ];
+                    }
+                    // Fetch ticket and hotel details with proper conditions
+                    $ticketDetails = Tiket::where('no_sppd', $businessTrip->no_sppd)
+                        ->where(function ($query) {
+                            $query->where('tkt_only', '!=', 'Y')
+                                ->orWhereNull('tkt_only'); // This handles the case where tkt_only is null
+                        })
+                        ->get();
+    
+                    $hotelDetails = Hotel::where('no_sppd', $businessTrip->no_sppd)
+                        ->where(function ($query) {
+                            $query->where('hotel_only', '!=', 'Y')
+                                ->orWhereNull('hotel_only'); // This handles the case where hotel_only is null
+                        })
+                        ->get();
+    
+                    $messDetails = Mess::where('no_sppd', $businessTrip->no_sppd)
+                        ->where(function ($query) {
+                            $query->where('mess_only', '!=', 'Y')
+                                ->orWhereNull('mess_only');
+                        })
+                        ->get();
+    
+                    $taksiDetails = Taksi::where('no_sppd', $businessTrip->no_sppd)->first();
+                    // dd($taksiDetails);
+                    $approvalLink = route('approve.business.trip.extend', [
+                        'id' => urlencode($businessTrip->id),
+                        'manager_id' => $businessTrip->manager_l2_id,
+                        'status' => 'Extend Approved',
+                    ]);
+    
+                    $rejectionLink = route('reject.business.trip.extend', [
+                        'id' => urlencode($businessTrip->id),
+                        'manager_id' => $businessTrip->manager_l2_id,
+                        'status' => 'Extend Rejected',
+                    ]);
+    
+                    // Send an email with the detailed business trip information
+                    try {
+                        Mail::to($managerL2)->send(new BusinessTripNotification(
+                            $businessTrip,
+                            $hotelDetails,  // Pass hotel details
+                            $ticketDetails,
+                            $taksiDetails,
+                            $caDetails,
+                            $managerName,
+                            $approvalLink,
+                            null,
+                            $rejectionLink,
+                            $employeeName,
+                            $base64Image,
+                            $textNotification,
+                            $isEnt,
+                            $isCa,
+                            $entDetails,
+                            $group_company,
+                            $messDetails,
+                        ));
+                    } catch (\Exception $e) {
+                        Log::error('Link Email Extend Bussines Trip tidak terkirim: ' . $e->getMessage());
+                    }
+                }
 
-                // $rejectionLink = route('reject.link.Extend', [
-                //     'id' => urlencode($businessTrip->id),
-                //     'manager_id' => $businessTrip->manager_l2_id,
-                //     'status' => 'Extend Rejected'
-                // ]);
-
-                $caTrans = CATransaction::where('no_sppd', $businessTrip->no_sppd)
-                    ->where(function ($query) {
-                        $query->where('caonly', '!=', 'Y')
-                            ->orWhereNull('caonly');
-                    })
-                    ->get();
-                $dnsNtfRe = $caTrans->where('type_ca', 'dns')->first();
-                $entrNtfRe = $caTrans->where('type_ca', 'entr')->first();
-                $isEnt = $dnsNtfRe ? true : false;
-                $isCa = $entrNtfRe ? true : false;
-                $detail_ca_req = isset($dnsNtfRe) && isset($dnsNtfRe->detail_ca) ? json_decode($dnsNtfRe->detail_ca, true) : [];
-                $detail_ent_req = isset($entrNtfRe) && isset($entrNtfRe->detail_ca) ? json_decode($entrNtfRe->detail_ca, true) : [];
-
-                $imagePath = public_path('images/kop.jpg');
-                $imageContent = file_get_contents($imagePath);
-                $employeeName = Employee::where('employee_id', $employeeId)->pluck('fullname')->first();
-                $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-                $textNotification = "requesting a Extend Business Trip and waiting for your approval with the following details :";
-
-                // dd($caTrans, $n->no_sppd);
-                $caDetails = [
-                    'total_days_perdiem' => array_sum(array_column($detail_ca_req['detail_perdiem'] ?? [], 'total_days')),
-                    'total_amount_perdiem' => array_sum(array_column($detail_ca_req['detail_perdiem'] ?? [], 'nominal')),
-
-                    'total_days_transport' => count($detail_ca_req['detail_transport'] ?? []),
-                    'total_amount_transport' => array_sum(array_column($detail_ca_req['detail_transport'] ?? [], 'nominal')),
-
-                    'total_days_accommodation' => array_sum(array_column($detail_ca_req['detail_penginapan'] ?? [], 'total_days')),
-                    'total_amount_accommodation' => array_sum(array_column($detail_ca_req['detail_penginapan'] ?? [], 'nominal')),
-
-                    'total_days_others' => count($detail_ca_req['detail_lainnya'] ?? []),
-                    'total_amount_others' => array_sum(array_column($detail_ca_req['detail_lainnya'] ?? [], 'nominal')),
-
-                    'total_days_meals' => count($detail_ca_req['detail_meals'] ?? []),
-                    'total_amount_meals' => array_sum(array_column($detail_ca_req['detail_meals'] ?? [], 'nominal')),
-                ];
-                $entDetails = [
-                    'total_amount_ent' => array_sum(array_column($detail_ent_req['detail_e'] ?? [], 'nominal')),
-                ];
-                // dd($caDetails,   $detail_ca );
-
-                $declare_ca_ntf = isset($dnsNtfRe) && isset($dnsNtfRe->declare_ca) ? json_decode($dnsNtfRe->declare_ca, true) : [];
-                $declare_ent_ntf = isset($entrNtfRe) && isset($entrNtfRe->detail_ca) ? json_decode($entrNtfRe->declare_ca, true) : [];
-                $caDeclare = [
-                    'total_days_perdiem' => array_sum(array_column($declare_ca_ntf['detail_perdiem'] ?? [], 'total_days')),
-                    'total_amount_perdiem' => array_sum(array_column($declare_ca_ntf['detail_perdiem'] ?? [], 'nominal')),
-
-                    'total_days_transport' => count($declare_ca_ntf['detail_transport'] ?? []),
-                    'total_amount_transport' => array_sum(array_column($declare_ca_ntf['detail_transport'] ?? [], 'nominal')),
-
-                    'total_days_accommodation' => array_sum(array_column($declare_ca_ntf['detail_penginapan'] ?? [], 'total_days')),
-                    'total_amount_accommodation' => array_sum(array_column($declare_ca_ntf['detail_penginapan'] ?? [], 'nominal')),
-
-                    'total_days_others' => count($declare_ca_ntf['detail_lainnya'] ?? []),
-                    'total_amount_others' => array_sum(array_column($declare_ca_ntf['detail_lainnya'] ?? [], 'nominal')),
-
-                    'total_days_meals' => count($declare_ca_ntf['detail_meals'] ?? []),
-                    'total_amount_meals' => array_sum(array_column($declare_ca_ntf['detail_meals'] ?? [], 'nominal')),
-                ];
-                $entDeclare = [
-                    'total_amount_ent' => array_sum(array_column($declare_ent_ntf['detail_e'] ?? [], 'nominal')),
-                ];
-                // dd($managerL2);
-                // if ($managerL2) {
-                //     // Send email to L2
-                //     try {
-                //         Mail::to($managerL2)->send(new DeclarationNotification(
-                //             $businessTrip,
-                //             $caDetails,
-                //             $caDeclare,
-                //             $entDetails,
-                //             $entDeclare,
-                //             $managerName,
-                //             $approvalLink,
-                //             $revisionLink,
-                //             $rejectionLink,
-                //             $employeeName,
-                //             $base64Image,
-                //             $textNotification,
-                //             $isEnt,
-                //             $isCa,
-                //         ));
-                //     } catch (\Exception $e) {
-                //         Log::error('Email Update Status Deklarasi Business Trip tidak terkirim: ' . $e->getMessage());
-                //     }
-                // }
                 // if ($businessTrip->ca == 'Ya') {
                 $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
                 foreach ($caTransaction as $caTransactions) {
