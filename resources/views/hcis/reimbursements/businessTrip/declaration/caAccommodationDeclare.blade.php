@@ -13,11 +13,11 @@
 
         const newForm = document.createElement("div");
         newForm.id = `form-container-bt-penginapan-${formCountPenginapan}`;
-        newForm.className = "card-body p-2 mb-3";
-        newForm.style.backgroundColor = "#f8f8f8";
+        newForm.className = "bg-light card-body rounded-3 p-2 mb-2";
+        // newForm.style.backgroundColor = "#f8f8f8";
         newForm.innerHTML = `
             <p class="fs-4 text-primary" style="font-weight: bold; ">Penginapan ${formCountPenginapan}</p>
-            <div class="card-body bg-light p-2 mb-3">
+            <div class="card-body bg-white rounded-3 p-2">
                 <p class="fs-5 text-primary" style="font-weight: bold;">Penginapan Declaration</p>
                 <div class="row">
                     <!-- Penginapan Date -->
@@ -107,11 +107,11 @@
 
         const newForm = document.createElement("div");
         newForm.id = `form-container-bt-penginapan-${formCountPenginapan}`;
-        newForm.className = "card-body p-2 mb-3";
-        newForm.style.backgroundColor = "#f8f8f8";
+        newForm.className = "card-body bg-light rounded-3 p-2 mb-2";
+        // newForm.style.backgroundColor = "#f8f8f8";
         newForm.innerHTML = `
             <p class="fs-4 text-primary" style="font-weight: bold; ">Penginapan ${formCountPenginapan}</p>
-            <div class="card-body bg-light p-2 mb-3">
+            <div class="card-body bg-white rounded-3 p-2 mb-2">
                 <p class="fs-5 text-primary" style="font-weight: bold;">Penginapan Request</p>
                 <div class="row">
                     <!-- Penginapan Date -->
@@ -315,7 +315,7 @@
         @foreach($caDetail['detail_penginapan'] as $index =>$penginapan)
             <div id="form-container-bt-penginapan-{{ $loop->index + 1 }}" class="p-2 mb-3 rounded-3" style="background-color: #f8f8f8">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Penginapan {{ $loop->index + 1 }}</p>
-                <div id="form-container-bt-penginapan-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
+                <div id="form-container-bt-penginapan-req-{{ $loop->index + 1 }}" class="card-body bg-white rounded-3 p-2" style="border-radius: 1%;">
                     <div class="row">
                         <p class="fs-5 text-primary" style="font-weight: bold;">Accommodation Request</p>
                         <div class="col-md-6">

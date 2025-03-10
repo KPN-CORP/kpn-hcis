@@ -5,7 +5,7 @@
         ?>
         <div class="card bg-light shadow-none" id="mess-form-<?php echo $i; ?>" style="display: <?php echo $i === 1 ? 'block' : 'none'; ?>;">
             <div class="card-body">
-                <div class="h5 text-uppercase">
+                <div class="h5 text-uppercase text-primary">
                     <b>Mess <?php echo $i; ?></b>
                 </div>
                 <div class="row">
@@ -28,12 +28,14 @@
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Check In Date</label>
                         <input type="date" class="form-control form-control-sm" name="tgl_masuk_mess[]"
-                            id="check-in-mess-<?php echo $i; ?>" onchange="calculateTotalDaysMess(<?php echo $i; ?>)">
+                            id="check-in-mess-<?php echo $i; ?>"
+                            onchange="calculateTotalDaysMess(<?php echo $i; ?>)">
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Check Out Date</label>
                         <input type="date" class="form-control form-control-sm" name="tgl_keluar_mess[]"
-                            id="check-out-mess-<?php echo $i; ?>" onchange="calculateTotalDaysMess(<?php echo $i; ?>)">
+                            id="check-out-mess-<?php echo $i; ?>"
+                            onchange="calculateTotalDaysMess(<?php echo $i; ?>)">
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Total Nights</label>
@@ -42,12 +44,11 @@
                     </div>
                 </div>
                 <div class="mt-2">
-                    <button type="button" class="btn btn-sm btn-outline-danger remove-mess-btn">Remove
-                        Data</button>
+                    <button type="button"
+                        class="btn btn-sm btn-outline-danger remove-mess-btn">Delete</button>
                 </div>
             </div>
         </div>
     </div>
-    <button type="button" class="btn btn-sm btn-outline-primary add-mess-btn">Add Mess
-        Data</button>
+    <button type="button" class="btn btn-sm btn-outline-primary add-mess-btn">Add More</button>
 </div>

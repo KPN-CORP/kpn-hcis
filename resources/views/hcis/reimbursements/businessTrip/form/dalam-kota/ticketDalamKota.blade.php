@@ -6,7 +6,7 @@
         <div class="card bg-light shadow-none" id="ticket-form-dalam-kota-<?php echo $i; ?>"
             style="display: <?php echo $i === 1 ? 'block' : 'none'; ?>;">
             <div class="card-body">
-                <div class="h5 text-uppercase">
+                <div class="h5 text-uppercase text-primary">
                     <b>TICKET <?php echo $i; ?></b>
                 </div>
                 <div class="row">

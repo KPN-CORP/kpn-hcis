@@ -9,10 +9,11 @@
         const newForm = document.createElement("div");
         newForm.id = `form-container-bt-perdiem-${formCountPerdiem}`;
         newForm.className = "card-body p-2 mb-3";
-        newForm.style.backgroundColor = "#f8f8f8";
+        newForm.className = "bg-light card-body rounded-3 p-2 mb-2";
+        // newForm.style.backgroundColor = "#f8f8f8";
         newForm.innerHTML = `
             <p class="fs-4 text-primary" style="font-weight: bold;">{{ $allowance }} ${formCountPerdiem}</p>
-            <div id="form-container-bt-perdiem-dec-${formCountPerdiem}" class="card-body bg-light p-2 mb-3">
+            <div id="form-container-bt-perdiem-dec-${formCountPerdiem}" class="card-body bg-white rounded-3 p-2">
                 <p class="fs-5 text-primary" style="font-weight: bold;">{{ $allowance }} Declaration</p>
                 <div class="row">
                     <!-- Company Code -->
@@ -70,7 +71,7 @@
                     </div>
                 </div>
                 <!-- Amount -->
-                <div class="mb-2">
+                <div>
                     <label class="form-label">Amount</label>
                 </div>
                 <div class="input-group">
@@ -83,7 +84,7 @@
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px" onclick="clearFormPerdiem(${formCountPerdiem}, event)">Reset</button>
-                        <button class="btn btn-outline-primary btn-sm" onclick="removeFormPerdiem(${formCountPerdiem}, event)">Delete</button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="removeFormPerdiem(${formCountPerdiem}, event)">Delete</button>
                     </div>
                 </div>
             </div>
@@ -114,10 +115,9 @@
     {{-- Form Edit --}}
     <div id="form-container-perdiem">
         @foreach ($caDetail['detail_perdiem'] as $index => $perdiem)
-            <div id="form-container-bt-perdiem-{{ $loop->index + 1 }}" class="p-2 mb-4 rounded-3"
-                style="background-color: #f8f8f8">
+            <div id="form-container-bt-perdiem-{{ $loop->index + 1 }}" class="p-2 mb-3 bg-light rounded-3">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">{{ $allowance }} {{ $loop->index + 1 }}</p>
-                <div id="form-container-bt-perdiem-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3"
+                <div id="form-container-bt-perdiem-req-{{ $loop->index + 1 }}" class="card-body bg-white rounded-3 p-2 mb-2"
                     style="border-radius: 1%;">
                     <div class="row">
                         <!-- Company Code -->
@@ -176,7 +176,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="form-container-bt-perdiem-dec-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3"
+                <div id="form-container-bt-perdiem-dec-{{ $loop->index + 1 }}" class="card-body bg-white p-2 rounded-3"
                     style="border-radius: 1%;">
                     <p class="fs-5 text-primary" style="font-weight: bold;">{{ $allowance }} Declaration</p>
                     <input type="hidden" value="{{ $perdiem['location'] }}" name="location_bt_perdiem[]">
@@ -367,7 +367,7 @@
                             <div class="d-flex justify-start w-100">
                                 <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px"
                                     onclick="clearFormPerdiem({{ $loop->index + 1 }}, event)">Reset</button>
-                                <button class="btn btn-outline-primary btn-sm"
+                                <button class="btn btn-outline-danger btn-sm"
                                     onclick="removeFormPerdiem({{ $loop->index + 1 }}, event)">Delete</button>
                             </div>
                         </div>
@@ -381,7 +381,7 @@
         <button class="btn btn-primary btn-sm" onclick="addMoreFormPerdiemDec(event)">Add More</button>
     </div>
 
-    <div class="mt-2 mb-2">
+    <hr/><div class="mb-2">
         <label class="form-label">Total {{ $allowance }}</label>
         <div class="input-group">
             <div class="input-group-append">
@@ -488,7 +488,7 @@
                             <div class="d-flex justify-start w-100">
                                 <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px"
                                     onclick="clearFormPerdiem({{ $loop->index + 1 }}, event)">Reset</button>
-                                <button class="btn btn-outline-primary btn-sm"
+                                <button class="btn btn-outline-danger btn-sm"
                                     onclick="removeFormPerdiem({{ $loop->index + 1 }}, event)">Delete</button>
                             </div>
                         </div>
@@ -502,7 +502,7 @@
         <button class="btn btn-primary btn-sm" onclick="addMoreFormPerdiemDec(event)">Add More</button>
     </div>
 
-    <div class="mt-2 mb-2">
+    <hr/><div class="mb-2">
         <label class="form-label">Total {{ $allowance }}</label>
         <div class="input-group">
             <div class="input-group-append">
@@ -585,7 +585,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="mb-2">
+                <div>
                     <label class="form-label">Amount</label>
                 </div>
                 <div class="input-group">
@@ -601,7 +601,7 @@
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px"
                             onclick="clearFormPerdiem(1, event)">Reset</button>
-                        <button class="btn btn-outline-primary btn-sm"
+                        <button class="btn btn-outline-danger btn-sm"
                             onclick="removeFormPerdiem(1, event)">Delete</button>
                     </div>
                 </div>
@@ -613,7 +613,7 @@
         <button class="btn btn-primary btn-sm" onclick="addMoreFormPerdiemDec(event)">Add More</button>
     </div>
 
-    <div class="mt-2 mb-2">
+    <hr/><div class="mb-2">
         <label class="form-label">Total {{ $allowance }}</label>
         <div class="input-group">
             <div class="input-group-append">
