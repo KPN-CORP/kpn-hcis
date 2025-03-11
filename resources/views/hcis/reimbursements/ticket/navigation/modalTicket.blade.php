@@ -401,13 +401,25 @@
                 if (approvalDataL1) {
                     const l1Approvals = filteredApprovals.filter(a => a.layer === 1);
                     if (l1Approvals.length > 0) {
-                        approvalDataL1.innerHTML = l1Approvals.map(approval => `
-                            <div class="border rounded p-2 mb-2">
-                                <strong>Status:</strong> ${approval.approval_status}<br>
-                                <strong>Approved By:</strong> ${approval.employee_id} ${approval.by_admin === 'T' ? '(Admin)' : ''}<br>
-                                <strong>Approved At:</strong> ${moment(approval.approved_at).format('DD-MMM-YY')}
-                            </div>
-                        `).join('');
+                        approvalDataL1.innerHTML = l1Approvals.map(approval => {  
+                            let alertClass = '';  
+                            // Menentukan kelas berdasarkan status approval  
+                            if (approval.approval_status === 'Request Revision') {  
+                                alertClass = 'alert alert-info';  
+                            } else if (approval.approval_status === 'Rejected') {  
+                                alertClass = 'alert alert-danger';  
+                            } else {  
+                                alertClass = 'border rounded'; // Kelas default untuk status lain  
+                            }  
+
+                            return `  
+                                <div class="${alertClass} p-2 mb-2">  
+                                    <strong>Status:</strong> ${approval.approval_status}<br>  
+                                    <strong>Approved By:</strong> ${approval.employee_id} ${approval.by_admin === 'T' ? '(Admin)' : ''}<br>  
+                                    <strong>Approved At:</strong> ${moment(approval.approved_at).format('DD-MMM-YY')}  
+                                </div>  
+                            `;  
+                        }).join('');
                     } else {
                         approvalDataL1.innerHTML = '<p class="text-muted">No L1 Request found</p>';
                     }
@@ -417,13 +429,25 @@
                 if (approvalDataL2) {
                     const l2Approvals = filteredApprovals.filter(a => a.layer === 2);
                     if (l2Approvals.length > 0) {
-                        approvalDataL2.innerHTML = l2Approvals.map(approval => `
-                            <div class="border rounded p-2 mb-2">
-                                <strong>Status:</strong> ${approval.approval_status}<br>
-                                <strong>Approved By:</strong> ${approval.employee_id} ${approval.by_admin === 'T' ? '(Admin)' : ''}<br>
-                                <strong>Approved At:</strong> ${moment(approval.approved_at).format('DD-MMM-YY')}
-                            </div>
-                        `).join('');
+                        approvalDataL2.innerHTML = l2Approvals.map(approval => {  
+                            let alertClass = '';  
+                            // Menentukan kelas berdasarkan status approval  
+                            if (approval.approval_status === 'Request Revision') {  
+                                alertClass = 'alert alert-info';  
+                            } else if (approval.approval_status === 'Rejected') {  
+                                alertClass = 'alert alert-danger';  
+                            } else {  
+                                alertClass = 'border rounded'; // Kelas default untuk status lain  
+                            }  
+
+                            return `  
+                                <div class="${alertClass} p-2 mb-2">  
+                                    <strong>Status:</strong> ${approval.approval_status}<br>  
+                                    <strong>Approved By:</strong> ${approval.employee_id} ${approval.by_admin === 'T' ? '(Admin)' : ''}<br>  
+                                    <strong>Approved At:</strong> ${moment(approval.approved_at).format('DD-MMM-YY')}  
+                                </div>  
+                            `;  
+                        }).join(''); 
                     } else {
                         approvalDataL2.innerHTML = '<p class="text-muted">No L2 Request found</p>';
                     }

@@ -39,7 +39,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\BusinessTripNotification;
 use App\Mail\DeclarationNotification;
 use App\Mail\RefundNotification;
-
+use App\Models\ca_extend;
 
 class BusinessTripController extends Controller
 {
@@ -103,10 +103,8 @@ class BusinessTripController extends Controller
         $query = BusinessTrip::where('user_id', $user->id)->orderBy('created_at', 'desc');
 
         $disableBT = BusinessTrip::where('user_id', $user->id)
-            ->where(function ($query) {
-                $query->where('status', '!=', 'Verified');
-            })
-            ->count();
+        ->whereNotIn('status', ['Verified', 'Rejected']) // Menggunakan whereNotIn()
+        ->count();
 
         // Get the filter value, default to 'all' if not provided
         $filter = $request->input('filter', 'all');
@@ -244,7 +242,7 @@ class BusinessTripController extends Controller
             $businessTrip->delete();
         }
 
-        return redirect()->route('businessTrip.admin')->with('success', 'Business Trip marked as deleted.');
+        return redirect()->back()->with('success', 'Business Trip marked as deleted.');
     }
 
     public function formUpdate($id)
@@ -1666,20 +1664,9 @@ class BusinessTripController extends Controller
             // dd($existingFiles);
             // $existingFiles = [];
             foreach ($request->file('prove_declare') as $file) {
-                if (!$file->isValid()) {
-                    dd("error");
-                    // return back()->with('error', 'One of the uploaded files is invalid.');
-                }
-
-                $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
+                $filename = time() . '_' . $file->getClientOriginalName();
                 $upload_path = 'uploads/proofs/' . $employee_data->employee_id;
-                $full_path = public_path($upload_path);
-
-                if (!is_dir($full_path)) {
-                    mkdir($full_path, 0777, true);
-                }
-
-                $file->move($full_path, $filename);
+                $file->storeAs($upload_path, $filename, 'public');
                 $existingFiles[] = $upload_path . '/' . $filename;
             }
         }
@@ -2045,7 +2032,9 @@ class BusinessTripController extends Controller
                 $model->sett_id = $managerL1;
 
             }
-            $ent->save();
+            if (isset($ent) && $ent->isDirty()) { 
+                $ent->save();
+            }
             $ca->save();
         }
         if ($caRecords) {
@@ -2892,7 +2881,302 @@ class BusinessTripController extends Controller
         return redirect('/businessTrip')->with('success', 'Declaration created successfully');
     }
 
+    public function businessTripExtend(Request $req)
+    {
+        $id = $req->input('no_id'); // Get the ID from the no_id input
+        $userId = Auth::id();
+        $employee = Employee::where('id', $userId)->first();
+        $model_bt = BusinessTrip::find($id);
+        $model_ca_bt = CATransaction::where('no_sppd', $model_bt->no_sppd)->where('type_ca', 'dns')->first();
+        $model_ca_ent = CATransaction::where('no_sppd', $model_bt->no_sppd)->where('type_ca', 'entr')->first();
 
+        $dnsTab = $model_ca_bt ? true : false;
+        $entrTab = $model_ca_ent ? true : false;
+
+        $employee_data = Employee::where('id', $userId)->first();
+
+        if ($req->input('action_ca_submit')) {
+            $model_bt->status = $req->input('action_ca_submit');
+            $statusValue = 'Extend L1';  // When "Submit" is clicked
+
+            function findDepartmentHead($employee)
+            {
+                $manager = Employee::where('employee_id', $employee->manager_l1_id)->first();
+
+                if (!$manager) {
+                    return null;
+                }
+
+                $designation = Designation::where('job_code', $manager->designation_code)->first();
+
+                if ($designation->dept_head_flag == 'T') {
+                    return $manager;
+                } else {
+                    return findDepartmentHead($manager);
+                }
+                return null;
+            }
+            $deptHeadManager = findDepartmentHead($employee_data);
+            $managerL1 = $deptHeadManager->employee_id;
+            $managerL2 = $deptHeadManager->manager_l1_id;
+
+            if ($dnsTab) {
+                $model_ca_bt->approval_extend = $req->input('action_ca_submit');
+
+                $model_ca_bt->extend_id = $managerL1;
+                $model_ca_bt->approval_extend = 'Pending';
+
+                $cek_director_id = Employee::select([
+                    'dsg.department_level2',
+                    'dsg2.director_flag',
+                    DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(dsg.department_level2, '(', -1), ')', 1) AS department_director"),
+                    'dsg2.designation_name',
+                    'dsg2.job_code',
+                    'emp.fullname',
+                    'emp.employee_id',
+                ])
+                    ->leftJoin('designations as dsg', 'dsg.job_code', '=', 'employees.designation_code')
+                    ->leftJoin('designations as dsg2', 'dsg2.department_code', '=', DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(dsg.department_level2, '(', -1), ')', 1)"))
+                    ->leftJoin('employees as emp', 'emp.designation_code', '=', 'dsg2.job_code')
+                    ->where('employees.designation_code', '=', $employee_data->designation_code)
+                    ->where('dsg2.director_flag', '=', 'T')
+                    ->get();
+
+                $director_id = "";
+
+                if ($cek_director_id->isNotEmpty()) {
+                    $director_id = $cek_director_id->first()->employee_id;
+                }
+                $data_matrix_approvals = MatrixApproval::where('modul', 'businesstripExtend')
+                    ->where('group_company', 'like', '%' . $employee_data->group_company . '%')
+                    ->where('contribution_level_code', 'like', '%' . $req->companyFilter . '%')
+                    ->get();
+                foreach ($data_matrix_approvals as $data_matrix_approval) {
+
+                    if ($data_matrix_approval->employee_id == "cek_L1") {
+                        $employee_id = $managerL1;
+                    } else if ($data_matrix_approval->employee_id == "cek_L2") {
+                        $employee_id = $managerL2;
+                    } else if ($data_matrix_approval->employee_id == "cek_director") {
+                        $employee_id = $director_id;
+                    } else {
+                        $employee_id = $data_matrix_approval->employee_id;
+                    }
+                    if ($employee_id != null) {
+                        $model_approval = new ca_extend();
+                        $model_approval->ca_id = $model_ca_bt->id;
+                        $model_approval->role_name = $data_matrix_approval->desc;
+                        $model_approval->employee_id = $employee_id;
+                        $model_approval->layer = $data_matrix_approval->layer;
+                        $model_approval->approval_status = 'Pending';
+                        $model_approval->start_date = $req->input('start_date');
+                        $model_approval->end_date = $req->input('end_date');
+                        $model_approval->ext_end_date = $req->input('ext_end_date');
+                        $model_approval->total_days = $req->input('totaldays');
+                        $model_approval->ext_total_days = $req->input('ext_totaldays');
+                        $model_approval->reason_extend = $req->input('ext_reason');
+
+                        // Simpan data ke database
+                        $model_approval->save();
+                    }
+                }
+
+                $model_ca_bt->save();
+            }
+
+            if ($entrTab) {
+                $model_ca_ent->approval_extend = $req->input('action_ca_submit');
+
+                $model_ca_ent->extend_id = $managerL1;
+                $model_ca_ent->approval_extend = 'Pending';
+
+                $cek_director_id = Employee::select([
+                    'dsg.department_level2',
+                    'dsg2.director_flag',
+                    DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(dsg.department_level2, '(', -1), ')', 1) AS department_director"),
+                    'dsg2.designation_name',
+                    'dsg2.job_code',
+                    'emp.fullname',
+                    'emp.employee_id',
+                ])
+                    ->leftJoin('designations as dsg', 'dsg.job_code', '=', 'employees.designation_code')
+                    ->leftJoin('designations as dsg2', 'dsg2.department_code', '=', DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(dsg.department_level2, '(', -1), ')', 1)"))
+                    ->leftJoin('employees as emp', 'emp.designation_code', '=', 'dsg2.job_code')
+                    ->where('employees.designation_code', '=', $employee_data->designation_code)
+                    ->where('dsg2.director_flag', '=', 'T')
+                    ->get();
+
+                $director_id = "";
+
+                if ($cek_director_id->isNotEmpty()) {
+                    $director_id = $cek_director_id->first()->employee_id;
+                }
+                $data_matrix_approvals = MatrixApproval::where('modul', 'businesstripExtend')
+                    ->where('group_company', 'like', '%' . $employee_data->group_company . '%')
+                    ->where('contribution_level_code', 'like', '%' . $req->companyFilter . '%')
+                    ->get();
+                foreach ($data_matrix_approvals as $data_matrix_approval) {
+
+                    if ($data_matrix_approval->employee_id == "cek_L1") {
+                        $employee_id = $managerL1;
+                    } else if ($data_matrix_approval->employee_id == "cek_L2") {
+                        $employee_id = $managerL2;
+                    } else if ($data_matrix_approval->employee_id == "cek_director") {
+                        $employee_id = $director_id;
+                    } else {
+                        $employee_id = $data_matrix_approval->employee_id;
+                    }
+                    if ($employee_id != null) {
+                        $model_approval = new ca_extend();
+                        $model_approval->ca_id = $model_ca_ent->id;
+                        $model_approval->role_name = $data_matrix_approval->desc;
+                        $model_approval->employee_id = $employee_id;
+                        $model_approval->layer = $data_matrix_approval->layer;
+                        $model_approval->approval_status = 'Pending';
+                        $model_approval->start_date = $req->input('start_date');
+                        $model_approval->end_date = $req->input('end_date');
+                        $model_approval->ext_end_date = $req->input('ext_end_date');
+                        $model_approval->total_days = $req->input('totaldays');
+                        $model_approval->ext_total_days = $req->input('ext_totaldays');
+                        $model_approval->reason_extend = $req->input('ext_reason');
+
+                        // Simpan data ke database
+                        $model_approval->save();
+                    }
+                }
+
+                $model_ca_ent->save();
+            }
+
+            $approval_bt = new BTApproval();
+            $approval_bt->id = (string) Str::uuid();
+            $approval_bt->approval_status = 'Request Extend';
+            $approval_bt->bt_id = $model_bt->id;
+            $approval_bt->layer = '0';
+            $approval_bt->ext_end_date = $req->input('ext_end_date');
+            $approval_bt->reason_extend = $req->input('ext_reason');
+            $approval_bt->employee_id = $employee_data->employee_id;
+
+            $approval_bt->save();
+
+            $model_bt->update([
+                'status' => $statusValue,
+            ]);
+
+            if ($statusValue == 'Extend L1') {
+                // Get manager email
+                $managerEmail = Employee::where('employee_id', $managerL1)->pluck('email')->first();
+                // $managerEmail = "eriton.dewa@kpn-corp.com";
+                $group_company = Employee::where('id', $employee->id)->pluck('group_company')->first();
+    
+                $imagePath = public_path('images/kop.jpg');
+                $imageContent = file_get_contents($imagePath);
+                $employeeName = Employee::where('id', $userId)->pluck('fullname')->first();
+                $base64Image = "data:image/png;base64," . base64_encode($imageContent);
+                $textNotification = "requesting Extend for his Business Trip and waiting for your approval with the following details :";
+                $managerName = Employee::where('employee_id', $managerL1)->pluck('fullname')->first();
+    
+                if ($managerEmail) {
+                    $ca = CATransaction::where('no_sppd', $model_bt->no_sppd)->orWhere('caonly', '!=', 'Y')->get();
+                    $dns = $ca->where('type_ca', 'dns')->first();
+                    $entr = $ca->where('type_ca', 'entr')->first();
+
+                    $isEnt = $entr ? true : false;
+                    $isCa = $dns ? true : false;
+                    $caDetails = [];
+                    $entDetails = [];
+
+                    if ($isCa == true) {
+                        $detail_ca = $ca ? json_decode($dns->detail_ca, true) : [];
+                        $caDetails = [
+                            'total_days_perdiem' => array_sum(array_column($detail_ca['detail_perdiem'] ?? [], 'total_days')),
+                            'total_amount_perdiem' => array_sum(array_column($detail_ca['detail_perdiem'] ?? [], 'nominal')),
+
+                            'total_days_transport' => count($detail_ca['detail_transport'] ?? []),
+                            'total_amount_transport' => array_sum(array_column($detail_ca['detail_transport'] ?? [], 'nominal')),
+
+                            'total_days_accommodation' => array_sum(array_column($detail_ca['detail_penginapan'] ?? [], 'total_days')),
+                            'total_amount_accommodation' => array_sum(array_column($detail_ca['detail_penginapan'] ?? [], 'nominal')),
+
+                            'total_days_others' => count($detail_ca['detail_lainnya'] ?? []),
+                            'total_amount_others' => array_sum(array_column($detail_ca['detail_lainnya'] ?? [], 'nominal')),
+
+                            'total_days_meals' => count($detail_ca['detail_meals'] ?? []),
+                            'total_amount_meals' => array_sum(array_column($detail_ca['detail_meals'] ?? [], 'nominal')),
+                        ];
+                    }
+                    if ($isEnt == true) {
+                        $detail_ca = $ca ? json_decode($entr->detail_ca, true) : [];
+                        $entDetails = [
+                            'total_amount_ent' => array_sum(array_column($detail_ca['detail_e'] ?? [], 'nominal')),
+                        ];
+                    }
+                    // Fetch ticket and hotel details with proper conditions
+                    $ticketDetails = Tiket::where('no_sppd', $model_bt->no_sppd)
+                        ->where(function ($query) {
+                            $query->where('tkt_only', '!=', 'Y')
+                                ->orWhereNull('tkt_only'); // This handles the case where tkt_only is null
+                        })
+                        ->get();
+
+                    $hotelDetails = Hotel::where('no_sppd', $model_bt->no_sppd)
+                        ->where(function ($query) {
+                            $query->where('hotel_only', '!=', 'Y')
+                                ->orWhereNull('hotel_only'); // This handles the case where hotel_only is null
+                        })
+                        ->get();
+
+                    $messDetails = Mess::where('no_sppd', $model_bt->no_sppd)
+                        ->where(function ($query) {
+                            $query->where('mess_only', '!=', 'Y')
+                                ->orWhereNull('mess_only');
+                        })
+                        ->get();
+
+                    $taksiDetails = Taksi::where('no_sppd', $model_bt->no_sppd)->first();
+                    // dd($taksiDetails);
+                    $approvalLink = route('approve.business.trip.extend', [
+                        'id' => urlencode($model_bt->id),
+                        'manager_id' => $model_bt->manager_l1_id,
+                        'status' => 'Extend Approved',
+                    ]);
+
+                    $rejectionLink = route('reject.business.trip.extend', [
+                        'id' => urlencode($model_bt->id),
+                        'manager_id' => $model_bt->manager_l1_id,
+                        'status' => 'Extend Rejected',
+                    ]);
+
+                    // Send an email with the detailed business trip information
+                    try {
+                        Mail::to($managerEmail)->send(new BusinessTripNotification(
+                            $model_bt,
+                            $hotelDetails,  // Pass hotel details
+                            $ticketDetails,
+                            $taksiDetails,
+                            $caDetails,
+                            $managerName,
+                            $approvalLink,
+                            null,
+                            $rejectionLink,
+                            $employeeName,
+                            $base64Image,
+                            $textNotification,
+                            $isEnt,
+                            $isCa,
+                            $entDetails,
+                            $group_company,
+                            $messDetails,
+                        ));
+                    } catch (\Exception $e) {
+                        Log::error('Link Email Extend Bussines Trip tidak terkirim: ' . $e->getMessage());
+                    }
+                }
+            }
+
+            return redirect('/businessTrip')->with('success', 'Transaction asking for Extend, Please wait for Approval.');
+        }
+    }
 
     public function filterDate(Request $request)
     {
@@ -3060,7 +3344,9 @@ class BusinessTripController extends Controller
 
                             $pdfFiles = [];
 
-                            $dnsCA = $allCa->where('type_ca', 'dns')->where('approval_status', '!=', 'Rejected')->first();
+                            $dnsCA = $allCa->where('type_ca', 'dns')->where('approval_status', '!=', 'Rejected')
+                                ->whereNotNull('date_required')->whereNotNull('status_id')
+                                ->first();
                             if ($dnsCA) {
                                 $employee_data = Employee::where('id', $user->id)->first();
                                 $allowance = in_array($employee_data->group_company, ['Plantations', 'KPN Plantations'])
@@ -3098,7 +3384,9 @@ class BusinessTripController extends Controller
                                     'data' => $data
                                 ];
                             }
-                            $entrCA = $allCa->where('type_ca', 'entr')->where('approval_status', '!=', 'Rejected')->first();
+                            $entrCA = $allCa->where('type_ca', 'entr')->where('approval_status', '!=', 'Rejected')
+                                ->whereNotNull('date_required')->whereNotNull('status_id')
+                                ->first();
                             if ($entrCA) {
                                 $employee_data = Employee::where('id', $user->id)->first();
                                 $allowance = in_array($employee_data->group_company, ['Plantations', 'KPN Plantations'])
@@ -3211,8 +3499,8 @@ class BusinessTripController extends Controller
                             $data = ['taksi' => $taksi];
                             break;
                         case 'deklarasi':
-                            $ca = CATransaction::where('no_sppd', $sppd->no_sppd)->where('approval_status', '!=', 'Rejected')->first();
-                            $allCa = CATransaction::where('no_sppd', $sppd->no_sppd)->where('approval_status', '!=', 'Rejected')
+                            $ca = CATransaction::where('no_sppd', $sppd->no_sppd)->first();
+                            $allCa = CATransaction::where('no_sppd', $sppd->no_sppd)
                                 ->get();
 
                             if ($allCa->isEmpty() || in_array($sppd->status, ['Approved', 'Pending L1', 'Pending L2', 'Rejected', 'Declaration Draft'])) {
@@ -3229,7 +3517,7 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $approval = ca_approval::with('employee')
+                                $approval = ca_sett_approval::with('employee')
                                     ->where('ca_id', $dnsCA->id)
                                     ->where('approval_status', '!=', 'Rejected')
                                     ->orderBy('layer', 'asc')
@@ -3266,7 +3554,7 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $approval = ca_approval::with('employee')
+                                $approval = ca_sett_approval::with('employee')
                                     ->where('ca_id', $entrCA->id)
                                     ->where('approval_status', '!=', 'Rejected')
                                     ->orderBy('layer', 'asc')
@@ -3434,7 +3722,9 @@ class BusinessTripController extends Controller
 
                             $pdfFiles = [];
 
-                            $dnsCA = $allCa->where('type_ca', 'dns')->where('approval_status', '!=', 'Rejected')->first();
+                            $dnsCA = $allCa->where('type_ca', 'dns')->where('approval_status', '!=', 'Rejected')
+                                ->whereNotNull('date_required')->whereNotNull('status_id')    
+                                ->first();
                             if ($dnsCA) {
                                 $employee_data = Employee::where('id', $sppd->user_id)->first();
                                 $allowance = in_array($employee_data->group_company, ['Plantations', 'KPN Plantations'])
@@ -3471,7 +3761,9 @@ class BusinessTripController extends Controller
                                     'data' => $data
                                 ];
                             }
-                            $entrCA = $allCa->where('type_ca', 'entr')->where('approval_status', '!=', 'Rejected')->first();
+                            $entrCA = $allCa->where('type_ca', 'entr')->where('approval_status', '!=', 'Rejected')
+                                ->whereNotNull('date_required')->whereNotNull('status_id')
+                                ->first();
                             if ($entrCA) {
                                 $employee_data = Employee::where('id', $sppd->user_id)->first();
                                 $allowance = in_array($employee_data->group_company, ['Plantations', 'KPN Plantations'])
@@ -3582,9 +3874,10 @@ class BusinessTripController extends Controller
                             $data = ['taksi' => $taksi];
                             break;
                         case 'deklarasi':
-                            $ca = CATransaction::where('no_sppd', $sppd->no_sppd)->where('approval_status', '!=', 'Rejected')
+                            $ca = CATransaction::where('no_sppd', $sppd->no_sppd)
                                 ->first();
-                            $allCa = CATransaction::where('no_sppd', $sppd->no_sppd)->where('approval_status', '!=', 'Rejected')
+                            dd($ca);
+                            $allCa = CATransaction::where('no_sppd', $sppd->no_sppd)
                                 ->get();
 
                             if ($allCa->isEmpty() || in_array($sppd->status, ['Approved', 'Pending L1', 'Pending L2', 'Rejected', 'Declaration Draft'])) {
@@ -3601,11 +3894,12 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $approval = ca_approval::with('employee')
+                                $approval = ca_sett_approval::with('employee')
                                     ->where('ca_id', $dnsCA->id)
                                     ->where('approval_status', '!=', 'Rejected')
                                     ->orderBy('layer', 'asc')
                                     ->get();
+                                dd($approval);
 
                                 $data = [
                                     'link' => 'Cash Advanced',
@@ -3638,7 +3932,7 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $approval = ca_approval::with('employee')
+                                $approval = ca_sett_approval::with('employee')
                                     ->where('ca_id', $entrCA->id)
                                     ->where('approval_status', '!=', 'Rejected')
                                     ->orderBy('layer', 'asc')
@@ -4871,42 +5165,59 @@ class BusinessTripController extends Controller
             });
         }
 
-        $sppd = $query->get();
+        // $sppd = $query->get();
 
-        // Collect all SPPD numbers from the BusinessTrip instances
-        $sppdNos = $sppd->pluck('no_sppd');
-        $btIds = $sppd->pluck('id');
+        // // Collect all SPPD numbers from the BusinessTrip instances
+        // $sppdNos = $sppd->pluck('no_sppd');
+        // $btIds = $sppd->pluck('id');
 
-        $btApprovals = BTApproval::whereIn('bt_id', $btIds)
-            ->where(function ($query) {
-                $query->where('approval_status', 'Rejected')
-                    ->orWhere('approval_status', 'Declaration Rejected');
-            })
-            ->get();
+        // $btApprovals = BTApproval::whereIn('bt_id', $btIds)
+        //     ->where(function ($query) {
+        //         $query->where('approval_status', 'Rejected')
+        //             ->orWhere('approval_status', 'Declaration Rejected');
+        //     })
+        //     ->get();
 
-        $btApprovals = $btApprovals->keyBy('bt_id');
-        // dd($btApprovals);
-        // Log::info('BT Approvals:', $btApprovals->toArray());
+        // $btApprovals = $btApprovals->keyBy('bt_id');
+        // // dd($btApprovals);
+        // // Log::info('BT Approvals:', $btApprovals->toArray());
 
-        $btApproved = BTApproval::whereIn('bt_id', $btIds)->get();
+        // $btApproved = BTApproval::whereIn('bt_id', $btIds)->get();
 
-        // dd($btIds, $btApproved);
+        // // dd($btIds, $btApproved);
 
-        $employeeIds = $sppd->pluck('user_id')->unique();
-        $employees = Employee::whereIn('id', $employeeIds)->get()->keyBy('id');
-        $employeeName = Employee::pluck('fullname', 'employee_id');
+        // $employeeIds = $sppd->pluck('user_id')->unique();
+        // $employees = Employee::whereIn('id', $employeeIds)->get()->keyBy('id');
+        // $employeeName = Employee::pluck('fullname', 'employee_id');
 
-        // Related data
-        $caTransactions = ca_transaction::whereIn('no_sppd', $sppdNos)
-            ->whereNull('deleted_at')
-            ->get()
-            ->groupBy('no_sppd');
-        $tickets = Tiket::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
-        $hotel = Hotel::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
-        $mess = Mess::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
-        $taksi = Taksi::whereIn('no_sppd', $sppdNos)->get()->keyBy('no_sppd');
-        $managerL1Names = Employee::whereIn('employee_id', $sppd->pluck('manager_l1_id'))->pluck('fullname', 'employee_id');
-        $managerL2Names = Employee::whereIn('employee_id', $sppd->pluck('manager_l2_id'))->pluck('fullname', 'employee_id');
+        // // Related data
+        // $caTransactions = ca_transaction::whereIn('no_sppd', $sppdNos)
+        //     ->whereNull('deleted_at')
+        //     ->get()
+        //     ->groupBy('no_sppd');
+        // $tickets = Tiket::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
+        // $hotel = Hotel::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
+        // $mess = Mess::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
+        // $taksi = Taksi::whereIn('no_sppd', $sppdNos)->get()->keyBy('no_sppd');
+        // $managerL1Names = Employee::whereIn('employee_id', $sppd->pluck('manager_l1_id'))->pluck('fullname', 'employee_id');
+        // $managerL2Names = Employee::whereIn('employee_id', $sppd->pluck('manager_l2_id'))->pluck('fullname', 'employee_id');
+
+        // Yg di atas di coment semua biar dia harus ngefilter dulu baru muncul data di admin
+        $sppd = [];  
+        $sppdNos = [];  
+        $btIds = [];  
+        $btApprovals = [];  
+        $btApproved = [];  
+        $employeeIds = [];  
+        $employees = [];  
+        $employeeName = [];  
+        $caTransactions = [];  
+        $tickets = [];  
+        $hotel = [];  
+        $taksi = [];  
+        $mess = [];  
+        $managerL1Names = [];  
+        $managerL2Names = [];  
 
         $parentLink = 'Reimbursement';
         $link = 'Business Trip (Admin)';
@@ -4915,6 +5226,7 @@ class BusinessTripController extends Controller
     }
     public function filterDateAdmin(Request $request)
     {
+        session(['previous_url' => request()->fullUrl()]);
 
         $query = BusinessTrip::whereNotIn('status', ['Draft', 'Declaration Draft'])
             ->orderBy('created_at', 'desc');
@@ -4976,7 +5288,7 @@ class BusinessTripController extends Controller
         $caTransactions = ca_transaction::whereIn('no_sppd', $sppdNos)
             ->whereNull('deleted_at')
             ->get()
-            ->keyBy('no_sppd');
+            ->groupBy('no_sppd');
         $tickets = Tiket::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
         $hotel = Hotel::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
         $mess = Mess::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
@@ -5002,10 +5314,23 @@ class BusinessTripController extends Controller
         // dd($startDate, $endDate);
         $sppd = $query->orderBy('created_at', 'desc')->get();
 
+        $extendData = BTApproval::whereIn('bt_id', $sppd->pluck('id'))
+            ->where('approval_status', 'Request Extend')
+            ->orderBy('created_at', 'asc')
+            ->get(['bt_id', 'ext_end_date', 'reason_extend']);
+
+        $extendTime = $extendData->keyBy('bt_id')->map(function ($item) {
+            return [
+                'ext_end_date' => $item->ext_end_date,
+                'reason_extend' => $item->reason_extend,
+            ];
+        });
+        // dd($extendTime);
+
         $parentLink = 'Reimbursement';
         $link = 'Business Trip (Admin)';
 
-        return view('hcis.reimbursements.businessTrip.btAdmin', compact('sppd', 'parentLink', 'link', 'caTransactions', 'tickets', 'hotel', 'taksi', 'managerL1Names', 'managerL2Names', 'filter', 'btApprovals', 'employeeName', 'btApproved'));
+        return view('hcis.reimbursements.businessTrip.btAdmin', compact('sppd', 'parentLink', 'link', 'caTransactions', 'tickets', 'hotel', 'taksi', 'managerL1Names', 'managerL2Names', 'filter', 'btApprovals', 'employeeName', 'btApproved', 'extendTime', 'mess'));
     }
     public function deklarasiAdmin($id)
     {
@@ -5472,7 +5797,7 @@ class BusinessTripController extends Controller
 
                 // Send email to the manager
                 try {
-                    Mail::to($employeeEmail)->send(new RefundNotification(
+                    Mail::to($employeeEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new RefundNotification(
                         $n,
                         $caDetails,
                         $caDeclare,
@@ -5495,8 +5820,9 @@ class BusinessTripController extends Controller
         $n->status = $request->input('accept_status');
         $n->save();
 
-
-        return redirect('/businessTrip/admin')->with('success', 'Status updated successfully');
+        // return redirect('/businessTrip/admin')->with('success', 'Status updated successfully');
+        return redirect(session('previous_url', url('businessTrip/admin')))
+            ->with('success', 'Status updated successfully');
     }
 
 
@@ -5545,10 +5871,10 @@ class BusinessTripController extends Controller
         $bt_all = BusinessTrip::where(function ($query) use ($user) {
             $query->where(function ($q) use ($user) {
                 $q->where('manager_l1_id', $user->employee_id)
-                    ->whereIn('status', ['Pending L1', 'Declaration L1']);
+                    ->whereIn('status', ['Pending L1', 'Declaration L1', 'Extend L1']);
             })->orWhere(function ($q) use ($user) {
                 $q->where('manager_l2_id', $user->employee_id)
-                    ->whereIn('status', ['Pending L2', 'Declaration L2']);
+                    ->whereIn('status', ['Pending L2', 'Declaration L2', 'Extend L2']);
             });
         })->orderBy('created_at', 'desc')
             ->get();
@@ -5576,10 +5902,23 @@ class BusinessTripController extends Controller
         })->orderBy('created_at', 'desc')
             ->get();
 
+        $bt_extend = BusinessTrip::where(function ($query) use ($user) {
+            $query->where(function ($q) use ($user) {
+                $q->where('manager_l1_id', $user->employee_id)
+                    ->where('status', 'Extend L1');
+            })->orWhere(function ($q) use ($user) {
+                $q->where('manager_l2_id', $user->employee_id)
+                    ->where('status', 'Extend L2');
+            });
+        })->orderBy('created_at', 'desc')
+            ->get();
+
+
         // Count only "Request" status (Pending L1 and L2)
         $requestCount = $bt_request->count();
         $declarationCount = $bt_declaration->count();
-        $totalBTCount = $requestCount + $declarationCount;
+        $extendCount = $bt_extend->count();
+        $totalBTCount = $requestCount + $declarationCount + $extendCount;
         $totalPendingCount = CATransaction::where(function ($query) use ($employeeId) {
             $query->where('status_id', $employeeId)->where('approval_status', 'Pending')
                 ->orWhere('sett_id', $employeeId)->where('approval_sett', 'Pending')
@@ -5671,19 +6010,59 @@ class BusinessTripController extends Controller
         $sppdNos = $bt_all->pluck('no_sppd');
 
         // Retrieve related data based on the collected SPPD numbers
-        $caTransactions = ca_transaction::whereIn('no_sppd', $sppdNos)
+        $caTransactions = CATransaction::whereIn('no_sppd', $sppdNos)
             ->whereNull('deleted_at')
             ->get()
             ->groupBy('no_sppd');
+
+        $extendData = BTApproval::whereIn('bt_id', $bt_extend->pluck('id'))
+            ->where('approval_status', 'Request Extend')
+            ->orderBy('created_at', 'asc')
+            ->get(['bt_id', 'ext_end_date', 'reason_extend']);
+
+        $extendTime = $extendData->keyBy('bt_id')->map(function ($item) {
+            return [
+                'ext_end_date' => $item->ext_end_date,
+                'reason_extend' => $item->reason_extend,
+            ];
+        });
+
+        // dd($extendTime);
+        
         $tickets = Tiket::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
         $hotel = Hotel::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
         $mess = Mess::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
         $taksi = Taksi::whereIn('no_sppd', $sppdNos)->get()->keyBy('no_sppd');
 
+        $managerL1Names = Employee::whereIn('employee_id', $bt_all->pluck('manager_l1_id'))->pluck('fullname', 'employee_id');
+        $managerL2Names = Employee::whereIn('employee_id', $bt_all->pluck('manager_l2_id'))->pluck('fullname', 'employee_id');
+
         $parentLink = 'Approval';
         $link = 'Business Trip';
 
-        return view('hcis.reimbursements.businessTrip.btApproval', compact('bt_all', 'bt_request', 'bt_declaration', 'parentLink', 'link', 'caTransactions', 'tickets', 'hotel', 'taksi', 'requestCount', 'declarationCount', 'totalBTCount', 'totalPendingCount', 'totalTKTCount', 'totalHTLCount', 'totalMDCCount', 'mess'));
+        return view('hcis.reimbursements.businessTrip.btApproval', compact(
+            'bt_all', 
+            'bt_request', 
+            'bt_declaration', 
+            'parentLink', 
+            'link', 
+            'caTransactions', 
+            'tickets', 
+            'hotel', 
+            'taksi', 
+            'requestCount', 
+            'declarationCount', 
+            'totalBTCount', 
+            'totalPendingCount', 
+            'totalTKTCount', 
+            'totalHTLCount', 
+            'totalMDCCount', 
+            'mess',
+            'extendData',
+            'extendTime',
+            'managerL1Names',
+            'managerL2Names'
+        ));
     }
     public function approvalDetail($id)
     {
@@ -6532,7 +6911,10 @@ class BusinessTripController extends Controller
 
         // Find the business trip by ID
         $businessTrip = BusinessTrip::findOrFail($id);
-        // dd($businessTrip);
+        $extendInfo = BTApproval::where('bt_id', $id)
+            ->where('approval_status', 'Request Extend')
+            ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru
+            ->first();
 
         if ($businessTrip->status == 'Pending L1' || $businessTrip->status == 'Pending L2') {
             if ($businessTrip->manager_l2_id == '-') {
@@ -7298,8 +7680,288 @@ class BusinessTripController extends Controller
             }
         }
 
+        if ($businessTrip->status == 'Extend L1' || $businessTrip->status == 'Extend L2') {
+            if ($businessTrip->manager_l2_id == '-') {
+                $statusValue = 'Extend Approved';
+                $layer = 1;
+                // if ($businessTrip->ca == 'Ya') {
+                $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
 
-        return redirect('/businessTrip/admin')->with('success', 'Request updated successfully');
+                foreach ($caTransaction as $caTransactions) {
+                    if ($caTransactions && $caTransactions->caonly != 'Y' || $caTransactions->caonly == null) {
+                        // Update CA approval status for L1
+                        $caApproval = ca_extend::where([
+                            'ca_id' => $caTransactions->id,
+                            'layer' => $layer,
+                        ])->where('approval_status', '!=', 'Rejected')
+                            ->first();
+
+                        if ($caApproval) {
+                            // Only update if the record exists
+                            $caApproval->approval_status = 'Approved';
+                            $caApproval->approved_at = now();
+                            $caApproval->by_admin = 'T';
+                            $caApproval->admin_id = $employeeId;
+                            $caApproval->save();
+                        }
+
+                        // Find the next approver (Layer 3) explicitly
+                        $nextApproval = ca_extend::where('ca_id', $caTransactions->id)
+                            ->where('layer', $layer + 1) // This will ensure it gets the immediate next layer (3)
+                            ->where('approval_status', '!=', 'Rejected')
+                            ->first();
+
+                        if ($nextApproval) {
+                            $updateCa = CATransaction::where('id', $caTransactions->id)->first();
+                            $updateCa->extend_id = $nextApproval->employee_id;
+                            $updateCa->save();
+                        } else {
+                            // No next layer, so mark as Approved
+                            $caTransactions->update(['approval_extend' => 'Approved']);
+                        }
+                    }
+                }
+                // }
+
+                $businessTrip->update(['status' => 'Approved', 'kembali' => $extendInfo->ext_end_date]);
+                $approval->bt_id = $businessTrip->id;
+                $approval->layer = $layer;
+                $approval->approval_status = $statusValue;
+                $approval->approved_at = now();
+                $approval->employee_id = $employeeId;
+                $approval->ext_end_date = $extendInfo->ext_end_date;
+                $approval->reason_extend = $extendInfo->reason_extend;
+                $approval->by_admin = 'T';
+
+                // Save the approval record
+                $approval->save();
+            } elseif ($businessTrip->status == 'Extend L1') {
+                $statusValue = 'Extend L2';
+                $layer = 1;
+                // Handle CA approval for L1
+
+                $extendInfo = BTApproval::where('bt_id', $businessTrip->id)
+                    ->where('approval_status', 'Request Extend')
+                    ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru
+                    ->first();
+                    
+                $managerL2 = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('email')->first();
+                $managerName = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('fullname')->first();
+
+                if ($managerL2) {
+                    $imagePath = public_path('images/kop.jpg');
+                    $imageContent = file_get_contents($imagePath);
+                    $employeeName = Employee::where('id', $businessTrip->user_id)->pluck('fullname')->first();
+                    $base64Image = "data:image/png;base64," . base64_encode($imageContent);
+                    $textNotification = "requesting for Extend Business Trip and waiting for your Approval with the following details :";
+                    $group_company = Employee::where('id', $businessTrip->user_id)->pluck('group_company')->first();
+
+                    $ca = CATransaction::where('no_sppd', $businessTrip->no_sppd)->orWhere('caonly', '!=', 'Y')->get();
+                    $dns = $ca->where('type_ca', 'dns')->first();
+                    $entr = $ca->where('type_ca', 'entr')->first();
+    
+                    $isEnt = $entr ? true : false;
+                    $isCa = $dns ? true : false;
+                    $caDetails = [];
+                    $entDetails = [];
+    
+                    if ($isCa == true) {
+                        $detail_ca = $ca ? json_decode($dns->detail_ca, true) : [];
+                        $caDetails = [
+                            'total_days_perdiem' => array_sum(array_column($detail_ca['detail_perdiem'] ?? [], 'total_days')),
+                            'total_amount_perdiem' => array_sum(array_column($detail_ca['detail_perdiem'] ?? [], 'nominal')),
+    
+                            'total_days_transport' => count($detail_ca['detail_transport'] ?? []),
+                            'total_amount_transport' => array_sum(array_column($detail_ca['detail_transport'] ?? [], 'nominal')),
+    
+                            'total_days_accommodation' => array_sum(array_column($detail_ca['detail_penginapan'] ?? [], 'total_days')),
+                            'total_amount_accommodation' => array_sum(array_column($detail_ca['detail_penginapan'] ?? [], 'nominal')),
+    
+                            'total_days_others' => count($detail_ca['detail_lainnya'] ?? []),
+                            'total_amount_others' => array_sum(array_column($detail_ca['detail_lainnya'] ?? [], 'nominal')),
+    
+                            'total_days_meals' => count($detail_ca['detail_meals'] ?? []),
+                            'total_amount_meals' => array_sum(array_column($detail_ca['detail_meals'] ?? [], 'nominal')),
+                        ];
+                    }
+                    if ($isEnt == true) {
+                        $detail_ca = $ca ? json_decode($entr->detail_ca, true) : [];
+                        $entDetails = [
+                            'total_amount_ent' => array_sum(array_column($detail_ca['detail_e'] ?? [], 'nominal')),
+                        ];
+                    }
+                    // Fetch ticket and hotel details with proper conditions
+                    $ticketDetails = Tiket::where('no_sppd', $businessTrip->no_sppd)
+                        ->where(function ($query) {
+                            $query->where('tkt_only', '!=', 'Y')
+                                ->orWhereNull('tkt_only'); // This handles the case where tkt_only is null
+                        })
+                        ->get();
+    
+                    $hotelDetails = Hotel::where('no_sppd', $businessTrip->no_sppd)
+                        ->where(function ($query) {
+                            $query->where('hotel_only', '!=', 'Y')
+                                ->orWhereNull('hotel_only'); // This handles the case where hotel_only is null
+                        })
+                        ->get();
+    
+                    $messDetails = Mess::where('no_sppd', $businessTrip->no_sppd)
+                        ->where(function ($query) {
+                            $query->where('mess_only', '!=', 'Y')
+                                ->orWhereNull('mess_only');
+                        })
+                        ->get();
+    
+                    $taksiDetails = Taksi::where('no_sppd', $businessTrip->no_sppd)->first();
+                    // dd($taksiDetails);
+                    $approvalLink = route('approve.business.trip.extend', [
+                        'id' => urlencode($businessTrip->id),
+                        'manager_id' => $businessTrip->manager_l2_id,
+                        'status' => 'Extend Approved',
+                    ]);
+    
+                    $rejectionLink = route('reject.business.trip.extend', [
+                        'id' => urlencode($businessTrip->id),
+                        'manager_id' => $businessTrip->manager_l2_id,
+                        'status' => 'Extend Rejected',
+                    ]);
+    
+                    // Send an email with the detailed business trip information
+                    try {
+                        Mail::to($managerL2)->send(new BusinessTripNotification(
+                            $businessTrip,
+                            $hotelDetails,  // Pass hotel details
+                            $ticketDetails,
+                            $taksiDetails,
+                            $caDetails,
+                            $managerName,
+                            $approvalLink,
+                            null,
+                            $rejectionLink,
+                            $employeeName,
+                            $base64Image,
+                            $textNotification,
+                            $isEnt,
+                            $isCa,
+                            $entDetails,
+                            $group_company,
+                            $messDetails,
+                        ));
+                    } catch (\Exception $e) {
+                        Log::error('Link Email Extend Bussines Trip tidak terkirim: ' . $e->getMessage());
+                    }
+                }
+
+                // if ($businessTrip->ca == 'Ya') {
+                $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+                foreach ($caTransaction as $caTransactions) {
+                    if ($caTransactions && $caTransactions->caonly != 'Y' || $caTransactions->caonly == null) {
+                        // Update CA approval status for L1
+                        $caApproval = ca_extend::where([
+                            'ca_id' => $caTransactions->id,
+                            'layer' => $layer,
+                        ])->where('approval_status', '!=', 'Rejected')
+                            ->first();
+
+                        if ($caApproval) {
+                            // Only update if the record exists
+                            $caApproval->approval_status = 'Approved';
+                            $caApproval->approved_at = now();
+                            $caApproval->by_admin = 'T';
+                            $caApproval->admin_id = $employeeId;
+                            $caApproval->save();
+                        }
+                        // Find the next approver (Layer 2) from ca_approval
+                        $nextApproval = ca_extend::where('ca_id', $caTransactions->id)
+                            ->where('layer', $layer + 1)
+                            ->first();
+
+                        if ($nextApproval) {
+                            $updateCa = CATransaction::where('id', $caTransactions->id)->first();
+                            $updateCa->extend_id = $nextApproval->employee_id;
+                            $updateCa->save();
+                        } else {
+                            // No next layer, so mark as Approved
+                            $caTransactions->update(['approval_extend' => 'Approved']);
+                        }
+                    }
+                }
+                // }
+                $businessTrip->update(['status' => $statusValue]);
+
+                $approval->bt_id = $businessTrip->id;
+                $approval->layer = $layer;
+                $approval->approval_status = $statusValue;
+                $approval->approved_at = now();
+                $approval->employee_id = $employeeId;
+                $approval->ext_end_date = $extendInfo->ext_end_date;
+                $approval->reason_extend = $extendInfo->reason_extend;
+                $approval->by_admin = 'T';
+
+                // Save the approval record
+                $approval->save();
+
+            } elseif ($businessTrip->status == 'Extend L2') {
+                $statusValue = 'Extend Approved';
+                $layer = 2;
+
+                // Handle CA approval for L2
+                // if ($businessTrip->ca == 'Ya') {
+                $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+                foreach ($caTransaction as $caTransactions) {
+                    if ($caTransactions && $caTransactions->caonly != 'Y' || $caTransactions->caonly == null) {
+                        // Update CA approval status for L1
+                        $caApproval = ca_extend::where([
+                            'ca_id' => $caTransactions->id,
+                            'layer' => $layer,
+                        ])->where('approval_status', '!=', 'Rejected')
+                            ->first();
+
+                        if ($caApproval) {
+                            // Only update if the record exists
+                            $caApproval->approval_status = 'Approved';
+                            $caApproval->approved_at = now();
+                            $caApproval->by_admin = 'T';
+                            $caApproval->admin_id = $employeeId;
+                            $caApproval->save();
+                        }
+
+                        // Find the next approver (Layer 3) explicitly
+                        $nextApproval = ca_extend::where('ca_id', $caTransactions->id)
+                            ->where('layer', $layer + 1) // This will ensure it gets the immediate next layer (3)
+                            ->first();
+
+                        if ($nextApproval) {
+                            $updateCa = CATransaction::where('id', $caTransactions->id)->first();
+                            $updateCa->extend_id = $nextApproval->employee_id;
+                            $updateCa->save();
+                        } else {
+                            // No next layer, so mark as Approved
+                            $caTransactions->update(['approval_extend' => 'Approved']);
+                        }
+                    }
+                }
+                // }
+
+                $businessTrip->update(['status' => 'Approved', 'kembali' => $extendInfo->ext_end_date]);
+                $approval->bt_id = $businessTrip->id;
+                $approval->layer = $layer;
+                $approval->approval_status = $statusValue;
+                $approval->approved_at = now();
+                $approval->employee_id = $employeeId;
+                $approval->ext_end_date = $extendInfo->ext_end_date;
+                $approval->reason_extend = $extendInfo->reason_extend;
+                $approval->by_admin = 'T';
+
+                // Save the approval record
+                $approval->save();
+            } else {
+                return redirect()->back()->with('error', 'Unauthorized action.');
+            }
+        }
+
+
+        return redirect()->back()->with('success', 'Request updated successfully');
     }
 
     public function adminRevisi(Request $request, $id)
@@ -7518,6 +8180,10 @@ class BusinessTripController extends Controller
 
         // Find the business trip by ID
         $businessTrip = BusinessTrip::findOrFail($id);
+        $extendInfo = BTApproval::where('bt_id', $id)
+            ->where('approval_status', 'Request Extend')
+            ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru
+            ->first();
 
         // Determine the new status and layer based on the action and manager's role
         // dd($businessTrip);
@@ -7711,6 +8377,58 @@ class BusinessTripController extends Controller
 
             // Save the approval record
             $approval->save();
+        }
+
+        if ($request->input('action_ca_reject')) {
+            $statusValue = 'Extend Rejected';
+            if ($businessTrip->status == 'Extend L1') {
+                $layer = 1;
+            } elseif ($businessTrip->status == 'Extend L2') {
+                $layer = 2;
+            } else {
+                return redirect()->back()->with('error', 'Unauthorized action.');
+            }
+
+            $caTransaction = CATransaction::where('no_sppd', $businessTrip->no_sppd)->get();
+            foreach ($caTransaction as $caTransactions) {
+                if ($caTransactions && $caTransactions->caonly != 'Y' && $caTransactions->caonly == null) {
+                    $caApproval = ca_extend::where([
+                        'ca_id' => $caTransactions->id,
+                        'layer' => $layer
+                    ])->first();
+                    if ($caApproval) {
+                        $caApproval->approval_status = 'Rejected';
+                        $caApproval->approved_at = now();
+                        $caApproval->by_admin = 'T';
+                        $caApproval->admin_id = $employeeId;
+                        $caApproval->save();
+
+                        ca_extend::where('ca_id', $caTransactions->id)
+                            ->whereNotIn('approval_status', ['Approved'])
+                            ->whereNull('approved_at')
+                            ->update(['approval_status' => 'Rejected', 'approved_at' => now(), 'by_admin' => 'T', 'admin_id' => $employeeId]);
+
+                        $caTransactions->update(['approval_extend' => 'Rejected']);
+                    }
+                }
+            }
+            
+            $businessTrip->update(['status' => 'Approved']);
+
+            $approval_bt = new BTApproval();
+            $approval_bt->id = (string) Str::uuid();
+            $approval_bt->approval_status = $statusValue;
+            $approval_bt->bt_id = $businessTrip->id;
+            $approval_bt->layer = $layer;
+            $approval_bt->ext_end_date = $extendInfo->ext_end_date;
+            $approval_bt->reason_extend = $extendInfo->reason_extend;
+            $approval_bt->employee_id = $employeeId;
+            $approval_bt->employee_id = $employeeId;
+            $approval_bt->by_admin = 'T';
+
+            $approval_bt->save();
+
+            return redirect('/businessTrip/admin')->with('success', 'Extend Rejected, Rejection will be send to the employee.');
         }
 
         return redirect('/businessTrip/admin')->with('success', 'Status updated successfully');
@@ -7983,9 +8701,9 @@ class BusinessTripController extends Controller
                     // Update CA approval status for L1
                     $caApproval = ca_sett_approval::where([
                         'ca_id' => $caTransactions->id,
-                        'layer' => $layer
-                    ])->where('approval_status', '!=', 'Rejected')
-                        ->first();
+                        'layer' => $layer,
+                        'approval_status' => 'Pending'
+                    ])->first();
 
                     if ($caApproval) {
                         // Only update if the record exists
@@ -8034,6 +8752,304 @@ class BusinessTripController extends Controller
 
         // Redirect back to the previous page with a success message
         return redirect('/businessTrip/approval')->with('success', 'Request updated successfully');
+    }
+
+    public function updateStatusExtended(Request $req)
+    {
+        $id = $req->input('no_id'); // Get the ID from the no_id input
+        $userId = Auth::id();
+        $employeeId = auth()->user()->employee_id;
+        $employee_data = Employee::where('id', $userId)->first();
+
+        $model_bt = BusinessTrip::find($id);
+        $model_ca_bt = CATransaction::where('no_sppd', $model_bt->no_sppd)->where('type_ca', 'dns')->first();
+        $model_ca_ent = CATransaction::where('no_sppd', $model_bt->no_sppd)->where('type_ca', 'entr')->first();
+
+        $dnsTab = $model_ca_bt ? true : false;
+        $entrTab = $model_ca_ent ? true : false;
+
+        // Cek jika tombol reject ditekan
+        if ($req->input('action_ca_reject')) {
+            if (!in_array($employeeId, [$model_bt->manager_l1_id, $model_bt->manager_l2_id])) {
+                return redirect()->back()->with('error', 'Unauthorized action.');
+            }
+            
+            $layer = $employeeId == $model_bt->manager_l1_id ? 1 : 2;
+            $statusValue = 'Extend Rejected';
+            
+            foreach ([$dnsTab => $model_ca_bt, $entrTab => $model_ca_ent] as $tab => $model_ca) {
+                if ($tab) {
+                    ca_extend::where('ca_id', $model_ca->id)
+                        ->whereNotIn('approval_status', ['Approved'])
+                        ->whereNull('approved_at')
+                        ->update(['approval_status' => 'Rejected', 'approved_at' => Carbon::now()]);
+                    
+                    CATransaction::where('id', $model_ca->id)
+                        ->update(['approval_extend' => 'Rejected']);
+                }
+            }
+            
+            $model_bt->update(['status' => 'Approved']);
+
+            $approval_bt = new BTApproval();
+            $approval_bt->id = (string) Str::uuid();
+            $approval_bt->approval_status = $statusValue;
+            $approval_bt->bt_id = $model_bt->id;
+            $approval_bt->layer = $layer;
+            $approval_bt->ext_end_date = $req->input('ext_end_date');
+            $approval_bt->reason_extend = $req->input('ext_reason');
+            $approval_bt->employee_id = $employeeId;
+
+            $approval_bt->save();
+
+            return redirect('/businessTrip/approval')->with('success', 'Extend Rejected, Rejection will be send to the employee.');
+        }
+
+        // Cek jika tombol approve ditekan
+        if ($req->input('action_ca_approve')) {
+            if ($employeeId == $model_bt->manager_l1_id) {
+                $layer = 1;
+                $statusValue = 'Extend L2';
+            } elseif ($employeeId == $model_bt->manager_l2_id) {
+                $layer = 2;
+                $statusValue = 'Approved';
+                $model_bt->update(['status' => $statusValue, 'kembali' => $req->input('ext_end_date')]);    
+            } else {
+                return redirect()->back()->with('error', 'Unauthorized action.');
+            }
+
+            if ($dnsTab) {
+                // Ambil semua approval yang terkait dengan ca_id
+                $approvals = ca_extend::where('ca_id', $model_ca_bt->id)
+                    ->orderBy('layer', 'asc') // Mengurutkan berdasarkan layer
+                    ->get();
+
+                $model = ca_extend::where('ca_id', $model_ca_bt->id)->where('employee_id', $employeeId)->where('approval_status', '<>', 'Rejected')->firstOrFail();
+
+                $nextApproval = null;
+
+                // Mencari layer berikutnya yang lebih tinggi
+                foreach ($approvals as $approval) {
+                    if ($approval->layer > $model->layer) {
+                        $nextApproval = $approval;
+                        break;
+                    }
+                }
+
+                // Jika tidak ada layer yang lebih tinggi (berarti ini adalah layer tertinggi)
+                if (!$nextApproval) {
+                    // Set status ke Approved untuk layer tertinggi
+                    $model->approval_status = 'Approved';
+                    $model->approved_at = Carbon::now(); // Simpan waktu approval sekarang
+                    $model->save();
+
+                    // Update status_id pada ca_transaction
+                    $caTransaction = CATransaction::where('id', $model_ca_bt->id)->first();
+                    if ($caTransaction) {
+                        $caTransaction->approval_extend = 'Approved'; // Set ke ID user layer tertinggi
+                        $caTransaction->start_date = $req->input('ext_start_date');
+                        $caTransaction->end_date = $req->input('ext_end_date');
+                        $caTransaction->total_days = $req->input('ext_totaldays');
+                        $caTransaction->reason_extend = $req->input('ext_reason');
+                        // dd($caTransaction);
+                        $caTransaction->save();
+                    }
+
+                    // dd($caTransaction);
+                    // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+                    // $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                    // $imagePath = public_path('images/kop.jpg');
+                    // $imageContent = file_get_contents($imagePath);
+                    // $base64Image = "data:image/png;base64," . base64_encode($imageContent);
+                    // if ($CANotificationLayer) {
+                    //     $textNotification = "Your Declaration Cash Advanced request has been approved, please check your request again or can download your submission in the email attachment :";
+                    //     try {
+                    //         Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                    //             null,
+                    //             $caTransaction,
+                    //             $textNotification,
+                    //             null,
+                    //             null,
+                    //             null,
+                    //             $base64Image,
+                    //         ));
+                    //     } catch (\Exception $e) {
+                    //         Log::error('Email tidak terkirim: ' . $e->getMessage());
+                    //     }
+                    // }
+                } else {
+                    // Jika ada layer yang lebih tinggi, update status layer saat ini dan alihkan ke layer berikutnya
+                    $model->approval_status = 'Approved';
+                    $model->approved_at = Carbon::now();
+                    $model->save();
+                    // dd($model);
+
+                    // Update status_id pada ca_transaction ke employee_id layer berikutnya
+                    $caTransaction = CATransaction::where('id', $model_ca_bt->id)->first();
+                    if ($caTransaction) {
+                        $caTransaction->extend_id = $nextApproval->employee_id;
+                        $caTransaction->save();
+                    }
+
+                    // $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
+                    // $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                    // $imagePath = public_path('images/kop.jpg');
+                    // $imageContent = file_get_contents($imagePath);
+                    // $base64Image = "data:image/png;base64," . base64_encode($imageContent);
+                    // if ($CANotificationLayer) {
+                    //     $textNotification = "{$caTransaction->employee->fullname} applied for Extend Cash Advanced with details as follows:";
+
+                    //     $linkApprove = route('approval.email.aproved', [
+                    //         'id' => $caTransaction->id,
+                    //         'employeeId' => $nextApproval->employee_id,
+                    //         'action' => 'approve',
+                    //     ]);
+                    //     $linkReject = route('blank.page', [
+                    //         'key' => encrypt($caTransaction->id),  // Ganti 'id' dengan 'key' sesuai dengan parameter di controller
+                    //         'userId' => $nextApproval->employee->id, // Jika perlu, masukkan ID pengguna di sini
+                    //         'autoOpen' => 'reject'
+                    //     ]);
+                    //     try {
+                    //         Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                    //             $nextApproval,
+                    //             $caTransaction,
+                    //             $textNotification,
+                    //             null,
+                    //             $linkApprove,
+                    //             $linkReject,
+                    //             $base64Image,
+                    //         ));
+                    //     } catch (\Exception $e) {
+                    //         Log::error('Email tidak terkirim: ' . $e->getMessage());
+                    //     }
+                    // }
+                }   
+            }
+
+            if ($entrTab) {
+                // Ambil semua approval yang terkait dengan ca_id
+                $approvals = ca_extend::where('ca_id', $model_ca_ent->id)
+                    ->orderBy('layer', 'asc') // Mengurutkan berdasarkan layer
+                    ->get();
+
+                $model = ca_extend::where('ca_id', $model_ca_ent->id)->where('employee_id', $employeeId)->where('approval_status', '<>', 'Rejected')->firstOrFail();
+
+                $nextApproval = null;
+
+                // Mencari layer berikutnya yang lebih tinggi
+                foreach ($approvals as $approval) {
+                    if ($approval->layer > $model->layer) {
+                        $nextApproval = $approval;
+                        break;
+                    }
+                }
+
+                // Jika tidak ada layer yang lebih tinggi (berarti ini adalah layer tertinggi)
+                if (!$nextApproval) {
+                    // Set status ke Approved untuk layer tertinggi
+                    $model->approval_status = 'Approved';
+                    $model->approved_at = Carbon::now(); // Simpan waktu approval sekarang
+                    $model->save();
+
+                    // Update status_id pada ca_transaction
+                    $caTransaction = CATransaction::where('id', $model_ca_ent->id)->first();
+                    if ($caTransaction) {
+                        $caTransaction->approval_extend = 'Approved'; // Set ke ID user layer tertinggi
+                        $caTransaction->start_date = $req->input('ext_start_date');
+                        $caTransaction->end_date = $req->input('ext_end_date');
+                        $caTransaction->total_days = $req->input('ext_totaldays');
+                        $caTransaction->reason_extend = $req->input('ext_reason');
+                        // dd($caTransaction);
+                        $caTransaction->save();
+                    }
+
+                    // dd($caTransaction);
+                    // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+                    // $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                    // $imagePath = public_path('images/kop.jpg');
+                    // $imageContent = file_get_contents($imagePath);
+                    // $base64Image = "data:image/png;base64," . base64_encode($imageContent);
+                    // if ($CANotificationLayer) {
+                    //     $textNotification = "Your Declaration Cash Advanced request has been approved, please check your request again or can download your submission in the email attachment :";
+                    //     try {
+                    //         Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                    //             null,
+                    //             $caTransaction,
+                    //             $textNotification,
+                    //             null,
+                    //             null,
+                    //             null,
+                    //             $base64Image,
+                    //         ));
+                    //     } catch (\Exception $e) {
+                    //         Log::error('Email tidak terkirim: ' . $e->getMessage());
+                    //     }
+                    // }
+                } else {
+                    // Jika ada layer yang lebih tinggi, update status layer saat ini dan alihkan ke layer berikutnya
+                    $model->approval_status = 'Approved';
+                    $model->approved_at = Carbon::now();
+                    $model->save();
+                    // dd($model);
+
+                    // Update status_id pada ca_transaction ke employee_id layer berikutnya
+                    $caTransaction = CATransaction::where('id', $model_ca_ent->id)->first();
+                    if ($caTransaction) {
+                        $caTransaction->extend_id = $nextApproval->employee_id;
+                        $caTransaction->save();
+                    }
+
+                    // $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
+                    // $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                    // $imagePath = public_path('images/kop.jpg');
+                    // $imageContent = file_get_contents($imagePath);
+                    // $base64Image = "data:image/png;base64," . base64_encode($imageContent);
+                    // if ($CANotificationLayer) {
+                    //     $textNotification = "{$caTransaction->employee->fullname} applied for Extend Cash Advanced with details as follows:";
+
+                    //     $linkApprove = route('approval.email.aproved', [
+                    //         'id' => $caTransaction->id,
+                    //         'employeeId' => $nextApproval->employee_id,
+                    //         'action' => 'approve',
+                    //     ]);
+                    //     $linkReject = route('blank.page', [
+                    //         'key' => encrypt($caTransaction->id),  // Ganti 'id' dengan 'key' sesuai dengan parameter di controller
+                    //         'userId' => $nextApproval->employee->id, // Jika perlu, masukkan ID pengguna di sini
+                    //         'autoOpen' => 'reject'
+                    //     ]);
+                    //     try {
+                    //         Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                    //             $nextApproval,
+                    //             $caTransaction,
+                    //             $textNotification,
+                    //             null,
+                    //             $linkApprove,
+                    //             $linkReject,
+                    //             $base64Image,
+                    //         ));
+                    //     } catch (\Exception $e) {
+                    //         Log::error('Email tidak terkirim: ' . $e->getMessage());
+                    //     }
+                    // }
+                }   
+            }
+
+            // dd($statusValue);
+            $model_bt->update(['status' => $statusValue]);
+
+            $approval_bt = new BTApproval();
+            $approval_bt->id = (string) Str::uuid();
+            $approval_bt->approval_status = $statusValue;
+            $approval_bt->bt_id = $model_bt->id;
+            $approval_bt->layer = $layer;
+            $approval_bt->ext_end_date = $req->input('ext_end_date');
+            $approval_bt->reason_extend = $req->input('ext_reason');
+            $approval_bt->employee_id = $employeeId;
+
+            $approval_bt->save();
+
+            return redirect('/businessTrip/approval')->with('success', 'Approved, Thanks for Approving.');
+        }
     }
 
 
@@ -8248,22 +9264,26 @@ class BusinessTripController extends Controller
         $currentMonth = date('n');
         $romanMonth = $this->getRomanMonth($currentMonth);
 
-        // Get the last transaction for the current year, including deleted ones
+        // Ambil transaksi terakhir dengan nomor terbesar dalam tahun ini
         $lastTransaction = BusinessTrip::whereYear('created_at', $currentYear)
-            ->orderBy('no_sppd', 'desc')
+            ->where('no_sppd', 'LIKE', "%/$currentYear") // Pastikan tahun cocok
+            ->orderByRaw("CAST(SUBSTRING_INDEX(no_sppd, '/', 1) AS UNSIGNED) DESC")
             ->withTrashed()
             ->first();
 
-        if ($lastTransaction && preg_match('/(\d{3})\/SPPD-HC\/([IVX]+)\/\d{4}/', $lastTransaction->no_sppd, $matches)) {
+        if ($lastTransaction && preg_match('/(\d{1,5})\/SPPD-HC\/([IVX]+)\/\d{4}/', $lastTransaction->no_sppd, $matches)) {
             $lastNumber = intval($matches[1]);
         } else {
             $lastNumber = 0;
         }
-        // dd($lastNumber);
 
-        $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
-        $newNoSppd = "$newNumber/SPPD-HC/$romanMonth/$currentYear";
-        // dd($newNoSppd);
+        // Tambah 1 ke nomor terakhir
+        $newNumber = $lastNumber + 1;
+
+        // Jika masih di bawah 1000, tambahkan padding nol (3 digit), jika lebih biarkan apa adanya
+        $formattedNumber = $newNumber < 1000 ? str_pad($newNumber, 3, '0', STR_PAD_LEFT) : $newNumber;
+
+        $newNoSppd = "$formattedNumber/SPPD-HC/$romanMonth/$currentYear";
 
         return $newNoSppd;
     }

@@ -151,11 +151,10 @@ class ReimburseController extends Controller
         $employee_data = Employee::where('id', $userId)->first();
 
         $disableCACount = CATransaction::where('user_id', $userId)
-            ->where(function ($query) {
-                $query->where('approval_status', 'Pending')
-                    ->orWhere('ca_status', 'Refund');
-            })
-            ->count();
+        ->whereNull('deleted_at') // Menambahkan kondisi deleted_at IS NULL
+        ->where('ca_status', '!=', 'Done') // Menambahkan kondisi ca_status != 'Done'
+        ->count();
+        
 
         $deklarasiCACount = CATransaction::where('user_id', $userId)
             ->where(function ($query) {
@@ -172,7 +171,7 @@ class ReimburseController extends Controller
         foreach ($ca_transactions as $transaction) {
             $transaction->settName = $transaction->statusReqEmployee ? $transaction->statusReqEmployee->fullname : '';
         }
-
+        // dd($disableCACount);
         return view('hcis.reimbursements.cashadv.cashadv', [
             'deklarasiCACount' => $deklarasiCACount,
             'disableCACount' => $disableCACount,
@@ -244,99 +243,106 @@ class ReimburseController extends Controller
         $userId = Auth::id();
         $parentLink = 'Reimbursement';
         $link = 'Report CA';
-        $query = CATransaction::with(['employee', 'statusReqEmployee', 'statusSettEmployee', 'statusExtendEmployee'])->orderBy('created_at', 'desc');
-        $ca_approvals = ca_approval::with(['employee', 'statusReqEmployee'])
-            // ->where('approval_status', '<>', 'Rejected')
-            ->orderBy('layer', 'asc') // Mengurutkan berdasarkan layer
-            ->get();
-
-        foreach ($ca_approvals as $approval) {
-            $approval->ReqName = $approval->statusReqEmployee ? $approval->statusReqEmployee->fullname : '';
-        }
-
-        $ca_sett = ca_sett_approval::where('approval_status', '<>', 'Rejected')
-            ->orderBy('layer', 'asc') // Mengurutkan berdasarkan layer
-            ->get();
-
-        foreach ($ca_sett as $approval_sett) {
-            $approval_sett->ReqName = $approval_sett->statusReqEmployee ? $approval_sett->statusReqEmployee->fullname : '';
-        }
-
-        $ca_extend = ca_extend::where('approval_status', '<>', 'Rejected')
-            ->orderBy('created_at', 'desc') // Mengurutkan terlebih dahulu berdasarkan created_at secara descending
-            ->orderBy('layer', 'asc') // Kemudian mengurutkan berdasarkan layer
-            ->get();
-
-        foreach ($ca_extend as $approval_ext) {
-            $approval_ext->ReqName = $approval_ext->statusReqEmployee ? $approval_ext->statusReqEmployee->fullname : '';
-        }
-
+        
+        // Inisialisasi koleksi kosong
+        $ca_transactions = collect([]);
+        $ca_approvals = collect([]);
+        $ca_sett = collect([]);
+        $ca_extend = collect([]);
+        
+        // Cek apakah filter telah diaplikasikan
+        $isDateRangeFilterApplied = $request->has(['start_date', 'end_date']) && $request->get('start_date') != '' && $request->get('end_date') != '';
+        $isCreatedDateFilterApplied = $request->has(['from_date', 'until_date']) && $request->get('from_date') != '' && $request->get('until_date') != '';
+        $isStatusFilterApplied = $request->has('stat') && $request->get('stat') != '' && $request->get('stat') != '-';
+        
+        // Tentukan apakah filter telah diaplikasikan
+        $isFilterApplied = $isDateRangeFilterApplied || $isCreatedDateFilterApplied;
+        
         $startDate = date('Y-m-d');
         $endDate = date('Y-m-d');
-        // dd($ca_approvals);
+        
+        if ($isFilterApplied) {
+            // Jika filter diaplikasikan, lakukan query
+            $query = CATransaction::with(['employee', 'statusReqEmployee', 'statusSettEmployee', 'statusExtendEmployee'])
+                ->orderBy('created_at', 'desc');
+                
+            $permissionLocations = $this->permissionLocations;
+            $permissionCompanies = $this->permissionCompanies;
+            $permissionGroupCompanies = $this->permissionGroupCompanies;
 
-        $permissionLocations = $this->permissionLocations;
-        $permissionCompanies = $this->permissionCompanies;
-        $permissionGroupCompanies = $this->permissionGroupCompanies;
+            if (!empty($permissionLocations)) {
+                $query->whereHas('employee', function ($query) use ($permissionLocations) {
+                    $query->whereIn('work_area_code', $permissionLocations);
+                });
+            }
 
-        if (!empty($permissionLocations)) {
-            $query->whereHas('employee', function ($query) use ($permissionLocations) {
-                $query->whereIn('work_area_code', $permissionLocations);
-            });
-        }
+            if (!empty($permissionCompanies)) {
+                $query->whereIn('contribution_level_code', $permissionCompanies);
+            }
 
-        if (!empty($permissionCompanies)) {
-            $query->whereIn('contribution_level_code', $permissionCompanies);
-        }
+            if (!empty($permissionGroupCompanies)) {
+                $query->whereHas('employee', function ($query) use ($permissionGroupCompanies) {
+                    $query->whereIn('group_company', $permissionGroupCompanies);
+                });
+            }
 
-        if (!empty($permissionGroupCompanies)) {
-            $query->whereHas('employee', function ($query) use ($permissionGroupCompanies) {
-                $query->whereIn('group_company', $permissionGroupCompanies);
-            });
-        }
-
-        if (request()->get('start_date') == '') {
-        } else {
-            if ($request->has(['start_date', 'end_date'])) {
+            // Terapkan filter tanggal mulai-akhir
+            if ($isDateRangeFilterApplied) {
                 $startDate = $request->input('start_date');
                 $endDate = $request->input('end_date');
-
                 $query->whereBetween('start_date', [$startDate, $endDate]);
             }
-        }
 
-        if (request()->get('from_date') == '') {
-        } else {
-            if ($request->has(['from_date', 'until_date'])) {
+            // Terapkan filter tanggal pembuatan
+            if ($isCreatedDateFilterApplied) {
                 $fromDate = $request->input('from_date');
                 $untilDate = Carbon::parse($request->input('until_date'))->addDay();
-
                 $query->whereBetween('created_at', [$fromDate, $untilDate]);
             }
-        }
 
-        if (request()->get('stat') == '-') {
-        } else {
-            if ($request->has('stat') && $request->input('stat') !== '') {
+            // Terapkan filter status
+            if ($isStatusFilterApplied) {
                 $status = $request->input('stat');
                 $query->where('ca_status', $status);
             }
-        }
 
-        $ca_transactions = $query->get();
+            // Dapatkan hasil query
+            $ca_transactions = $query->get();
 
-        foreach ($ca_transactions as $transaction) {
-            $transaction->ReqName = $transaction->statusReqEmployee ? $transaction->statusReqEmployee->fullname : '';
-            $transaction->settName = $transaction->statusSettEmployee ? $transaction->statusSettEmployee->fullname : '';
-            $transaction->extName = $transaction->statusExtendEmployee ? $transaction->statusExtendEmployee->fullname : '';
-        }
+            // Format data transaksi
+            foreach ($ca_transactions as $transaction) {
+                $transaction->ReqName = $transaction->statusReqEmployee ? $transaction->statusReqEmployee->fullname : '';
+                $transaction->settName = $transaction->statusSettEmployee ? $transaction->statusSettEmployee->fullname : '';
+                $transaction->extName = $transaction->statusExtendEmployee ? $transaction->statusExtendEmployee->fullname : '';
+                $transaction->formatted_start_date = Carbon::parse($transaction->start_date)->format('d-m-Y');
+                $transaction->formatted_end_date = Carbon::parse($transaction->end_date)->format('d-m-Y');
+            }
+            
+            // Query data approval lainnya hanya jika filter diterapkan
+            $ca_approvals = ca_approval::with(['employee', 'statusReqEmployee'])
+                ->orderBy('layer', 'asc')
+                ->get();
 
-        // $pendingCACount = CATransaction::where('user_id', $userId)->where('approval_status', 'Pending')->count();
+            foreach ($ca_approvals as $approval) {
+                $approval->ReqName = $approval->statusReqEmployee ? $approval->statusReqEmployee->fullname : '';
+            }
 
-        // Memformat tanggal
-        foreach ($ca_transactions as $transaction) {
-            $transaction->formatted_start_date = Carbon::parse($transaction->start_date)->format('d-m-Y');
-            $transaction->formatted_end_date = Carbon::parse($transaction->end_date)->format('d-m-Y');
+            $ca_sett = ca_sett_approval::where('approval_status', '<>', 'Rejected')
+                ->orderBy('layer', 'asc')
+                ->get();
+
+            foreach ($ca_sett as $approval_sett) {
+                $approval_sett->ReqName = $approval_sett->statusReqEmployee ? $approval_sett->statusReqEmployee->fullname : '';
+            }
+
+            $ca_extend = ca_extend::where('approval_status', '<>', 'Rejected')
+                ->orderBy('created_at', 'desc')
+                ->orderBy('layer', 'asc')
+                ->get();
+
+            foreach ($ca_extend as $approval_ext) {
+                $approval_ext->ReqName = $approval_ext->statusReqEmployee ? $approval_ext->statusReqEmployee->fullname : '';
+            }
         }
 
         return view('hcis.reimbursements.cashadv.adminCashadv', [
@@ -349,6 +355,7 @@ class ReimburseController extends Controller
             'ca_approvals' => $ca_approvals,
             'ca_sett' => $ca_sett,
             'ca_extend' => $ca_extend,
+            'isFilterApplied' => $isFilterApplied, // Tambahkan variabel ini ke view
         ]);
     }
     public function cashadvancedAdminUpdate(Request $request, $id)
@@ -2000,7 +2007,7 @@ class ReimburseController extends Controller
 
         // Apply filter to the query
         if ($filter === 'request') {
-            $statusFilter = ['Pending L1', 'Pending L2', 'Approved', 'Draft'];
+            $statusFilter = ['Pending L1', 'Pending L2', 'Approved', 'Draft', 'Request Revision'];
         } elseif ($filter === 'rejected') {
             $statusFilter = ['Rejected'];
         }
@@ -2283,6 +2290,12 @@ class ReimburseController extends Controller
                 'status' => 'Pending L2'
             ]);
 
+            $revisionLink = route('revision.hotel.link', [
+                'id' => urlencode($model->id),
+                'manager_id' => $managerId,
+                'status' => 'Request Revision'
+            ]);
+
             $rejectionLink = route('reject.hotel.link', [
                 'id' => urlencode($model->id),
                 'manager_id' => $managerId,
@@ -2304,6 +2317,7 @@ class ReimburseController extends Controller
                         'approvalStatus' => $statusValue,
                         'managerName' => $managerName,
                         'approvalLink' => $approvalLink,
+                        'revisionLink' => $revisionLink,
                         'rejectionLink' => $rejectionLink,
                         'base64Image' => $base64Image,
                         'textNotification' => $textNotification,
@@ -2346,6 +2360,12 @@ class ReimburseController extends Controller
                 'status' => 'Pending L2'
             ]);
 
+            $revisionLink = route('revision.hotel.link', [
+                'id' => urlencode($hotel->id),
+                'manager_id' => $managerId,
+                'status' => 'Request Revision'
+            ]);
+
             $rejectionLink = route('reject.hotel.link', [
                 'id' => urlencode($hotel->id),
                 'manager_id' => $managerId,
@@ -2384,6 +2404,7 @@ class ReimburseController extends Controller
                         'totalHari' => $totalHari,
                         'managerName' => $managerName,
                         'approvalLink' => $approvalLink,
+                        'revisionLink' => $revisionLink,
                         'rejectionLink' => $rejectionLink,
                         'approvalStatus' => 'Pending L2',
                         'base64Image' => $base64Image,
@@ -2493,6 +2514,15 @@ class ReimburseController extends Controller
             ->orderBy('no_sppd', 'asc')
             ->get();
 
+        $revisiInfo = null;
+        if ($hotel->approval_status === 'Request Revision') {
+            $revisiInfo = HotelApproval::where('htl_id', $hotel->id)
+                ->where('approval_status', 'Request Revision')  
+                ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru  
+                ->pluck('reject_info')  
+                ->first();
+        }
+
         // Prepare data for multiple forms
         $hotelData = [];
         $hotelCount = $hotels->count();
@@ -2523,6 +2553,7 @@ class ReimburseController extends Controller
             'transactions' => $hotels,
             'hotel' => $hotel,
             'hotelData' => $hotelData,
+            'revisiInfo' => $revisiInfo,
         ]);
     }
 
@@ -2647,8 +2678,8 @@ class ReimburseController extends Controller
 
         if ($statusValue !== 'Draft') {
             $managerId = Employee::where('id', $userId)->pluck('manager_l1_id')->first();
-            // $managerEmail = Employee::where('employee_id', $managerId)->pluck('email')->first();
-            $managerEmail = "eriton.dewa@kpn-corp.com";
+            $managerEmail = Employee::where('employee_id', $managerId)->pluck('email')->first();
+            // $managerEmail = "eriton.dewa@kpn-corp.com";
             $managerName = Employee::where('employee_id', $managerId)->pluck('fullname')->first();
             $employeeName = Employee::where('id', $userId)->pluck('fullname')->first();
 
@@ -2662,6 +2693,12 @@ class ReimburseController extends Controller
                 'id' => urlencode($processedHotelIds[0]),
                 'manager_id' => $managerId,
                 'status' => 'Pending L2'
+            ]);
+
+            $revisionLink = route('revision.hotel.link', [
+                'id' => urlencode($processedHotelIds[0]),
+                'manager_id' => $managerId,
+                'status' => 'Request Revision'
             ]);
 
             $rejectionLink = route('reject.hotel.link', [
@@ -2684,6 +2721,7 @@ class ReimburseController extends Controller
                         'approvalStatus' => $statusValue,
                         'managerName' => $managerName,
                         'approvalLink' => $approvalLink,
+                        'revisionLink' => $revisionLink,
                         'rejectionLink' => $rejectionLink,
                         'base64Image' => $base64Image,
                         'textNotification' => $textNotification,
@@ -2890,16 +2928,13 @@ class ReimburseController extends Controller
         $employeeIds = $hotels->pluck('user_id')->unique();
         $employees = Employee::whereIn('id', $employeeIds)->get()->keyBy('id');
 
-        // Fetch manager names for display (optional, depending on your view)
-        $managerL1Ids = $employees->pluck('manager_l1_id')->unique();
-        $managerL2Ids = $employees->pluck('manager_l2_id')->unique();
-        $managerL1Names = Employee::whereIn('id', $managerL1Ids)->pluck('fullname', 'id');
-        $managerL2Names = Employee::whereIn('id', $managerL2Ids)->pluck('fullname', 'id');
-
         // Count tickets per `no_tkt`
         $hotelCounts = $hotels->groupBy('no_htl')->mapWithKeys(function ($group, $key) {
             return [$key => ['total' => $group->count()]];
         });
+
+        $managerL1Names = Employee::whereIn('employee_id', $transactions->pluck('manager_l1_id'))->pluck('fullname', 'employee_id');
+        $managerL2Names = Employee::whereIn('employee_id', $transactions->pluck('manager_l2_id'))->pluck('fullname', 'employee_id');
 
         return view('hcis.reimbursements.hotel.hotelApproval', [
             'link' => $link,
@@ -3002,6 +3037,36 @@ class ReimburseController extends Controller
         $statusApproval = $request->input('status_approval');
 
         // Handle rejection scenario
+        if ($statusApproval == 'Request Revision') {
+            $revisiInfo = $request->input('revisi_info');
+            // Get the current approval status before updating it
+            $currentApprovalStatus = $hotel->approval_status;
+
+            // Update all hotels with the same no_htl to 'Rejected'
+            Hotel::where('no_htl', $noHtl)->update(['approval_status' => 'Request Revision']);
+
+            // Log the rejection into the hotel_approvals table for all hotels with the same no_htl
+            $hotels = Hotel::where('no_htl', $noHtl)->get();
+            
+            foreach ($hotels as $hotel) {
+                $rejection = new HotelApproval();
+                $rejection->id = (string) Str::uuid();
+                $rejection->htl_id = $hotel->id;
+                $rejection->employee_id = $employeeId;
+
+                // Determine the correct layer based on the hotel's approval status BEFORE rejection
+                $rejection->layer = $currentApprovalStatus == 'Pending L2' ? 2 : 1;
+
+                $rejection->approval_status = 'Request Revision';
+                $rejection->approved_at = now();
+                $rejection->reject_info = $revisiInfo;
+                $rejection->save();
+            }
+
+            return redirect('/hotel/approval')->with('success', 'Request approved successfully');
+        }
+
+        // Handle rejection scenario
         if ($statusApproval == 'Rejected') {
             $rejectInfo = $request->input('reject_info');
 
@@ -3054,6 +3119,12 @@ class ReimburseController extends Controller
                 'status' => 'Pending L2'
             ]);
 
+            $revisionLink = route('revision.hotel.link', [
+                'id' => urlencode($hotel->id),
+                'manager_id' => $managerId,
+                'status' => 'Request Revision'
+            ]);
+
             $rejectionLink = route('reject.hotel.link', [
                 'id' => urlencode($hotel->id),
                 'manager_id' => $managerId,
@@ -3092,6 +3163,7 @@ class ReimburseController extends Controller
                         'totalHari' => $totalHari,
                         'managerName' => $managerName,
                         'approvalLink' => $approvalLink,
+                        'revisionLink' => $revisionLink,                        
                         'rejectionLink' => $rejectionLink,
                         'approvalStatus' => 'Pending L2',
                         'base64Image' => $base64Image,
@@ -3140,6 +3212,37 @@ class ReimburseController extends Controller
 
         // Check the provided status_approval input
         $statusApproval = $request->input('status_approval');
+
+        // Handle revusuin scenario
+        if ($statusApproval == 'Request Revision') {
+            $rejectInfo = $request->input('revision_info');
+
+            // Get the current approval status before updating it
+            $currentApprovalStatus = $hotel->approval_status;
+
+            // Update all hotels with the same no_htl to 'Rejected'
+            Hotel::where('no_htl', $noHtl)->update(['approval_status' => 'Request Revision']);
+
+            // Log the rejection into the hotel_approvals table for all hotels with the same no_htl
+            $hotels = Hotel::where('no_htl', $noHtl)->get();
+            foreach ($hotels as $hotel) {
+                $rejection = new HotelApproval();
+                $rejection->id = (string) Str::uuid();
+                $rejection->htl_id = $hotel->id;
+                $rejection->employee_id = $employeeId;
+
+                // Determine the correct layer based on the hotel's approval status BEFORE rejection
+                $rejection->layer = $currentApprovalStatus == 'Pending L2' ? 2 : 1;
+
+                $rejection->approval_status = 'Request Revision';
+                $rejection->approved_at = now();
+                $rejection->reject_info = $rejectInfo;
+                $rejection->by_admin = 'T';
+                $rejection->save();
+            }
+
+            return redirect()->back()->with('success', 'Request successfully Rejected.');
+        }
 
         // Handle rejection scenario
         if ($statusApproval == 'Rejected') {
@@ -3268,7 +3371,7 @@ class ReimburseController extends Controller
         }
 
         // Redirect to the hotel approval page
-        return redirect()->route('hotel.admin')->with('success', 'Request approved successfully.');
+        return redirect()->back()->with('success', 'Request approved successfully.');
     }
 
     public function hotelAdmin(Request $request)
@@ -3279,124 +3382,138 @@ class ReimburseController extends Controller
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
+        // Initialize variables
+        $transactions = collect([]);
+        $hotels = collect([]);
+        $hotel = collect([]);
+        $hotelCounts = collect([]);
+        $hotelGroups = collect([]);
+        $hotelApprovals = collect([]);
+        $approvalHotels = [];
+        $managerL1Name = 'Unknown';
+        $managerL2Name = 'Unknown';
+        $employeeName = Employee::pluck('fullname', 'employee_id');
+
         $permissionLocations = $this->permissionLocations;
         $permissionCompanies = $this->permissionCompanies;
         $permissionGroupCompanies = $this->permissionGroupCompanies;
 
-        // Fetch latest hotel entries grouped by 'no_htl'
-        $latestHotelIds = Hotel::selectRaw('MAX(id) as id')
-            ->groupBy('no_htl')
-            ->pluck('id');
+        // Only process data if filters are applied
+        $isFilterApplied = ($startDate && $endDate);
 
-        // Fetch the hotel transactions using the latest ids
-        $transactions = Hotel::whereIn('id', $latestHotelIds)
-            ->with('employee', 'hotelApproval')
-            ->orderBy('created_at', 'desc')
-            ->where('approval_status', '!=', 'Draft')
-            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
-                $query->whereRaw("DATE(tgl_masuk_htl) BETWEEN ? AND ?", [$startDate, $endDate]);
-            });
+        if ($isFilterApplied) {
+            // Fetch latest hotel entries grouped by 'no_htl'
+                $latestHotelIds = Hotel::selectRaw('MAX(id) as id')
+                ->groupBy('no_htl')
+                ->pluck('id');
 
-        // Apply permission filters
-        if (!empty($permissionLocations)) {
-            $transactions->whereHas('employee', function ($query) use ($permissionLocations) {
-                $query->whereIn('work_area_code', $permissionLocations);
-            });
-        }
+            // Fetch the hotel transactions using the latest ids
+            $transactions = Hotel::whereIn('id', $latestHotelIds)
+                ->with('employee', 'hotelApproval')
+                ->orderBy('created_at', 'desc')
+                ->where('approval_status', '!=', 'Draft')
+                ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                    $query->whereRaw("DATE(tgl_masuk_htl) BETWEEN ? AND ?", [$startDate, $endDate]);
+                });
 
-        if (!empty($permissionCompanies)) {
-            $transactions->whereIn('contribution_level_code', $permissionCompanies);
-        }
+            // Apply permission filters
+            if (!empty($permissionLocations)) {
+                $transactions->whereHas('employee', function ($query) use ($permissionLocations) {
+                    $query->whereIn('work_area_code', $permissionLocations);
+                });
+            }
 
-        if (!empty($permissionGroupCompanies)) {
-            $transactions->whereHas('employee', function ($query) use ($permissionGroupCompanies) {
-                $query->whereIn('group_company', $permissionGroupCompanies);
-            });
-        }
+            if (!empty($permissionCompanies)) {
+                $transactions->whereIn('contribution_level_code', $permissionCompanies);
+            }
 
-        $transactions = $transactions->select('id', 'no_htl', 'nama_htl', 'lokasi_htl', 'approval_status', 'user_id', 'no_sppd', 'manager_l1_id', 'manager_l2_id', 'booking_code', 'booking_price')->get();
+            if (!empty($permissionGroupCompanies)) {
+                $transactions->whereHas('employee', function ($query) use ($permissionGroupCompanies) {
+                    $query->whereIn('group_company', $permissionGroupCompanies);
+                });
+            }
 
-        // Fetch all hotel transactions, removing the user ID filter
-        $hotels = Hotel::with('employee', 'hotelApproval')
-            ->orderBy('created_at', 'desc')
-            ->get();
+            $transactions = $transactions->select('id', 'no_htl', 'nama_htl', 'lokasi_htl', 'approval_status', 'user_id', 'no_sppd', 'manager_l1_id', 'manager_l2_id', 'booking_code', 'booking_price')->get();
 
-        $hotel = Hotel::with('employee', 'hotelApproval')
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->groupBy('no_htl');
+            // Fetch all hotel transactions, removing the user ID filter
+            $hotels = Hotel::with('employee', 'hotelApproval')
+                ->orderBy('created_at', 'desc')
+                ->get();
 
-        $hotelIds = $hotels->pluck('id');
+            $hotel = Hotel::with('employee', 'hotelApproval')
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->groupBy('no_htl');
 
-        // Fetch hotel approval details using the hotel IDs
-        $hotelApprovals = HotelApproval::whereIn('htl_id', $hotelIds)
-            ->where(function ($query) {
-                $query->where('approval_status', 'Rejected')
-                    ->orWhere('approval_status', 'Declaration Rejected');
-            })
-            ->get()
-            ->keyBy('htl_id');
+            $hotelIds = $hotels->pluck('id');
 
-        // Group transactions by hotel number
-        $hotelGroups = $hotels->groupBy('no_htl');
+            // Fetch hotel approval details using the hotel IDs
+            $hotelApprovals = HotelApproval::whereIn('htl_id', $hotelIds)
+                ->where(function ($query) {
+                    $query->where('approval_status', 'Rejected')
+                        ->orWhere('approval_status', 'Declaration Rejected');
+                })
+                ->get()
+                ->keyBy('htl_id');
 
-        $managerL1Name = 'Unknown';
-        $managerL2Name = 'Unknown';
+            // Group transactions by hotel number
+            $hotelGroups = $hotels->groupBy('no_htl');
 
-        foreach ($transactions as $transaction) {
-            // First check if manager IDs exist in the transaction (hotel db)
-            if ($transaction->manager_l1_id) {
-                // If exists in transaction, get manager name from transaction's manager_l1_id
-                $managerL1 = Employee::where('employee_id', $transaction->manager_l1_id)->first();
-                $transaction->manager_l1_name = $managerL1 ? $managerL1->fullname : 'Unknown';
-            } else {
-                // If not exists in transaction, get from requestor's (employee) data
-                $requestor = Employee::find($transaction->user_id);
-                if ($requestor && $requestor->manager_l1_id) {
-                    $managerL1 = Employee::where('employee_id', $requestor->manager_l1_id)->first();
+            foreach ($transactions as $transaction) {
+                // First check if manager IDs exist in the transaction (hotel db)
+                if ($transaction->manager_l1_id) {
+                    // If exists in transaction, get manager name from transaction's manager_l1_id
+                    $managerL1 = Employee::where('employee_id', $transaction->manager_l1_id)->first();
                     $transaction->manager_l1_name = $managerL1 ? $managerL1->fullname : 'Unknown';
                 } else {
-                    $transaction->manager_l1_name = 'No Manager Assigned';
+                    // If not exists in transaction, get from requestor's (employee) data
+                    $requestor = Employee::find($transaction->user_id);
+                    if ($requestor && $requestor->manager_l1_id) {
+                        $managerL1 = Employee::where('employee_id', $requestor->manager_l1_id)->first();
+                        $transaction->manager_l1_name = $managerL1 ? $managerL1->fullname : 'Unknown';
+                    } else {
+                        $transaction->manager_l1_name = 'No Manager Assigned';
+                    }
                 }
-            }
 
-            // Same logic for L2 manager
-            if ($transaction->manager_l2_id) {
-                // If exists in transaction, get manager name from transaction's manager_l2_id
-                $managerL2 = Employee::where('employee_id', $transaction->manager_l2_id)->first();
-                $transaction->manager_l2_name = $managerL2 ? $managerL2->fullname : 'Unknown';
-            } else {
-                // If not exists in transaction, get from requestor's (employee) data
-                $requestor = Employee::find($transaction->user_id);
-                if ($requestor && $requestor->manager_l2_id) {
-                    $managerL2 = Employee::where('employee_id', $requestor->manager_l2_id)->first();
+                // Same logic for L2 manager
+                if ($transaction->manager_l2_id) {
+                    // If exists in transaction, get manager name from transaction's manager_l2_id
+                    $managerL2 = Employee::where('employee_id', $transaction->manager_l2_id)->first();
                     $transaction->manager_l2_name = $managerL2 ? $managerL2->fullname : 'Unknown';
                 } else {
-                    $transaction->manager_l2_name = 'No Manager Assigned';
+                    // If not exists in transaction, get from requestor's (employee) data
+                    $requestor = Employee::find($transaction->user_id);
+                    if ($requestor && $requestor->manager_l2_id) {
+                        $managerL2 = Employee::where('employee_id', $requestor->manager_l2_id)->first();
+                        $transaction->manager_l2_name = $managerL2 ? $managerL2->fullname : 'Unknown';
+                    } else {
+                        $transaction->manager_l2_name = 'No Manager Assigned';
+                    }
                 }
             }
-        }
 
-        $employeeName = Employee::pluck('fullname', 'employee_id');
+            $employeeName = Employee::pluck('fullname', 'employee_id');
 
-        // Count grouped hotel entries
-        $hotelCounts = $hotels->groupBy('no_htl')->mapWithKeys(function ($group, $key) {
-            return [$key => ['total' => $group->count()]];
-        });
+            // Count grouped hotel entries
+            $hotelCounts = $hotels->groupBy('no_htl')->mapWithKeys(function ($group, $key) {
+                return [$key => ['total' => $group->count()]];
+            });
 
-        // Fetch approval data for each ticket ID
-        $approvalHotels = [];
-        foreach ($hotelIds as $hotelId) {
-            $hotels = HotelApproval::where('htl_id', $hotelId)->get();
-            foreach ($hotels as $hotelApprove) {
-                $approvalHotels[] = [
-                    'htl_id' => $hotelId,
-                    'layer' => $hotelApprove->layer,
-                    'approval_status' => $hotelApprove->approval_status,
-                    'employee_id' => $hotelApprove->employee->fullname,
-                    'by_admin' => $hotelApprove->by_admin,
-                    'approved_at' => $hotelApprove->approved_at,
-                ];
+            // Fetch approval data for each ticket ID
+            $approvalHotels = [];
+            foreach ($hotelIds as $hotelId) {
+                $hotels = HotelApproval::where('htl_id', $hotelId)->get();
+                foreach ($hotels as $hotelApprove) {
+                    $approvalHotels[] = [
+                        'htl_id' => $hotelId,
+                        'layer' => $hotelApprove->layer,
+                        'approval_status' => $hotelApprove->approval_status,
+                        'employee_id' => $hotelApprove->employee->fullname,
+                        'by_admin' => $hotelApprove->by_admin,
+                        'approved_at' => $hotelApprove->approved_at,
+                    ];
+                }
             }
         }
 
@@ -3442,7 +3559,7 @@ class ReimburseController extends Controller
                 $hotel->save();
             }
 
-            return redirect()->route('hotel.admin')->with('success', 'Hotel booking updated successfully.');
+            return redirect()->back()->with('success', 'Hotel booking updated successfully.');
         }
     }
     public function exportHotelAdminExcel(Request $request)
@@ -3467,7 +3584,7 @@ class ReimburseController extends Controller
         }
 
         // Redirect after deletion
-        return redirect()->intended(route('hotel.admin', absolute: false))->with('success', 'All related hotels deleted successfully');
+        return redirect()->back()->with('success', 'All related hotels deleted successfully');
     }
 
 
@@ -4066,6 +4183,15 @@ class ReimburseController extends Controller
             ->get();
         $transactions = $tickets;
 
+        $revisiInfo = null;
+        if ($ticket->approval_status === 'Request Revision') {
+            $revisiInfo = TiketApproval::where('tkt_id', $ticket->id)
+                ->where('approval_status', 'Request Revision')  
+                ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru  
+                ->pluck('reject_info')  
+                ->first();
+        }
+
         $ticketData = [];
         $ticketCount = $tickets->count();
         foreach ($tickets as $index => $ticket) {
@@ -4102,6 +4228,7 @@ class ReimburseController extends Controller
             'ticket' => $ticket,
             'ticketData' => $ticketData,
             'employees' => $employees,
+            'revisiInfo' => $revisiInfo,
         ]);
     }
 
@@ -4354,7 +4481,9 @@ class ReimburseController extends Controller
                     'type_tkt' => $ticket->type_tkt,
                     'jenis_tkt' => $ticket->jenis_tkt,
                     'ket_tkt' => $ticket->ket_tkt,
-                    'company_name' => $ticket->checkcompany->contribution_level ?? $ticket->checkcompanybt->checkCompany->contribution_level,
+                    'company_name' => $ticket->jns_dinas_tkt === 'Cuti' 
+                    ? $ticket->employee->company_name 
+                    : ($ticket->checkcompany->contribution_level ?? $ticket->checkcompanybt->checkCompany->contribution_level),
                     'cost_center' => $ticket->cost_center ?? 'N/A',
                     'manager1_fullname' => $ticket->manager1_fullname, // Accessor attribute
                     'manager2_fullname' => $ticket->manager2_fullname,
@@ -4418,12 +4547,6 @@ class ReimburseController extends Controller
         // Fetch employee data for ticket owners
         $employeeIds = $tickets->pluck('user_id')->unique();
         $employees = Employee::whereIn('id', $employeeIds)->get()->keyBy('id');
-
-        // Fetch manager names for display (optional, depending on your view)
-        $managerL1Ids = $employees->pluck('manager_l1_id')->unique();
-        $managerL2Ids = $employees->pluck('manager_l2_id')->unique();
-        $managerL1Names = Employee::whereIn('id', $managerL1Ids)->pluck('fullname', 'id');
-        $managerL2Names = Employee::whereIn('id', $managerL2Ids)->pluck('fullname', 'id');
 
         // Count tickets per `no_tkt`
         $ticketCounts = $tickets->groupBy('no_tkt')->mapWithKeys(function ($group, $key) {
@@ -4516,6 +4639,9 @@ class ReimburseController extends Controller
         }
 
         $totalMDCCount = $medical->count();
+
+        $managerL1Names = Employee::whereIn('employee_id', $transactions->pluck('manager_l1_id'))->pluck('fullname', 'employee_id');
+        $managerL2Names = Employee::whereIn('employee_id', $transactions->pluck('manager_l2_id'))->pluck('fullname', 'employee_id');
 
         return view('hcis.reimbursements.ticket.ticketApproval', [
             'link' => $link,
@@ -4953,7 +5079,7 @@ class ReimburseController extends Controller
             }
 
             // Redirect to the ticket approval page instead of back to the same page
-            return redirect()->route('ticket.admin')->with('success', 'Request rejected successfully.');
+            return redirect()->back()->with('success', 'Request rejected successfully.');
         }
 
         // Handle rejection scenario
@@ -4990,7 +5116,7 @@ class ReimburseController extends Controller
             }
 
             // Redirect to the ticket approval page instead of back to the same page
-            return redirect()->route('ticket.admin')->with('success', 'Request rejected successfully.');
+            return redirect()->back()->with('success', 'Request rejected successfully.');
         }
         // If not rejected, proceed with normal approval process
         if ($ticket->manager_l2_id == '-') {
@@ -5184,7 +5310,7 @@ class ReimburseController extends Controller
             $approval->by_admin = 'T';
             $approval->save();
         }
-        return redirect()->route('ticket.admin')->with('success', 'Request approved successfully.');
+        return redirect()->back()->with('success', 'Request approved successfully.');
     }
 
     public function ticketAdmin(Request $request)
@@ -5192,132 +5318,154 @@ class ReimburseController extends Controller
         $parentLink = 'Reimbursement';
         $link = 'Ticket (Admin)';
 
-        // Base query for filtering without user-specific filtering
+        // Check if any filter is applied
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         $tktType = $request->input('tkt_type');
-
-        // Fetch latest ticket IDs
-        $latestTicketIds = Tiket::selectRaw('MAX(id) as id')
-            ->groupBy('no_tkt')
-            ->pluck('id');
-
-        // Get transactions with the latest ticket IDs
-        $transactions = Tiket::whereIn('id', $latestTicketIds)
-            ->where('approval_status', '!=', 'Draft') // Apply the same filter to transactions
-            ->orderBy('created_at', 'desc')
-            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
-                $query->whereRaw("DATE(tgl_brkt_tkt) BETWEEN ? AND ?", [$startDate, $endDate]);
-            })
-            ->when($tktType, function ($query) use ($tktType) {
-                if ($tktType !== '-') { // Pastikan - tidak dianggap sebagai tipe yang valid
-                    $query->where('jns_dinas_tkt', $tktType);
-                }
-            });
-
-
-        // Apply permission filters
-        if (!empty($permissionLocations)) {
-            $transactions->whereHas('employee', function ($query) use ($permissionLocations) {
-                $query->whereIn('work_area_code', $permissionLocations);
-            });
-        }
-
-        if (!empty($permissionCompanies)) {
-            $transactions->whereIn('contribution_level_code', $permissionCompanies);
-        }
-
-        if (!empty($permissionGroupCompanies)) {
-            $transactions->whereHas('employee', function ($query) use ($permissionGroupCompanies) {
-                $query->whereIn('group_company', $permissionGroupCompanies);
-            });
-        }
-
-        $transactions = $transactions->select('id', 'no_tkt', 'dari_tkt', 'ke_tkt', 'approval_status', 'jns_dinas_tkt', 'user_id', 'no_sppd', 'manager_l1_id', 'manager_l2_id', 'booking_code', 'tkt_price')
-            ->get();
-
-        // Get all tickets
-        $tickets = Tiket::with('businessTrip')
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        // Group tickets by 'no_tkt'
-        $ticket = $tickets->groupBy('no_tkt');
-
-        // Get ticket IDs
-        $tiketIds = $tickets->pluck('id');
-
-        // Get ticket approvals
-        $ticketApprovals = TiketApproval::whereIn('tkt_id', $tiketIds)
-            ->where(function ($query) {
-                $query->where('approval_status', 'Rejected')
-                    ->orWhere('approval_status', 'Declaration Rejected');
-            })
-            ->get();
-
-        // Key ticket approvals by ticket ID
-        $ticketApprovals = $ticketApprovals->keyBy('tkt_id');
-        $ticketsGroups = $tickets->groupBy('no_tkt');
+        
+        // Initialize variables
+        $transactions = collect([]);
+        $tickets = collect([]);
+        $ticket = collect([]);
+        $ticketCounts = collect([]);
+        $ticketsGroups = collect([]);
+        $ticketApprovals = collect([]);
+        $approvalTickets = [];
         $employeeName = Employee::pluck('fullname', 'employee_id');
+        
+        // Only process data if filters are applied
+        $isFilterApplied = ($startDate && $endDate);
+        
+        if ($isFilterApplied) {
+            // Fetch latest ticket IDs
+            $latestTicketIds = Tiket::selectRaw('MAX(id) as id')
+                ->groupBy('no_tkt')
+                ->pluck('id');
 
-        // Fetch employee data and manager names for transactions
-        foreach ($transactions as $transaction) {
-            // First check if manager IDs exist in the transaction (hotel db)
-            if ($transaction->manager_l1_id) {
-                // If exists in transaction, get manager name from transaction's manager_l1_id
-                $managerL1 = Employee::where('employee_id', $transaction->manager_l1_id)->first();
-                $transaction->manager_l1_name = $managerL1 ? $managerL1->fullname : 'Unknown';
-            } else {
-                // If not exists in transaction, get from requestor's (employee) data
-                $requestor = Employee::find($transaction->user_id);
-                if ($requestor && $requestor->manager_l1_id) {
-                    $managerL1 = Employee::where('employee_id', $requestor->manager_l1_id)->first();
+            // Get transactions with the latest ticket IDs
+            $transactions = Tiket::whereIn('id', $latestTicketIds)
+                ->where('approval_status', '!=', 'Draft')
+                ->orderBy('created_at', 'desc')
+                ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                    $query->whereRaw("DATE(tgl_brkt_tkt) BETWEEN ? AND ?", [$startDate, $endDate]);
+                })
+                ->when($tktType, function ($query) use ($tktType) {
+                    if ($tktType !== '-') {
+                        $query->where('jns_dinas_tkt', $tktType);
+                    }
+                });
+
+            // Apply permission filters
+            if (!empty($permissionLocations)) {
+                $transactions->whereHas('employee', function ($query) use ($permissionLocations) {
+                    $query->whereIn('work_area_code', $permissionLocations);
+                });
+            }
+
+            if (!empty($permissionCompanies)) {
+                $transactions->whereIn('contribution_level_code', $permissionCompanies);
+            }
+
+            if (!empty($permissionGroupCompanies)) {
+                $transactions->whereHas('employee', function ($query) use ($permissionGroupCompanies) {
+                    $query->whereIn('group_company', $permissionGroupCompanies);
+                });
+            }
+
+            $transactions = $transactions->select('id', 'no_tkt', 'dari_tkt', 'ke_tkt', 'approval_status', 'jns_dinas_tkt', 'user_id', 'no_sppd', 'manager_l1_id', 'manager_l2_id', 'booking_code', 'tkt_price')
+                ->get();
+
+            // Get all tickets (only if filters are applied)
+            $tickets = Tiket::with('businessTrip')
+                ->orderBy('created_at', 'desc');
+                
+            // Apply the same filters to tickets query
+            if ($startDate && $endDate) {
+                $tickets->whereRaw("DATE(tgl_brkt_tkt) BETWEEN ? AND ?", [$startDate, $endDate]);
+            }
+            
+            if ($tktType && $tktType !== '-') {
+                $tickets->where('jns_dinas_tkt', $tktType);
+            }
+            
+            $tickets = $tickets->get();
+
+            // Group tickets by 'no_tkt'
+            $ticket = $tickets->groupBy('no_tkt');
+
+            // Get ticket IDs
+            $tiketIds = $tickets->pluck('id');
+
+            // Get ticket approvals
+            $ticketApprovals = TiketApproval::whereIn('tkt_id', $tiketIds)
+                ->where(function ($query) {
+                    $query->where('approval_status', 'Rejected')
+                        ->orWhere('approval_status', 'Declaration Rejected');
+                })
+                ->get();
+
+            // Key ticket approvals by ticket ID
+            $ticketApprovals = $ticketApprovals->keyBy('tkt_id');
+            $ticketsGroups = $tickets->groupBy('no_tkt');
+
+            // Fetch employee data and manager names for transactions
+            foreach ($transactions as $transaction) {
+                // First check if manager IDs exist in the transaction (hotel db)
+                if ($transaction->manager_l1_id) {
+                    // If exists in transaction, get manager name from transaction's manager_l1_id
+                    $managerL1 = Employee::where('employee_id', $transaction->manager_l1_id)->first();
                     $transaction->manager_l1_name = $managerL1 ? $managerL1->fullname : 'Unknown';
                 } else {
-                    $transaction->manager_l1_name = 'No Manager Assigned';
+                    // If not exists in transaction, get from requestor's (employee) data
+                    $requestor = Employee::find($transaction->user_id);
+                    if ($requestor && $requestor->manager_l1_id) {
+                        $managerL1 = Employee::where('employee_id', $requestor->manager_l1_id)->first();
+                        $transaction->manager_l1_name = $managerL1 ? $managerL1->fullname : 'Unknown';
+                    } else {
+                        $transaction->manager_l1_name = 'No Manager Assigned';
+                    }
                 }
-            }
 
-            // Same logic for L2 manager
-            if ($transaction->manager_l2_id) {
-                // If exists in transaction, get manager name from transaction's manager_l2_id
-                $managerL2 = Employee::where('employee_id', $transaction->manager_l2_id)->first();
-                $transaction->manager_l2_name = $managerL2 ? $managerL2->fullname : 'Unknown';
-            } else {
-                // If not exists in transaction, get from requestor's (employee) data
-                $requestor = Employee::find($transaction->user_id);
-                if ($requestor && $requestor->manager_l2_id) {
-                    $managerL2 = Employee::where('employee_id', $requestor->manager_l2_id)->first();
+                // Same logic for L2 manager
+                if ($transaction->manager_l2_id) {
+                    // If exists in transaction, get manager name from transaction's manager_l2_id
+                    $managerL2 = Employee::where('employee_id', $transaction->manager_l2_id)->first();
                     $transaction->manager_l2_name = $managerL2 ? $managerL2->fullname : 'Unknown';
                 } else {
-                    $transaction->manager_l2_name = 'No Manager Assigned';
+                    // If not exists in transaction, get from requestor's (employee) data
+                    $requestor = Employee::find($transaction->user_id);
+                    if ($requestor && $requestor->manager_l2_id) {
+                        $managerL2 = Employee::where('employee_id', $requestor->manager_l2_id)->first();
+                        $transaction->manager_l2_name = $managerL2 ? $managerL2->fullname : 'Unknown';
+                    } else {
+                        $transaction->manager_l2_name = 'No Manager Assigned';
+                    }
+                }
+            }
+
+            // Count tickets grouped by 'no_tkt'
+            $ticketCounts = $tickets->groupBy('no_tkt')->mapWithKeys(function ($group, $key) {
+                return [$key => ['total' => $group->count()]];
+            });
+
+            // Fetch approval data for each ticket ID
+            $approvalTickets = [];
+            foreach ($tiketIds as $tiketId) {
+                $ticketApprovals = TiketApproval::where('tkt_id', $tiketId)->get();
+                foreach ($ticketApprovals as $ticketApprove) {
+                    $approvalTickets[] = [
+                        'tkt_id' => $tiketId,
+                        'layer' => $ticketApprove->layer,
+                        'approval_status' => $ticketApprove->approval_status,
+                        'employee_id' => $ticketApprove->employee->fullname,
+                        'by_admin' => $ticketApprove->by_admin,
+                        'approved_at' => $ticketApprove->approved_at,
+                    ];
                 }
             }
         }
 
-
-        // Count tickets grouped by 'no_tkt'
-        $ticketCounts = $tickets->groupBy('no_tkt')->mapWithKeys(function ($group, $key) {
-            return [$key => ['total' => $group->count()]];
-        });
-
-        // Fetch approval data for each ticket ID
-        $approvalTickets = [];
-        foreach ($tiketIds as $tiketId) {
-            $tickets = TiketApproval::where('tkt_id', $tiketId)->get();
-            foreach ($tickets as $ticketApprove) {
-                $approvalTickets[] = [
-                    'tkt_id' => $tiketId,
-                    'layer' => $ticketApprove->layer,
-                    'approval_status' => $ticketApprove->approval_status,
-                    'employee_id' => $ticketApprove->employee->fullname,
-                    'by_admin' => $ticketApprove->by_admin,
-                    'approved_at' => $ticketApprove->approved_at,
-                ];
-            }
-        }
-
-        // Return the view with all the data
+        // Return the view with all the data (empty collections if no filters)
         return view('hcis.reimbursements.ticket.admin.ticketAdmin', [
             'link' => $link,
             'parentLink' => $parentLink,
@@ -5329,6 +5477,7 @@ class ReimburseController extends Controller
             'ticketApprovals' => $ticketApprovals,
             'employeeName' => $employeeName,
             'approvalTicket' => $approvalTickets,
+            'isFilterApplied' => $isFilterApplied,
         ]);
     }
 
@@ -5357,7 +5506,7 @@ class ReimburseController extends Controller
                 $ticket->save();
             }
 
-            return redirect()->route('ticket.admin')->with('success', 'Ticket booking updated successfully.');
+            return redirect()->back()->with('success', 'Ticket booking updated successfully.');
         }
     }
 
@@ -5377,7 +5526,7 @@ class ReimburseController extends Controller
         Tiket::where('no_tkt', $model->no_tkt)->delete();
 
         // Redirect to the ticket page with a success message
-        return redirect()->route('ticket.admin')->with('success', 'Tickets has been deleted');
+        return redirect()->back()->with('success', 'Tickets has been deleted');
     }
 
 

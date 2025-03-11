@@ -24,6 +24,7 @@ class HotelNotification extends Mailable
     public $approvalStatus;
     public $managerName;
     public $approvalLink;
+    public $revisionLink;
     public $rejectionLink;
     public $base64Image;
     public $textNotification;
@@ -41,6 +42,7 @@ class HotelNotification extends Mailable
         $this->approvalStatus = $data['approvalStatus'];
         $this->managerName = $data['managerName'];
         $this->approvalLink = $data['approvalLink'];
+        $this->revisionLink = $data['revisionLink'];
         $this->rejectionLink = $data['rejectionLink'];
         $this->base64Image = $data['base64Image'];
         $this->textNotification = $data['textNotification'];

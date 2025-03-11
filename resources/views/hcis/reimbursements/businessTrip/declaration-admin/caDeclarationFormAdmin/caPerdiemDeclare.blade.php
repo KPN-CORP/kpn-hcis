@@ -245,17 +245,21 @@
                             <!-- Start Perdiem -->
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Start </label>
+
                                 <input type="date" name="start_bt_perdiem[]" class="form-control {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'bg-light' : '' }} start-perdiem"
                                     value="{{ $perdiem_dec['start_date'] }}" placeholder="mm/dd/yyyy"
                                     onchange="calculateTotalDaysPerdiem(this)" 
+
                                     {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'readonly' : '' }}>
                             </div>
                             <!-- End Perdiem -->
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">End </label>
+
                                 <input type="date" name="end_bt_perdiem[]" class="form-control {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'bg-light' : '' }} end-perdiem"
                                     value="{{ $perdiem_dec['end_date'] }}" placeholder="mm/dd/yyyy"
                                     onchange="calculateTotalDaysPerdiem(this)" 
+
                                     {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'readonly' : '' }}>
                             </div>
                             <div class="col-md-4 mb-2">
@@ -358,17 +362,21 @@
                             <!-- Start Perdiem -->
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Start </label>
+
                                 <input type="date" name="start_bt_perdiem[]" class="form-control {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'bg-light' : '' }} start-perdiem"
                                     value="{{ $perdiem_dec['start_date'] }}" placeholder="mm/dd/yyyy"
                                     onchange="calculateTotalDaysPerdiem(this)" 
+
                                     {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'readonly' : '' }}>
                             </div>
                             <!-- End Perdiem -->
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">End </label>
+
                                 <input type="date" name="end_bt_perdiem[]" class="form-control {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'bg-light' : '' }} end-perdiem"
                                     value="{{ $perdiem_dec['end_date'] }}" placeholder="mm/dd/yyyy"
                                     onchange="calculateTotalDaysPerdiem(this)" 
+
                                     {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'readonly' : '' }}>
                             </div>
                             <div class="col-md-4 mb-2">
@@ -493,16 +501,20 @@
                             <!-- Start Perdiem -->
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Start </label>
+
                                 <input type="date" name="start_bt_perdiem[]" class="form-control {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'bg-light' : '' }} start-perdiem"
                                     value="{{ $perdiem_dec['start_date'] }}" placeholder="mm/dd/yyyy"
+
                                     onchange="calculateTotalDaysPerdiem(this)"
                                     {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'readonly' : '' }}>
                             </div>
                             <!-- End Perdiem -->
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">End </label>
+
                                 <input type="date" name="end_bt_perdiem[]" class="form-control {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'bg-light' : '' }} end-perdiem"
                                     value="{{ $perdiem_dec['end_date'] }}" placeholder="mm/dd/yyyy"
+
                                     onchange="calculateTotalDaysPerdiem(this)"
                                     {{ $group_company === 'KPN Plantations' || $group_company === 'Plantations' ? 'readonly' : '' }}>
                             </div>

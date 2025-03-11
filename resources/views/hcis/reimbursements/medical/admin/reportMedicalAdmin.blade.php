@@ -83,15 +83,15 @@
                         <form action="{{ route('medical.report') }}" method="GET">
                             <div class="container-fluid p-2">
                                 <div class="row align-items-end g-1">
-                                    <div class="col-12 col-md-1">
-                                        <label class="form-label">Filter From :</label>
-                                        <input type="date" class="form-control" id="start_date" name="start_date" placeholder="Start Date" value="{{ request()->get('start_date') }}" title="Start Date">
-                                    </div>
-
-                                    <div class="col-12 col-md-1">
-                                        <label class="form-label">Until :</label>
-                                        <input type="date" class="form-control" id="end_date" name="end_date" placeholder="End Date" value="{{ request()->get('end_date') }}" title="End Date">
-                                    </div>
+                                    <div class="col-12 col-md-1">  
+                                        <label class="form-label">Filter From :</label>  
+                                        <input type="date" class="form-control" id="start_date" name="start_date" placeholder="Start Date" value="{{ request()->get('start_date') }}" title="Start Date" onchange="updateEndDate()">  
+                                    </div>  
+                                    
+                                    <div class="col-12 col-md-1">  
+                                        <label class="form-label">Until :</label>  
+                                        <input type="date" class="form-control" id="end_date" name="end_date" placeholder="End Date" value="{{ request()->get('end_date') }}" title="End Date" disabled>  
+                                    </div>  
 
                                     <div class="col-12 col-md-2">
                                         <label class="form-label">Status :</label>
@@ -148,6 +148,7 @@
                                             <button style="display: block" class="btn btn-success w-100" type="button" onclick="redirectToExportExcel()">
                                                 Export <i class="ri-file-excel-2-line"></i>
                                             </button>
+                                            {{-- block --}}
                                         @else
                                             <button style="display: none" class="btn btn-success w-100" type="button" onclick="redirectToExportExcel()">
                                                 <i class="ri-file-excel-2-line"></i> Export Excel
@@ -274,6 +275,44 @@
     {{-- @include('js.hcis.cashAdvanced.adminPage') --}}
 @endsection
 @push('scripts')
+    <script>  
+        function updateEndDate() {  
+            const startDateInput = document.getElementById('start_date');  
+            const endDateInput = document.getElementById('end_date');  
+            const startDate = new Date(startDateInput.value);  
+        
+            // Set min attribute for end date to the selected start date  
+            if (startDateInput.value) {  
+                const minDate = new Date(startDate);  
+                minDate.setDate(minDate.getDate() + 1); // Disable the start date itself  
+        
+                // Enable end date input  
+                endDateInput.disabled = false;  
+                // Set min and max for end date  
+                endDateInput.min = minDate.toISOString().split('T')[0];  
+        
+                // Set max to 3 months from the start date  
+                const maxDate = new Date(startDate);  
+                maxDate.setMonth(startDate.getMonth() + 3);  
+        
+                // Set max attribute for end date  
+                endDateInput.max = maxDate.toISOString().split('T')[0];  
+        
+                // Optionally reset the end date if it is before the new min date  
+                if (new Date(endDateInput.value) < minDate) {  
+                    endDateInput.value = '';  
+                }  
+            } else {  
+                // Disable end date input if no start date is selected  
+                endDateInput.disabled = true;  
+                endDateInput.value = ''; // Clear the end date input  
+            }  
+        }  
+        
+        // Initial call to set dates if there are pre-filled values  
+        updateEndDate();  
+    </script>  
+
     <script>
         // Periksa apakah ada pesan sukses
         var successMessage = "{{ session('success') }}";

@@ -88,15 +88,13 @@
                                 <div class="col-md-7">
                                     <div class="d-flex align-items-center mt-3">
                                         <label class="form-label me-2 mb-0" style="width: 80px;">Departure</label>
-                                        <div class="input-group">
-                                            <input type="date" class="form-control ml-3" id="start_date"
-                                                name="start_date" placeholder="Start Date" title="Start Date"
-                                                value="{{ request()->get('start_date') }}">
-                                            <span class="px-2 mt-1">-</span>
-                                            <input type="date" class="form-control" id="end_date" name="end_date"
-                                                placeholder="End Date" title="End Date"
-                                                value="{{ request()->get('end_date') }}">
-                                        </div>
+                                        <div class="input-group">  
+                                            <input type="date" class="form-control ml-3" id="start_date" name="start_date"  
+                                                placeholder="Start Date" title="Start Date" value="{{ request()->get('start_date') }}" onchange="updateEndDate()">  
+                                            <span class="px-2 mt-1">-</span>  
+                                            <input type="date" class="form-control" id="end_date" name="end_date"  
+                                                placeholder="End Date" title="End Date" value="{{ request()->get('end_date') }}" disabled>  
+                                        </div>  
                                     </div>
                                 </div>
 
@@ -580,4 +578,42 @@
         updateDateTime();
         setInterval(updateDateTime, 1000);
     </script>
+
+    <script>  
+        function updateEndDate() {  
+            const startDateInput = document.getElementById('start_date');  
+            const endDateInput = document.getElementById('end_date');  
+            const startDate = new Date(startDateInput.value);  
+        
+            // Set min attribute for end date to the selected start date + 1 day  
+            if (startDateInput.value) {  
+                const minDate = new Date(startDate);  
+                minDate.setDate(minDate.getDate() + 1); // Disable the start date  
+                
+                // Enable end date input  
+                endDateInput.disabled = false;  
+                // Set min and max for end date  
+                endDateInput.min = minDate.toISOString().split('T')[0];  
+        
+                // Set max to 3 months from the start date  
+                const maxDate = new Date(startDate);  
+                maxDate.setMonth(startDate.getMonth() + 3);  
+        
+                // Set max attribute for end date  
+                endDateInput.max = maxDate.toISOString().split('T')[0];  
+        
+                // Optionally reset the end date if it is before the new min date  
+                if (new Date(endDateInput.value) < minDate) {  
+                    endDateInput.value = '';  
+                }  
+            } else {  
+                // Disable end date input if no start date is selected  
+                endDateInput.disabled = true;  
+                endDateInput.value = ''; // Clear the end date input  
+            }  
+        }  
+        
+        // Initial call to set dates if there are pre-filled values  
+        updateEndDate();  
+    </script>      
 @endpush

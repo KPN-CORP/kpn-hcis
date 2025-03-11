@@ -36,8 +36,9 @@
                     <td>Rp. {{ number_format($transaction->total_real) }}</td>
                     <td>Rp. {{ number_format($transaction->total_cost) }}</td>
                     <td>
+                        {{-- <h1>{{ $fullnames_req[$transaction->id][0]['role_name'] ?? 'N/A' }}</h1> --}}
                         <p class="badge text-bg-{{ $transaction->approval_status == 'Approved' ? 'success' : ($transaction->approval_status == 'Declaration' ? 'info' : ($transaction->approval_status == 'Pending' ? 'warning' : ($transaction->approval_status == 'Rejected' ? 'danger' : ($transaction->approval_status == 'Draft' ? 'secondary' : 'success')))) }}"
-                            title="{{ $transaction->approval_status }} : {{ isset($fullnames[$transaction->status_id]) ? $fullnames[$transaction->status_id] : 'Unknown Employee' }}">
+                            onclick="showManagerInfo('All Approval', {{ json_encode($fullnames_req[$transaction->id] ?? []) }})">
                             {{ $transaction->approval_status }}
                         </p>
                     </td>

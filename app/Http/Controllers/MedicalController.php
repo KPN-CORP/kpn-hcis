@@ -313,6 +313,11 @@ class MedicalController extends Controller
             ->count() >= 1;
         // dd($isProbation);
 
+        $hasScalling = HealthCoverage::where('employee_id', $employee_id)
+            ->where('period', $currentYear)
+            ->where('disease', 'Dental (Scalling)')
+            ->count() >= 1;
+
         $medicalBalances = HealthPlan::where('employee_id', $employee_id)
             // ->where('period', $currentYear)
             ->get();
@@ -331,7 +336,7 @@ class MedicalController extends Controller
         $parentLink = 'Medical';
         $link = 'Add Medical Coverage Usage';
 
-        return view('hcis.reimbursements.medical.form.medicalForm', compact('diseases', 'medical_type', 'families', 'parentLink', 'link', 'employee_name', 'balanceData', 'hasGlasses', 'isMarried', 'isProbation'));
+        return view('hcis.reimbursements.medical.form.medicalForm', compact('diseases', 'medical_type', 'families', 'parentLink', 'link', 'employee_name', 'balanceData', 'hasGlasses', 'isMarried', 'isProbation','hasScalling'));
     }
 
     public function medicalCreate(Request $request)
@@ -739,6 +744,7 @@ class MedicalController extends Controller
 
         // Process the medical verification costs
         $medical_costs = $request->input('medical_costs', []);
+        $bpjs_costs = $request->input('bpjs_cover', []);
         $existingCoverages = HealthCoverage::where('no_medic', $no_medic)->get();
         $medicalEmployee = HealthCoverage::where('no_medic', $no_medic)->first();
 
@@ -771,10 +777,13 @@ class MedicalController extends Controller
             $existingCoverage = $existingCoverages->where('medical_type', $medical_type)->first();
 
             if ($existingCoverage) {
+                $bpjs_cost = isset($bpjs_costs[$medical_type]) ? (int) str_replace('.', '', $bpjs_costs[$medical_type]) : 0;  
+
                 $existingCoverage->update([
                     'balance_verif' => $verif_cost,
                     'verif_by' => $employee_id,
                     'status' => 'Pending',
+                    'balance_bpjs' => $bpjs_cost,
                 ]);
                 if ($medical_plan->balance < $verif_cost) {
                     $old_balance_total = $medical_plan->balance + $existingCoverage->balance; // Combine balances
@@ -1022,6 +1031,7 @@ class MedicalController extends Controller
         // Extract the medical types from medicGroup
         $selectedMedicalTypes = $medicGroup->pluck('medical_type')->unique();
         $balanceMapping = $medicGroup->pluck('balance_verif', 'medical_type');
+        $balanceBPJSMapping = $medicGroup->pluck('balance_bpjs', 'medical_type');
         $selectedDisease = $medic->disease;
 
         // Fetch related data as before
@@ -1032,7 +1042,7 @@ class MedicalController extends Controller
         $parentLink = 'Medical Approval';
         $link = 'Medical Details';
 
-        return view('hcis.reimbursements.medical.approval.medicalApprovalDetail', compact('selectedDisease', 'balanceMapping', 'medic', 'medical_type', 'diseases', 'families', 'parentLink', 'link', 'employee_name', 'medicGroup', 'selectedMedicalTypes', 'balanceData'));
+        return view('hcis.reimbursements.medical.approval.medicalApprovalDetail', compact('selectedDisease', 'balanceMapping', 'medic', 'medical_type', 'diseases', 'families', 'parentLink', 'link', 'employee_name', 'medicGroup', 'selectedMedicalTypes', 'balanceData', 'balanceBPJSMapping'));
     }
 
     public function medicalApprovalUpdate($id, Request $request)
@@ -1607,13 +1617,7 @@ class MedicalController extends Controller
             foreach ($request->file('medical_proof') as $file) {
                 $filename = time() . '_' . $file->getClientOriginalName();
                 $upload_path = 'uploads/proofs/' . $employee_data->employee_id;
-                $full_path = public_path($upload_path);
-        
-                if (!is_dir($full_path)) {
-                    mkdir($full_path, 0755, true);
-                }
-        
-                $file->move($full_path, $filename);
+                $file->storeAs($upload_path, $filename, 'public');
                 $existingFiles[] = $upload_path . '/' . $filename;
             }
         }
@@ -1836,10 +1840,24 @@ class MedicalController extends Controller
             // Import the data
             Excel::import($import, $request->file('file'));
 
+            // Ambil data yang gagal
+            $failedRows = $import->afterImport();
+
             // After import is complete, process the batched records and send emails
             $import->afterImport();
 
-            return redirect()->route('medical.admin')->with('success', 'Transaction successfully added from Excel.');
+            if (!empty($failedRows)) {
+                // Simpan file gagal ke session (sementara)
+                $filePath = 'failed_imports/failed_import_' . time() . '.xlsx';
+                Excel::store(new \App\Exports\MedicalFailedImportExport($failedRows), $filePath, 'public');
+            
+                // Simpan path file ke session
+                session()->put('failed_import_path', asset('storage/' . $filePath));
+            
+                return redirect()->route('medical.admin')->with('failed', 'Transaction successfully added from Excel, but some of them failed.');
+            } else {
+                return redirect()->route('medical.admin')->with('success', 'Transaction successfully added from Excel.');
+            }
         } catch (\App\Exceptions\ImportDataInvalidException $e) {
             // Catch custom exception and redirect back with error message
             return redirect()->route('medical.admin')->withErrors(['import_error' => $e->getMessage()]);

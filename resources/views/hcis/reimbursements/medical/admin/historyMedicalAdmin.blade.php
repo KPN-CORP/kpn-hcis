@@ -47,12 +47,19 @@
                       <td>{{ 'Rp. ' . number_format($item->total_per_no_medic, 0, ',', '.') }}</td>
                       <td>{{ $item->disease }}</td>
                       <td>
-                        @if (isset($item->medical_proof) && $item->medical_proof)
+                        {{-- @if (isset($item->medical_proof) && $item->medical_proof)
                             <a href="{{ \Illuminate\Support\Facades\Storage::url($item->medical_proof) }}" 
                             target="_blank" 
                             class="btn btn-sm btn-warning rounded-pill">
-                            View
+                            View ubah
                             </a>
+                        @endif --}}
+                        @if (isset($item->medical_proof) && $item->medical_proof)
+                            <button type="button" class="btn btn-sm btn-warning rounded-pill" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#viewAttachmentModal-{{ $item->no_medic }}">
+                                View
+                            </button>
                         @endif
                       </td>
                       @foreach ($master_medical as $master_medicals)
@@ -113,3 +120,61 @@
           </tbody>
       </table>
   </div>
+@php
+  use Illuminate\Support\Facades\Storage;
+@endphp
+@foreach ($medical as $item)
+    @if (isset($item->medical_proof) && $item->medical_proof)
+        @php
+            // Decode JSON jika ada, jika tidak valid anggap sebagai array kosong
+            $decodedData = json_decode($item->medical_proof, true);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $existingFiles = $decodedData;
+            } else {
+                // Jika gagal decode, anggap sebagai string biasa
+                $existingFiles = [$item->medical_proof];
+            }
+        @endphp
+
+        <div class="modal fade" id="viewAttachmentModal-{{ $item->no_medic }}" tabindex="-1" aria-labelledby="viewAttachmentModalLabel-{{ $item->no_medic }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewAttachmentModalLabel-{{ $item->no_medic }}">View Attachment</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <div class="attachmentContent">
+                            @if (is_array($existingFiles) && count($existingFiles) > 0)
+                                @foreach ($existingFiles as $file)
+                                    @php 
+                                        $fileUrl = Storage::url($file); 
+                                        $extension = pathinfo($file, PATHINFO_EXTENSION);
+                                    @endphp
+                                    
+                                    @if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'PNG', 'JPG', 'JPEG']))
+                                        <a href="{{ $fileUrl }}" target="_blank" rel="noopener noreferrer">
+                                            <img src="{{ $fileUrl }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
+                                        </a>
+                                    @elseif (in_array($extension, ['pdf', 'PDF']))
+                                        {{-- <iframe src="{{ $fileUrl }}" width="100%" height="500px" class="mb-2"></iframe> --}}
+                                        <a href="{{ $fileUrl }}" target="_blank" rel="noopener noreferrer">
+
+                                            <img src="{{ asset('images/pdf_icon.png') }}" alt="PDF File">
+                                            <p>Click to view PDF</p>
+                                        </a>
+                                    @else
+                                        <p>File type not supported: {{ $file }}</p>
+                                    @endif
+                                @endforeach
+                            @else
+                                <p>No valid files found.</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+@endforeach

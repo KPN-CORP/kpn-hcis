@@ -43,7 +43,7 @@
                     </td>
                     <td>
                         <p class="badge text-bg-{{ $transaction->approval_sett == 'Approved' ? 'success' : ($transaction->approval_sett == 'Declaration' ? 'info' : ($transaction->approval_sett == 'Pending' ? 'warning' : ($transaction->approval_sett == 'Rejected' ? 'danger' : ($transaction->approval_sett == 'Draft' ? 'secondary' : 'success')))) }}"
-                             title="Waiting Approve by: {{ isset($fullnames[$transaction->sett_id]) ? $fullnames[$transaction->sett_id] : 'Unknown Employee' }}">
+                            onclick="showManagerInfo('All Approval', {{ json_encode($fullnames_dec[$transaction->id] ?? []) }})">
                             {{ $transaction->approval_sett }}
                         </p>
                     </td>

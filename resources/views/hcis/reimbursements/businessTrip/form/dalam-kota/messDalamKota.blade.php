@@ -6,7 +6,7 @@
         <div class="card bg-light shadow-none" id="mess-form-dalam-kota-<?php echo $i; ?>"
             style="display: <?php echo $i === 1 ? 'block' : 'none'; ?>;">
             <div class="card-body">
-                <div class="h5 text-uppercase">
+                <div class="h5 text-uppercase text-primary">
                     <b>Mess <?php echo $i; ?></b>
                 </div>
                 <div class="row">
@@ -45,11 +45,10 @@
                     </div>
                 </div>
                 <div class="mt-2">
-                    <button type="button" class="btn btn-sm btn-outline-danger remove-mess-btn-dalam-kota">Remove
-                        Data</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-mess-btn-dalam-kota">Delete</button>
                 </div>
             </div>
         </div>
     </div>
-    <button type="button" class="btn btn-sm btn-outline-primary add-mess-btn-dalam-kota">Add Mess Data</button>
+    <button type="button" class="btn btn-sm btn-primary add-mess-btn-dalam-kota">Add More</button>
 </div>

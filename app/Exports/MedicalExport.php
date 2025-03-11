@@ -100,6 +100,9 @@ class MedicalExport implements FromCollection, WithHeadings, WithStyles, WithEve
 
             foreach ($employeeCoverages as $coverage) {
                 // if ($coverage->status == 'Done' || $coverage->status == 'Pending') {
+                    $amountVerify = $coverage->balance_verif;  
+                    $amountBPJS = $coverage->balance_bpjs;  
+                    $amountInvoice = $amountVerify - $amountBPJS;                      
                     $combinedData[] = [
                         'number' => count($combinedData) + 1,
                         'NoMed' => $coverage->no_medic,
@@ -118,7 +121,9 @@ class MedicalExport implements FromCollection, WithHeadings, WithStyles, WithEve
                         'MedicalType' => $coverage->medical_type,
                         'Amount' => 'Rp ' . number_format($coverage->balance, 0, ',', '.'),
                         'AmountUncoverage' => 'Rp ' . number_format($coverage->balance_uncoverage, 0, ',', '.'),
-                        'AmountVerify' => 'Rp ' . number_format($coverage->balance_verif, 0, ',', '.'),
+                        'AmountVerify' => 'Rp ' . number_format($amountVerify, 0, ',', '.'),  
+                        'AmountBPJS' => 'Rp ' . number_format($amountBPJS, 0, ',', '.'),  
+                        'AmountInovice' => 'Rp ' . number_format($amountInvoice, 0, ',', '.'),
                         'AdminNotes' => $coverage->admin_notes,
                         'PT' => $employee->company_name,
                         'CostCenter' => $employee->contribution_level_code,
@@ -155,6 +160,8 @@ class MedicalExport implements FromCollection, WithHeadings, WithStyles, WithEve
             'Amount',
             'Amount Uncoverage',
             'Amount Verify',
+            'Amount BPJS',
+            'Amount Invoice',
             'Admin Notes',
             'PT',
             'Cost Center',

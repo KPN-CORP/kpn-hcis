@@ -58,9 +58,55 @@ class ApprovalReimburseController extends Controller
         $ca_transactions_dec = CATransaction::with('employee')->where('sett_id', $employeeId)->where('approval_sett', 'Pending')->get();
         $ca_transactions_ext = CATransaction::with('employee')->where('extend_id', $employeeId)->where('approval_extend', 'Pending')->get();
 
-        $fullnames = Employee::whereIn('employee_id', $ca_transactions_ext->pluck('status_id'))
-            ->pluck('fullname', 'employee_id');
+        $fullnames_req = ca_approval::whereIn('ca_id', $ca_transactions->pluck('id'))
+            ->whereNotIn('approval_status', ['Verified', 'Rejected'])
+            ->orderBy('created_at', 'desc') // Urutkan dari tanggal terbaru ke lama
+            ->orderBy('layer', 'asc') // Urutkan layer dari kecil ke besar dalam tanggal yang sama
+            ->get()
+            ->groupBy('ca_id')
+            ->map(function ($approvals) {
+                return $approvals->map(function ($approval) {
+                    return [
+                        'role_name' => $approval->role_name,
+                        'employee_id' => $approval->employee->fullname,
+                        'approval_status' => $approval->approval_status,
+                    ];
+                })->values()->toArray();
+            });
 
+        $fullnames_dec = ca_sett_approval::whereIn('ca_id', collect($ca_transactions_dec)->pluck('id'))
+            ->whereNotIn('approval_status', ['Verified', 'Rejected'])    
+            ->orderBy('created_at', 'desc') 
+            ->orderBy('layer', 'asc') 
+            ->get()
+            ->groupBy('ca_id')
+            ->map(function ($approvals) {
+                return $approvals->map(function ($approval) {
+                    $employee = Employee::where('employee_id', $approval->employee_id)->first();
+                    return [
+                        'role_name' => $approval->role_name,
+                        'employee_id' => optional($employee)->fullname ?? 'Unknown',
+                        'approval_status' => $approval->approval_status,
+                    ];
+                })->values()->toArray();
+            });
+        
+        $fullnames_ext = ca_extend::whereIn('ca_id', $ca_transactions_ext->pluck('id'))  
+            ->whereNotIn('approval_status', ['Verified', 'Rejected']) // Menggunakan whereNotIn()    
+            ->orderBy('created_at', 'desc') // Urutkan dari tanggal terbaru ke lama
+            ->orderBy('layer', 'asc') // Urutkan layer dari kecil ke besar dalam tanggal yang sama
+            ->get()
+            ->groupBy('ca_id')
+            ->map(function ($approvals) {
+                return $approvals->map(function ($approval) {
+                    return [
+                        'role_name' => $approval->role_name,
+                        'employee_id' => $approval->employee->fullname,
+                        'approval_status' => $approval->approval_status,
+                    ];
+                })->values()->toArray();
+            });
+        
         $extendData = ca_extend::whereIn('ca_id', $ca_transactions_ext->pluck('id'))
             ->get(['ca_id', 'ext_end_date', 'ext_total_days', 'reason_extend']);
 
@@ -186,7 +232,9 @@ class ApprovalReimburseController extends Controller
             'totalTKTCount' => $totalTKTCount,
             'totalHTLCount' => $totalHTLCount,
             'totalMDCCount' => $totalMDCCount,
-            'fullnames' => $fullnames,
+            'fullnames_req' => $fullnames_req,
+            'fullnames_dec' => $fullnames_dec,
+            'fullnames_ext' => $fullnames_ext,
             'extendTime' => $extendTime,
             'extendData' => $extendData,
             'link' => $link,
@@ -654,7 +702,7 @@ class ApprovalReimburseController extends Controller
                 }
             }
 
-            return redirect()->route('cashadvanced.admin')->with('success', 'Transaction Rejected, Rejection will be send to the employee.')
+            return redirect()->back()->with('success', 'Transaction Rejected, Rejection will be send to the employee.')
                 ->with('refresh', true);
         }
 
@@ -765,7 +813,7 @@ class ApprovalReimburseController extends Controller
             }
         }
 
-        return redirect()->route('cashadvanced.admin')
+        return redirect()->back()
             ->with('success', 'Transaction approved successfully.')
             ->with('refresh', true);
     }
@@ -1229,7 +1277,7 @@ class ApprovalReimburseController extends Controller
                 }
             }
 
-            return redirect()->route('cashadvanced.admin')->with('success', 'Transaction Rejected, Rejection will be send to the employee.')
+            return redirect()->back()->with('success', 'Transaction Rejected, Rejection will be send to the employee.')
                 ->with('refresh', true);
         }
 
@@ -1340,7 +1388,7 @@ class ApprovalReimburseController extends Controller
             }
         }
 
-        return redirect()->route('cashadvanced.admin')->with('success', 'Transaction approved successfully.')
+        return redirect()->back()->with('success', 'Transaction approved successfully.')
             ->with('refresh', true);
     }
 
@@ -1601,7 +1649,7 @@ class ApprovalReimburseController extends Controller
                 }
             }
 
-            return redirect()->route('cashadvanced.admin')->with('success', 'Transaction Rejected, Rejection will be send to the employee.');
+            return redirect()->back()->with('success', 'Transaction Rejected, Rejection will be send to the employee.');
         }
 
         if ($req->input('action_ca_approve')) {
@@ -1713,7 +1761,7 @@ class ApprovalReimburseController extends Controller
             }
         }
 
-        return redirect()->route('cashadvanced.admin')->with('success', 'Transaction approved successfully.');
+        return redirect()->back()->with('success', 'Transaction approved successfully.');
     }
 
     function cashadvancedActionExtendEmail(Request $req, $ca_id, $employeeId)
@@ -1966,6 +2014,12 @@ class ApprovalReimburseController extends Controller
                 'status' => 'Pending L2'
             ]);
 
+            $revisionLink = route('revision.hotel.link', [
+                'id' => urlencode($hotel->id),
+                'manager_id' => $managerId,
+                'status' => 'Request Revision'
+            ]);
+
             $rejectionLink = route('reject.hotel.link', [
                 'id' => urlencode($hotel->id),
                 'manager_id' => $managerId,
@@ -2004,6 +2058,7 @@ class ApprovalReimburseController extends Controller
                         'totalHari' => $totalHari,
                         'managerName' => $managerName,
                         'approvalLink' => $approvalLink,
+                        'revisionLink' => $revisionLink,
                         'rejectionLink' => $rejectionLink,
                         'approvalStatus' => 'Pending L2',
                         'base64Image' => $base64Image,
@@ -2055,6 +2110,27 @@ class ApprovalReimburseController extends Controller
             'hotelsTotal' => $hotelsTotal,
         ]);
     }
+    public function revisionHotelLink($id, $manager_id, $status)
+    {
+        $hotel = Hotel::where('id', $id)->first();
+        // dd($id, $hotel);
+        $userId = $hotel->user_id;
+
+        $employeeName = Employee::where('id', $userId)->pluck('fullname')->first();
+        $noHtl = $hotel->no_htl;
+        $hotels = Hotel::where('no_htl', $noHtl)->first();
+        $hotelsTotal = Hotel::where('no_htl', $noHtl)->count();
+
+        return view('hcis.reimbursements.hotel.hotelRevision', [
+            'userId' => $userId,
+            'id' => $id,
+            'manager_id' => $manager_id,
+            'status' => $status,
+            'hotels' => $hotels,
+            'employeeName' => $employeeName,
+            'hotelsTotal' => $hotelsTotal,
+        ]);
+    }
     public function rejectHotelFromLink(Request $request, $id, $manager_id, $status)
     {
         $employeeId = $manager_id;
@@ -2084,7 +2160,35 @@ class ApprovalReimburseController extends Controller
             $rejection->save();
         }
     }
+    public function revisionHotelFromLink(Request $request, $id, $manager_id, $status)
+    {
+        $employeeId = $manager_id;
 
+        $revisionInfo = $request->revision_info;
+        $hotel = Hotel::findOrFail($id);
+        $noHtl = $hotel->no_htl;
+        // Get the current approval status before updating it
+        $currentApprovalStatus = $hotel->approval_status;
+
+        Hotel::where('no_htl', $noHtl)->update(['approval_status' => 'Request Revision']);
+
+        // Log the rejection into the hotel_approvals table for all hotels with the same no_htl
+        $hotels = Hotel::where('no_htl', $noHtl)->get();
+        foreach ($hotels as $hotel) {
+            $rejection = new HotelApproval();
+            $rejection->id = (string) Str::uuid();
+            $rejection->htl_id = $hotel->id;
+            $rejection->employee_id = $employeeId;
+
+            // Determine the correct layer based on the hotel's approval status BEFORE rejection
+            $rejection->layer = $currentApprovalStatus == 'Pending L2' ? 2 : 1;
+
+            $rejection->approval_status = 'Request Revision';
+            $rejection->approved_at = now();
+            $rejection->reject_info = $revisionInfo;
+            $rejection->save();
+        }
+    }
     public function approveTicketFromLink($id, $manager_id, $status)
     {
         $employeeId = $manager_id;

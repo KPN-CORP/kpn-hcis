@@ -4,9 +4,9 @@
 @if (!empty($caDetail['detail_e']) && $caDetail['detail_e'][0]['type'] !== null)
     <div id="form-container-detail">
         @foreach ($caDetail['detail_e'] as $detail)
-            <div id="form-container-e-detail-{{ $loop->index + 1 }}" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
+            <div id="form-container-e-detail-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-2">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Entertainment {{ $loop->index + 1 }}</p>
-                <div id="form-container-e-detail-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3">
+                <div id="form-container-e-detail-req-{{ $loop->index + 1 }}" class="card-body bg-white p-2">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Detail Entertainment Request</p>
                     <div class="row">
                         <div class="col-md-6 mb-2">
@@ -38,11 +38,10 @@
                             <textarea name="enter_fee_e_detail[]" class="form-control" placeholder="Write more details ...">{{ $detail['fee_detail'] }}</textarea>
                         </div>
                     </div>
-                    <br>
                     <div class="row mt-3">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormDetail({{ $loop->index + 1 }}, event)">Reset</button>
-                            <button class="btn btn-outline-primary mr-2 btn-sm" onclick="removeFormDetail({{ $loop->index + 1 }}, event)">Delete</button>
+                            <button class="btn btn-outline-danger mr-2 btn-sm" onclick="removeFormDetail({{ $loop->index + 1 }}, event)">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -53,11 +52,24 @@
     <div class="mt-3">
         <button class="btn btn-primary btn-sm" id="addMoreButtonDetail" onclick="addMoreFormDetailReq(event)">Add More</button>
     </div>
+    <hr/>
+    <div>
+        <label class="form-label">Total Entertain</label>
+        <div class="input-group">
+            <div class="input-group-append">
+                <span class="input-group-text">Rp</span>
+            </div>
+            <input class="form-control bg-light"
+                name="total_ent_detail" id="total_ent_detail"
+                type="text" min="0" value="0"
+                readonly>
+        </div>
+    </div>
 @else
     <div id="form-container-detail">
-        <div id="form-container-e-detail-1" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
+        <div id="form-container-e-detail-1" class="card-body p-2 mb-2 rounded-3 bg-light">
             <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Entertainment 1</p>
-            <div id="form-container-e-detail-req-1" class="card-body bg-light p-2 mb-3">
+            <div id="form-container-e-detail-req-1" class="card-body bg-white rounded-3 p-2 ">
                 <p class="fs-5 text-primary" style="font-weight: bold;">Detail Entertainment Request</p>
                 <div class="row">
                     <div class="col-md-6 mb-2">
@@ -89,11 +101,10 @@
                         <textarea name="enter_fee_e_detail[]" class="form-control" placeholder="Write more details ..."></textarea>
                     </div>
                 </div>
-                <br>
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormDetail(1, event)">Reset</button>
-                        <button class="btn btn-outline-primary mr-2 btn-sm" onclick="removeFormDetail(1, event)">Delete</button>
+                        <button class="btn btn-outline-danger mr-2 btn-sm" onclick="removeFormDetail(1, event)">Delete</button>
                     </div>
                 </div>
             </div>
@@ -102,5 +113,18 @@
 
     <div class="mt-3">
         <button class="btn btn-primary btn-sm" id="addMoreButtonDetail" onclick="addMoreFormDetailReq(event)">Add More</button>
+    </div>
+    <hr/>
+    <div>
+        <label class="form-label">Total Entertain</label>
+        <div class="input-group">
+            <div class="input-group-append">
+                <span class="input-group-text">Rp</span>
+            </div>
+            <input class="form-control bg-light"
+                name="total_ent_detail" id="total_ent_detail"
+                type="text" min="0" value="0"
+                readonly>
+        </div>
     </div>
 @endif

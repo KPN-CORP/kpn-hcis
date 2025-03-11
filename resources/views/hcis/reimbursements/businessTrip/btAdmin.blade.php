@@ -104,49 +104,47 @@
                 <div class="row align-items-end">
                     <h3 class="card-title">SPPD Data</h3>
 
-                    <div class="col-md-5">
-                        <label for="start-date" class="mb-2 mt-2">Departure Date:</label>
-                        <input type="date" id="start-date" name="start-date" class="form-control"
-                            value="{{ request()->query('start-date') }}">
-                    </div>
-                    <div class="col-md-5">
-                        <label for="end-date" class="mb-2 mt-2">To:</label>
-                        <input type="date" id="end-date" name="end-date" class="form-control"
-                            value="{{ request()->query('end-date') }}">
-                    </div>
+                    <div class="col-md-5">  
+                        <label for="start-date" class="mb-2 mt-2">Departure Date:</label>  
+                        <input type="date" id="start-date" name="start-date" class="form-control"  
+                            value="{{ request()->query('start-date') }}" onchange="updateEndDate2()">  
+                    </div>  
+                    <div class="col-md-5">  
+                        <label for="end-date" class="mb-2 mt-2">To:</label>  
+                        <input type="date" id="end-date" name="end-date" class="form-control"  
+                            value="{{ request()->query('end-date') }}" disabled>  
+                    </div>  
                     <div class="col-md-2 mt-2">
                         <button type="submit" class="btn btn-primary rounded-pill w-100">Find</button>
                     </div>
                 </div>
-            </form>
 
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card shadow mb-4">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div>
-                                    <h3 class="card-title mb-2">{{ $link }}</h3>
-                                    <div class="text-muted small">
-                                        <span class="me-3 fs-5"><i
-                                                class="ri-user-line me-1"></i>{{ Auth::user()->name }}</span>
-                                        <span class="me-3 fs-5"><i
-                                                class="ri-calendar-line me-1"></i>{{ date('l, d F Y') }}</span>
-                                        <span class="me-3"><i class="ri-time-line me-1"></i><span id="currentTime"></span>
-                                            WIB</span>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card shadow mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <h3 class="card-title mb-2">{{ $link }}</h3>
+                                        <div class="text-muted small">
+                                            <span class="me-3 fs-5"><i
+                                                    class="ri-user-line me-1"></i>{{ Auth::user()->name }}</span>
+                                            <span class="me-3 fs-5"><i
+                                                    class="ri-calendar-line me-1"></i>{{ date('l, d F Y') }}</span>
+                                            <span class="me-3"><i class="ri-time-line me-1"></i><span id="currentTime"></span>
+                                                WIB</span>
+                                        </div>
+                                    </div>
+                                    <div class="input-group" style="width: 30%;">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-white border-dark-subtle"><i
+                                                    class="ri-search-line"></i></span>
+                                        </div>
+                                        <input type="text" name="customsearch" id="customsearch"
+                                            class="form-control w-  border-dark-subtle border-left-0" placeholder="Search.."
+                                            aria-label="search" aria-describedby="search">
                                     </div>
                                 </div>
-                                <div class="input-group" style="width: 30%;">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text bg-white border-dark-subtle"><i
-                                                class="ri-search-line"></i></span>
-                                    </div>
-                                    <input type="text" name="customsearch" id="customsearch"
-                                        class="form-control w-  border-dark-subtle border-left-0" placeholder="Search.."
-                                        aria-label="search" aria-describedby="search">
-                                </div>
-                            </div>
-                            <form method="GET" action="{{ route('businessTrip.admin') }}">
                                 @php
                                     $currentFilter = request('filter', 'all');
                                 @endphp
@@ -180,29 +178,29 @@
                                         Rejected
                                     </button>
                                 </div>
-                            </form>
-                            <div class="table-responsive" style="overflow-y: auto">
-                                <table class="table table-sm table-hover" id="scheduleTable" width="100%"
-                                    cellspacing="0">
-                                    <thead class="thead-light">
-                                        <tr>
-                                            <th>No</th>
-                                            <th class="sticky-col-header">No SPPD</th>
-                                            <th>Name</th>
-                                            <th>Destination</th>
-                                            <th>Start</th>
-                                            <th>End</th>
-                                            <th>CA</th>
-                                            <th>Hotel</th>
-                                            <th>Mess</th>
+            </form>{{-- Tutup Form ini buat yg atas biar Filter date sama filter button jalan --}}
+                                <div class="table-responsive" style="overflow-y: auto">
+                                    <table class="table table-sm table-hover" id="scheduleTable" width="100%"
+                                        cellspacing="0">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th>No</th>
+                                                <th class="sticky-col-header">No SPPD</th>
+                                                <th>Name</th>
+                                                <th>Destination</th>
+                                                <th>Start</th>
+                                                <th>End</th>
+                                                <th>CA</th>
+                                                    <th>Hotel</th>
+                                                <th>Mess</th>
                                             <th>Ticket</th>
                                             <th>Taxi</th>
-                                            <th>Status</th>
-                                            <th style="">Approve</th>
-                                            <th style="width: 270px;">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
+                                                <th>Status</th>
+                                                <th style="">Approve</th>
+                                                <th style="width: 270px;">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
 
                                         @foreach ($sppd as $idx => $n)
                                             <tr>
@@ -337,7 +335,7 @@
                                                             ? 'success'
                                                             : ($n->status == 'Rejected' || $n->status == 'Return/Refund' || $n->status == 'Declaration Rejected'
                                                                 ? 'danger'
-                                                                : (in_array($n->status, ['Pending L1', 'Pending L2', 'Declaration L1', 'Declaration L2', 'Waiting Submitted'])
+                                                                : (in_array($n->status, ['Pending L1', 'Pending L2', 'Declaration L1', 'Declaration L2', 'Waiting Submitted', 'Extend L1', 'Extend L2'])
                                                                     ? 'warning'
                                                                     : ($n->status == 'Draft'
                                                                         ? 'secondary'
@@ -358,74 +356,76 @@
                                                     </span>
                                                 </td>
 
-                                                <td style="text-align: center; align-content: center">
-                                                    <button type="button" class="btn btn-outline-success rounded-pill"
-                                                        data-bs-toggle="modal" data-bs-target="#approvalDecModal"
-                                                        data-id="{{ $n->id }}" data-sppd="{{ $n->no_sppd }}"
-                                                        data-status="{{ $n->status }}"
-                                                        data-manager-l1="{{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}"
-                                                        data-manager-l2="{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}"
-                                                        title="Approval Update">
-                                                        <i class="bi bi-list-check"></i>
-                                                    </button>
-
-                                                </td>
-                                                <td style="text-align: center; align-content: center">
-                                                    <form id="deleteForm_{{ $n->id }}" method="POST"
-                                                        action="/businessTrip/admin/delete/{{ $n->id }}"
-                                                        style="display: inline-block;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <input type="hidden" id="no_sppd_{{ $n->id }}"
-                                                            value="{{ $n->no_sppd }}">
-                                                        <button type="button"
-                                                            class="btn btn-outline-danger rounded-pill mb-1 delete-button"
-                                                            data-id="{{ $n->id }}"
-                                                            {{ $n->status === 'Diterima' ? 'disabled' : '' }}>
-                                                            <i class="bi bi-trash-fill"></i>
+                                                    <td style="text-align: center; align-content: center">
+                                                        <button type="button" class="btn btn-outline-success rounded-pill"
+                                                            data-bs-toggle="modal" data-bs-target="#approvalDecModal"
+                                                            data-id="{{ $n->id }}" data-sppd="{{ $n->no_sppd }}"
+                                                            data-status="{{ $n->status }}"
+                                                            data-manager-l1="{{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}"
+                                                            data-manager-l2="{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}"
+                                                            title="Approval Update">
+                                                            <i class="bi bi-list-check"></i>
                                                         </button>
-                                                    </form>
+
+                                                    </td>
+                                                    <td style="text-align: center; align-content: center">
+                                                        <form id="deleteForm_{{ $n->id }}" method="POST"
+                                                            action="/businessTrip/admin/delete/{{ $n->id }}"
+                                                            style="display: inline-block;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <input type="hidden" id="no_sppd_{{ $n->id }}"
+                                                                value="{{ $n->no_sppd }}">
+                                                            <button type="button"
+                                                                class="btn btn-outline-danger rounded-pill mb-1 delete-button"
+                                                                data-id="{{ $n->id }}"
+                                                                {{ $n->status === 'Diterima' ? 'disabled' : '' }}>
+                                                                <i class="bi bi-trash-fill"></i>
+                                                            </button>
+                                                        </form>
 
                                                     <a href="{{ route('export.admin', ['id' => $n->id, 'types' => 'sppd,ca,tiket,hotel,taksi,mess']) }}"
                                                         class="btn btn-outline-info rounded-pill mb-1">
                                                         <i class="bi bi-download"></i>
                                                     </a>
 
-                                                    @php
-                                                        $today = \Carbon\Carbon::today()->format('Y-m-d');
-                                                    @endphp
-                                                    @if (
-                                                        $n->status != 'Pending L1' &&
-                                                            $n->status != 'Pending L2' &&
-                                                            $n->status != 'Rejected' &&
-                                                            $n->status != 'Verified' &&
-                                                            $n->status != 'Declaration L1' &&
-                                                            $n->status != 'Declaration L2' &&
-                                                            $n->status != 'Declaration Rejected')
-                                                        <form method="GET"
-                                                            action="/businessTrip/declaration/admin/{{ $n->id }}"
-                                                            style="display: inline-block;">
-                                                            <button type="submit"
-                                                                class="btn btn-outline-success rounded-pill mb-1"
-                                                                data-toggle="tooltip" title="Deklarasi">
-                                                                <i class="bi bi-card-checklist"></i>
-                                                            </button>
-                                                        </form>
-                                                    @endif
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                                        @php
+                                                            $today = \Carbon\Carbon::today()->format('Y-m-d');
+                                                        @endphp
+                                                        @if (
+                                                            $n->status != 'Pending L1' &&
+                                                                $n->status != 'Pending L2' &&
+                                                                $n->status != 'Rejected' &&
+                                                                $n->status != 'Verified' &&
+                                                                $n->status != 'Declaration L1' &&
+                                                                $n->status != 'Declaration L2' &&
+                                                                $n->status != 'Declaration Rejected')
+                                                            <form method="GET"
+                                                                action="{{ route('businessTrip.deklarasi.admin', ['id' => $n->id, 'previous_url' => request()->fullUrl()]) }}"
+                                                                style="display: inline-block;">
+                                                                <button type="submit"
+                                                                    class="btn btn-outline-success rounded-pill mb-1"
+                                                                    data-toggle="tooltip" title="Deklarasi">
+                                                                    <i class="bi bi-card-checklist"></i>
+                                                                </button>
+                                                            </form>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
+        </div>
+    </div>
                 {{-- APPROVAL MODAL --}}
                 <div class="modal fade" id="approvalDecModal" tabindex="-1" aria-labelledby="approvalDecModalLabel"
                     aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
+                    <div class="modal-dialog modal-xl">  
                         <div class="modal-content">
                             <div class="modal-header bg-primary text-white">
                                 <h5 class="modal-title" id="approvalDecModalLabel">Approval Business Trip Update - <span
@@ -441,7 +441,7 @@
                                     <div class="modal-body">
                                         <div class="row">
                                             <!-- Manager L1 -->
-                                            <div class="col-md-6 mb-3">
+                                            <div class="col-md-4 mb-3">
                                                 <div
                                                     class="d-flex flex-column align-items-start border-danger-subtle px-2 mx-2 py-2">
                                                     <label class="col-form-label mb-2 text-dark">Approval Request:</label>
@@ -471,7 +471,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6 mb-3">
+                                            <div class="col-md-4 mb-3">
                                                 <div class="d-flex flex-column align-items-start p-2">
                                                     <label class="col-form-label mb-2 text-dark">Approval
                                                         Declaration:</label>
@@ -496,6 +496,36 @@
                                                         </div>
                                                         <div class="mt-2 d-flex justify-content-start"
                                                             id="l2ActionContainerDeclare">
+                                                            <!-- Will be populated by JavaScript -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <div
+                                                    class="d-flex flex-column align-items-start border-danger-subtle px-2 mx-2 py-2">
+                                                    <label class="col-form-label mb-2 text-dark">Extending Request:</label>
+
+                                                    <!-- Manager L1 Name & Buttons -->
+                                                    <div class="mb-3 w-100">
+                                                        <div>
+                                                            <strong>Manager L1:</strong>
+                                                            <span id="managerL1NameExtend"></span>
+                                                        </div>
+                                                        <div class="mt-2 d-flex justify-content-start"
+                                                            id="l1ActionContainerExtend">
+                                                            <!-- Will be populated by JavaScript -->
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Manager L2 Name & Buttons -->
+                                                    <div class="mb-3 w-100">
+                                                        <div>
+                                                            <strong>Manager L2:</strong>
+                                                            <span id="managerL2NameExtend"></span>
+                                                        </div>
+                                                        <div class="mt-2 d-flex justify-content-start"
+                                                            id="l2ActionContainerExtend">
                                                             <!-- Will be populated by JavaScript -->
                                                         </div>
                                                     </div>
@@ -657,6 +687,32 @@
                     </div>
                 </div>
 
+                {{-- Extend Confirm Modal --}}
+                <div class="modal fade" id="extendConfirm" tabindex="-1" aria-labelledby="extendConfirmLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow">
+                            <div class="modal-header bg-light border-bottom-0">
+                                <h5 class="modal-title" id="extendConfirmLabel" style="color: #333; font-weight: 600;">Confirmation Reject Extend</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form id="extendReasonForm" method="POST">
+                                @csrf
+                                <div class="modal-body p-3 text-center">
+                                    <div class="text-danger">
+                                        <i class="bi bi-exclamation-circle-fill" style="font-size: 8rem;"></i>
+                                        <p class="mt-2 fw-semibold">Apakah Anda yakin ingin mereject?</p>
+                                    </div>
+                                    <div class="d-flex justify-content-center mt-3">
+                                        <button type="button" class="btn btn-outline-secondary rounded-pill me-2" data-bs-dismiss="modal" style="min-width: 90px;">Cancel</button>
+                                        <button type="submit" class="btn btn-danger rounded-pill" name="action_ca_reject" value="Extend Reject" style="min-width: 90px;">Reject</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+
                 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
                 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
                 <script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
@@ -694,6 +750,24 @@
                         const form = this.querySelector('form');
                         if (form && btId) {
                             form.action = `/businessTrip/status/revisi/${btId}`; // Update form action with correct path
+                            // Add method override for PUT request
+                            let methodInput = form.querySelector('input[name="_method"]');
+                            if (!methodInput) {
+                                methodInput = document.createElement('input');
+                                methodInput.type = 'hidden';
+                                methodInput.name = '_method';
+                                form.appendChild(methodInput);
+                            }
+                            methodInput.value = 'PUT';
+                        }
+                    });
+
+                    document.getElementById('extendConfirm').addEventListener('show.bs.modal', function(event) {
+                        const button = event.relatedTarget; // Button that triggered the modal
+                        const btId = button.getAttribute('data-id'); // Get the ID
+                        const form = this.querySelector('form');
+                        if (form && btId) {
+                            form.action = `/businessTrip/status/reject/${btId}`; // Update form action with correct path
                             // Add method override for PUT request
                             let methodInput = form.querySelector('input[name="_method"]');
                             if (!methodInput) {
@@ -748,6 +822,8 @@
                                 document.getElementById('managerL2Name').textContent = managerL2;
                                 document.getElementById('managerL1NameDeclare').textContent = managerL1;
                                 document.getElementById('managerL2NameDeclare').textContent = managerL2;
+                                document.getElementById('managerL1NameExtend').textContent = managerL1;
+                                document.getElementById('managerL2NameExtend').textContent = managerL2;
 
                                 // Get the containers
                                 const l1Container = document.getElementById('l1ActionContainer');
@@ -756,12 +832,17 @@
                                 const l1ContainerDeclare = document.getElementById('l1ActionContainerDeclare');
                                 const l2ContainerDeclare = document.getElementById('l2ActionContainerDeclare');
 
+                                const l1ContainerExtend = document.getElementById('l1ActionContainerExtend');
+                                const l2ContainerExtend = document.getElementById('l2ActionContainerExtend');
+
 
                                 // Clear previous content
                                 l1Container.innerHTML = '';
                                 l2Container.innerHTML = '';
                                 l1ContainerDeclare.innerHTML = '';
                                 l2ContainerDeclare.innerHTML = '';
+                                l1ContainerExtend.innerHTML = '';
+                                l2ContainerExtend.innerHTML = '';
 
                                 approvalModal.addEventListener('click', function(e) {
                                     if (e.target.matches('.btn-success')) {
@@ -825,6 +906,29 @@
                                         `<div id="approvalDataL2Declare" class="w-100"></div>`;
                                 }
 
+                                if (status === 'Extend L1') {
+                                    l1ContainerExtend.innerHTML = `
+                                        <button type="submit" class="btn btn-success btn-sm rounded-pill me-2" data-id="${btId}">Approve Extend</button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill"
+                                            data-bs-toggle="modal" data-bs-target="#extendConfirm" data-id="${btId}">Reject</button>
+                                    `;
+                                } else {
+                                    l1ContainerExtend.innerHTML =
+                                        `<div id="approvalDataL1Extend" class="w-100"></div>`;
+                                }
+
+                                // Handle L2 Extend container content
+                                if (status === 'Extend L2') {
+                                    l2ContainerExtend.innerHTML = `
+                                        <button type="submit" class="btn btn-success btn-sm rounded-pill me-2" data-id="${btId}">Approve Extend</button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill"
+                                            data-bs-toggle="modal" data-bs-target="#extendConfirm" data-id="${btId}">Reject</button>
+                                    `;
+                                } else {
+                                    l2ContainerExtend.innerHTML =
+                                        `<div id="approvalDataL2Extend" class="w-100"></div>`;
+                                }
+
                                 // Get and display approval data
                                 const approvals = @json($btApproved);
                                 const filteredApprovals = approvals.filter(approval => approval.bt_id === btId);
@@ -834,6 +938,8 @@
                                 const approvalDataL2 = document.getElementById('approvalDataL2');
                                 const approvalDataL1Declare = document.getElementById('approvalDataL1Declare');
                                 const approvalDataL2Declare = document.getElementById('approvalDataL2Declare');
+                                const approvalDataL1Extend = document.getElementById('approvalDataL1Extend');
+                                const approvalDataL2Extend = document.getElementById('approvalDataL2Extend');
 
                                 if (approvalDataL1) {
                                     const l1Approvals = filteredApprovals.filter(a => a.layer === 1 && a
@@ -1037,6 +1143,115 @@
                                             '<p class="text-muted">No L2 declarations found</p>';
                                     }
                                 }
+
+                                if (approvalDataL1Extend) {
+                                    const l1Extending = filteredApprovals.filter(a =>
+                                        a.layer === 1 &&
+                                        (a.approval_status === 'Extend L2')
+                                    );
+                                    const l1ExtendingOnce = filteredApprovals.filter(a =>
+                                        a.layer === 1 &&
+                                        (a.approval_status === 'Extend Approved')
+                                    );
+                                    const l1ExtendingRevision = filteredApprovals.filter(a =>
+                                        a.layer === 1 &&
+                                        (a.approval_status === 'Extend Revision')
+                                    );
+                                    const l1ExtendingReject = filteredApprovals.filter(a =>
+                                        a.layer === 1 &&
+                                        (a.approval_status === 'Extend Rejected')
+                                    );
+                                    if (l1ExtendingOnce.length > 0) {
+                                        approvalDataL1Extend.innerHTML = l1ExtendingOnce.map(approval => `
+                                        <div class="border rounded p-2 mb-2">
+                                            <strong>Status:</strong> ${approval.approval_status}<br>
+                                            <strong>Approved By:</strong> ${approval.employee_id}<br>
+                                            <strong>Approved At:</strong> ${formatDateToCustomString(approval.approved_at)}<br>
+                                            <strong>Processed By:</strong> ${approval.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                        </div>
+                                    `).join('');
+                                    } else if (l1Extending.length > 0) {
+                                        approvalDataL1Extend.innerHTML = l1Extending.map(approval => `
+                                        <div class="border rounded p-2 mb-2">
+                                            <strong>Status:</strong> ${approval.approval_status}<br>
+                                            <strong>Approved By:</strong> ${approval.employee_id}<br>
+                                            <strong>Approved At:</strong> ${formatDateToCustomString(approval.approved_at)}<br>
+                                            <strong>Processed By:</strong> ${approval.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                        </div>
+                                    `).join('');
+                                    } else if (l1ExtendingRevision.length > 0) {
+                                        approvalDataL1Extend.innerHTML += l1ExtendingRevision.map(rejection => `
+                                        <div class="alert alert-info">
+                                            <strong>Status:</strong> ${rejection.approval_status}<br>
+                                            <strong>Rejected By:</strong> ${rejection.employee_id}<br>
+                                            <strong>Rejected At:</strong> ${formatDateToCustomString(rejection.approved_at)}<br>
+                                            <strong>Rejection Info:</strong> ${rejection.reject_info || 'No additional info provided'}<br>
+                                            <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                        </div>
+                                    `).join('');
+                                    } else if (l1ExtendingReject.length > 0) {
+                                        approvalDataL1Extend.innerHTML += l1ExtendingReject.map(rejection => `
+                                        <div class="border rounded p-2 mb-2 bg-warning">
+                                            <strong>Status:</strong> ${rejection.approval_status}<br>
+                                            <strong>Rejected By:</strong> ${rejection.employee_id}<br>
+                                            <strong>Rejected At:</strong> ${formatDateToCustomString(rejection.approved_at)}<br>
+                                            <strong>Rejection Info:</strong> ${rejection.reject_info || 'No additional info provided'}<br>
+                                            <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                        </div>
+                                    `).join('');
+                                    } else {
+                                        approvalDataL1Extend.innerHTML =
+                                            '<p class="text-muted">No L1 Extending found</p>';
+                                    }
+                                }
+
+                                if (approvalDataL2Extend) {
+                                    const l2Extending = filteredApprovals.filter(a =>
+                                        a.layer === 2 &&
+                                        (a.approval_status === 'Extend Approved')
+                                    );
+                                    const l2ExtendingRevision = filteredApprovals.filter(a =>
+                                        a.layer === 2 &&
+                                        (a.approval_status === 'Extend Revision')
+                                    );
+                                    const l2ExtendingReject = filteredApprovals.filter(a =>
+                                        a.layer === 2 &&
+                                        (a.approval_status === 'Extend Rejected')
+                                    );
+                                    if (l2Extending.length > 0) {
+                                        approvalDataL2Extend.innerHTML = l2Extending.map(approval => `
+                                        <div class="border rounded p-2 mb-2">
+                                            <strong>Status:</strong> ${approval.approval_status}<br>
+                                            <strong>Approved By:</strong> ${approval.employee_id}<br>
+                                            <strong>Approved At:</strong> ${formatDateToCustomString(approval.approved_at)}<br>
+                                            <strong>Processed By:</strong> ${approval.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                        </div>
+                                    `).join('');
+                                    } else if (l2ExtendingRevision.length > 0) {
+                                        approvalDataL2Extend.innerHTML += l2ExtendingRevision.map(rejection => `
+                                        <div class="alert alert-info">
+                                            <strong>Status:</strong> ${rejection.approval_status}<br>
+                                            <strong>Rejected By:</strong> ${rejection.employee_id}<br>
+                                            <strong>Rejected At:</strong> ${formatDateToCustomString(rejection.approved_at)}<br>
+                                            <strong>Rejection Info:</strong> ${rejection.reject_info || 'No additional info provided'}<br>
+                                            <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                        </div>
+                                    `).join('');
+                                    } else if (l2ExtendingReject.length > 0) {
+                                        approvalDataL2Extend.innerHTML += l2ExtendingReject.map(rejection => `
+                                        <div class="border rounded p-2 mb-2 bg-warning">
+                                            <strong>Status:</strong> ${rejection.approval_status}<br>
+                                            <strong>Rejected By:</strong> ${rejection.employee_id}<br>
+                                            <strong>Rejected At:</strong> ${formatDateToCustomString(rejection.approved_at)}<br>
+                                            <strong>Rejection Info:</strong> ${rejection.reject_info || 'No additional info provided'}<br>
+                                            <strong>Processed By:</strong> ${rejection.by_admin === 'T' ? 'Admin' : 'Layer Manager'}
+                                        </div>
+                                    `).join('');
+                                    } else {
+                                        approvalDataL2Extend.innerHTML =
+                                            '<p class="text-muted">No L2 Extending found</p>';
+                                    }
+                                }
                             });
                         }
                     });
@@ -1112,20 +1327,20 @@
                             mm = '0' + mm;
                         }
 
-                        // Correct date format for input fields
-                        var formattedToday = yyyy + '-' + mm + '-' + dd;
-                        console.log(formattedToday);
+                        // // Correct date format for input fields
+                        // var formattedToday = yyyy + '-' + mm + '-' + dd;
+                        // console.log(formattedToday);
 
-                        var startDateElement = document.getElementById("start-date");
-                        var endDateElement = document.getElementById("end-date");
+                        // var startDateElement = document.getElementById("start-date");
+                        // var endDateElement = document.getElementById("end-date");
 
-                        // Only set the value if it's not already set
-                        if (!startDateElement.value) {
-                            startDateElement.value = formattedToday;
-                        }
-                        if (!endDateElement.value) {
-                            endDateElement.value = formattedToday;
-                        }
+                        // // Only set the value if it's not already set
+                        // if (!startDateElement.value) {
+                        //     startDateElement.value = formattedToday;
+                        // }
+                        // if (!endDateElement.value) {
+                        //     endDateElement.value = formattedToday;
+                        // }
 
                         document.addEventListener('DOMContentLoaded', function() {
                             getDate();
@@ -1295,4 +1510,42 @@
                     updateDateTime();
                     setInterval(updateDateTime, 1000);
                 </script>
+
+                <script>  
+                    function updateEndDate2() {  
+                        const startDateInput = document.getElementById('start-date');  
+                        const endDateInput = document.getElementById('end-date');  
+                        const startDate = new Date(startDateInput.value);  
+                    
+                        // Set min attribute for end date to the selected start date + 1 day  
+                        if (startDateInput.value) {  
+                            const minDate = new Date(startDate);  
+                            minDate.setDate(minDate.getDate() + 1); // Disable the start date  
+                            
+                            // Enable end date input  
+                            endDateInput.disabled = false;  
+                            // Set min and max for end date  
+                            endDateInput.min = minDate.toISOString().split('T')[0];  
+                    
+                            // Set max to 3 months from the start date  
+                            const maxDate = new Date(startDate);  
+                            maxDate.setMonth(startDate.getMonth() + 3);  
+                    
+                            // Set max attribute for end date  
+                            endDateInput.max = maxDate.toISOString().split('T')[0];  
+                    
+                            // Optionally reset the end date if it is before the new min date  
+                            if (new Date(endDateInput.value) < minDate) {  
+                                endDateInput.value = '';  
+                            }  
+                        } else {  
+                            // Disable end date input if no start date is selected  
+                            endDateInput.disabled = true;  
+                            endDateInput.value = ''; // Clear the end date input  
+                        }  
+                    }  
+                    
+                    // Initial call to set dates if there are pre-filled values  
+                    updateEndDate2();  
+                </script>  
             @endsection

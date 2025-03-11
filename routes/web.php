@@ -48,6 +48,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Mail\TestEmail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return redirect('reimbursements');
@@ -98,7 +99,7 @@ Route::get('businessTrip/rejection/{id}/{manager_id}/{status}', [BTApprovalContr
 Route::post('revision/{id}/{manager_id}/{status}', [BTApprovalController::class, 'revisionFromLink'])->name('revision.business.trip');
 Route::post('reject/{id}/{manager_id}/{status}', [BTApprovalController::class, 'rejectFromLink'])->name('reject.business.trip');
 
-//LINK APPROVAL Declarations
+//LINK APPROVAL Declarations BT
 Route::get('approve/declaration/{id}/{manager_id}/{status}', [BTApprovalController::class, 'approveFromLinkDeklarasi'])->name('approve.business.trip.declare');
 
 Route::get('businessTrip/declaration/revision/{id}/{manager_id}/{status}', [BTApprovalController::class, 'revisionDeclarationLink'])->name('revision.link.declaration');
@@ -106,11 +107,17 @@ Route::get('businessTrip/declaration/rejection/{id}/{manager_id}/{status}', [BTA
 Route::post('reject/declaration/{id}/{manager_id}/{status}', [BTApprovalController::class, 'rejectDeclarationFromLink'])->name('reject.business.trip.declaration');
 Route::post('revision/declaration/{id}/{manager_id}/{status}', [BTApprovalController::class, 'revisionDeclarationFromLink'])->name('revision.business.trip.declaration');
 
+// LINK APPROVAL EXTEND BT
+Route::get('approve/extend/{id}/{manager_id}/{status}', [BTApprovalController::class, 'approveFromLinkExtend'])->name('approve.business.trip.extend');
+Route::get('reject/extend/{id}/{manager_id}/{status}', [BTApprovalController::class, 'rejectExtendFromLink'])->name('reject.business.trip.extend');
+
 //LINK APPROVAL Hotel
 Route::get('approve/hotel/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'approveHotelFromLink'])->name('approve.hotel');
 
 Route::get('hotel/rejection/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'rejectHotelLink'])->name('reject.hotel.link');
 Route::post('reject/hotel/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'rejectHotelFromLink'])->name('reject.hotel');
+Route::get('hotel/revision/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'revisionHotelLink'])->name('revision.hotel.link');
+Route::post('revision/hotel/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'revisionHotelFromLink'])->name('revision.hotel');
 
 //LINK APPROVAL TICKETS
 Route::get('approve/ticket/{id}/{manager_id}/{status}', [ApprovalReimburseController::class, 'approveTicketFromLink'])->name('approve.ticket');
@@ -385,6 +392,16 @@ Route::middleware('auth')->group(function () {
         Route::put('/medical/admin/form-update/update/{id}', [MedicalController::class, 'medicalAdminUpdate'])->name('medical-admin-form.put');
         Route::delete('/medical/admin/delete/{id}', [MedicalController::class, 'medicalAdminDelete'])->name('medical-admin.delete');
         Route::delete('/medical/admin/delete/report/{id}', [MedicalController::class, 'medicalReportAdminDelete'])->name('medicalReport-admin.delete');
+        Route::post('/delete-failed-import', function (Request $request) {
+            $filePath = str_replace(asset('storage/'), '', $request->file_path); // Ambil path relatif
+        
+            if (Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
+                return response()->json(['message' => 'File deleted successfully']);
+            }
+        
+            return response()->json(['message' => 'File not found'], 404);
+        })->name('delete.failed.import');
     });
 
     //Medical Approval
@@ -422,6 +439,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/businessTrip/update/{id}', [BusinessTripController::class, 'update'])->name('update.bt');
     Route::delete('/businessTrip/delete/{id}', [BusinessTripController::class, 'delete'])->name('delete.bt');
     Route::post('/businessTrip/saveDraft', [BusinessTripController::class, 'saveDraft'])->name('businessTrip.saveDraft');
+
+    // Extend BT and CA
+    Route::post('/businessTrip/extend', [BusinessTripController::class, 'businessTripExtend'])->name('businessTrip.extend');
+    Route::post('/businessTrip/approval/extend', [BusinessTripController::class, 'updateStatusExtended'])->name('businessTrip.approvalExtended');
 
     //pdf BT
     Route::get('/businessTrip/pdf/{id}', [BusinessTripController::class, 'pdfDownload'])->name('pdf');

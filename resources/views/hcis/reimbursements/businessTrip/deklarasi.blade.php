@@ -174,10 +174,10 @@
                                 @endphp
 
                                 @if ($n->status == 'Declaration Revision')
-                                    <div class="alert alert-info mt-4" role="alert">  
-                                        <h4 class="alert-heading">Revision Note</h4>  
-                                        {!! nl2br(e($revisiInfo)) !!}  
-                                    </div>  
+                                    <div class="alert alert-info mt-4" role="alert">
+                                        <h4 class="alert-heading">Revision Note</h4>
+                                        {!! nl2br(e($revisiInfo)) !!}
+                                    </div>
                                 @endif
                                 <!-- 1st Form -->
                                 <div class="row mt-2" id="ca_div">
@@ -230,9 +230,39 @@
                                             use Illuminate\Support\Facades\Storage;
                                         @endphp
 
-                                        <div class="col-md-12 mb-2 mt-2">
+                                        <div class="card-body my-3 p-2 rounded-3" style="background-color:#f8f8f8;">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Total Cash Advanced Request</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-append">
+                                                            <span class="input-group-text">Rp</span>
+                                                        </div>
+                                                        <input class="form-control bg-light" name="totalca_ca"
+                                                            id="totalca_declarasi" type="text" min="0"
+                                                            value="{{ number_format($dnsData->total_ca ?? '0', 0, ',', '.') }}"
+                                                            readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Total Cash Advanced Declaration</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-append">
+                                                            <span class="input-group-text">Rp</span>
+                                                        </div>
+                                                        <input class="form-control bg-light" name="totalca_ca_deklarasi"
+                                                            id="totalca_ca_deklarasi" type="text" min="0"
+                                                            value="{{ number_format($dnsData->total_cost ?? '0', 0, ',', '.') }}"
+                                                            readonly>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12 mt-2">
                                             <label for="prove_declare" class="form-label">Upload Document <span
-                                                    class="text-info fst-italic">* (Bon, Boarding Pass, Hotel, Taxi Voucher, etc.)</span></label>
+                                                    class="text-info fst-italic">* (Bon, Boarding Pass, Hotel, Taxi
+                                                    Voucher, etc.)</span></label>
                                             <input type="file" id="prove_declare" name="prove_declare[]"
                                                 accept="image/*, application/pdf" class="form-control mb-2" multiple
                                                 onchange="previewFiles()"
@@ -242,6 +272,7 @@
                                                 )
                                                     ? 'required'
                                                     : '' }}>
+
                                             @if (
                                                 (isset($dnsData->prove_declare) && $dnsData->prove_declare) ||
                                                     (isset($entrData->prove_declare) && $entrData->prove_declare))
@@ -282,14 +313,14 @@
                                                                         data-file="{{ $file }}"
                                                                         style="position: relative; display: inline-block; margin: 10px;">
                                                                         @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
-                                                                            <a href="{{ asset($file) }}" target="_blank"
+                                                                            <a href="{{ Storage::url($file) }}" target="_blank"
                                                                                 rel="noopener noreferrer">
-                                                                                <img src="{{ asset($file) }}"
+                                                                                <img src="{{ Storage::url($file) }}"
                                                                                     alt="Proof Image"
                                                                                     style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
                                                                             </a>
                                                                         @elseif ($extension === 'pdf')
-                                                                            <a href="{{ asset($file) }}" target="_blank"
+                                                                            <a href="{{ Storage::url($file) }}" target="_blank"
                                                                                 rel="noopener noreferrer">
                                                                                 <img src="{{ asset('images/pdf_icon.png') }}"
                                                                                     alt="PDF File">
@@ -306,7 +337,10 @@
                                                             @else
                                                                 @php
                                                                     $file = $existingFiles[0] ?? ''; // Ambil satu file jika hanya ada satu file
-                                                                    $extension = pathinfo($file, PATHINFO_EXTENSION);
+                                                                    $extension = pathinfo(
+                                                                        $file,
+                                                                        PATHINFO_EXTENSION,
+                                                                    );
                                                                 @endphp
 
                                                                 @if (!empty($file))
@@ -314,14 +348,14 @@
                                                                         data-file="{{ $file }}"
                                                                         style="position: relative; display: inline-block; margin: 10px;">
                                                                         @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
-                                                                            <a href="{{ asset($file) }}" target="_blank"
+                                                                            <a href="{{ Storage::url($file) }}" target="_blank"
                                                                                 rel="noopener noreferrer">
-                                                                                <img src="{{ asset($file) }}"
+                                                                                <img src="{{ Storage::url($file) }}"
                                                                                     alt="Proof Image"
                                                                                     style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
                                                                             </a>
                                                                         @elseif ($extension === 'pdf')
-                                                                            <a href="{{ asset($file) }}" target="_blank"
+                                                                            <a href="{{ Storage::url($file) }}" target="_blank"
                                                                                 rel="noopener noreferrer">
                                                                                 <img src="{{ asset('images/pdf_icon.png') }}"
                                                                                     alt="PDF File">

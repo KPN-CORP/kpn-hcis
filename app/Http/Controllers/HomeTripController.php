@@ -249,7 +249,7 @@ class HomeTripController extends Controller
         $employee_data = Employee::where('id', $userId)->first();
         $contribution_level_code = Employee::where('id', $userId)->pluck('contribution_level_code')->first();
 
-        $deptHeadManager = findDepartmentHead($employee_data);
+        $deptHeadManager = $this->findDepartmentHead($employee_data);
 
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
@@ -555,7 +555,7 @@ class HomeTripController extends Controller
         $employee_data = Employee::where('id', $userId)->first();
         $contribution_level_code = Employee::where('id', $userId)->pluck('contribution_level_code')->first();
 
-        $deptHeadManager = findDepartmentHead($employee_data);
+        $deptHeadManager = $this->findDepartmentHead($employee_data);
 
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;

@@ -13,11 +13,11 @@ function addMoreFormRelationDec(event) {
 
     const newForm = document.createElement("div");
     newForm.id = `form-container-e-relation-${formCountRelation}`;
-    newForm.className = "card-body p-2 mb-3";
-    newForm.style.backgroundColor = "#f8f8f8";
+    newForm.className = "card-body bg-light p-2 rounded-3 mb-2";
+    // newForm.style.backgroundColor = "#f8f8f8";
     newForm.innerHTML = `
             <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Receiver ${formCountRelation}</p>
-            <div class="card-body bg-light p-2 mb-3">
+            <div class="card-body bg-light rounded-3 p-2">
                 <p class="fs-5 text-primary" style="font-weight: bold;">Detail Receiver Declaration</p>
                 <div class="row">
                     <!-- Relation Date -->
@@ -92,11 +92,10 @@ function addMoreFormRelationDec(event) {
                             class="form-control" placeholder="Write your purpose ..."></textarea>
                     </div>
                 </div>
-                <br>
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormRelation(${formCountRelation}, event)">Reset</button>
-                        <button class="btn btn-outline-primary mr-2 btn-sm" onclick="removeFormRelation(${formCountRelation}, event)">Delete</button>
+                        <button class="btn btn-outline-danger mr-2 btn-sm" onclick="removeFormRelation(${formCountRelation}, event)">Delete</button>
                     </div>
                 </div>
             </div>
@@ -112,11 +111,11 @@ function addMoreFormRelationReq(event) {
 
     const newForm = document.createElement("div");
     newForm.id = `form-container-e-relation-${formCountRelation}`;
-    newForm.className = "card-body p-2 mb-3";
-    newForm.style.backgroundColor = "#f8f8f8";
+    newForm.className = "card-body p-2 mb-2 rounded-3 bg-light";
+    // newForm.style.backgroundColor = "#f8f8f8";
     newForm.innerHTML = `
             <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Receiver ${formCountRelation}</p>
-            <div class="card-body bg-light p-2 mb-3">
+            <div class="card-body bg-white rounded-3 p-2 ">
                 <p class="fs-5 text-primary" style="font-weight: bold;">Detail Receiver Request</p>
                 <div class="row">
                     <!-- Relation Date -->
@@ -191,11 +190,10 @@ function addMoreFormRelationReq(event) {
                             class="form-control" placeholder="Write your purpose ..."></textarea>
                     </div>
                 </div>
-                <br>
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormRelation(${formCountRelation}, event)">Reset</button>
-                        <button class="btn btn-outline-primary mr-2 btn-sm" onclick="removeFormRelation(${formCountRelation}, event)">Delete</button>
+                        <button class="btn btn-outline-danger mr-2 btn-sm" onclick="removeFormRelation(${formCountRelation}, event)">Delete</button>
                     </div>
                 </div>
             </div>

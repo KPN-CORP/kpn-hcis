@@ -1362,7 +1362,7 @@
             return `
             <div class="card bg-light shadow-none" id="ticket-form-${formNumber}" style="display: block;">
                 <div class="card-body">
-                    <div class="h5 text-uppercase">
+                    <div class="h5 text-uppercase text-primary">
                         <b>TICKET ${formNumber}</b>
                     </div>
                     <div class="row">
@@ -1443,7 +1443,7 @@
                     </div>
 
                     <div class="mt-2">
-                        <button type="button" class="btn btn-sm btn-outline-danger remove-ticket-btn" data-form-id="${formNumber}">Remove Data</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-ticket-btn" data-form-id="${formNumber}">Delete</button>
                     </div>
                 </div>
             </div>`;
@@ -1784,7 +1784,7 @@
             return `
             <div class="card bg-light shadow-none" id="ticket-form-dalam-kota-${formNumber}" style="display: block;">
                 <div class="card-body">
-                    <div class="h5 text-uppercase">
+                    <div class="h5 text-uppercase text-primary">
                         <b>TICKET ${formNumber}</b>
                     </div>
                     <div class="row">
@@ -1865,7 +1865,7 @@
                     </div>
 
                     <div class="mt-2">
-                        <button type="button" class="btn btn-sm btn-outline-danger remove-ticket-btn-dalam-kota" data-form-id="${formNumber}">Remove Data</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-ticket-btn-dalam-kota" data-form-id="${formNumber}">Delete</button>
                     </div>
                 </div>
             </div>`;
@@ -2113,7 +2113,7 @@
             return `
             <div class="card bg-light shadow-none" id="hotel-form-${formNumber}" style="display: block;">
                 <div class="card-body">
-                    <div class="h5 text-uppercase">
+                    <div class="h5 text-uppercase text-primary">
                         <b>Hotel ${formNumber}</b>
                     </div>
                     <div class="row">
@@ -2171,7 +2171,7 @@
                     </div>
                     </div>
                     <div class="mt-2">
-                        <button type="button" class="btn btn-sm btn-outline-danger remove-hotel-btn" data-form-id="${formNumber}">Remove Data</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-hotel-btn" data-form-id="${formNumber}">Delete</button>
                     </div>
                 </div>
             </div>`;
@@ -2393,7 +2393,7 @@
             return `
             <div class="card bg-light shadow-none" id="hotel-form-dalam-kota-${formNumber}" style="display: block;">
                 <div class="card-body">
-                    <div class="h5 text-uppercase">
+                    <div class="h5 text-uppercase text-primary">
                         <b>Hotel ${formNumber} (Dalam Kota)</b>
                     </div>
                     <div class="row">
@@ -2451,7 +2451,7 @@
                         </div>
                     </div>
                     <div class="mt-2">
-                        <button type="button" class="btn btn-sm btn-outline-danger remove-hotel-btn-dalam-kota" data-form-id="${formNumber}">Remove Data</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-hotel-btn-dalam-kota" data-form-id="${formNumber}">Delete</button>
                     </div>
                 </div>
             </div>`;
@@ -2664,7 +2664,7 @@
             return `
             <div class="card bg-light shadow-none" id="mess-form-${formNumber}" style="display: block;">
                 <div class="card-body">
-                    <div class="h5 text-uppercase">
+                    <div class="h5 text-uppercase text-primary">
                         <b>Mess ${formNumber}</b>
                     </div>
                     <div class="row">
@@ -2699,7 +2699,7 @@
                     </div>
                     </div>
                     <div class="mt-2">
-                        <button type="button" class="btn btn-sm btn-outline-danger remove-mess-btn" data-form-id="${formNumber}">Remove Data</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-mess-btn" data-form-id="${formNumber}">Delete</button>
                     </div>
                 </div>
             </div>`;
@@ -2854,7 +2854,7 @@
             return `
         <div class="card bg-light shadow-none" id="mess-form-dalam-kota-${formNumber}" style="display: block;">
             <div class="card-body">
-                <div class="h5 text-uppercase">
+                <div class="h5 text-uppercase text-primary">
                     <b>Mess ${formNumber}</b>
                 </div>
                 <div class="row">
@@ -2889,7 +2889,7 @@
                     </div>
                 </div>
                 <div class="mt-2">
-                    <button type="button" class="btn btn-sm btn-outline-danger remove-mess-btn-dalam-kota" data-form-id="${formNumber}">Remove Data</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-mess-btn-dalam-kota" data-form-id="${formNumber}">Delete</button>
                 </div>
             </div>
         </div>`;

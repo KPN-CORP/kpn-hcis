@@ -101,6 +101,7 @@
                             {{-- Dynamic Forms --}}
                             <div id="balanceContainer" class="row"></div>
                             <div id="dynamicForms" class="row"></div>
+                            <div id="bpjsCoverContainer" class="row"></div>
 
                             <div class="row mb-2">
                                 <div class="col-md-12 mt-2">
@@ -164,7 +165,7 @@
                                                                 <a href="{{ Storage::url($file) }}" target="_blank" rel="noopener noreferrer">
                                                                     <img src="{{ Storage::url($file) }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
                                                                 </a>
-                                                            @elseif($extension === 'pdf')
+                                                                @elseif (in_array($extension, ['pdf', 'PDF']))
                                                                 <a href="{{ Storage::url($file) }}" target="_blank" rel="noopener noreferrer">
 
                                                                     <img src="{{ asset('images/pdf_icon.png') }}" alt="PDF File">
@@ -196,7 +197,7 @@
         </div>
     </div>
 
-    <!--<script src="{{ asset('/js/medical/medical-edit.js') }}"></script>-->
+    {{-- <script src="{{ asset('/js/medical/medical-edit.js') }}"></script> --}}
     <script>
         $(document).ready(function () {
             // Function to generate balance display based on selected types and year
@@ -224,6 +225,27 @@
                 }
             }
 
+            function generateBpjsCoverForms(selectedTypes) {
+                var bpjsCoverContainer = $("#bpjsCoverContainer");
+                bpjsCoverContainer.empty(); // Hapus field BPJS Cover sebelumnya
+
+                if (selectedTypes && selectedTypes.length > 0) {
+                    selectedTypes.forEach(function (type) {
+                        var formGroupBpjs = `
+                        <div class="col-md-3 mb-3">
+                            <label for="bpjs_cover_${type}" class="form-label">${type} BPJS Cover</label>
+                            <div class="input-group">
+                                <span class="input-group-text">Rp</span>
+                                <input type="text" class="form-control currency-input" id="bpjs_cover_${type}" name="bpjs_cover[${type}]" placeholder="0" value="0" required>
+                            </div>
+                        </div>
+                        `;
+                        bpjsCoverContainer.append(formGroupBpjs);
+                    });
+
+                }
+            }
+
             // Function to handle changes in medical type and date
             function handleInputChange() {
                 var selectedDate = $("#date").val();
@@ -234,6 +256,7 @@
 
                 if (selectedYear && selectedTypes) {
                     generateBalanceDisplay(selectedTypes, selectedYear);
+                    generateBpjsCoverForms(selectedTypes);
                 }
             }
 
@@ -286,6 +309,7 @@
             $("#medical_type").on("change", function () {
                 var selectedTypes = $(this).val();
                 generateDynamicForms(selectedTypes);
+                
             });
 
             function initCurrencyFormatting() {
