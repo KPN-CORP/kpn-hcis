@@ -3876,7 +3876,6 @@ class BusinessTripController extends Controller
                         case 'deklarasi':
                             $ca = CATransaction::where('no_sppd', $sppd->no_sppd)
                                 ->first();
-                            dd($ca);
                             $allCa = CATransaction::where('no_sppd', $sppd->no_sppd)
                                 ->get();
 
@@ -3899,7 +3898,6 @@ class BusinessTripController extends Controller
                                     ->where('approval_status', '!=', 'Rejected')
                                     ->orderBy('layer', 'asc')
                                     ->get();
-                                dd($approval);
 
                                 $data = [
                                     'link' => 'Cash Advanced',
