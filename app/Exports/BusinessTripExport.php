@@ -21,11 +21,13 @@ class BusinessTripExport implements FromCollection, WithMapping, ShouldAutoSize,
 
     protected $businessTrips;
     protected $caData;
+    protected $btApprovalData;
 
-    public function __construct($businessTrips, $caData)
+    public function __construct($businessTrips, $caData, $btApprovalData)
     {
         $this->businessTrips = $businessTrips;
         $this->caData = $caData;
+        $this->btApprovalData = $btApprovalData;
     }
 
     public function collection()
@@ -41,6 +43,9 @@ class BusinessTripExport implements FromCollection, WithMapping, ShouldAutoSize,
         $totalReal = $relatedCA ? $relatedCA->total_real : 0;
         $totalCost = $relatedCA ? $relatedCA->total_cost : 0;
 
+        $relatedBtApproval = $this->btApprovalData->firstWhere('bt_id', $businessTrip->id);
+        $approvedAt = $relatedBtApproval ? Carbon::parse($relatedBtApproval->approved_at)->format('d-m-Y') : '-';
+        $processedAt = $relatedBtApproval ? Carbon::parse($relatedBtApproval->processed_at)->format('d-m-Y') : '-';
         return [
             $businessTrip->jns_dinas,
             $businessTrip->nama,
@@ -53,11 +58,11 @@ class BusinessTripExport implements FromCollection, WithMapping, ShouldAutoSize,
             $totalCA !== null ? $totalCA : '-',
             $totalReal !== null ? $totalReal : '-',
             $totalCost !== null ? $totalCost : '-',
-            $businessTrip->created_at,
-            $businessTrip->tanggal_diterima_hrd ?? '-',
-            $businessTrip->tanggal_diproses_hrd ?? '-',
+            Carbon::parse($businessTrip->created_at)->format('d-m-Y'),
+            $approvedAt,
+            $processedAt,
             $businessTrip->tanggal_penyerahan_ke ?? '-',
-            $relatedCA ? $relatedCA->total_days . " Days" : '-', // Example field
+            $relatedCA ? $relatedCA->total_days . " Days" : '-',
             // $businessTrip->hari_berjalan,
         ];
     }
