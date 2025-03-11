@@ -263,15 +263,14 @@
                                             <label for="prove_declare" class="form-label">Upload Document <span
                                                     class="text-info fst-italic">* (Bon, Boarding Pass, Hotel, Taxi
                                                     Voucher, etc.)</span></label>
+
                                             <input type="file" id="prove_declare" name="prove_declare[]"
                                                 accept="image/*, application/pdf" class="form-control mb-2" multiple
                                                 onchange="previewFiles()"
-                                                {{ !(
-                                                    (isset($dnsData->prove_declare) && is_array($dnsData->prove_declare) && count($dnsData->prove_declare) > 0) ||
-                                                    (isset($entrData->prove_declare) && is_array($entrData->prove_declare) && count($entrData->prove_declare) > 0)
-                                                )
-                                                    ? 'required'
-                                                    : '' }}>
+                                                {{ (isset($dnsData->prove_declare) && !empty($dnsData->prove_declare) && $dnsData->prove_declare != '[]') ||
+                                                (isset($entrData->prove_declare) && !empty($entrData->prove_declare) && $entrData->prove_declare != '[]')
+                                                    ? ''
+                                                    : 'required' }}>
 
                                             @if (
                                                 (isset($dnsData->prove_declare) && $dnsData->prove_declare) ||
@@ -313,15 +312,15 @@
                                                                         data-file="{{ $file }}"
                                                                         style="position: relative; display: inline-block; margin: 10px;">
                                                                         @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
-                                                                            <a href="{{ Storage::url($file) }}" target="_blank"
-                                                                                rel="noopener noreferrer">
+                                                                            <a href="{{ Storage::url($file) }}"
+                                                                                target="_blank" rel="noopener noreferrer">
                                                                                 <img src="{{ Storage::url($file) }}"
                                                                                     alt="Proof Image"
                                                                                     style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
                                                                             </a>
                                                                         @elseif ($extension === 'pdf')
-                                                                            <a href="{{ Storage::url($file) }}" target="_blank"
-                                                                                rel="noopener noreferrer">
+                                                                            <a href="{{ Storage::url($file) }}"
+                                                                                target="_blank" rel="noopener noreferrer">
                                                                                 <img src="{{ asset('images/pdf_icon.png') }}"
                                                                                     alt="PDF File">
                                                                                 <p>Click to view PDF</p>
@@ -337,10 +336,7 @@
                                                             @else
                                                                 @php
                                                                     $file = $existingFiles[0] ?? ''; // Ambil satu file jika hanya ada satu file
-                                                                    $extension = pathinfo(
-                                                                        $file,
-                                                                        PATHINFO_EXTENSION,
-                                                                    );
+                                                                    $extension = pathinfo($file, PATHINFO_EXTENSION);
                                                                 @endphp
 
                                                                 @if (!empty($file))
@@ -348,15 +344,15 @@
                                                                         data-file="{{ $file }}"
                                                                         style="position: relative; display: inline-block; margin: 10px;">
                                                                         @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
-                                                                            <a href="{{ Storage::url($file) }}" target="_blank"
-                                                                                rel="noopener noreferrer">
+                                                                            <a href="{{ Storage::url($file) }}"
+                                                                                target="_blank" rel="noopener noreferrer">
                                                                                 <img src="{{ Storage::url($file) }}"
                                                                                     alt="Proof Image"
                                                                                     style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
                                                                             </a>
                                                                         @elseif ($extension === 'pdf')
-                                                                            <a href="{{ Storage::url($file) }}" target="_blank"
-                                                                                rel="noopener noreferrer">
+                                                                            <a href="{{ Storage::url($file) }}"
+                                                                                target="_blank" rel="noopener noreferrer">
                                                                                 <img src="{{ asset('images/pdf_icon.png') }}"
                                                                                     alt="PDF File">
                                                                                 <p>Click to view PDF</p>
@@ -424,6 +420,49 @@
     @endif
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('prove_declare');
+            const existingPreview = document.getElementById('existing-file-preview');
+            const removedFilesInput = document.getElementById('removed-prove-declare');
+
+            // Function to check if any files exist and update required status
+            function updateRequiredStatus() {
+                const existingFiles = existingPreview ? existingPreview.querySelectorAll('.file-preview').length :
+                0;
+                const newFiles = fileInput.files.length;
+                if (existingFiles === 0 && newFiles === 0) {
+                    fileInput.setAttribute('required', '');
+                } else {
+                    fileInput.removeAttribute('required');
+                }
+            }
+
+            // Initial check
+            updateRequiredStatus();
+
+            // Add event listeners for file removal buttons
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-existing')) {
+                    const fileToRemove = e.target.getAttribute('data-file');
+                    const removedFiles = JSON.parse(removedFilesInput.value || '[]');
+
+                    // Add the file to the removed list
+                    if (!removedFiles.includes(fileToRemove)) {
+                        removedFiles.push(fileToRemove);
+                        removedFilesInput.value = JSON.stringify(removedFiles);
+                    }
+
+                    // Remove the preview element
+                    e.target.closest('.file-preview').remove();
+                    updateRequiredStatus();
+                }
+            });
+
+            // Listen for new file selections
+            fileInput.addEventListener('change', function() {
+                updateRequiredStatus();
+            });
+        });
         //CA JS
         function handleCaForms() {
             const caCheckbox = document.getElementById("cashAdvancedCheckbox");
