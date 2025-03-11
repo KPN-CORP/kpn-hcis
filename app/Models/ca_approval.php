@@ -67,6 +67,11 @@ class ca_approval extends Model
         return $this->belongsTo(User::class, 'admin_id', 'id');
     }
 
+    public function employee_admin()
+    {
+        return $this->belongsTo(User::class, 'admin_id', 'employee_id');
+    }
+
     public function managerL1()
     {
         return $this->hasOne(Employee::class, 'employee_id', 'employee_id')->where('role_name', 'Dept Head');

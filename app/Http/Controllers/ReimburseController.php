@@ -3241,7 +3241,7 @@ class ReimburseController extends Controller
                 $rejection->save();
             }
 
-            return redirect()->route('hotel.admin')->with('success', 'Request successfully Rejected.');
+            return redirect()->back()->with('success', 'Request successfully Rejected.');
         }
 
         // Handle rejection scenario
@@ -3371,7 +3371,7 @@ class ReimburseController extends Controller
         }
 
         // Redirect to the hotel approval page
-        return redirect()->route('hotel.admin')->with('success', 'Request approved successfully.');
+        return redirect()->back()->with('success', 'Request approved successfully.');
     }
 
     public function hotelAdmin(Request $request)
@@ -3559,7 +3559,7 @@ class ReimburseController extends Controller
                 $hotel->save();
             }
 
-            return redirect()->route('hotel.admin')->with('success', 'Hotel booking updated successfully.');
+            return redirect()->back()->with('success', 'Hotel booking updated successfully.');
         }
     }
     public function exportHotelAdminExcel(Request $request)
@@ -3584,7 +3584,7 @@ class ReimburseController extends Controller
         }
 
         // Redirect after deletion
-        return redirect()->intended(route('hotel.admin', absolute: false))->with('success', 'All related hotels deleted successfully');
+        return redirect()->back()->with('success', 'All related hotels deleted successfully');
     }
 
 
@@ -5079,7 +5079,7 @@ class ReimburseController extends Controller
             }
 
             // Redirect to the ticket approval page instead of back to the same page
-            return redirect()->route('ticket.admin')->with('success', 'Request rejected successfully.');
+            return redirect()->back()->with('success', 'Request rejected successfully.');
         }
 
         // Handle rejection scenario
@@ -5116,7 +5116,7 @@ class ReimburseController extends Controller
             }
 
             // Redirect to the ticket approval page instead of back to the same page
-            return redirect()->route('ticket.admin')->with('success', 'Request rejected successfully.');
+            return redirect()->back()->with('success', 'Request rejected successfully.');
         }
         // If not rejected, proceed with normal approval process
         if ($ticket->manager_l2_id == '-') {
@@ -5310,7 +5310,7 @@ class ReimburseController extends Controller
             $approval->by_admin = 'T';
             $approval->save();
         }
-        return redirect()->route('ticket.admin')->with('success', 'Request approved successfully.');
+        return redirect()->back()->with('success', 'Request approved successfully.');
     }
 
     public function ticketAdmin(Request $request)
@@ -5506,7 +5506,7 @@ class ReimburseController extends Controller
                 $ticket->save();
             }
 
-            return redirect()->route('ticket.admin')->with('success', 'Ticket booking updated successfully.');
+            return redirect()->back()->with('success', 'Ticket booking updated successfully.');
         }
     }
 
@@ -5526,7 +5526,7 @@ class ReimburseController extends Controller
         Tiket::where('no_tkt', $model->no_tkt)->delete();
 
         // Redirect to the ticket page with a success message
-        return redirect()->route('ticket.admin')->with('success', 'Tickets has been deleted');
+        return redirect()->back()->with('success', 'Tickets has been deleted');
     }
 
 
