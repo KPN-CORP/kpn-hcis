@@ -702,7 +702,7 @@ class ApprovalReimburseController extends Controller
                 }
             }
 
-            return redirect()->route('cashadvanced.admin')->with('success', 'Transaction Rejected, Rejection will be send to the employee.')
+            return redirect()->back()->with('success', 'Transaction Rejected, Rejection will be send to the employee.')
                 ->with('refresh', true);
         }
 
@@ -813,7 +813,7 @@ class ApprovalReimburseController extends Controller
             }
         }
 
-        return redirect()->route('cashadvanced.admin')
+        return redirect()->back()
             ->with('success', 'Transaction approved successfully.')
             ->with('refresh', true);
     }
@@ -1277,7 +1277,7 @@ class ApprovalReimburseController extends Controller
                 }
             }
 
-            return redirect()->route('cashadvanced.admin')->with('success', 'Transaction Rejected, Rejection will be send to the employee.')
+            return redirect()->back()->with('success', 'Transaction Rejected, Rejection will be send to the employee.')
                 ->with('refresh', true);
         }
 
@@ -1388,7 +1388,7 @@ class ApprovalReimburseController extends Controller
             }
         }
 
-        return redirect()->route('cashadvanced.admin')->with('success', 'Transaction approved successfully.')
+        return redirect()->back()->with('success', 'Transaction approved successfully.')
             ->with('refresh', true);
     }
 
@@ -1649,7 +1649,7 @@ class ApprovalReimburseController extends Controller
                 }
             }
 
-            return redirect()->route('cashadvanced.admin')->with('success', 'Transaction Rejected, Rejection will be send to the employee.');
+            return redirect()->back()->with('success', 'Transaction Rejected, Rejection will be send to the employee.');
         }
 
         if ($req->input('action_ca_approve')) {
@@ -1761,7 +1761,7 @@ class ApprovalReimburseController extends Controller
             }
         }
 
-        return redirect()->route('cashadvanced.admin')->with('success', 'Transaction approved successfully.');
+        return redirect()->back()->with('success', 'Transaction approved successfully.');
     }
 
     function cashadvancedActionExtendEmail(Request $req, $ca_id, $employeeId)

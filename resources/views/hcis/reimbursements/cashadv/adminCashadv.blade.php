@@ -731,7 +731,7 @@
                                 dateText.innerHTML = `
                                     <div class="border rounded p-2 mb-2">  
                                         <strong>Status:</strong> {{ $approval->approval_status }}<br>  
-                                        <strong>Approved By Admin :</strong> {{ $approval->admin->name ?? 'Admin tidak tersedia.' }}<br> 
+                                        <strong>Approved By Admin :</strong> {{ $approval->employee_admin->name ?? ($approval->admin->name ?? 'Admin tidak tersedia.') }}<br> 
                                         <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
                                     </div>
                                 `;
@@ -868,7 +868,7 @@
                                 dateText.innerHTML = `
                                     <div class="border rounded p-2 mb-2">  
                                         <strong>Status:</strong> {{ $approval->approval_status }}<br>  
-                                        <strong>Approved By Admin :</strong> {{ $approval->admin->name ?? 'Admin tidak tersedia.' }}<br> 
+                                        <strong>Approved By Admin :</strong> {{ $approval->employee_admin->name ?? ($approval->admin->name ?? 'Admin tidak tersedia.') }}<br> 
                                         <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
                                     </div>
                                 `;
@@ -947,7 +947,7 @@
                                 dateTextDec.innerHTML = `
                                     <div class="border rounded p-2 mb-2">  
                                         <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>  
-                                        <strong>Approved By Admin :</strong> {{ $approval_sett->admin->name ?? 'Admin tidak tersedia.' }}<br> 
+                                        <strong>Approved By Admin :</strong> {{ $approval_sett->employee_admin->name ?? ($approval_sett->admin->name ?? 'Admin tidak tersedia.') }}<br> 
                                         <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}  
                                     </div>
                                 `;
@@ -1081,7 +1081,7 @@
                                 dateText.innerHTML = `
                                     <div class="border rounded p-2 mb-2">  
                                         <strong>Status:</strong> {{ $approval->approval_status }}<br>  
-                                        <strong>Approved By Admin :</strong> {{ $approval->admin->name ?? 'Admin tidak tersedia.' }}<br> 
+                                        <strong>Approved By Admin :</strong> {{ $approval->employee_admin->name ?? ($approval->admin->name ?? 'Admin tidak tersedia.') }}<br> 
                                         <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
                                     </div>
                                 `;
@@ -1127,7 +1127,7 @@
                             approval_status: "{{ $approval_extend->approval_status }}",
                             role: "{{ $approval_extend->role_name }}",
                             by_admin: "{{ $approval_extend->by_admin }}",
-                            admin_name: "{{ $approval_extend->admin->name ?? 'Admin tidak tersedia.' }}",
+                            admin_name: "{{ $approval_extend->employee_admin->name ?? ($approval_extend->admin->name ?? 'Admin tidak tersedia.') }}",
                             approved_at: "{{ $approval_extend->approved_at }}",
                             id: "{{ $approval_extend->id }}"
                         });
@@ -1312,7 +1312,7 @@
                                 dateText.innerHTML = `
                                     <div class="border rounded p-2 mb-2">  
                                         <strong>Status:</strong> {{ $approval->approval_status }}<br>  
-                                        <strong>Approved By Admin :</strong> {{ $approval->admin->name ?? 'Admin tidak tersedia.' }}<br> 
+                                        <strong>Approved By Admin :</strong> {{ $approval->employee_admin->name ?? ($approval->admin->name ?? 'Admin tidak tersedia.') }}<br> 
                                         <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
                                     </div>
                                 `;
@@ -1369,7 +1369,7 @@
                                 dateTextDec.innerHTML = `
                                     <div class="border rounded p-2 mb-2">  
                                         <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>  
-                                        <strong>Approved By Admin :</strong> {{ $approval_sett->admin->name ?? 'Admin tidak tersedia.' }}<br> 
+                                        <strong>Approved By Admin :</strong> {{ $approval_sett->employee_admin->name ?? ($approval_sett->admin->name ?? 'Admin tidak tersedia.') }}<br> 
                                         <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}  
                                     </div>
                                 `;
@@ -1438,7 +1438,7 @@
                             approval_status: "{{ $approval_extend->approval_status }}",
                             role: "{{ $approval_extend->role_name }}",
                             by_admin: "{{ $approval_extend->by_admin }}",
-                            admin_name: "{{ $approval_extend->admin->name ?? 'Admin tidak tersedia.' }}",
+                            admin_name: "{{ $approval_extend->employee_admin->name ?? ($approval_extend->admin->name ?? 'Admin tidak tersedia.') }}",
                             approved_at: "{{ $approval_extend->approved_at }}",
                             id: "{{ $approval_extend->id }}"
                         });
