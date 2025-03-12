@@ -5,7 +5,7 @@
     <a href="{{ Url('/') }}" class="logo logo-light">
         <span class="logo-lg">
             <img src="{{ asset('images/logo.png')}}" alt="logo">
-            
+
         </span>
         <span class="logo-sm">
             <img src="{{ asset('images/logo-sm.png')}}" alt="small logo">
@@ -75,7 +75,7 @@
                 </div>
             </li>
             @endif --}}
-            
+
             <li class="side-nav-item">
                 <a href="{{ route('reimbursements') }}"  aria-controls="sidebarEmail" class="side-nav-link">
                     <i class="ri-star-line"></i>
@@ -88,7 +88,7 @@
                     <span> Travel </span>
                 </a>
             </li>
-            
+
             <li class="side-nav-item">
                 <a href="{{ route('docGenerator') }}" class="side-nav-link">
                     <i class="ri-file-text-line"></i>
@@ -137,6 +137,9 @@
                                         <a href="{{ route('roles') }}">Role</a>
                                     </li>
                                     @endcan
+                                    <li>
+                                        <a href="{{ route('designations') }}">Designations</a>
+                                    </li>
                                 </ul>
                             </div>
                         </li>

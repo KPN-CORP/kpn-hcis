@@ -9,6 +9,13 @@ use Illuminate\Support\Facades\Http;
 
 class DesignationController extends Controller
 {
+    protected $link;
+
+    function __construct()
+    {
+        $this->link = 'Designations';
+    }
+
     public function UpdateDesignation()
     {
         Log::info('UpdateDesignation method started.'); // Logging start
@@ -78,10 +85,40 @@ class DesignationController extends Controller
 
             Log::info('Update Designation data successfully saved', ['saved_count' => $number_data]);
 
-            return response()->json(['message' => $number_data.' Update Designation data successfully saved']);
+            return response()->json(['message' => $number_data . ' Update Designation data successfully saved']);
         } catch (\Exception $e) {
             Log::error('Exception occurred in UpdateDesignation method', ['error' => $e->getMessage()]);
-            return response()->json(['message' => 'An error occurred: '.$e->getMessage()], 500);
+            return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
+    }
+
+    public function index()
+    {
+        $parentLink = "Settings";
+        $link = $this->link;
+
+        $designations = Designation::all();
+
+        return view('pages.designations.adminDesignations', compact('designations', 'parentLink', 'link'));
+    }
+    public function updateDeptHead(Request $request, $id)
+    {
+        $designation = Designation::find($id);
+        if ($designation) {
+            $designation->dept_head_flag = ($designation->dept_head_flag === 'T') ? 'F' : 'T';
+            $designation->save(); // Save the changes
+        }
+
+        return redirect()->route('designations')->with('success', 'Designation data changed.');
+    }
+    public function updateDirectorHead(Request $request, $id)
+    {
+        $designation = Designation::find($id);
+        if ($designation) {
+            $designation->director_flag = ($designation->director_flag === 'T') ? 'F' : 'T';
+            $designation->save(); // Save the changes
+        }
+
+        return redirect()->route('designations')->with('success', 'Designation data changed.');
     }
 }
