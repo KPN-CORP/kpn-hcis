@@ -2851,6 +2851,7 @@
                 <div class="h5 text-uppercase text-primary">
                     <b>Mess ${formNumber}</b>
                 </div>
+                <div role="alert" class="alert alert-info">This form must be filled out if you are on duty at a site that provides mess facilities. Please complete it with the necessary details.</div>
                 <div class="row">
                     <div class="col-md-8 mb-2">
                         <label class="form-label">Mess Location</label>

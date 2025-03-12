@@ -175,11 +175,11 @@
         formCountMeals++;
         const newForm = document.createElement("div");
         newForm.id = `form-container-bt-meals-${formCountMeals}`;
-        newForm.className = "card-body p-2 mb-3";
-        newForm.style.backgroundColor = "#f8f8f8";
+        newForm.className = "card-body p-2 mb-2 bg-light rounded-3";
+        // newForm.style.backgroundColor = "#f8f8f8";
         newForm.innerHTML = `
                   <p class="fs-4 text-primary" style="font-weight: bold;">Meals ${formCountMeals}</p>
-    <div class="card-body bg-light p-2 mb-2">
+    <div class="card-body bg-white rounded-3 p-2">
         <p class="fs-5 text-primary" style="font-weight: bold;">Meals Request</p>
         <div class="row">
             <!-- Meals Start Plan -->
@@ -653,9 +653,9 @@
     </div>
 @else
     <div id="form-container-meals">
-        <div id="form-container-bt-meals-1" class="bg-light card-body p-2 mb-2">
+        <div id="form-container-bt-meals-1" class="bg-light card-body p-2 mb-2 rounded-3">
             <p class="fs-4 text-primary" style="font-weight: bold; ">Meals 1</p>
-            <div id="form-container-bt-meals-req-1" class="card-body bg-white p-2 mb-2 rounded-3">
+            <div id="form-container-bt-meals-req-1" class="card-body bg-white p-2 rounded-3">
                 <p class="fs-5 text-primary" style="font-weight: bold;">Meals Request</p>
                 <div class="row">
                     <!-- meals Date -->

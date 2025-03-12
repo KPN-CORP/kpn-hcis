@@ -2,9 +2,7 @@
     <div class="h5 text-uppercase text-primary">
         <b>Taxi/Grab</b>
     </div>
-    <label for="additional-fields-title" class="mb-2">
-        <span class="text-info fst-italic">* Only applicable GrabCar & GrabBike</span>
-    </label>
+    <div role="alert" class="alert alert-info">Only applicable GrabCar &amp; GrabBike</div>
     <div class="row">
         <div class="col-md-12 mb-2" id="taksi_div_dalam_kota">
             <label class="form-label">Total Voucher</label>

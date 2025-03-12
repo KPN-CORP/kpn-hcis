@@ -7,19 +7,18 @@
             @php
                 $initialCount = count($caDetail['relation_e']);
             @endphp
-            <div id="form-container-e-relation-{{ $loop->index + 1 }}" class="p-2 mb-4 rounded-3"
-                style="background-color: #f8f8f8">
+            <div id="form-container-e-relation-{{ $loop->index + 1 }}" class="p-2 mb-2 bg-light card-body rounded-3">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Receiver {{ $loop->index + 1 }}</p>
-                <div id="form-container-e-relation-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3"
+                <div id="form-container-e-relation-req-{{ $loop->index + 1 }}" class="card-body bg-white rounded-3 p-2 mb-2"
                     style="border-radius: 1%;">
                     <div class="row">
-                        <p class="fs-4 text-primary" style="font-weight: bold;">Detail Receiver Request</p>
+                        <p class="text-primary" style="font-weight: bold;">Detail Receiver Request</p>
                         <div class="col-md-6">
                             <table width="100%">
                                 <tr>
-                                    <th width="40%">Receiver Type</th>
+                                    <th class ="label" width="40%">Receiver Type</th>
                                     <td class="block">:</td>
-                                    <td>
+                                    <td class=""value>
                                         @php
                                             $relationTypes = [];
                                             $typeMap = [
@@ -42,36 +41,36 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Name</th>
+                                    <th class="label">Name</th>
                                     <td class="block">:</td>
-                                    <td>{{ $relation['name'] }}</td>
+                                    <td class="value">{{ $relation['name'] }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Position</th>
+                                    <th class="label">Position</th>
                                     <td class="block">:</td>
-                                    <td>{{ $relation['position'] }}</td>
+                                    <td class="value">{{ $relation['position'] }}</td>
                                 </tr>
                             </table>
                         </div>
                         <div class="col-md-6">
                             <table width="100%">
                                 <tr>
-                                    <th>Company</th>
+                                    <th class="label">Company</th>
                                     <td class="block">:</td>
-                                    <td>{{ $relation['company'] }}</td>
+                                    <td class="value">{{ $relation['company'] }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Purpose</th>
+                                    <th class="label">Purpose</th>
                                     <td class="block">:</td>
-                                    <td>{{ $relation['purpose'] }}</td>
+                                    <td class="value">{{ $relation['purpose'] }}</td>
                                 </tr>
                             </table>
                         </div>
                     </div>
                 </div>
-                <div id="form-container-e-relation-dec-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3"
+                <div id="form-container-e-relation-dec-{{ $loop->index + 1 }}" class="card-body bg-white p-2 mb-2 rounded-3"
                     style="border-radius: 1%;">
-                    <p class="fs-5 text-primary" style="font-weight: bold;">Detail Receiver Declaration</p>
+                    <p class="text-primary" style="font-weight: bold;">Detail Receiver Declaration</p>
                     @if (isset($declareCa['relation_e'][$index]))
                         @php
                             $relation_dec = $declareCa['relation_e'][$index];
@@ -144,12 +143,11 @@
                                     placeholder="Write your purpose ...">{{ $relation_dec['purpose'] }}</textarea>
                             </div>
                         </div>
-                        <br>
                         <div class="row mt-3">
                             <div class="d-flex justify-start w-100">
                                 <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px"
                                     onclick="clearFormRelation({{ $loop->index + 1 }}, event)">Reset</button>
-                                {{-- <button class="btn btn-outline-primary mr-2 btn-sm" onclick="removeFormRelation({{ $loop->index + 1 }}, event)">Delete</button> --}}
+                                {{-- <button class="btn btn-outline-danger mr-2 btn-sm" onclick="removeFormRelation({{ $loop->index + 1 }}, event)">Delete</button> --}}
                             </div>
                         </div>
                     @endif
@@ -227,12 +225,11 @@
                                 placeholder="Write your purpose ...">{{ $relation_dec['purpose'] }}</textarea>
                         </div>
                     </div>
-                    <br>
                     <div class="row mt-3">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px"
                                 onclick="clearFormRelation({{ $loop->index + 1 }}, event)">Reset</button>
-                            <button class="btn btn-outline-primary mr-2 btn-sm"
+                            <button class="btn btn-outline-danger mr-2 btn-sm"
                                 onclick="removeFormRelation({{ $loop->index + 1 }}, event)">Delete</button>
                         </div>
                     </div>
@@ -245,7 +242,7 @@
         let checkboxCount = {{ $initialCount }} - 1;
     </script>
 
-    <div class="mt-2 mb-3">
+    <div class="mt-3">
         <button class="btn btn-primary btn-sm" id="addMoreButtonRelation" onclick="addMoreFormRelationDec(event)">Add
             More</button>
     </div>
@@ -325,12 +322,11 @@
                                 placeholder="Write your purpose ...">{{ $relation_dec['purpose'] }}</textarea>
                         </div>
                     </div>
-                    <br>
                     <div class="row mt-3">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px"
                                 onclick="clearFormRelation({{ $loop->index + 1 }}, event)">Reset</button>
-                            <button class="btn btn-outline-primary mr-2 btn-sm"
+                            <button class="btn btn-outline-danger mr-2 btn-sm"
                                 onclick="removeFormRelation({{ $loop->index + 1 }}, event)">Delete</button>
                         </div>
                     </div>
@@ -343,15 +339,15 @@
         let checkboxCount = {{ $initialCount }} - 1;
     </script>
 
-    <div class="mt-2 mb-3">
+    <div class="mt-3">
         <button class="btn btn-primary btn-sm" id="addMoreButtonRelation" onclick="addMoreFormRelationDec(event)">Add
             More</button>
     </div>
 @else
     <div id="form-container-relation">
-        <div id="form-container-e-relation-1" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
+        <div id="form-container-e-relation-1" class="card-body p-2 mb-2 bg-light rounded-3">
             <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Receiver 1</p>
-            <div id="form-container-e-relation-dec-1" class="card-body bg-light p-2 mb-3">
+            <div id="form-container-e-relation-dec-1" class="card-body bg-white p-2 rounded-3">
                 <p class="fs-5 text-primary" style="font-weight: bold;">Detail Receiver Declaration</p>
                 <div class="row">
                     <!-- Relation Date -->
@@ -404,12 +400,11 @@
                             placeholder="Write your purpose ..."></textarea>
                     </div>
                 </div>
-                <br>
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px"
                             onclick="clearFormRelation(1, event)">Reset</button>
-                        <button class="btn btn-outline-primary mr-2 btn-sm"
+                        <button class="btn btn-outline-danger mr-2 btn-sm"
                             onclick="removeFormRelation(1, event)">Delete</button>
                     </div>
                 </div>
@@ -421,7 +416,7 @@
         let checkboxCount = 0;
     </script>
 
-    <div class="mt-2 mb-3">
+    <div class="mt-3">
         <button class="btn btn-primary btn-sm" id="addMoreButtonRelation" onclick="addMoreFormRelationDec(event)">Add
             More</button>
     </div>

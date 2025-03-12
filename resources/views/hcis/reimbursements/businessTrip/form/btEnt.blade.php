@@ -21,7 +21,7 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="pills-detail-tab" data-bs-toggle="pill"
                             data-bs-target="#pills-detail" type="button" role="tab" aria-controls="pills-detail"
-                            aria-selected="true">Detail Entertain</button>
+                            aria-selected="true">Detail Entertainment</button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="pills-relation-tab" data-bs-toggle="pill"

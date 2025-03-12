@@ -14,7 +14,7 @@
         ?>
         <div class="card bg-light shadow-none" id="ticket-form-dalam-kota-<?php echo $i; ?>" style="display: <?php echo $i <= $ticketCount ? 'block' : 'none'; ?>;">
             <div class="card-body">
-                <div class="h5 text-uppercase">
+                <div class="h5 text-uppercase text-primary">
                     <b>TICKET <?php echo $i; ?></b>
                 </div>
                 <div class="row">
@@ -118,14 +118,13 @@
 
                 <div class="mt-2">
                     <button type="button" class="btn btn-sm btn-outline-danger remove-ticket-btn-dalam-kota"
-                        id="remove-ticket-btn-dalam-kota" data-form-id="<?php echo $i; ?>">Remove Data</button>
+                        id="remove-ticket-btn-dalam-kota" data-form-id="<?php echo $i; ?>">Delete</button>
                 </div>
             </div>
         </div>
         <?php endfor; ?>
     </div>
-    <button type="button" class="btn btn-sm btn-outline-primary add-ticket-btn-dalam-kota" id="add-ticket-btn-dalam-kota">Add Ticket
-        Data</button>
+    <button type="button" class="btn btn-sm btn-primary add-ticket-btn-dalam-kota" id="add-ticket-btn-dalam-kota">Add More</button>
 </div>
 
 <script src="{{ asset('vendor/bootstrap/js/jquery-3.6.0.min.js') }}"></script>

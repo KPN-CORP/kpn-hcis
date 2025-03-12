@@ -10,9 +10,9 @@
         newForm.className = "bg-light card-body rounded-3 p-2 mb-2";
         // newForm.style.backgroundColor = "#f8f8f8";
         newForm.innerHTML = `
-                    <p class="fs-4 text-primary" style="font-weight: bold; ">Others ${formCountOthers}</p>
+                    <p class="fs-4 text-primary" style="font-weight: bold; ">Other Expenses ${formCountOthers}</p>
                     <div class="card-body bg-white rounded-3 p-2">
-                        <p class="fs-5 text-primary" style="font-weight: bold;">Others Request</p>
+                        <p class="fs-5 text-primary" style="font-weight: bold;">Other Expenses Request</p>
                         <div class="row">
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Date</label>
@@ -24,6 +24,7 @@
                                     <option value="">Select Type...</option>
                                     <option value="Laundry">Laundry</option>
                                     <option value="Airport Tax">Airport Tax</option>
+                                    <option value="Porter">Porter</option>
                                     <option value="Excess Baggage">Excess Baggage</option>
                                 </select>
                             </div>
@@ -57,10 +58,10 @@
 @if (!empty($caDetail['detail_lainnya']) && $caDetail['detail_lainnya'][0]['tanggal'] !== null)
     <div id="form-container-lainnya">
         @foreach ($caDetail['detail_lainnya'] as $lainnya)
-            <div id="form-container-bt-lainnya-{{ $loop->index + 1 }}" class="card-body p-2 mb-2" style="background-color: #f8f8f8">
-                <p class="fs-4 text-primary" style="font-weight: bold; ">Others {{ $loop->index + 1 }}</p>
+            <div id="form-container-bt-lainnya-{{ $loop->index + 1 }}" class="card-body p-2 mb-2 bg-light rounded-3">
+                <p class="fs-4 text-primary" style="font-weight: bold; ">Other Expenses {{ $loop->index + 1 }}</p>
                 <div id="form-container-bt-lainnya-req-{{ $loop->index + 1 }}" class="card-body rounded-3 bg-white p-2">
-                    <p class="fs-5 text-primary" style="font-weight: bold;">Others Request</p>
+                    <p class="fs-5 text-primary" style="font-weight: bold;">Other Expenses Request</p>
                     <div class="row">
                         <!-- Lainnya Date -->   
                         <div class="col-md-4 mb-2">
@@ -73,6 +74,7 @@
                                 <option value="">Select Type...</option>  
                                 <option value="Laundry" {{ $lainnya['type'] == 'Laundry' ? 'selected' : '' }}>Laundry</option>  
                                 <option value="Airport Tax" {{ $lainnya['type'] == 'Airport Tax' ? 'selected' : '' }}>Airport Tax</option>  
+                                <option value="Porter" {{ $lainnya['type'] == 'Porter' ? 'selected' : '' }}>Porter</option>  
                                 <option value="Excess Baggage" {{ $lainnya['type'] == 'Excess Baggage' ? 'selected' : '' }}>Excess Baggage</option>  
                             </select>  
                         </div>
@@ -107,7 +109,7 @@
     </div>
 <hr/>
     <div>
-        <label class="form-label">Total Others</label>
+        <label class="form-label">Total Other Expenses</label>
         <div class="input-group">
             <div class="input-group-append">
                 <span class="input-group-text">Rp</span>
@@ -118,9 +120,9 @@
 @else
     <div id="form-container-lainnya">
         <div id="form-container-bt-lainnya-1" class="card-body p-2 mb-2 bg-light rounded-3" style="background-color: #f8f8f8">
-            <p class="fs-4 text-primary" style="font-weight: bold; ">Others 1</p>
+            <p class="fs-4 text-primary" style="font-weight: bold; ">Other Expenses 1</p>
             <div id="form-container-bt-lainnya-req-1" class="card-body bg-white rounded-3 p-2">
-                <p class="fs-5 text-primary" style="font-weight: bold;">Others Request</p>
+                <p class="fs-5 text-primary" style="font-weight: bold;">Other Expenses Request</p>
                 <div class="row">
                     <!-- Lainnya Date -->
                     <div class="col-md-4 mb-2">
@@ -133,6 +135,7 @@
                             <option value="">Select Type...</option>
                             <option value="Laundry">Laundry</option>
                             <option value="Airport Tax">Airport Tax</option>
+                            <option value="Porter">Porter</option>
                             <option value="Excess Baggage">Excess Baggage</option>
                         </select>
                     </div>
@@ -165,7 +168,7 @@
     </div>
     <hr/>
     <div>
-        <label class="form-label">Total Others</label>
+        <label class="form-label">Total Other Expenses</label>
         <div class="input-group">
             <div class="input-group-append">
                 <span class="input-group-text">Rp</span>

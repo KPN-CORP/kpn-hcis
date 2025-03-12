@@ -20,11 +20,11 @@ function addMoreFormNBTReq(event) {
     formCountNBT++;
     const newForm = document.createElement("div");
     newForm.id = `form-container-nbt-${formCountNBT}`;
-    newForm.className = "card-body p-2 mb-3";
-    newForm.style.backgroundColor = "#f8f8f8";
+    newForm.className = "card-body p-2 mb-2 rounded-3 bg-light";
+    // newForm.style.backgroundColor = "#f8f8f8";
     newForm.innerHTML = `
             <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Trip ${formCountNBT}</p>
-            <div id="form-container-nbt-req-${formCountNBT}" class="card-body bg-light p-2">
+            <div id="form-container-nbt-req-${formCountNBT}" class="card-body bg-white rounded-3 p-2">
                 <p class="fs-5 text-primary" style="font-weight: bold; ">Non Business Trip Request</p>
                 <div class="row">
                     <div class="col-md-6 mb-2">
@@ -51,7 +51,7 @@ function addMoreFormNBTReq(event) {
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormNBT(${formCountNBT}, event)">Reset</button>
-                        <button class="btn btn-outline-primary mr-2 btn-sm" onclick="removeFormNBT(${formCountNBT}, event)">Delete</button>
+                        <button class="btn btn-outline-danger mr-2 btn-sm" onclick="removeFormNBT(${formCountNBT}, event)">Delete</button>
                     </div>
                 </div>
             </div>
@@ -80,11 +80,11 @@ function addMoreFormNBTDec(event) {
     formCountNBT++;
     const newForm = document.createElement("div");
     newForm.id = `form-container-nbt-${formCountNBT}`;
-    newForm.className = "card-body p-2 mb-3";
-    newForm.style.backgroundColor = "#f8f8f8";
+    newForm.className = "card-body p-2 mb-2 bg-light rounded-3";
+    // newForm.style.backgroundColor = "#f8f8f8";
     newForm.innerHTML = `
             <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Trip ${formCountNBT}</p>
-            <div class="card-body bg-light p-2 ">
+            <div class="card-body bg-white rounded-3 p-2 ">
                 <p class="fs-5 text-primary" style="font-weight: bold; ">Non Business Trip Declaration</p>
                 <div class="row">
                     <div class="col-md-6 mb-2">
@@ -111,7 +111,7 @@ function addMoreFormNBTDec(event) {
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormNBT(${formCountNBT}, event)">Reset</button>
-                        <button class="btn btn-outline-primary mr-2 btn-sm" onclick="removeFormNBT(${formCountNBT}, event)">Delete</button>
+                        <button class="btn btn-outline-danger mr-2 btn-sm" onclick="removeFormNBT(${formCountNBT}, event)">Delete</button>
                     </div>
                 </div>
             </div>

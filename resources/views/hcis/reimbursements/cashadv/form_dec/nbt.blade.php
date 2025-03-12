@@ -4,10 +4,10 @@
 @if (!empty($detailCA) && $detailCA[0]['nominal_nbt'] !== null)
     <div id="form-container-nonb">
         @foreach ($detailCA as $index => $item)
-            <div id="form-container-nbt-{{ $loop->index + 1 }}" class="p-2 mb-4 rounded-3" style="background-color: #f8f8f8">
-                <p class="fs-4 text-primary" style="font-weight: bold; ">Non Bussiness Trip {{ $loop->index + 1 }}</p>
-                <div id="form-container-nbt-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
-                    <p class="fs-5 text-primary" style="font-weight: bold;">Non Bussiness Trip Request</p>
+            <div id="form-container-nbt-{{ $loop->index + 1 }}" class="p-2 mb-2 rounded-3 bg-light">
+                <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Trip {{ $loop->index + 1 }}</p>
+                <div id="form-container-nbt-req-{{ $loop->index + 1 }}" class="card-body bg-white p-2 mb-2 rounded-3">
+                    <p class="fs-5 text-primary" style="font-weight: bold;">Non Business Trip Request</p>
                     <div class="row">
                         <div class="col-md-6">
                             <table width="100%">
@@ -30,8 +30,8 @@
                         </div>
                     </div>
                 </div>
-                <div id="form-container-nbt-dec-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3">
-                    <p class="fs-5 text-primary" style="font-weight: bold; ">Non Bussiness Trip Declaration</p>
+                <div id="form-container-nbt-dec-{{ $loop->index + 1 }}" class="card-body bg-white p-2 mb-2 rounded-3">
+                    <p class="fs-5 text-primary" style="font-weight: bold; ">Non Business Trip Declaration</p>
                     @if (isset($declareCA[$index]))
                         @php
                             $item_dec = $declareCA[$index];
@@ -43,7 +43,7 @@
                             </div>
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">Amount</label>
-                                <div class="input-group mb-3">
+                                <div class="input-group">
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
@@ -52,17 +52,15 @@
                                 </div>
                             </div>
                             <div class="col-md-12 mb-2">
-                                <div class="mb-2">
                                     <label class="form-label">Information</label>
                                     <textarea name="keterangan_nbt[]" class="form-control">{{ $item_dec['keterangan_nbt'] }}</textarea>
                                 </div>
-                            </div>
                         </div>
                     @endif
-                    <div class="row mt-3">
+                    <div class="row mt-2">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormNBT({{ $loop->index + 1 }}, event)">Reset</button>
-                            {{-- <button class="btn btn-outline-primary mr-2 btn-sm" onclick="removeFormNBT({{ $loop->index + 1 }}, event)">Delete</button> --}}
+                            {{-- <button class="btn btn-outline-danger mr-2 btn-sm" onclick="removeFormNBT({{ $loop->index + 1 }}, event)">Delete</button> --}}
                         </div>
                     </div>
                 </div>
@@ -70,10 +68,10 @@
         @endforeach
         @foreach ($declareCA  as $index => $item_dec)
             @if (!isset($detailCA [$index]))
-                <div id="form-container-nbt-{{ $loop->index + 1 }}" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
-                    <p class="fs-4 text-primary" style="font-weight: bold; ">Non Bussiness Trip {{ $loop->index + 1 }}</p>
-                    <div class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
-                        <p class="fs-5 text-primary" style="font-weight: bold; ">Non Bussiness Trip Declaration</p>
+                <div id="form-container-nbt-{{ $loop->index + 1 }}" class="card-body p-2 mb-2 rounded-3 bg-light">
+                    <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Trip {{ $loop->index + 1 }}</p>
+                    <div class="card-body bg-white rounded-3 p-2 mb-2">
+                        <p class="fs-5 text-primary" style="font-weight: bold; ">Non Business Trip Declaration</p>
                         <div class="row">
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">Date</label>
@@ -81,7 +79,7 @@
                             </div>
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">Amount</label>
-                                <div class="input-group mb-3">
+                                <div class="input-group">
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
@@ -90,16 +88,14 @@
                                 </div>
                             </div>
                             <div class="col-md-12 mb-2">
-                                <div class="mb-2">
                                     <label class="form-label">Information</label>
                                     <textarea name="keterangan_nbt[]" class="form-control">{{ $item_dec['keterangan_nbt'] }}</textarea>
                                 </div>
-                            </div>
                         </div>
-                        <div class="row mt-3">
+                        <div class="row mt-2">
                             <div class="d-flex justify-start w-100">
                                 <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormNBT({{ $loop->index + 1 }}, event)">Reset</button>
-                                <button class="btn btn-outline-primary mr-2 btn-sm" onclick="removeFormNBT({{ $loop->index + 1 }}, event)">Delete</button>
+                                <button class="btn btn-outline-danger mr-2 btn-sm" onclick="removeFormNBT({{ $loop->index + 1 }}, event)">Delete</button>
                             </div>
                         </div>
                     </div>
@@ -108,7 +104,7 @@
         @endforeach
     </div>
 
-    <div class="mt-3">
+    <div class="mt-2">
         <button class="btn btn-primary btn-sm" id="addMoreButtonNBT" onclick="addMoreFormNBTDec(event)">Add More</button>
     </div>
 @elseif (!empty($declareCA) && $declareCA[0]['nominal_nbt'] !== null)
@@ -116,9 +112,9 @@
         @foreach ($declareCA  as $index => $item_dec)
             @if (!isset($detailCA [$index]))
                 <div id="form-container-nbt-{{ $loop->index + 1 }}" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
-                    <p class="fs-4 text-primary" style="font-weight: bold; ">Non Bussiness Trip {{ $loop->index + 1 }}</p>
+                    <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Trip {{ $loop->index + 1 }}</p>
                     <div class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
-                        <p class="fs-5 text-primary" style="font-weight: bold; ">Non Bussiness Trip Declaration</p>
+                        <p class="fs-5 text-primary" style="font-weight: bold; ">Non Business Trip Declaration</p>
                         <div class="row">
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">Date</label>
@@ -126,7 +122,7 @@
                             </div>
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">Amount</label>
-                                <div class="input-group mb-3">
+                                <div class="input-group">
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
@@ -135,16 +131,15 @@
                                 </div>
                             </div>
                             <div class="col-md-12 mb-2">
-                                <div class="mb-2">
                                     <label class="form-label">Information</label>
                                     <textarea name="keterangan_nbt[]" class="form-control">{{ $item_dec['keterangan_nbt'] }}</textarea>
-                                </div>
+                            
                             </div>
                         </div>
-                        <div class="row mt-3">
+                        <div class="row mt-2">
                             <div class="d-flex justify-start w-100">
                                 <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormNBT({{ $loop->index + 1 }}, event)">Reset</button>
-                                <button class="btn btn-outline-primary mr-2 btn-sm" onclick="removeFormNBT({{ $loop->index + 1 }}, event)">Delete</button>
+                                <button class="btn btn-outline-danger mr-2 btn-sm" onclick="removeFormNBT({{ $loop->index + 1 }}, event)">Delete</button>
                             </div>
                         </div>
                     </div>
@@ -153,15 +148,15 @@
         @endforeach
     </div>
 
-    <div class="mt-3">
+    <div class="mt-2">
         <button class="btn btn-primary btn-sm" id="addMoreButtonNBT" onclick="addMoreFormNBTDec(event)">Add More</button>
     </div>
 @else
     <div id="form-container-nonb">
         <div id="form-container-nbt-1" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
-            <p class="fs-4 text-primary" style="font-weight: bold; ">Non Bussiness Trip 1</p>
+            <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Trip 1</p>
             <div id="form-container-nbt-dec-1" class="card-body bg-light p-2 mb-3">
-                <p class="fs-5 text-primary" style="font-weight: bold;">Non Bussiness Trip Declaration</p>
+                <p class="fs-5 text-primary" style="font-weight: bold;">Non Business Trip Declaration</p>
                 <div class="row">
                     <div class="col-md-6 mb-2">
                         <label class="form-label">Date</label>
@@ -169,7 +164,7 @@
                     </div>
                     <div class="col-md-6 mb-2">
                         <label class="form-label">Amount</label>
-                        <div class="input-group mb-3">
+                        <div class="input-group">
                             <div class="input-group-append">
                                 <span class="input-group-text">Rp</span>
                             </div>
@@ -177,16 +172,14 @@
                         </div>
                     </div>
                     <div class="col-md-12 mb-2">
-                        <div class="mb-2">
                             <label class="form-label">Information</label>
                             <textarea name="keterangan_nbt[]" class="form-control"></textarea>
-                        </div>
                     </div>
                 </div>
-                <div class="row mt-3">
+                <div class="row mt-2">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormNBT(1, event)">Reset</button>
-                        <button class="btn btn-outline-primary mr-2 btn-sm" onclick="removeFormNBT(1, event)">Delete</button>
+                        <button class="btn btn-outline-danger mr-2 btn-sm" onclick="removeFormNBT(1, event)">Delete</button>
                     </div>
                 </div>
             </div>
