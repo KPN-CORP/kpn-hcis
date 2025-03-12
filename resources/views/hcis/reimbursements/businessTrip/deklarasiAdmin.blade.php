@@ -178,7 +178,7 @@
                                 <div class="row mt-2" id="ca_div">
                                     <div class="col-md-12">
                                         <div class="d-flex flex-column gap-2">
-                                            <ul class="nav nav-tabs nav-pills mb-2" id="pills-tab" role="tablist">
+                                            <ul class="nav nav-tabs nav-pills" id="pills-tab" role="tablist">
                                                 @if ($dnsTab == true)
                                                     <li class="nav-item" role="presentation">
                                                         <button class="nav-link <?php echo (!$entrTab && $dnsTab) ? 'active' : (($dnsTab && $entrTab) ? 'active' : ''); ?>" id="pills-cashAdvanced-tab"
@@ -192,7 +192,7 @@
                                                         <button class="nav-link <?php echo ($entrTab && !$dnsTab) ? 'active' : ''; ?>" id="pills-caEntertain-tab"
                                                             data-bs-toggle="pill" data-bs-target="#pills-caEntertain"
                                                             type="button" role="tab" aria-controls="pills-caEntertain"
-                                                            aria-selected="false">CA Entertain</button>
+                                                            aria-selected="false">CA Entertainment</button>
                                                     </li>
                                                 @endif
                                             </ul>
@@ -204,14 +204,81 @@
                                                 <!-- CA Entertain Content -->
                                                 @include('hcis.reimbursements.businessTrip.declaration-admin.btEntDeclarationAdmin')
                                             </div>
-                                        </div>
+                                            <div class="card-body p-2 mt-2 rounded-3" style="background-color:#f8f8f8;">
+                                                <div class="row">
+                                                    <!-- Cash Advanced Costs Requested -->
+                                                    <div class="col-md-6 mb-2">
+                                                        <label class="form-label">Cash Advanced Costs Requested</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">Rp</span>
+                                                            </div>
+                                                            <input class="form-control bg-light" name="totalca_deklarasi" id="totalca_declarasi" type="text"
+                                                                min="0" value="{{ number_format($dnsData->total_ca ?? '0', 0, ',', '.') }}" readonly>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <!-- Cash Advanced Costs Used -->
+                                                    <div class="col-md-6 mb-2">
+                                                        <label class="form-label">Cash Advanced Costs Used</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">Rp</span>
+                                                            </div>
+                                                            <input class="form-control bg-light" name="totalca_ca_deklarasi" id="totalca_ca_deklarasi"
+                                                                type="text" min="0"
+                                                                value="{{ number_format($dnsData->total_cost ?? '0', 0, ',', '.') }}" readonly>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <!-- Hidden Total Cost (for future use or logic) -->
+                                                    <div class="col-md-4" style="display:none">
+                                                        <label class="form-label">Total Cost</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">Rp</span>
+                                                            </div>
+                                                            <input class="form-control bg-light" name="" id="" type="text" min="0"
+                                                                value="{{ number_format($dnsData->total_cost ?? '0', 0, ',', '.') }}" readonly>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                    
+                                                    <hr/>
+                                                    <div class="row">
+                                                    <!-- Entertainment Costs Requested -->
+                                                    <div class="col-md-6 mb-2">
+                                                        <label class="form-label">Entertainment Costs Requested</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">Rp</span>
+                                                            </div>
+                                                            <input class="form-control bg-light" name="totalca_ent" id="totalca_ent" type="text" min="0"
+                                                                value="{{ number_format($entrData->total_ca ?? '0', 0, ',', '.') }}" readonly>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <!-- Entertainment Costs Used -->
+                                                    <div class="col-md-6 mb-2">
+                                                        <label class="form-label">Entertainment Costs Used</label>
+                                                        <div class="input-group">
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">Rp</span>
+                                                            </div>
+                                                            <input class="form-control bg-light" name="totalca" id="totalca" type="text" min="0"
+                                                                value="{{ number_format($dnsData->total_real ?? '0', 0, ',', '.') }}" readonly>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
 
                                         {{-- CHANGE REASON --}}
                                         @php
                                             $caNote = $dnsData->ca_note ?? $entrData->ca_note ?? '';
                                         @endphp
                                         @if ($entrTab == true || $dnsTab == true)
-                                            <div class="mb-3">
+                                            <div class="my-2">
                                                 <label class="form-label">Change Note</label>
                                                 {{-- @if($caNote) --}}
                                                 <textarea class="form-control form-control-sm" id="ca_note" name="ca_note" rows="3"
@@ -219,7 +286,7 @@
                                                 {{-- @endif --}}
                                             </div>
                                         @endif
-                                        <div class="mb-3">
+                                        <div class="mb-2">
                                             <label class="form-label">Accept Status</label>
                                             <select class="form-select" name="accept_status" id="accept-status"
                                                 required>
@@ -243,7 +310,7 @@
                                             use Illuminate\Support\Facades\Storage;
                                         @endphp
 
-                                        <div class="col-md-12 mb-2 mt-2">
+                                        <div class="col-md-12 mb-2">
                                             <label for="prove_declare" class="form-label">Uploaded Proof</label>
                                             @if ((isset($dnsData->prove_declare) && $dnsData->prove_declare) || (isset($entrData->prove_declare) && $entrData->prove_declare))
                                                 <input type="hidden" name="existing_prove_declare" id="existing-prove-declare" value="{{ $dnsData->prove_declare ?? $entrData->prove_declare }}">
@@ -326,7 +393,7 @@
                                         <input class="form-control" id="perdiem" name="perdiem" type="hidden"
                                             value="{{ $perdiem->amount ?? 0 }}" readonly>
                                         {{-- <input type="hidden" name="status" value="Declaration L1" id="status"> --}}
-                                        <div class="d-flex justify-content-end mt-3">
+                                        <div class="d-flex justify-content-end">
                                             <button type="submit"
                                                 class="btn btn-primary rounded-pill submit-button">Submit</button>
                                         </div>

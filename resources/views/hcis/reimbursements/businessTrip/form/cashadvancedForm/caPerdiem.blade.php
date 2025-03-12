@@ -10,7 +10,6 @@
         const newForm = document.createElement("div");
         newForm.id = `form-container-bt-perdiem-${formCountPerdiem}`;
         newForm.className = "bg-light card-body rounded-3 p-2 mb-2";
-        // newForm.style.backgroundColor = "#f8f8f8";
         newForm.innerHTML = `
                 <p class="fs-4 text-primary" style="font-weight: bold;">{{ $allowance }} ${formCountPerdiem}</p>
                 <div id="form-container-bt-perdiem-req-${formCountPerdiem}" class="card-body bg-white rounded-3 p-2">
@@ -114,9 +113,9 @@
 @if (!empty($caDetail['detail_perdiem']) && $caDetail['detail_perdiem'][0]['start_date'] !== null)
     <div id="form-container-perdiem">
         @foreach ($caDetail['detail_perdiem'] as $perdiem)
-            <div id="form-container-bt-perdiem-{{ $loop->index + 1 }}" class="card-body p-2 mb-2">
+            <div id="form-container-bt-perdiem-{{ $loop->index + 1 }}" class="bg-light rounded-3 card-body p-2 mb-2">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">{{ $allowance }} {{ $loop->index + 1 }}</p>
-                <div id="form-container-bt-perdiem-req-{{ $loop->index + 1 }}" class="card-body p-2 bg-white">
+                <div id="form-container-bt-perdiem-req-{{ $loop->index + 1 }}" class="card-body rounded-3 p-2 bg-white">
                     <p class="fs-5 text-primary" style="font-weight: bold;">{{ $allowance }} Request</p>
                     <div class="row">
                         <!-- Company Code -->
@@ -205,12 +204,12 @@
             </div>
         @endforeach
     </div>
-
-    <div class="mt-3">
+    
+    <div>
         <button class="btn btn-primary btn-sm" onclick="addMoreFormPerdiemReq(event)">Add More</button>
     </div>
-
-    <div class="mt-2">
+    <hr/>
+    <div>
         <label class="form-label">Total {{ $allowance }}</label>
         <div class="input-group">
             <div class="input-group-append">
@@ -307,7 +306,6 @@
             </div>
         </div>
     </div>
-
     <div class="mt-3">
         <button class="btn btn-primary btn-sm" onclick="addMoreFormPerdiemReq(event)">Add More</button>
     </div>

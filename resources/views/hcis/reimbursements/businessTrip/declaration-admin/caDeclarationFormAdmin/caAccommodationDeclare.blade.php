@@ -13,12 +13,12 @@
 
         const newForm = document.createElement("div");
         newForm.id = `form-container-bt-penginapan-${formCountPenginapan}`;
-        newForm.className = "card-body p-2 mb-3";
-        newForm.style.backgroundColor = "#f8f8f8";
+        newForm.className = "card-body p-2 mb-2 bg-light rounded-3";
+        // newForm.style.backgroundColor = "#f8f8f8";
         newForm.innerHTML = `
-            <p class="fs-4 text-primary" style="font-weight: bold; ">Penginapan ${formCountPenginapan}</p>
-            <div class="card-body bg-light p-2 mb-3">
-                <p class="fs-5 text-primary" style="font-weight: bold;">Penginapan Declaration</p>
+            <p class="fs-4 text-primary" style="font-weight: bold; ">Accomodation ${formCountPenginapan}</p>
+            <div class="card-body bg-white rounded-3 p-2">
+                <p class="fs-5 text-primary" style="font-weight: bold;">Accomodation Declaration</p>
                 <div class="row">
                     <!-- Penginapan Date -->
                     <div class="col-md-4 mb-2">
@@ -69,9 +69,9 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-4 mb-2">
+                    <div class="col-md-4">
                         <label class="form-label">Amount</label>
-                        <div class="input-group mb-3">
+                        <div class="input-group">
                             <div class="input-group-append">
                                 <span class="input-group-text">Rp</span>
                             </div>
@@ -85,11 +85,11 @@
                         </div>
                     </div>
                 </div>
-                <br>
-                <div class="row mt-3">
+                
+                <div class="row mt-2">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px" onclick="clearFormPenginapan(${formCountPenginapan}, event)">Reset</button>
-                        <button class="btn btn-outline-primary btn-sm" onclick="removeFormPenginapan(${formCountPenginapan}, event)">Delete</button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="removeFormPenginapan(${formCountPenginapan}, event)">Delete</button>
                     </div>
                 </div>
             </div>
@@ -107,12 +107,12 @@
 
         const newForm = document.createElement("div");
         newForm.id = `form-container-bt-penginapan-${formCountPenginapan}`;
-        newForm.className = "card-body p-2 mb-3";
-        newForm.style.backgroundColor = "#f8f8f8";
+        newForm.className = "card-body p-2 mb-2 bg-light rounded-3";
+        // newForm.style.backgroundColor = "#f8f8f8";
         newForm.innerHTML = `
-            <p class="fs-4 text-primary" style="font-weight: bold; ">Penginapan ${formCountPenginapan}</p>
-            <div class="card-body bg-light p-2 mb-3">
-                <p class="fs-5 text-primary" style="font-weight: bold;">Penginapan Request</p>
+            <p class="fs-4 text-primary" style="font-weight: bold; ">Accomodation ${formCountPenginapan}</p>
+            <div class="card-body bg-white rounded-3 p-2 mb-2 ">
+                <p class="fs-5 text-primary" style="font-weight: bold;">Accomodation Request</p>
                 <div class="row">
                     <!-- Penginapan Date -->
                     <div class="col-md-4 mb-2">
@@ -163,9 +163,9 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-4 mb-2">
+                    <div class="col-md-4">
                         <label class="form-label">Amount</label>
-                        <div class="input-group mb-3">
+                        <div class="input-group">
                             <div class="input-group-append">
                                 <span class="input-group-text">Rp</span>
                             </div>
@@ -179,11 +179,11 @@
                         </div>
                     </div>
                 </div>
-                <br>
-                <div class="row mt-3">
+                
+                <div class="row mt-2">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px" onclick="clearFormPenginapan(${formCountPenginapan}, event)">Reset</button>
-                        <button class="btn btn-outline-primary btn-sm" onclick="removeFormPenginapan(${formCountPenginapan}, event)">Delete</button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="removeFormPenginapan(${formCountPenginapan}, event)">Delete</button>
                     </div>
                 </div>
             </div>
@@ -313,52 +313,53 @@
 @if (!empty($caDetail['detail_penginapan']) && $caDetail['detail_penginapan'][0]['start_date'] !== null && $caDetail['detail_penginapan'][0]['end_date'] !== null)
     <div id="form-container-penginapan">
         @foreach($caDetail['detail_penginapan'] as $index =>$penginapan)
-            <div id="form-container-bt-penginapan-{{ $loop->index + 1 }}" class="p-2 mb-3 rounded-3" style="background-color: #f8f8f8">
-                <p class="fs-4 text-primary" style="font-weight: bold; ">Penginapan {{ $loop->index + 1 }}</p>
-                <div id="form-container-bt-penginapan-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
+            <div id="form-container-bt-penginapan-{{ $loop->index + 1 }}" class="p-2 mb-2 card-body bg-light rounded-3">
+                <p class="fs-4 text-primary" style="font-weight: bold; ">Accomodation {{ $loop->index + 1 }}</p>
+                <div id="form-container-bt-penginapan-req-{{ $loop->index + 1 }}" class="card-body bg-white p-2 mb-2 rounded-3"">
                     <div class="row">
                         <p class="fs-5 text-primary" style="font-weight: bold;">Accommodation Request</p>
                         <div class="col-md-6">
                             <table width="100%">
                                 <tr>
-                                    <th width="40%">Hotel Name</th>
+                                    <th class="label" ="40%">Hotel Name</th>
                                     <td class="block">:</td>
-                                    <td>{{ $penginapan['hotel_name'] }}</td>
+                                    <td class="value">{{ $penginapan['hotel_name'] }}</td>
                                 </tr>
                                 <tr>
-                                    <th width="40%">Company Code</th>
+                                    <th class="label" width="40%">Company Code</th>
                                     <td class="block">:</td>
-                                    <td>{{ $penginapan['company_code'] }}</td>
+                                    <td class="value">{{ $penginapan['company_code'] }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Amount</th>
+                                    <th class="label">Amount</th>
                                     <td class="block">:</td>
-                                    <td> Rp {{ number_format($penginapan['nominal'], 0, ',', '.') }}</td>
+                                    <td class="value"> Rp {{ number_format($penginapan['nominal'], 0, ',', '.') }}</td>
                                 </tr>
                             </table>
                         </div>
                         <div class="col-md-6">
                             <table width="100%">
                                 <tr>
-                                    <th width="40%">Start Plan</th>
+                                    <th class="label" width="40%">Start Plan</th>
                                     <td class="block">:</td>
-                                    <td> {{ date('d M Y', strtotime($penginapan['start_date'])) }} </td>
+                                    <td class="value"> {{ date('d M Y', strtotime($penginapan['start_date'])) }} </td>
                                 </tr>
                                 <tr>
-                                    <th width="40%">End Plan</th>
+                                    <th class="label" width="40%">End Plan</th>
                                     <td class="block">:</td>
-                                    <td> {{ date('d M Y', strtotime($penginapan['end_date'])) }} </td>
+                                    <td class="value"> {{ date('d M Y', strtotime($penginapan['end_date'])) }} </td>
                                 </tr>
                                 <tr>
-                                    <th>Total Days</th>
+                                    <th class="label">Total Days</th>
                                     <td class="block">:</td>
-                                    <td>{{$penginapan['total_days']}} Days</td>
+                                    <td class="value">{{$penginapan['total_days']}} Days</td>
                                 </tr>
                             </table>
                         </div>
                     </div>
                 </div>
-                <div id="form-container-bt-penginapan-dec-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
+
+                <div id="form-container-bt-penginapan-dec-{{ $loop->index + 1 }}" class="card-body bg-white rounded-3 p-2">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Accommodation Declaration</p>
                     @if (isset($declareCa['detail_penginapan'][$index]))
                         @php
@@ -422,9 +423,9 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-4 mb-2">
+                            <div class="col-md-4">
                                 <label class="form-label">Amount</label>
-                                <div class="input-group mb-3">
+                                <div class="input-group">
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
@@ -440,8 +441,8 @@
                             </div>
                         </div>
                     @endif
-                    <br>
-                    <div class="row mt-3">
+                    
+                    <div class="row mt-2">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px" onclick="clearFormPenginapan({{ $loop->index + 1 }}, event)">Reset</button>
                             {{-- <button class="btn btn-warning mr-2" onclick="removeFormPenginapan({{ $loop->index + 1 }}, event)">Delete</button> --}}
@@ -452,7 +453,7 @@
         @endforeach
         @foreach ($declareCa['detail_penginapan'] as $index => $penginapan_dec)
             @if (!isset($caDetail['detail_penginapan'][$index]))
-                <div id="form-container-bt-penginapan-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
+                <div id="form-container-bt-penginapan-{{ $loop->index + 1 }}" class="card-body bg-light rounded-3 p-2 mb-2">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Accommodation {{ $loop->index + 1 }}</p>
                     <div class="row">
                         <!-- Penginapan Date -->
@@ -512,9 +513,9 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-4 mb-2">
+                        <div class="col-md-4">
                             <label class="form-label">Amount</label>
-                            <div class="input-group mb-3">
+                            <div class="input-group">
                                 <div class="input-group-append">
                                     <span class="input-group-text">Rp</span>
                                 </div>
@@ -529,11 +530,11 @@
                             </div>
                         </div>
                     </div>
-                    <br>
-                    <div class="row mt-3">
+                    
+                    <div class="row mt-2">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px" onclick="clearFormPenginapan({{ $loop->index + 1 }}, event)">Reset</button>
-                            <button class="btn btn-outline-primary btn-sm" onclick="removeFormPenginapan({{ $loop->index + 1 }}, event)">Delete</button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="removeFormPenginapan({{ $loop->index + 1 }}, event)">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -544,8 +545,8 @@
     <div class="mt-3">
         <button class="btn btn-primary btn-sm" id="addMoreButton" onclick="addMoreFormPenginapanDec(event)">Add More</button>
     </div>
-
-    <div class="mt-2 mb-2">
+    <hr/>
+    <div>
         <label class="form-label">Total Accommodation</label>
         <div class="input-group">
             <div class="input-group-append">
@@ -561,9 +562,9 @@
     <div id="form-container-penginapan">
         @foreach ($declareCa['detail_penginapan'] as $index => $penginapan_dec)
             @if (!isset($caDetail['detail_penginapan'][$index]))
-                <div id="form-container-bt-penginapan-{{ $loop->index + 1 }}" class="p-2 mb-3 rounded-3" style="background-color: #f8f8f8">
+                <div id="form-container-bt-penginapan-{{ $loop->index + 1 }}" class="p-2 mb-2 bg-light card-body rounded-3">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Accommodation {{ $loop->index + 1 }}</p>
-                    <div class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
+                    <div class="card-body bg-white p-2 rounded-3" style="border-radius: 1%;">
                         <p class="fs-5 text-primary" style="font-weight: bold;">Accommodation Declaration</p>
                         <div class="row">
                             <!-- Penginapan Date -->
@@ -623,9 +624,9 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-4 mb-2">
+                            <div class="col-md-4">
                                 <label class="form-label">Amount</label>
-                                <div class="input-group mb-3">
+                                <div class="input-group">
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
@@ -640,11 +641,11 @@
                                 </div>
                             </div>
                         </div>
-                        <br>
-                        <div class="row mt-3">
+                        
+                        <div class="row mt-2">
                             <div class="d-flex justify-start w-100">
                                 <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px" onclick="clearFormPenginapan({{ $loop->index + 1 }}, event)">Reset</button>
-                                <button class="btn btn-outline-primary btn-sm" onclick="removeFormPenginapan({{ $loop->index + 1 }}, event)">Delete</button>
+                                <button class="btn btn-outline-danger btn-sm" onclick="removeFormPenginapan({{ $loop->index + 1 }}, event)">Delete</button>
                             </div>
                         </div>
                     </div>
@@ -656,8 +657,8 @@
     <div class="mt-1">
         <button class="btn btn-primary btn-sm" id="addMoreButton" onclick="addMoreFormPenginapanDec(event)">Add More</button>
     </div>
-
-    <div class="mt-2 mb-2">
+    <hr/>
+    <div>
         <label class="form-label">Total Accommodation</label>
         <div class="input-group">
             <div class="input-group-append">
@@ -673,7 +674,7 @@
     <div id="form-container-penginapan">
         <div id="form-container-bt-penginapan-1" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
             <p class="fs-4 text-primary" style="font-weight: bold; ">Accommodation 1</p>
-            <div class="card-body bg-light p-2 mb-3">
+            <div class="card-body bg-white p-2 rounded-3">
                 <p class="fs-5 text-primary" style="font-weight: bold;">Accommodation Declaration</p>
                 <div class="row">
                     <!-- Penginapan Date -->
@@ -725,9 +726,9 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-4 mb-2">
+                    <div class="col-md-4">
                         <label class="form-label">Amount</label>
-                        <div class="input-group mb-3">
+                        <div class="input-group">
                             <div class="input-group-append">
                                 <span class="input-group-text">Rp</span>
                             </div>
@@ -741,11 +742,11 @@
                         </div>
                     </div>
                 </div>
-                <br>
-                <div class="row mt-3">
+                
+                <div class="row mt-2">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px" onclick="clearFormPenginapan(1, event)">Reset</button>
-                        <button class="btn btn-outline-primary btn-sm" onclick="removeFormPenginapan(1, event)">Delete</button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="removeFormPenginapan(1, event)">Delete</button>
                     </div>
                 </div>
             </div>
@@ -755,8 +756,8 @@
     <div class="mt-3">
         <button class="btn btn-primary btn-sm" id="addMoreButton" onclick="addMoreFormPenginapanDec(event)">Add More</button>
     </div>
-
-    <div class="mt-2 mb-2">
+<hr/>
+    <div>
         <label class="form-label">Total Accommodation</label>
         <div class="input-group">
             <div class="input-group-append">

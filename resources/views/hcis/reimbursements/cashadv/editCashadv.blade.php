@@ -229,19 +229,18 @@
                                 @if ($transactions->type_ca == 'entr')
                                     <div class="col-md-12">
                                         <div class="table-responsive-sm">
-                                            <div class="d-flex flex-column gap-2">
+                                            <div class="d-flex flex-column">
                                                 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                                                     <li class="nav-item" role="presentation">
                                                         <button class="nav-link active" id="pills-detail-tab"
                                                             data-bs-toggle="pill" data-bs-target="#pills-detail" type="button"
                                                             role="tab" aria-controls="pills-detail"
-                                                            aria-selected="true">Detail Entertain Plan</button>
+                                                            aria-selected="true">Detail Entertainment Plan</button>
                                                     </li>
                                                     <li class="nav-item" role="presentation">
                                                         <button class="nav-link" id="pills-relation-tab" data-bs-toggle="pill"
                                                             data-bs-target="#pills-relation" type="button" role="tab"
-                                                            aria-controls="pills-relation" aria-selected="false">Relation Entertain
-                                                            Plan</button>
+                                                            aria-controls="pills-relation" aria-selected="false">Detail Receiver Plan</button>
                                                     </li>
                                                 </ul>
                                                 <div class="tab-content" id="pills-tabContent">

@@ -4,7 +4,7 @@
     </div>
 
     {{-- <span class="text-info fst-italic">* Only applicable GrabCar & GrabBike</span> --}}
-    <div class="alert alert-info col-md-12" style="width:100%">*Only applicable GrabCar &amp; GrabBike</div>
+    <div class="alert alert-info col-md-12" style="width:100%">Only applicable GrabCar &amp; GrabBike</div>
 
 
     <div class="row">

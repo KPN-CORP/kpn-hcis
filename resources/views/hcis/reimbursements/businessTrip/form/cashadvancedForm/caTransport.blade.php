@@ -76,12 +76,12 @@
 @if (!empty($caDetail['detail_transport']) && $caDetail['detail_transport'][0]['tanggal'] !== null)
     <div id="form-container-transport">
         @foreach ($caDetail['detail_transport'] as $transport)
-            <div id="form-container-bt-transport-{{ $loop->index + 1 }}" class="card-body p-2 mb-2">
+            <div id="form-container-bt-transport-{{ $loop->index + 1 }}" class="bg-light rounded-3 card-body p-2 mb-2">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Transport {{ $loop->index + 1 }}</p>
                 <label for="additional-fields-title" class="mb-2">
                     <span class="text-info fst-italic">* Transport only for Bus, Train and Speedboat</span>
                 </label>
-                <div id="form-container-bt-transport-req-{{ $loop->index + 1 }}" class="card-body bg-white p-2">
+                <div id="form-container-bt-transport-req-{{ $loop->index + 1 }}" class="card-body rounded-3 bg-white p-2">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Transport Request</p>
                     <div class="row">
                         <!-- Transport Date -->
@@ -122,7 +122,6 @@
                             <textarea name="keterangan_bt_transport[]" class="form-control" placeholder="Write your information here ...">{{ $transport['keterangan'] }}</textarea>
                         </div>
                     </div>
-                    <br>
                     <div class="row mt-3">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-sm btn-outline-warning" style="margin-right: 10px"

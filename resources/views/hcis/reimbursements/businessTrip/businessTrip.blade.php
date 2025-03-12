@@ -723,7 +723,7 @@
                             tableHtml += '<div class="table-responsive">' + // Added this for horizontal scrolling
                                 '<table class="table table-sm table-bordered nowrap w-100" cellspacing="0">' +
                                 // Added w-100 and table-bordered
-                                '<thead><tr>';
+                                '<thead class="text-center"><tr>';
                             var isArray = Array.isArray(data) && data.length > 0;
 
                             // Assuming all objects in the data array have the same keys, use the first object to create headers
@@ -889,7 +889,7 @@
                     extEndDateInput.addEventListener('change', function() {
                         if (new Date(extEndDateInput.value) < new Date(extStartDateInput.value)) {
                             Swal.fire({
-                                title: 'Cannot Sett Date!',
+                                title: 'Cannot Set Date!',
                                 text: 'End Date cannot be earlier than Start Date.',
                                 icon: 'warning',
                                 confirmButtonColor: "#9a2a27",

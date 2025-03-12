@@ -99,9 +99,9 @@
 @if (!empty($caDetail['detail_penginapan']) && $caDetail['detail_penginapan'][0]['start_date'] !== null)
     <div id="form-container-penginapan">
         @foreach ($caDetail['detail_penginapan'] as $penginapan)
-            <div id="form-container-bt-penginapan-{{ $loop->index + 1 }}" class="card-body p-2 bg-light mb-2">
+            <div id="form-container-bt-penginapan-{{ $loop->index + 1 }}" class="card-body p-2 bg-light rounded-3 mb-2">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Accommodation {{ $loop->index + 1 }}</p>
-                <div id="form-container-bt-penginapan-req-{{ $loop->index + 1 }}" class="card-body bg-white p-2">
+                <div id="form-container-bt-penginapan-req-{{ $loop->index + 1 }}" class="card-body rounded-3 bg-white p-2">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Accommodation Request</p>
                     <div class="row">
                         <!-- Penginapan Date -->

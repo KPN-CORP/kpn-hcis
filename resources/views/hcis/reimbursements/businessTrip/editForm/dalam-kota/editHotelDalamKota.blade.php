@@ -16,7 +16,7 @@
         <div class="card bg-light shadow-none" id="hotel-form-dalam-kota-<?php echo $i; ?>"
             style="display: <?php echo $i <= $hotelCount ? 'block' : 'none'; ?>;">
             <div class="card-body">
-                <div class="h5 text-uppercase">
+                <div class="h5 text-uppercase text-primary">
                     <b>Hotel <?php echo $i; ?></b>
                 </div>
                 <div class="row">
@@ -96,11 +96,11 @@
                 </div>
                 <div class="mt-2">
                     <button type="button" class="btn btn-sm btn-outline-danger remove-hotel-btn-dalam-kota"
-                        data-form-id="<?php echo $i; ?>">Remove Data</button>
+                        data-form-id="<?php echo $i; ?>">Delete</button>
                 </div>
             </div>
         </div>
         <?php endfor; ?>
     </div>
-    <button type="button" class="btn btn-sm btn-outline-primary add-hotel-btn-dalam-kota">Add Hotel Data</button>
+    <button type="button" class="btn btn-sm btn-primary add-hotel-btn-dalam-kota">Add More</button>
 </div>
