@@ -53,6 +53,8 @@ class ImportHealthCoverage implements ToModel
 
     public function model(array $row)
     {
+        $employeeId = Employee::where('id', Auth::id())->pluck('employee_id')->first();
+
         if ($row[0] == 'No' && $row[1] == 'Employee Name' && $row[2] == 'Employee ID') {
             return null;
         }
@@ -63,6 +65,15 @@ class ImportHealthCoverage implements ToModel
 
         $errorMessage = null;
 
+        $nameDummy = "Write Name Employee Here";
+        $idDummy = "01111111111";
+        $invDummy = "123/TestVioce/2000";
+        $rsDummy = "RS. Hospital Dummy";
+        $patDummy = "John Doe";
+        if ($row[1] == $nameDummy || $row[2] == $idDummy || $row[4] == $invDummy || $row[5] == $rsDummy || $row[6] == $patDummy) {
+            throw new ImportDataInvalidException("You can Import Dummy data to Database.");
+        }
+
         // Cek apakah Employee ID ada di database
         $employee = Employee::where('employee_id', $row[2])->first();
         if (!$employee) {
@@ -72,9 +83,9 @@ class ImportHealthCoverage implements ToModel
         }
 
         // Validasi apakah telah ada record yang sama
-        $expectedRecord = HealthCoverage::where('no_invoice', $row[4])->where('disease', $row[7])->where('medical_type', $row[11])->first();
+        $expectedRecord = HealthCoverage::where('employee_id', $row[2])->where('no_invoice', $row[4])->where('disease', $row[7])->where('medical_type', $row[11])->first();
         if ($expectedRecord) {
-            $errorMessage = "Transaksi Medical dengan Invoice '{$row[4]}', Desease '{$row[7]}' dan Medical Type '{$row[11]}' sudah pernah di ajukan.";
+            $errorMessage = "Transaksi Medical dengan Employee Name '{$row[1]}' Invoice '{$row[4]}', Desease '{$row[7]}' dan Medical Type '{$row[11]}' sudah pernah di ajukan.";
         }
 
         // Validasi Medical Type
@@ -106,7 +117,7 @@ class ImportHealthCoverage implements ToModel
 
         // Jika ada error, simpan ke array gagal
         if ($errorMessage) {
-            $row[13] = $errorMessage; // Simpan error di kolom ke-14
+            $row[14] = $errorMessage; // Simpan error di kolom ke-14
             $this->failedRows[] = $row;
             return null; // Jangan simpan ke database
         }
@@ -128,10 +139,11 @@ class ImportHealthCoverage implements ToModel
             'balance' => $row[12],
             'balance_uncoverage' => '0',
             'balance_verif' => $row[12],
+            'balance_bpjs' => $row[13],
             'status' => 'Done',
             'submission_type' => 'F',
             'medical_proof' => $this->attachmentPath,
-            'created_by' => Auth::id(),
+            'created_by' => $employeeId,
             'verif_by' => $employee->employee_id,
             'approved_by' => $employee->employee_id,
             'created_at' => now(),
