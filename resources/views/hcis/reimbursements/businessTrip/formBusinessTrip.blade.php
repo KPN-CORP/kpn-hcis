@@ -152,9 +152,9 @@
                                 </div>
                             </div>
 
-                            <div id="additional-fields-dalam" class="row mb-3" style="display: none;">
-                                <label for="additional-fields-dalam-title" class="mb-3">
-                                    Business Trip Needs <br>
+                            <div id="additional-fields-dalam" class="row" style="display: none;">
+                                <label for="additional-fields-dalam-title" class="mb-1">
+                                    Business Trip Needs
                                 </label>
                                 <div class="row">
                                     <div class="col-md-3">
@@ -272,10 +272,10 @@
                                     </div>
                                 </div>
                                 {{-- </div> --}}
-                                <div id="additional-fields" class="row mb-3" style="display: none;">
+                                <div id="additional-fields" class="row" style="display: none;">
                                     <div class="col-md-12">
-                                        <label for="additional-fields-title" class="mb-3">
-                                            Business Trip Needs <br>
+                                        <label for="additional-fields-title" class="mb-1">
+                                            Business Trip Needs
                                             @if ($isAllowed)
                                                 <span class="text-info fst-italic">* Your job
                                                     level is above 8. No perdiem is required for your job level</span>
@@ -299,7 +299,7 @@
                                                         id="caEntertainCheckbox" value="Ya"
                                                         onchange="updateCAValue()" {{ $isDisabled ? 'disabled' : '' }}>
                                                     <label class="form-check-label" for="caEntertainCheckbox">CA
-                                                        Entertain</label>
+                                                        Entertainment</label>
                                                 </div>
                                             </div>
                                             <div class="col-md-2">
@@ -371,7 +371,7 @@
                                                             data-bs-toggle="pill"
                                                             data-bs-target="#pills-cashAdvancedEntertain" type="button"
                                                             role="tab" aria-controls="pills-cashAdvancedEntertain"
-                                                            aria-selected="false">CA Entertain</button>
+                                                            aria-selected="false">CA Entertainment</button>
                                                     </li>
                                                     <li class="nav-item" role="presentation" id="nav-hotel"
                                                         style="display: none;">
@@ -697,7 +697,7 @@
                             // ✅ Case 1: Low-level Plantation users (Exclude Meals)
                             Swal.fire({
                                 title: "Warning!",
-                                text: "Cash Advanced fields (Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                text: "Cash Advanced fields (Perdiem, Accommodation, Transport, Other Expenses) are 0.\nPlease fill in the values.",
                                 icon: "warning",
                                 confirmButtonColor: "#AB2F2B",
                                 confirmButtonText: "OK",
@@ -708,7 +708,7 @@
                             // ✅ Case 2: High-level Plantation users (Include Meals)
                             Swal.fire({
                                 title: "Warning!",
-                                text: "Cash Advanced fields (Meals, Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                text: "Cash Advanced fields (Meals, Perdiem, Accommodation, Transport, Other Expenses) are 0.\nPlease fill in the values.",
                                 icon: "warning",
                                 confirmButtonColor: "#AB2F2B",
                                 confirmButtonText: "OK",
@@ -719,7 +719,7 @@
                             // ✅ Case 3: Non-Plantation Users (Include Meals)
                             Swal.fire({
                                 title: "Warning!",
-                                text: "Cash Advanced fields (Meals, Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                text: "Cash Advanced fields (Meals, Perdiem, Accommodation, Transport, Other Expenses) are 0.\nPlease fill in the values.",
                                 icon: "warning",
                                 confirmButtonColor: "#AB2F2B",
                                 confirmButtonText: "OK",
@@ -784,7 +784,7 @@
                                 <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtTransport}</strong></td>
                             </tr>
                             <tr>
-                                <th style="width: 40%; text-align: left; padding: 8px;">Total Others</th>
+                                <th style="width: 40%; text-align: left; padding: 8px;">Total Other Expenses</th>
                                 <td style="width: 10%; text-align: right; padding: 8px;">:</td>
                                 <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtLainnya}</strong></td>
                             </tr>
@@ -920,7 +920,7 @@
                             // ✅ Case 1: Low-level Plantation users (Exclude Meals)
                             Swal.fire({
                                 title: "Warning!",
-                                text: "Cash Advanced fields (Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                text: "Cash Advanced fields (Perdiem, Accommodation, Transport, Other Expenses) are 0.\nPlease fill in the values.",
                                 icon: "warning",
                                 confirmButtonColor: "#AB2F2B",
                                 confirmButtonText: "OK",
@@ -931,7 +931,7 @@
                             // ✅ Case 2: High-level Plantation users (Include Meals)
                             Swal.fire({
                                 title: "Warning!",
-                                text: "Cash Advanced fields (Meals, Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                text: "Cash Advanced fields (Meals, Perdiem, Accommodation, Transport, Other Expenses) are 0.\nPlease fill in the values.",
                                 icon: "warning",
                                 confirmButtonColor: "#AB2F2B",
                                 confirmButtonText: "OK",
@@ -942,7 +942,7 @@
                             // ✅ Case 3: Non-Plantation Users (Include Meals)
                             Swal.fire({
                                 title: "Warning!",
-                                text: "Cash Advanced fields (Meals, Perdiem, Accommodation, Transport, Others) are 0.\nPlease fill in the values.",
+                                text: "Cash Advanced fields (Meals, Perdiem, Accommodation, Transport, Other Expenses) are 0.\nPlease fill in the values.",
                                 icon: "warning",
                                 confirmButtonColor: "#AB2F2B",
                                 confirmButtonText: "OK",

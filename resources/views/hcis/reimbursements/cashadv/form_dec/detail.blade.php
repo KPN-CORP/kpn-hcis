@@ -1,17 +1,17 @@
-{{-- <script src="{{ asset('/js/cashAdvanced/detail.js') }}"></script> --}}
+<!--<script src="{{ asset('/js/cashAdvanced/detail.js') }}"></script>-->
 @include('js.hcis.cashAdvanced.detail')
 
 @if (!empty($detailCA['detail_e']) && $detailCA['detail_e'][0]['type'] !== null)
     <div id="form-container-detail">
         @foreach ($detailCA['detail_e'] as $index => $detail)
-            <div id="form-container-e-detail-{{ $loop->index + 1 }}" class="p-2 mb-4 rounded-3" style="background-color: #f8f8f8">
+            <div id="form-container-e-detail-{{ $loop->index + 1 }}" class="p-2 mb-2 bg-light card-body rounded-3" >
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Entertainment {{ $loop->index + 1 }}</p>
-                <div id="form-container-e-detail-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
+                <div id="form-container-e-detail-req-{{ $loop->index + 1 }}" class="card-body bg-white p-2 mb-2 rounded-3">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Detail Entertainment Request</p>
                     <div class="row">
                         <!-- Company Code -->
                         <div class="col-md-6">
-                            <table class="table" style="border: none; border-collapse: collapse; padding: 1%;">
+                            <table width="100%">
                                 <tr>
                                     <th class="label" style="border: none; width:40%;">Entertainment Type</th>
                                     <td class="colon" style="border: none; width:1%;">:</td>
@@ -42,7 +42,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="form-container-e-detail-dec-{{ $loop->index + 1 }}" class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
+                <div id="form-container-e-detail-dec-{{ $loop->index + 1 }}" class="card-body bg-white p-2 rounded-3">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Detail Entertainment Declaration</p>
                     @if (isset($declareCA['detail_e'][$index]))
                         @php
@@ -79,11 +79,11 @@
                             </div>
                         </div>
                     @endif
-                    <br>
+                    
                     <div class="row mt-3">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormDetail({{ $loop->index + 1 }}, event)">Reset</button>
-                            {{-- <button class="btn btn-outline-primary mr-2 btn-sm" onclick="removeFormDetailDec({{ $loop->index + 1 }}, event)">Delete</button> --}}
+                            {{-- <button class="btn btn-outline-danger mr-2 btn-sm" onclick="removeFormDetailDec({{ $loop->index + 1 }}, event)">Delete</button> --}}
                         </div>
                     </div>
                 </div>
@@ -91,7 +91,7 @@
         @endforeach
         @foreach ($declareCA['detail_e'] as $index => $detail_dec)
             @if (!isset($detailCA['detail_e'][$index]))
-                <div id="form-container-e-detail-{{ $loop->index + 1 }}" class="p-2 mb-4 rounded-3" style="background-color: #f8f8f8">
+                <div id="form-container-e-detail-{{ $loop->index + 1 }}" class="p-2 mb-2 bg-light card-body rounded-3">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Entertainment {{ $loop->index + 1 }}</p>
                     <div class="row">
                         <div class="col-md-6 mb-2">
@@ -123,11 +123,11 @@
                             <textarea name="enter_fee_e_detail[]" class="form-control">{{ $detail_dec['fee_detail'] }}</textarea>
                         </div>
                     </div>
-                    <br>
+                    
                     <div class="row mt-3">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormDetail({{ $loop->index + 1 }}, event)">Reset</button>
-                            <button class="btn btn-outline-primary mr-2 btn-sm" onclick="removeFormDetail({{ $loop->index + 1 }}, event)">Delete</button>
+                            <button class="btn btn-outline-danger mr-2 btn-sm" onclick="removeFormDetail({{ $loop->index + 1 }}, event)">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -138,9 +138,9 @@
     <div class="mt-3">
         <button class="btn btn-primary btn-sm" id="addMoreButtonDetail" onclick="addMoreFormDetailDec(event)">Add More</button>
     </div>
-
-    <div class="mt-2">
-        <label class="form-label">Total Entertain</label>
+    <hr/>
+    <div>
+        <label class="form-label">Total Entertainment</label>
         <div class="input-group">
             <div class="input-group-append">
                 <span class="input-group-text">Rp</span>
@@ -155,7 +155,7 @@
     <div id="form-container-detail">
         @foreach ($declareCA['detail_e'] as $index => $detail_dec)
             @if (!isset($detailCA['detail_e'][$index]))
-                <div id="form-container-e-detail-{{ $loop->index + 1 }}" class="p-2 mb-4 rounded-3" style="background-color: #f8f8f8">
+                <div id="form-container-e-detail-{{ $loop->index + 1 }}" class="p-2 mb-2 bg-light card-body rounded-3">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Entertainment {{ $loop->index + 1 }}</p>
                     <div class="row">
                         <div class="col-md-6 mb-2">
@@ -187,11 +187,11 @@
                             <textarea name="enter_fee_e_detail[]" class="form-control">{{ $detail_dec['fee_detail'] }}</textarea>
                         </div>
                     </div>
-                    <br>
+                    
                     <div class="row mt-3">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormDetail({{ $loop->index + 1 }}, event)">Reset</button>
-                            <button class="btn btn-outline-primary mr-2 btn-sm" onclick="removeFormDetail({{ $loop->index + 1 }}, event)">Delete</button>
+                            <button class="btn btn-outline-danger mr-2 btn-sm" onclick="removeFormDetail({{ $loop->index + 1 }}, event)">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -202,9 +202,9 @@
     <div class="mt-3">
         <button class="btn btn-primary btn-sm" id="addMoreButtonDetail" onclick="addMoreFormDetailDec(event)">Add More</button>
     </div>
-
-    <div class="mt-2">
-        <label class="form-label">Total Entertain</label>
+    <hr/>
+    <div>
+        <label class="form-label">Total Entertainment</label>
         <div class="input-group">
             <div class="input-group-append">
                 <span class="input-group-text">Rp</span>
@@ -217,9 +217,9 @@
     </div>
 @else
     <div id="form-container-detail">
-        <div id="form-container-e-detail-1" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
+        <div id="form-container-e-detail-1" class="card-body p-2 mb-2 bg-light rounded-3">
             <p class="fs-4 text-primary" style="font-weight: bold; ">Detail Entertainment 1</p>
-            <div id="form-container-e-detail-req-1" class="card-body bg-light p-2 mb-3">
+            <div id="form-container-e-detail-req-1" class="card-body bg-white rounded-3 p-2 mb-2">
                 <p class="fs-5 text-primary" style="font-weight: bold;">Detail Entertainment Declaration</p>
                 <div class="row">
                     <div class="col-md-6 mb-2">
@@ -251,11 +251,11 @@
                         <textarea name="enter_fee_e_detail[]" class="form-control"></textarea>
                     </div>
                 </div>
-                <br>
+                
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormDetail(1, event)">Reset</button>
-                        <button class="btn btn-outline-primary mr-2 btn-sm" onclick="removeFormDetail(1, event)">Delete</button>
+                        <button class="btn btn-outline-danger mr-2 btn-sm" onclick="removeFormDetail(1, event)">Delete</button>
                     </div>
                 </div>
             </div>
@@ -265,9 +265,9 @@
     <div class="mt-3">
         <button class="btn btn-primary btn-sm" id="addMoreButtonDetail" onclick="addMoreFormDetailDec(event)">Add More</button>
     </div>
-
-    <div class="mt-2">
-        <label class="form-label">Total Entertain</label>
+    <hr/>
+    <div>
+        <label class="form-label">Total Entertainment</label>
         <div class="input-group">
             <div class="input-group-append">
                 <span class="input-group-text">Rp</span>

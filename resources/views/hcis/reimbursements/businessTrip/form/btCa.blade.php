@@ -48,7 +48,7 @@
                     <li class="nav-item" role="presentation" id="other-tab-li">
                         <button class="nav-link" id="pills-other-tab" data-bs-toggle="pill"
                             data-bs-target="#pills-other" type="button" role="tab" aria-controls="pills-other"
-                            aria-selected="false">Others</button>
+                            aria-selected="false">Other Expenses</button>
                     </li>
                 </ul>
 

@@ -14,12 +14,9 @@
                         placeholder="mm/dd/yyyy" value="{{ $date->declare_estimate ?? 0 }}" readonly>
                 </div>
             </div>
-            <label for="additional-fields-title" class="mb-2">  
-                <span class="text-info fst-italic">  
-                    * In accordance with the company's policy on <strong>Long-Distance Business Travel</strong>, any unused cash advance must be returned to the company's cash/account no later than <strong>2 (two) days</strong> after the <strong>Business Trip Accountability Declaration</strong> is verified by the <strong>GA department</strong>. If the employee fails to return the unused cash advance within the specified time, the cash advance will be <strong>deducted from the employee's salary</strong>.  
-                </span>  
-            </label>  
-            <div class="d-flex flex-column">
+           <div class="alert alert-info" role="alert">
+                    *In accordance with the company's policy on <strong>Long-Distance Business Travel</strong>, any unused cash advance must be returned to the company's cash/account no later than <strong>2 (two) days</strong> after the <strong>Business Trip Accountability Declaration</strong> is verified by the <strong>GA department</strong>. If the employee fails to return the unused cash advance within the specified time, the cash advance will be <strong>deducted from the employee's salary</strong>.  </div>
+            <div class="d-flex flex-column rounded-3 p-2" style="background-color:#f8f8f8;">
                 <ul class="nav mb-2" id="pills-tab" role="tablist">
                     <li class="nav-item" role="presentation" id="perdiem-tab-li">
                         <button class="nav-link active" id="pills-perdiem-tab" data-bs-toggle="pill"
@@ -47,7 +44,7 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="pills-other-tab" data-bs-toggle="pill"
                             data-bs-target="#pills-other" type="button" role="tab" aria-controls="pills-other"
-                            aria-selected="false">Others</button>
+                            aria-selected="false">Other Expenses</button>
                     </li>
                 </ul>
                 <div class="tab-content" id="pills-tabContent">
@@ -76,11 +73,10 @@
                         @include('hcis.reimbursements.businessTrip.form.cashadvancedForm.caOther')
                     </div>
                 </div>
-
-                <br>
-                <div class="col-md-12 mb-2">
-                    <label class="form-label">Total Cash
-                        Advanced</label>
+               
+            </div>
+             <div class="col-md-12 mt-3">
+                    <label class="form-label">Total Cash Advanced</label>
                     <div class="input-group">
                         <div class="input-group-append">
                             <span class="input-group-text">Rp</span>
@@ -99,7 +95,6 @@
                             min="0" value="0" readonly>
                     </div>
                 </div>
-            </div>
         </div>
     </div>
 </div>

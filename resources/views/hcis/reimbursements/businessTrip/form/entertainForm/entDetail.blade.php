@@ -54,7 +54,7 @@
     </div>
     <hr/>
     <div>
-        <label class="form-label">Total Entertain</label>
+        <label class="form-label">Total Entertainment</label>
         <div class="input-group">
             <div class="input-group-append">
                 <span class="input-group-text">Rp</span>
@@ -116,7 +116,7 @@
     </div>
     <hr/>
     <div>
-        <label class="form-label">Total Entertain</label>
+        <label class="form-label">Total Entertainment</label>
         <div class="input-group">
             <div class="input-group-append">
                 <span class="input-group-text">Rp</span>

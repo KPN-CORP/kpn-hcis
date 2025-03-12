@@ -88,7 +88,7 @@
 @if (!empty($caDetail['detail_meals']) && $caDetail['detail_meals'][0]['start_date'] !== null)
     <div id="form-container-meals">
         @foreach ($caDetail['detail_meals'] as $meals)
-            <div id="form-container-bt-meals-{{ $loop->index + 1 }}" class="bg-white card-body p-2 mb-2">
+            <div id="form-container-bt-meals-{{ $loop->index + 1 }}" class="bg-light rounded-3 card-body p-2 mb-2">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Meals {{ $loop->index + 1 }}</p>
                 <div id="form-container-bt-meals-req-{{ $loop->index + 1 }}" class="card-body bg-white p-2 rounded-3">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Meals Request</p>
@@ -134,7 +134,7 @@
                         </div>
                         <div class="col-md-6 mb-2">
                             <label class="form-label">Amount</label>
-                            <div class="input-group mb-3">
+                            <div class="input-group">
                                 <div class="input-group-append">
                                     <span class="input-group-text">Rp</span>
                                 </div>
@@ -147,7 +147,7 @@
                             </div>
                         </div>
                         <!-- Information -->
-                        <div class="col-md-12 mb-2">
+                        <div class="col-md-12">
                             <label class="form-label">Information</label>
                             <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ...">{{ $meals['keterangan'] }}</textarea>
                         </div>

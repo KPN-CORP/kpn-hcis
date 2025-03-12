@@ -3,7 +3,7 @@
           </div>
 <div style="background-color:#f8f8f8;" class="tab-pane fade p-2 rounded-3  <?php echo ($entrTab && $dnsTab) || (!$entrTab && $dnsTab) || (!$entrTab && !$dnsTab) ? 'show active' : ''; ?>" id="pills-cashAdvanced" role="tabpanel"
     aria-labelledby="pills-cashAdvanced-tab">
-    <ul class="nav mb-3" id="pills-tab-inner" role="tablist">
+    <ul class="nav mb-2" id="pills-tab-inner" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="pills-perdiem-tab" data-bs-toggle="pill" data-bs-target="#pills-perdiem"
                 type="button" role="tab" aria-controls="pills-perdiem"
@@ -26,7 +26,7 @@
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="pills-other-tab" data-bs-toggle="pill" data-bs-target="#pills-other"
-                type="button" role="tab" aria-controls="pills-other" aria-selected="false">Other</button>
+                type="button" role="tab" aria-controls="pills-other" aria-selected="false">Other Expenses</button>
         </li>
     </ul>
     <div class="tab-content">

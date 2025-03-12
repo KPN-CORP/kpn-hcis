@@ -67,7 +67,7 @@
                     <div class="row mt-2">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px" onclick="clearFormTransport(${formCountTransport}, event)">Reset</button>
-                            <button class="btn btn-outline-primary btn-sm" onclick="removeFormTransport(${formCountTransport}, event)">Delete</button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="removeFormTransport(${formCountTransport}, event)">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -138,7 +138,7 @@
                     <div class="row mt-2">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px" onclick="clearFormTransport(${formCountTransport}, event)">Reset</button>
-                            <button class="btn btn-outline-primary btn-sm" onclick="removeFormTransport(${formCountTransport}, event)">Delete</button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="removeFormTransport(${formCountTransport}, event)">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -295,34 +295,34 @@
                         <div class="col-md-6">
                             <table width="100%">
                                 <tr>
-                                    <th width="40%">Company Code</th>
+                                    <th width="40%" class="label">Company Code</th>
                                     <td class="block">:</td>
-                                    <td>{{ $transport['company_code'] }}</td>
+                                    <td class="value">{{ $transport['company_code'] }}</td>
                                 </tr>
                                 <tr>
-                                    <th>Amount</th>
+                                    <th class="label">Amount</th>
                                     <td class="block">:</td>
-                                    <td> Rp {{ number_format($transport['nominal'], 0, ',', '.') }}</td>
+                                    <td class="value"> Rp {{ number_format($transport['nominal'], 0, ',', '.') }}</td>
                                 </tr>
                             </table>
                         </div>
                         <div class="col-md-6">
                             <table width="100%">
                                 <tr>
-                                    <th width="40%">Date</th>
+                                    <th width="40%" class="label">Date</th>
                                     <td class="block">:</td>
-                                    <td> {{ date('d M Y', strtotime($transport['tanggal'])) }} </td>
+                                    <td value="value"> {{ date('d M Y', strtotime($transport['tanggal'])) }} </td>
                                 </tr>
                                 <tr>
-                                    <th>End Date</th>
+                                    <th class="label">End Date</th>
                                     <td class="block">:</td>
-                                    <td>{{ number_format($transport['nominal'], 0, ',', '.') }}</td>
+                                    <td class="value">{{ number_format($transport['nominal'], 0, ',', '.') }}</td>
                                 </tr>
                             </table>
                         </div>
                     </div>
                 </div>
-                <div id="form-container-bt-transport-dec-{{ $loop->index + 1 }}" class="card-body bg-white rounded-3 p-2 mb-2"
+                <div id="form-container-bt-transport-dec-{{ $loop->index + 1 }}" class="card-body bg-white rounded-3 p-2"
                     style="border-radius: 1%;">
                     <p class="fs-5 text-primary" style="font-weight: bold; ">Transport Declaration</p>
                     @if (isset($declareCa['detail_transport'][$index]))
@@ -429,7 +429,7 @@
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px"
                                 onclick="clearFormTransport({{ $loop->index + 1 }}, event)">Reset</button>
-                            <button class="btn btn-outline-primary btn-sm"
+                            <button class="btn btn-outline-danger btn-sm"
                                 onclick="removeFormTransport({{ $loop->index + 1 }}, event)">Delete</button>
                         </div>
                     </div>
@@ -514,7 +514,7 @@
                             <div class="d-flex justify-start w-100">
                                 <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px"
                                     onclick="clearFormTransport({{ $loop->index + 1 }}, event)">Reset</button>
-                                <button class="btn btn-outline-primary btn-sm"
+                                <button class="btn btn-outline-danger btn-sm"
                                     onclick="removeFormTransport({{ $loop->index + 1 }}, event)">Delete</button>
                             </div>
                         </div>
@@ -543,7 +543,7 @@
     </div>
 @else
     <div id="form-container-transport">
-        <div id="form-container-bt-transport-1" class="bg-light card-body p-2 mb-2">
+        <div id="form-container-bt-transport-1" class="bg-light card-body rounded-3 p-2 mb-2">
             <p class="fs-4 text-primary" style="font-weight: bold; ">Transport 1</p>
             <label for="additional-fields-title" class="mb-2">
                 <span class="text-info fst-italic">* Transport only for Bus, Train and Speedboat</span>
@@ -593,7 +593,7 @@
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px"
                             onclick="clearFormTransport(1, event)">Reset</button>
-                        <button class="btn btn-outline-primary btn-sm"
+                        <button class="btn btn-outline-danger btn-sm"
                             onclick="removeFormTransport(1, event)">Delete</button>
                     </div>
                 </div>

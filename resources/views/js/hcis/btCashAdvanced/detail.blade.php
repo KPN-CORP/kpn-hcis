@@ -53,7 +53,7 @@ function addMoreFormDetailDec(event) {
                                 oninput="formatInputENT(this)">
                         </div>
                     </div>
-                    <div class="col-md-12 mb-2">
+                    <div class="col-md-12">
                         <label class="form-label">Entertainment Fee Detail</label>
                         <textarea name="enter_fee_e_detail[]" class="form-control" placeholder="Write more details ..."></textarea>
                     </div>

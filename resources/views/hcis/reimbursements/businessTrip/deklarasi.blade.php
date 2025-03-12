@@ -198,7 +198,7 @@
                                                     <button class="nav-link <?php echo $entrTab && !$dnsTab ? 'active' : ''; ?>" id="pills-caEntertain-tab"
                                                         data-bs-toggle="pill" data-bs-target="#pills-caEntertain"
                                                         type="button" role="tab" aria-controls="pills-caEntertain"
-                                                        aria-selected="false">CA Entertain</button>
+                                                        aria-selected="false">CA Entertainment</button>
                                                 </li>
                                                 {{-- @endif --}}
                                             </ul>
@@ -229,11 +229,39 @@
                                         @php
                                             use Illuminate\Support\Facades\Storage;
                                         @endphp
-
+                                        
                                         <div class="card-body my-3 p-2 rounded-3" style="background-color:#f8f8f8;">
                                             <div class="row">
-                                                <div class="col-md-6">
-                                                    <label class="form-label">Total Cash Advanced Request</label>
+        <div class="col-md-6 mb-2">
+            <label class="form-label">Entertainment Costs Requested</label>
+            <div class="input-group">
+                <div class="input-group-append">
+                    <span class="input-group-text">Rp</span>
+                </div>
+                <input class="form-control bg-light" name="totalca_ent"
+                    id="totalca_ent" type="text" min="0"
+                    value="{{ number_format($entrData->total_ca ?? '0', 0, ',', '.') }}"
+                    readonly>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-2">
+            <label class="form-label">Entertainment Costs Used</label>
+            <div class="input-group">
+                <div class="input-group-append">
+                    <span class="input-group-text">Rp</span>
+                </div>
+                <input class="form-control bg-light" name="totalca"
+                    id="totalca" type="text" min="0"
+                    value="{{ number_format($entrData->total_cost ?? '0', 0, ',', '.') }}"
+                    readonly>
+            </div>
+        </div>
+    </div>
+    <hr/>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-2">
+                                                    <label class="form-label">Cash Advanced Costs Requested</label>
                                                     <div class="input-group">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">Rp</span>
@@ -244,8 +272,8 @@
                                                             readonly>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
-                                                    <label class="form-label">Total Cash Advanced Declaration</label>
+                                                <div class="col-md-6 mb-2">
+                                                    <label class="form-label">Cash Advanced Costs Used</label>
                                                     <div class="input-group">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">Rp</span>
@@ -313,14 +341,16 @@
                                                                         data-file="{{ $file }}"
                                                                         style="position: relative; display: inline-block; margin: 10px;">
                                                                         @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
-                                                                            <a href="{{ Storage::url($file) }}" target="_blank"
+                                                                            <a href="{{ asset($file) }}"
+                                                                                target="_blank"
                                                                                 rel="noopener noreferrer">
-                                                                                <img src="{{ Storage::url($file) }}"
+                                                                                <img src="{{ asset($file) }}"
                                                                                     alt="Proof Image"
                                                                                     style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
                                                                             </a>
                                                                         @elseif ($extension === 'pdf')
-                                                                            <a href="{{ Storage::url($file) }}" target="_blank"
+                                                                            <a href="{{ asset($file) }}"
+                                                                                target="_blank"
                                                                                 rel="noopener noreferrer">
                                                                                 <img src="{{ asset('images/pdf_icon.png') }}"
                                                                                     alt="PDF File">
@@ -348,14 +378,16 @@
                                                                         data-file="{{ $file }}"
                                                                         style="position: relative; display: inline-block; margin: 10px;">
                                                                         @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
-                                                                            <a href="{{ Storage::url($file) }}" target="_blank"
+                                                                            <a href="{{ asset($file) }}"
+                                                                                target="_blank"
                                                                                 rel="noopener noreferrer">
-                                                                                <img src="{{ Storage::url($file) }}"
+                                                                                <img src="{{ asset($file) }}"
                                                                                     alt="Proof Image"
                                                                                     style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
                                                                             </a>
                                                                         @elseif ($extension === 'pdf')
-                                                                            <a href="{{ Storage::url($file) }}" target="_blank"
+                                                                            <a href="{{ asset($file) }}"
+                                                                                target="_blank"
                                                                                 rel="noopener noreferrer">
                                                                                 <img src="{{ asset('images/pdf_icon.png') }}"
                                                                                     alt="PDF File">
