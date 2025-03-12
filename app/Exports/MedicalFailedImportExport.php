@@ -43,6 +43,7 @@ class MedicalFailedImportExport implements FromArray, WithHeadings, WithStyles, 
             'Period', 
             'Medical Type',
             'Amount', 
+            'Amount BPJS', 
             'Error Message' // Kolom tambahan untuk error
         ];
     }
