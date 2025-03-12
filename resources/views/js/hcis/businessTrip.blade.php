@@ -888,12 +888,14 @@
             "caEntertainCheckbox",
             "ticketCheckbox",
             "hotelCheckbox",
+            "messCheckbox",
             "taksiCheckbox",
         ];
 
         const checkboxesDalamKota = [
             "ticketCheckboxDalamKota",
             "hotelCheckboxDalamKota",
+            "messCheckboxDalamKota",
             "taksiCheckboxDalamKota",
         ];
 
@@ -924,6 +926,7 @@
                 resetSection(checkboxesDalamKota, [
                     "nav-ticket-dalam-kota",
                     "nav-hotel-dalam-kota",
+                    "nav-mess-dalam-kota",
                     "nav-taksi-dalam-kota",
                 ]);
             } else if (this.value === "dalam kota") {
@@ -936,6 +939,7 @@
                     "nav-cashAdvancedEntertain",
                     "nav-ticket",
                     "nav-hotel",
+                    "nav-mess",
                     "nav-taksi",
                 ]);
             } else {
@@ -948,9 +952,11 @@
                     "nav-cashAdvancedEntertain",
                     "nav-ticket",
                     "nav-hotel",
+                    "nav-mess",
                     "nav-taksi",
                     "nav-ticket-dalam-kota",
                     "nav-hotel-dalam-kota",
+                    "nav-mess-dalam-kota",
                     "nav-taksi-dalam-kota",
                 ]);
             }

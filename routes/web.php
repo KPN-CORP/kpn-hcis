@@ -394,12 +394,12 @@ Route::middleware('auth')->group(function () {
         Route::delete('/medical/admin/delete/report/{id}', [MedicalController::class, 'medicalReportAdminDelete'])->name('medicalReport-admin.delete');
         Route::post('/delete-failed-import', function (Request $request) {
             $filePath = str_replace(asset('storage/'), '', $request->file_path); // Ambil path relatif
-        
+
             if (Storage::disk('public')->exists($filePath)) {
                 Storage::disk('public')->delete($filePath);
                 return response()->json(['message' => 'File deleted successfully']);
             }
-        
+
             return response()->json(['message' => 'File not found'], 404);
         })->name('delete.failed.import');
     });
@@ -487,8 +487,8 @@ Route::middleware('auth')->group(function () {
     //ADMIN Home Trip
     // Route::middleware(['permission:report_hcis_ht'])->group(function () {
 
-        Route::get('/home-trip/admin', [HomeTripController::class, 'homeTripAdmin'])->name('home-trip.admin');
-        Route::get('/home-trip/admin/detail/{key}', [HomeTripController::class, 'homeTripAdminDetail'])->name('home-trip.detail');
+    Route::get('/home-trip/admin', [HomeTripController::class, 'homeTripAdmin'])->name('home-trip.admin');
+    Route::get('/home-trip/admin/detail/{key}', [HomeTripController::class, 'homeTripAdminDetail'])->name('home-trip.detail');
     // });
 
     //Home Trip
@@ -563,6 +563,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/roles/get-assignment', [RoleController::class, 'getAssignment'])->name('getAssignment');
         Route::get('/admin/roles/get-permission', [RoleController::class, 'getPermission'])->name('getPermission');
         Route::post('/admin/assign-user', [RoleController::class, 'assignUser'])->name('assign.user');
+    });
+
+    Route::middleware(['permission:viewdesignation'])->group(function () {
+        // Designation
+        Route::get('/designations', [DesignationController::class, 'index'])->name('designations');
+
+        Route::put('/admin/designations/update/dept-head/{id}', [DesignationController::class, 'updateDeptHead'])->name('designations.update.dept');
+
+        Route::put('/admin/designations/update/director-flag/{id}', [DesignationController::class, 'updateDirectorHead'])->name('designations.update.director');
     });
 
     Route::middleware(['permission:viewonbehalf'])->group(function () {

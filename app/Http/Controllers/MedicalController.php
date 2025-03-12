@@ -1824,13 +1824,9 @@ class MedicalController extends Controller
                 $attachment = $request->file('imp_attachment');
                 $attachmentName = 'proof_' . time() . '_' . $attachment->getClientOriginalName();
                 $uploadPath = 'uploads/proofs/import_medical';
-                $fullPath = public_path($uploadPath);
             
                 // Save file to storage
                 $attachmentPath = $attachment->storeAs($uploadPath, $attachmentName, 'public');
-            
-                // Move file to public path
-                $attachment->move($fullPath, $attachmentName);
                 $existingFiles[] = $uploadPath . '/' . $attachmentName;
             }
 
