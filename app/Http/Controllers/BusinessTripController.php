@@ -23,6 +23,7 @@ use App\Models\HotelApproval;
 use App\Models\MessApproval;
 use App\Models\TaksiApproval;
 use App\Models\HealthCoverage;
+use App\Models\ApprovalPriority;
 use Carbon\Carbon;
 use Excel;
 use Illuminate\Support\Facades\DB;
@@ -440,25 +441,7 @@ class BusinessTripController extends Controller
             $allowance = "Allowance";
         }
 
-        function findDepartmentHead($employee)
-        {
-            $manager = Employee::where('employee_id', $employee->manager_l1_id)->first();
-
-            if (!$manager) {
-                return null;
-            }
-
-            $designation = Designation::where('job_code', $manager->designation_code)->first();
-
-            if ($designation->dept_head_flag == 'T') {
-                return $manager;
-            } else {
-                return findDepartmentHead($manager);
-            }
-            return null;
-        }
-
-        $deptHeadManager = findDepartmentHead($employee);
+        $deptHeadManager = $this->findDepartmentHead($employee);
 
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
@@ -1596,24 +1579,8 @@ class BusinessTripController extends Controller
         $oldNoSppd = $n->no_sppd;
         $userId = Auth::id();
         $employee = Employee::where('id', $userId)->first();
-        function findDepartmentHead($employee)
-        {
-            $manager = Employee::where('employee_id', $employee->manager_l1_id)->first();
 
-            if (!$manager) {
-                return null;
-            }
-
-            $designation = Designation::where('job_code', $manager->designation_code)->first();
-
-            if ($designation->dept_head_flag == 'T') {
-                return $manager;
-            } else {
-                return findDepartmentHead($manager);
-            }
-            return null;
-        }
-        $deptHeadManager = findDepartmentHead($employee);
+        $deptHeadManager = $this->findDepartmentHead($employee);
 
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
@@ -2899,24 +2866,7 @@ class BusinessTripController extends Controller
             $model_bt->status = $req->input('action_ca_submit');
             $statusValue = 'Extend L1';  // When "Submit" is clicked
 
-            function findDepartmentHead($employee)
-            {
-                $manager = Employee::where('employee_id', $employee->manager_l1_id)->first();
-
-                if (!$manager) {
-                    return null;
-                }
-
-                $designation = Designation::where('job_code', $manager->designation_code)->first();
-
-                if ($designation->dept_head_flag == 'T') {
-                    return $manager;
-                } else {
-                    return findDepartmentHead($manager);
-                }
-                return null;
-            }
-            $deptHeadManager = findDepartmentHead($employee_data);
+            $deptHeadManager = $this->findDepartmentHead($employee_data);
             $managerL1 = $deptHeadManager->employee_id;
             $managerL2 = $deptHeadManager->manager_l1_id;
 
@@ -4114,24 +4064,8 @@ class BusinessTripController extends Controller
         $userId = Auth::id();
         $employee = Employee::where('id', $userId)->first();
 
-        function findDepartmentHead($employee)
-        {
-            $manager = Employee::where('employee_id', $employee->manager_l1_id)->first();
-
-            if (!$manager) {
-                return null;
-            }
-
-            $designation = Designation::where('job_code', $manager->designation_code)->first();
-
-            if ($designation->dept_head_flag == 'T') {
-                return $manager;
-            } else {
-                return findDepartmentHead($manager);
-            }
-            return null;
-        }
-        $deptHeadManager = findDepartmentHead($employee);
+        //Kn
+        $deptHeadManager = $this->findDepartmentHead($employee);
 
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
@@ -9387,7 +9321,30 @@ class BusinessTripController extends Controller
         return $newNoSppd;
     }
 
+    private function findDepartmentHead($employee)
+    {
+        $priority = ApprovalPriority::where('user_id', $employee->employee_id)->first();
 
+        if ($priority) {
+            $manager = ApprovalPriority::where('employee_id', $priority->employee_id)->first();
+            return $manager;
+        } else {
+            $manager = Employee::where('employee_id', $employee->manager_l1_id)->first();
+
+            if (!$manager) {
+                return null;
+            }
+
+            $designation = Designation::where('job_code', $manager->designation_code)->first();
+
+            if ($designation->dept_head_flag == 'T') {
+                return $manager;
+            } else {
+                return findDepartmentHead($manager);
+            }
+        }
+        return null;
+    }
     private function getRomanMonth($month)
     {
         $romanMonths = [
