@@ -151,10 +151,10 @@ class ReimburseController extends Controller
         $employee_data = Employee::where('id', $userId)->first();
 
         $disableCACount = CATransaction::where('user_id', $userId)
-        ->whereNull('deleted_at') // Menambahkan kondisi deleted_at IS NULL
-        ->where('ca_status', '!=', 'Done') // Menambahkan kondisi ca_status != 'Done'
-        ->count();
-        
+            ->whereNull('deleted_at') // Menambahkan kondisi deleted_at IS NULL
+            ->where('ca_status', '!=', 'Done') // Menambahkan kondisi ca_status != 'Done'
+            ->count();
+
 
         $deklarasiCACount = CATransaction::where('user_id', $userId)
             ->where(function ($query) {
@@ -243,29 +243,29 @@ class ReimburseController extends Controller
         $userId = Auth::id();
         $parentLink = 'Reimbursement';
         $link = 'Report CA';
-        
+
         // Inisialisasi koleksi kosong
         $ca_transactions = collect([]);
         $ca_approvals = collect([]);
         $ca_sett = collect([]);
         $ca_extend = collect([]);
-        
+
         // Cek apakah filter telah diaplikasikan
         $isDateRangeFilterApplied = $request->has(['start_date', 'end_date']) && $request->get('start_date') != '' && $request->get('end_date') != '';
         $isCreatedDateFilterApplied = $request->has(['from_date', 'until_date']) && $request->get('from_date') != '' && $request->get('until_date') != '';
         $isStatusFilterApplied = $request->has('stat') && $request->get('stat') != '' && $request->get('stat') != '-';
-        
+
         // Tentukan apakah filter telah diaplikasikan
         $isFilterApplied = $isDateRangeFilterApplied || $isCreatedDateFilterApplied;
-        
+
         $startDate = date('Y-m-d');
         $endDate = date('Y-m-d');
-        
+
         if ($isFilterApplied) {
             // Jika filter diaplikasikan, lakukan query
             $query = CATransaction::with(['employee', 'statusReqEmployee', 'statusSettEmployee', 'statusExtendEmployee'])
                 ->orderBy('created_at', 'desc');
-                
+
             $permissionLocations = $this->permissionLocations;
             $permissionCompanies = $this->permissionCompanies;
             $permissionGroupCompanies = $this->permissionGroupCompanies;
@@ -317,7 +317,7 @@ class ReimburseController extends Controller
                 $transaction->formatted_start_date = Carbon::parse($transaction->start_date)->format('d-m-Y');
                 $transaction->formatted_end_date = Carbon::parse($transaction->end_date)->format('d-m-Y');
             }
-            
+
             // Query data approval lainnya hanya jika filter diterapkan
             $ca_approvals = ca_approval::with(['employee', 'statusReqEmployee'])
                 ->orderBy('layer', 'asc')
@@ -2137,21 +2137,33 @@ class ReimburseController extends Controller
         $currentMonth = date('n');
         $romanMonth = $this->getRomanMonth($currentMonth);
 
-        // Get the last transaction for the current year, including deleted ones
-        $lastTransaction = Hotel::whereYear('created_at', $currentYear)
-            ->orderBy('no_htl', 'desc')
+        // Get all transactions for the current year, including deleted ones
+        $transactions = Hotel::whereYear('created_at', $currentYear)
             ->withTrashed()
-            ->first();
+            ->get();
 
-        if ($lastTransaction && preg_match('/(\d{3})\/HTLD-HRD\/([IVX]+)\/\d{4}/', $lastTransaction->no_htl, $matches)) {
-            $lastNumber = intval($matches[1]);
-        } else {
-            $lastNumber = 0;
+        // Find the highest number by extracting and comparing the numeric part
+        $lastNumber = 0;
+        foreach ($transactions as $transaction) {
+            if (preg_match('/(\d+)\/HTLD-HRD\/([IVX]+)\/\d{4}/', $transaction->no_htl, $matches)) {
+                $number = intval($matches[1]);
+                if ($number > $lastNumber) {
+                    $lastNumber = $number;
+                }
+            }
         }
 
-        $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
-        $newNoSppd = "$newNumber/HTLD-HRD/$romanMonth/$currentYear";
-        // dd($newNoSppd);
+        $newNumber = $lastNumber + 1;
+
+        // Only pad with zeros if less than 1000
+        if ($newNumber < 1000) {
+            $formattedNumber = str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+        } else {
+            $formattedNumber = (string) $newNumber;
+        }
+
+        // Generate the new transaction number
+        $newNoSppd = "$formattedNumber/HTLD-HRD/$romanMonth/$currentYear";
 
         return $newNoSppd;
     }
@@ -2517,9 +2529,9 @@ class ReimburseController extends Controller
         $revisiInfo = null;
         if ($hotel->approval_status === 'Request Revision') {
             $revisiInfo = HotelApproval::where('htl_id', $hotel->id)
-                ->where('approval_status', 'Request Revision')  
-                ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru  
-                ->pluck('reject_info')  
+                ->where('approval_status', 'Request Revision')
+                ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru
+                ->pluck('reject_info')
                 ->first();
         }
 
@@ -3047,7 +3059,7 @@ class ReimburseController extends Controller
 
             // Log the rejection into the hotel_approvals table for all hotels with the same no_htl
             $hotels = Hotel::where('no_htl', $noHtl)->get();
-            
+
             foreach ($hotels as $hotel) {
                 $rejection = new HotelApproval();
                 $rejection->id = (string) Str::uuid();
@@ -3163,7 +3175,7 @@ class ReimburseController extends Controller
                         'totalHari' => $totalHari,
                         'managerName' => $managerName,
                         'approvalLink' => $approvalLink,
-                        'revisionLink' => $revisionLink,                        
+                        'revisionLink' => $revisionLink,
                         'rejectionLink' => $rejectionLink,
                         'approvalStatus' => 'Pending L2',
                         'base64Image' => $base64Image,
@@ -3403,7 +3415,7 @@ class ReimburseController extends Controller
 
         if ($isFilterApplied) {
             // Fetch latest hotel entries grouped by 'no_htl'
-                $latestHotelIds = Hotel::selectRaw('MAX(id) as id')
+            $latestHotelIds = Hotel::selectRaw('MAX(id) as id')
                 ->groupBy('no_htl')
                 ->pluck('id');
 
@@ -3776,7 +3788,6 @@ class ReimburseController extends Controller
 
         function generateTicketNumber($type)
         {
-
             $currentYear = date('Y');
             $currentMonth = date('n');
             $romanMonth = getRomanMonth_tkt($currentMonth);
@@ -3791,22 +3802,33 @@ class ReimburseController extends Controller
                 throw new Exception('Invalid ticket type');
             }
 
-            // Get the last transaction of the current year and month for the specific type
-            $lastTransaction = Tiket::whereYear('created_at', $currentYear)
+            // Get all transactions of the current year for the specific type
+            $transactions = Tiket::whereYear('created_at', $currentYear)
                 ->where('no_tkt', 'like', "%/$prefix/%/$currentYear")
-                ->orderBy('no_tkt', 'desc')
                 ->withTrashed()
-                ->first();
+                ->get();
 
-            // Determine the new ticket number
-            if ($lastTransaction && preg_match('/(\d{3})\/' . preg_quote($prefix, '/') . '\/[^\/]+\/' . $currentYear . '/', $lastTransaction->no_tkt, $matches)) {
-                $lastNumber = intval($matches[1]);
-            } else {
-                $lastNumber = 0;
+            // Find the highest number by extracting and comparing the numeric part
+            $lastNumber = 0;
+            foreach ($transactions as $transaction) {
+                if (preg_match('/(\d+)\/' . preg_quote($prefix, '/') . '\/[^\/]+\/' . $currentYear . '/', $transaction->no_tkt, $matches)) {
+                    $number = intval($matches[1]);
+                    if ($number > $lastNumber) {
+                        $lastNumber = $number;
+                    }
+                }
             }
 
-            $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
-            $newNoTkt = "$newNumber/$prefix/$romanMonth/$currentYear";
+            $newNumber = $lastNumber + 1;
+
+            // Only pad with zeros if less than 1000
+            if ($newNumber < 1000) {
+                $formattedNumber = str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+            } else {
+                $formattedNumber = (string) $newNumber;
+            }
+
+            $newNoTkt = "$formattedNumber/$prefix/$romanMonth/$currentYear";
 
             return $newNoTkt;
         }
@@ -3957,7 +3979,7 @@ class ReimburseController extends Controller
                         'jamPlgTkt' => $jamPlgTkt,
                         'managerName' => $managerName,
                         'approvalLink' => $approvalLink,
-                        'revisionLink' => $revisionLink,                        
+                        'revisionLink' => $revisionLink,
                         'rejectionLink' => $rejectionLink,
                         'base64Image' => $base64Image,
                         'textNotification' => $textNotification,
@@ -4186,9 +4208,9 @@ class ReimburseController extends Controller
         $revisiInfo = null;
         if ($ticket->approval_status === 'Request Revision') {
             $revisiInfo = TiketApproval::where('tkt_id', $ticket->id)
-                ->where('approval_status', 'Request Revision')  
-                ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru  
-                ->pluck('reject_info')  
+                ->where('approval_status', 'Request Revision')
+                ->orderBy('created_at', 'desc') // Mengurutkan dari terbaru
+                ->pluck('reject_info')
                 ->first();
         }
 
@@ -4424,7 +4446,7 @@ class ReimburseController extends Controller
                         'approvalStatus' => $statusValue,
                         'managerName' => $managerName,
                         'approvalLink' => $approvalLink,
-                        'revisionLink' => $revisionLink,                        
+                        'revisionLink' => $revisionLink,
                         'rejectionLink' => $rejectionLink,
                         'base64Image' => $base64Image,
                         'textNotification' => $textNotification,
@@ -4481,9 +4503,9 @@ class ReimburseController extends Controller
                     'type_tkt' => $ticket->type_tkt,
                     'jenis_tkt' => $ticket->jenis_tkt,
                     'ket_tkt' => $ticket->ket_tkt,
-                    'company_name' => $ticket->jns_dinas_tkt === 'Cuti' 
-                    ? $ticket->employee->company_name 
-                    : ($ticket->checkcompany->contribution_level ?? $ticket->checkcompanybt->checkCompany->contribution_level),
+                    'company_name' => $ticket->jns_dinas_tkt === 'Cuti'
+                        ? $ticket->employee->company_name
+                        : ($ticket->checkcompany->contribution_level ?? $ticket->checkcompanybt->checkCompany->contribution_level),
                     'cost_center' => $ticket->cost_center ?? 'N/A',
                     'manager1_fullname' => $ticket->manager1_fullname, // Accessor attribute
                     'manager2_fullname' => $ticket->manager2_fullname,
@@ -5322,7 +5344,7 @@ class ReimburseController extends Controller
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         $tktType = $request->input('tkt_type');
-        
+
         // Initialize variables
         $transactions = collect([]);
         $tickets = collect([]);
@@ -5332,10 +5354,10 @@ class ReimburseController extends Controller
         $ticketApprovals = collect([]);
         $approvalTickets = [];
         $employeeName = Employee::pluck('fullname', 'employee_id');
-        
+
         // Only process data if filters are applied
         $isFilterApplied = ($startDate && $endDate);
-        
+
         if ($isFilterApplied) {
             // Fetch latest ticket IDs
             $latestTicketIds = Tiket::selectRaw('MAX(id) as id')
@@ -5378,16 +5400,16 @@ class ReimburseController extends Controller
             // Get all tickets (only if filters are applied)
             $tickets = Tiket::with('businessTrip')
                 ->orderBy('created_at', 'desc');
-                
+
             // Apply the same filters to tickets query
             if ($startDate && $endDate) {
                 $tickets->whereRaw("DATE(tgl_brkt_tkt) BETWEEN ? AND ?", [$startDate, $endDate]);
             }
-            
+
             if ($tktType && $tktType !== '-') {
                 $tickets->where('jns_dinas_tkt', $tktType);
             }
-            
+
             $tickets = $tickets->get();
 
             // Group tickets by 'no_tkt'
@@ -5528,7 +5550,6 @@ class ReimburseController extends Controller
         // Redirect to the ticket page with a success message
         return redirect()->back()->with('success', 'Tickets has been deleted');
     }
-
 
     private function getRomanMonth($month)
     {
