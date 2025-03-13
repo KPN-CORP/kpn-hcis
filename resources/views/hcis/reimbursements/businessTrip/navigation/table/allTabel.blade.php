@@ -41,7 +41,6 @@
                                                 'No. CA' => $transaction->no_ca,
                                                 'No. SPPD' => $transaction->no_sppd,
                                                 'Type' => $transaction->type_ca === 'dns' ? 'Business Trip' : 'Entertain', // Conditional assignment
-                                                'Unit' => $transaction->unit,
                                                 'Destination' => $transaction->destination,
                                                 'CA Total' => 'Rp ' . number_format($transaction->total_ca, 0, ',', '.'),
                                                 'Total Real' => 'Rp ' . number_format($transaction->total_real, 0, ',', '.'),
@@ -64,7 +63,6 @@
                                         return [
                                             'No. Mess' => $mess->no_mess,
                                             'No. SPPD' => $mess->no_sppd,
-                                            'Unit' => $mess->unit,
                                             'Mess Location' => $mess->lokasi_mess,
                                             'Room' => $mess->jmlkmr_mess,
                                             'Check In' => date('d-M-Y', strtotime($mess->tgl_masuk_mess)),
@@ -88,7 +86,6 @@
                                             'No. Hotel' => $hotel->no_htl,
                                             'No. SPPD' => $hotel->no_sppd,
                                             'Colleague No. SPPD' => $hotel->no_sppd_htl,
-                                            'Unit' => $hotel->unit,
                                             'Hotel Name' => $hotel->nama_htl,
                                             'Location' => $hotel->lokasi_htl,
                                             'Room' => $hotel->jmlkmr_htl,
@@ -115,7 +112,6 @@
                                             'No. SPPD' => $ticket->no_sppd,
                                             'No. Ticket' => $ticket->no_tkt,
                                             'Passengers Name' => $ticket->np_tkt,
-                                            'Unit' => $ticket->unit,
                                             'Gender' => $ticket->jk_tkt,
                                             'NIK' => $ticket->noktp_tkt,
                                             'Phone No.' => $ticket->tlp_tkt,
@@ -141,7 +137,6 @@
                                 data-taksi="{{ json_encode([
                                     'Total Voucher' => $taksi[$n->no_sppd]->no_vt . ' Voucher',
                                     'No. SPPD' => $taksi[$n->no_sppd]->no_sppd,
-                                    'Unit' => $taksi[$n->no_sppd]->unit,
                                     'Details' => $taksi[$n->no_sppd]->vt_detail,
                                 ]) }}"><u>Details<u></a>
                         @else
@@ -170,11 +165,11 @@
                             @elseif ($n->status == 'Declaration L1')
                                 onclick="showManagerInfo('Next Approval L2 Manager', '{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}')"
                             @elseif ($n->status == 'Declaration L2')
-                                onclick="showManagerInfo('Previous Approval L1 Manager', '{{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}')" 
+                                onclick="showManagerInfo('Previous Approval L1 Manager', '{{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}')"
                                 @elseif ($n->status == 'Extend L1')
                                 onclick="showManagerInfo('Next Approval L2 Manager', '{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}')"
                             @elseif ($n->status == 'Extend L2')
-                                onclick="showManagerInfo('Previous Approval L1 Manager', '{{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}')" 
+                                onclick="showManagerInfo('Previous Approval L1 Manager', '{{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}')"
                             @endif>
                             {{ $n->status }}
                         </span>
@@ -187,7 +182,7 @@
                                 data-no-ca="{{ $n->no_sppd }}"
                                 data-start-date="{{ $n->mulai }}"
                                 data-end-date="{{ $n->kembali }}"
-                                data-end-date-ext="{{ $extendTime[$n->id]['ext_end_date'] ?? '' }}"  
+                                data-end-date-ext="{{ $extendTime[$n->id]['ext_end_date'] ?? '' }}"
                                 data-reason-ext="{{ $extendTime[$n->id]['reason_extend'] }}"
                             >
                                 Act
