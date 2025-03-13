@@ -168,11 +168,11 @@
                                     <select class="form-select form-control-sm" id="jns_dinas" name="jns_dinas" required>
                                         <option value="" selected disabled>-- Choose Type of Service --</option>
                                         <option value="dalam kota" {{ $n->jns_dinas == 'dalam kota' ? 'selected' : '' }}>
-                                            Dinas
-                                            Dalam Kota</option>
+                                            Perjalanan Dinas
+                                            Jarak Dekat (PDJD)</option>
                                         <option value="luar kota" {{ $n->jns_dinas == 'luar kota' ? 'selected' : '' }}>
-                                            Dinas
-                                            Luar Kota</option>
+                                            Perjalanan Dinas
+                                            Jarak Jauh (PDJJ)</option>
                                     </select>
                                 </div>
                             </div>
@@ -565,7 +565,7 @@
                                             </div>
                                         </div>
                                     </div>
-
+                                </div>
                                     <input type="hidden" name="status" value="Pending L1" id="status">
                                     <input type="hidden" name="job_level_number" value={{ $job_level_number }}
                                         id="job_level_number">

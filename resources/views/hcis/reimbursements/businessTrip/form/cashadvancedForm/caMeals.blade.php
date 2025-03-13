@@ -19,14 +19,14 @@
                 <label class="form-label">Meals Start Plan</label>
                 <input type="date" name="start_bt_meals[]" id="start_bt_meals_${formCountMeals}"
                     class="form-control start-meals" placeholder="mm/dd/yyyy"
-                    onchange="calculateTotalDaysPenginapan(this, document.getElementById('end_bt_meals_${formCountMeals}'), document.querySelector('#total_days_bt_meals_${formCountMeals}'))">
+                    onchange="calculateTotalDaysMeals(this, document.getElementById('end_bt_meals_${formCountMeals}'), document.querySelector('#total_days_bt_meals_${formCountMeals}'))">
             </div>
             <!-- Meals End Plan -->
             <div class="col-md-4 mb-2">
                 <label class="form-label">Meals End Plan</label>
                 <input type="date" name="end_bt_meals[]" id="end_bt_meals_${formCountMeals}"
                     class="form-control end-meals" placeholder="mm/dd/yyyy"
-                    onchange="calculateTotalDaysPenginapan(document.getElementById('start_bt_meals_${formCountMeals}'), this, document.querySelector('#total_days_bt_meals_${formCountMeals}'))">
+                    onchange="calculateTotalDaysMeals(document.getElementById('start_bt_meals_${formCountMeals}'), this, document.querySelector('#total_days_bt_meals_${formCountMeals}'))">
             </div>
             <!-- Total Days -->
             <div class="col-md-4 mb-2">
@@ -99,13 +99,13 @@
                             <input type="date" name="start_bt_meals[]" id="start_bt_meals_{{ $loop->index + 1 }}"
                                 class="form-control start-meals" value="{{ $meals['start_date'] }}"
                                 placeholder="mm/dd/yyyy"
-                                onchange="calculateTotalDaysPenginapan(this, document.getElementById('end_bt_meals_1'), document.querySelector('#total_days_bt_meals_1'))">
+                                onchange="calculateTotalDaysMeals(this, document.getElementById('end_bt_meals_1'), document.querySelector('#total_days_bt_meals_1'))">
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Meals End Plan</label>
                             <input type="date" name="end_bt_meals[]" id="end_bt_meals_{{ $loop->index + 1 }}"
                                 class="form-control end-meals" value="{{ $meals['end_date'] }}" placeholder="mm/dd/yyyy"
-                                onchange="calculateTotalDaysPenginapan(document.getElementById('start_bt_meals_{{ $loop->index + 1 }}'), this, document.querySelector('#total_days_bt_meals_1'))">
+                                onchange="calculateTotalDaysMeals(document.getElementById('start_bt_meals_{{ $loop->index + 1 }}'), this, document.querySelector('#total_days_bt_meals_1'))">
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Total Days</label>
@@ -193,13 +193,13 @@
                         <label class="form-label">Meals Start Plan</label>
                         <input type="date" name="start_bt_meals[]" id="start_bt_meals_1"
                             class="form-control start-meals" placeholder="mm/dd/yyyy"
-                            onchange="calculateTotalDaysPenginapan(this, document.getElementById('end_bt_meals_1'), document.querySelector('#total_days_bt_meals_1'))">
+                            onchange="calculateTotalDaysMeals(this, document.getElementById('end_bt_meals_1'), document.querySelector('#total_days_bt_meals_1'))">
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Meals End Plan</label>
                         <input type="date" name="end_bt_meals[]" id="end_bt_meals_1"
                             class="form-control end-meals" placeholder="mm/dd/yyyy"
-                            onchange="calculateTotalDaysPenginapan(document.getElementById('start_bt_meals_1'), this, document.querySelector('#total_days_bt_meals_1'))">
+                            onchange="calculateTotalDaysMeals(document.getElementById('start_bt_meals_1'), this, document.querySelector('#total_days_bt_meals_1'))">
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Total Days</label>

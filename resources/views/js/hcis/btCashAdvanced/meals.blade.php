@@ -80,4 +80,32 @@ function calculateTotalNominalBTMeals() {
 function onNominalChange() {
     calculateTotalNominalBTMeals();
 }
+
+function calculateTotalDaysMeals(startInput, endInput, totalDaysInput) {
+    const startDate = new Date(startInput.value);
+    const endDate = new Date(endInput.value);
+
+    // Set the minimum date for the endDate input
+    endInput.min = startInput.value;
+
+    if (startDate && endDate && endDate >= startDate) {
+        const timeDiff = endDate - startDate;
+        const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // Convert time to days
+        totalDaysInput.value = daysDiff > 0 ? daysDiff : 0; // Ensure non-negative
+    } else {
+        totalDaysInput.value = 0; // Set to 0 if invalid dates
+        endInput.value = "";
+    }
+
+    if (endDate < startDate) {
+        Swal.fire({
+            icon: "error",
+            title: "End Date cannot be earlier than Start Date",
+            text: "Choose another date!",
+            timer: 3000,
+            confirmButtonColor: "#AB2F2B",
+            confirmButtonText: "OK",
+        });
+    }
+}
 </script>
