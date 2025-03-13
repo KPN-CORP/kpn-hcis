@@ -168,6 +168,15 @@
         <tr>
             <td colspan="3"><b>CA Submission Details:</b></td>
         </tr>
+        @if (!empty($transactions->no_sppd))
+            <tr>
+                <td class="label">No SPPD</td>
+                <td class="colon">:</td>
+                <td class="value">
+                    <b>{{ $transactions->no_sppd }}</b>
+                </td>
+            </tr>
+        @endif
         <tr>
             <td class="label">Costing Company</td>
             <td class="colon">:</td>
@@ -445,6 +454,48 @@
                                 <span style="float: left; margin-left:4px">Rp.</span>
                                 <span
                                     style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_perdiem'], 'nominal')), 0, ',', '.') }}</span>
+                            </td>
+                        </tr>
+                    </table>
+                @endif
+                
+                @if (count($detailCA['detail_meals']) > 0 && !empty($detailCA['detail_meals'][0]['company_code']))
+                    <table class="table-approve">
+                        <tr>
+                            <th colspan="6"><b>Meals Plan :</b></th>
+                        </tr>
+                        <tr class="head-row">
+                            <td style="width:12%">Start Date</td>
+                            <td style="width:12%">End Date</td>
+                            <td>Company Code</td>
+                            <td>Information</td>
+                            <td>Total Days</td>
+                            <td style="width:20%">Amount</td>
+                        </tr>
+
+                        @foreach ($detailCA['detail_meals'] as $perdiem)
+                            <tr style="text-align: center">
+                                <td>{{ \Carbon\Carbon::parse($perdiem['start_date'])->format('d-M-y') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($perdiem['end_date'])->format('d-M-y') }}</td>
+                                <td>{{ $perdiem['company_code'] }}</td>
+                                <td>{{ $perdiem['keterangan'] }}</td>
+                                <td>{{ $perdiem['total_days'] }} Days</td>
+                                <td>
+                                    <span style="float: left; margin-left:4px">Rp.</span>
+                                    <span
+                                        style="float: right;">{{ number_format($perdiem['nominal'], 0, ',', '.') }}</span>
+                                </td>
+                            </tr>
+                        @endforeach
+                        <tr class="total-row">
+                            <td colspan="4" class="head-row">Total</td>
+                            <td>
+                                {{ array_sum(array_column($detailCA['detail_meals'], 'total_days')) }} Days
+                            </td>
+                            <td>
+                                <span style="float: left; margin-left:4px">Rp.</span>
+                                <span
+                                    style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_meals'], 'nominal')), 0, ',', '.') }}</span>
                             </td>
                         </tr>
                     </table>
