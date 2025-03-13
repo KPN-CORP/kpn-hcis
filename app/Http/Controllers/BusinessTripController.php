@@ -848,21 +848,8 @@ class BusinessTripController extends Controller
             if (!$ca) {
                 // Create a new CA transaction
                 $ca = new CATransaction();
-
-                // Generate new 'no_ca' code
-                $currentYear = date('Y');
-                $currentYearShort = date('y');
-                $prefix = 'CA';
-                $lastTransaction = CATransaction::whereYear('created_at', $currentYear)
-                    ->orderBy('no_ca', 'desc')
-                    ->first();
-
-                $lastNumber = $lastTransaction && preg_match('/CA' . $currentYearShort . '(\d{6})/', $lastTransaction->no_ca, $matches) ? intval($matches[1]) : 0;
-                $newNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
-                $newNoCa = "$prefix$currentYearShort$newNumber";
-
                 $ca->id = (string) Str::uuid();
-                $ca->no_ca = $newNoCa;
+                $ca->no_ca = $this->generateNoCa();
             } else {
                 // Update the existing CA transaction
                 $ca->no_ca = $ca->no_ca; // Keep the existing no_ca
@@ -1120,20 +1107,8 @@ class BusinessTripController extends Controller
                 $ent = new CATransaction();
                 $businessTripStatus = $request->input('status');
 
-                // Generate new 'no_ca' code
-                $currentYear = date('Y');
-                $currentYearShort = date('y');
-                $prefix = 'CA';
-                $lastTransaction = CATransaction::whereYear('created_at', $currentYear)
-                    ->orderBy('no_ca', 'desc')
-                    ->first();
-
-                $lastNumber = $lastTransaction && preg_match('/CA' . $currentYearShort . '(\d{6})/', $lastTransaction->no_ca, $matches) ? intval($matches[1]) : 0;
-                $newNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
-                $newNoCa = "$prefix$currentYearShort$newNumber";
-
                 $ent_id = (string) Str::uuid();
-                $ent->no_ca = $newNoCa;
+                $ent->no_ca = $this->generateNoCa();
             } else {
                 // Update the existing CA transaction
                 $ent->no_ca = $ent->no_ca; // Keep the existing no_ca
@@ -1644,20 +1619,8 @@ class BusinessTripController extends Controller
                 $ent = new CATransaction();
                 $entrTab = true;
 
-                // Generate new 'no_ca' code
-                $currentYear = date('Y');
-                $currentYearShort = date('y');
-                $prefix = 'CA';
-                $lastTransaction = CATransaction::whereYear('created_at', $currentYear)
-                    ->orderBy('no_ca', 'desc')
-                    ->first();
-
-                $lastNumber = $lastTransaction && preg_match('/CA' . $currentYearShort . '(\d{6})/', $lastTransaction->no_ca, $matches) ? intval($matches[1]) : 0;
-                $newNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
-                $newNoCa = "$prefix$currentYearShort$newNumber";
-
                 $entId = $ent->id = (string) Str::uuid();
-                $ent->no_ca = $newNoCa;
+                $ent->no_ca = $this->generateNoCa();
                 $ent->no_sppd = $oldNoSppd;
                 $ent->unit = $request->divisi;
                 $ent->contribution_level_code = $request->bb_perusahaan;
@@ -1780,20 +1743,9 @@ class BusinessTripController extends Controller
                 $ca = new CATransaction();
                 $dnsTab = true;
 
-                // Generate new 'no_ca' code
-                $currentYear = date('Y');
-                $currentYearShort = date('y');
-                $prefix = 'CA';
-                $lastTransaction = CATransaction::whereYear('created_at', $currentYear)
-                    ->orderBy('no_ca', 'desc')
-                    ->first();
-
-                $lastNumber = $lastTransaction && preg_match('/CA' . $currentYearShort . '(\d{6})/', $lastTransaction->no_ca, $matches) ? intval($matches[1]) : 0;
-                $newNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
-                $newNoCa = "$prefix$currentYearShort$newNumber";
 
                 $caId = $ca->id = (string) Str::uuid();
-                $ca->no_ca = $newNoCa;
+                $ca->no_ca = $this->generateNoCa();
                 $ca->no_sppd = $oldNoSppd;
                 $ca->unit = $request->divisi;
                 $ca->contribution_level_code = $request->bb_perusahaan;
@@ -2270,20 +2222,9 @@ class BusinessTripController extends Controller
                     $ca = new CATransaction();
                     $entrTab = true;
 
-                    // Generate new 'no_ca' code
-                    $currentYear = date('Y');
-                    $currentYearShort = date('y');
-                    $prefix = 'CA';
-                    $lastTransaction = CATransaction::whereYear('created_at', $currentYear)
-                        ->orderBy('no_ca', 'desc')
-                        ->first();
-
-                    $lastNumber = $lastTransaction && preg_match('/CA' . $currentYearShort . '(\d{6})/', $lastTransaction->no_ca, $matches) ? intval($matches[1]) : 0;
-                    $newNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
-                    $newNoCa = "$prefix$currentYearShort$newNumber";
 
                     $caId = $ca->id = (string) Str::uuid();
-                    $ca->no_ca = $newNoCa;
+                    $ca->no_ca = $this->generateNoCa();
                     $ca->no_sppd = $oldNoSppd;
                     $ca->unit = $request->divisi;
                     $ca->contribution_level_code = $request->bb_perusahaan;
@@ -2406,20 +2347,8 @@ class BusinessTripController extends Controller
                     $ca = new CATransaction();
                     $dnsTab = true;
 
-                    // Generate new 'no_ca' code
-                    $currentYear = date('Y');
-                    $currentYearShort = date('y');
-                    $prefix = 'CA';
-                    $lastTransaction = CATransaction::whereYear('created_at', $currentYear)
-                        ->orderBy('no_ca', 'desc')
-                        ->first();
-
-                    $lastNumber = $lastTransaction && preg_match('/CA' . $currentYearShort . '(\d{6})/', $lastTransaction->no_ca, $matches) ? intval($matches[1]) : 0;
-                    $newNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
-                    $newNoCa = "$prefix$currentYearShort$newNumber";
-
                     $caId = $ca->id = (string) Str::uuid();
-                    $ca->no_ca = $newNoCa;
+                    $ca->no_ca = $this->generateNoCa();
                     $ca->no_sppd = $oldNoSppd;
                     $ca->unit = $request->divisi;
                     $ca->contribution_level_code = $request->bb_perusahaan;
@@ -4057,7 +3986,7 @@ class BusinessTripController extends Controller
         }
 
         $noSppd = $this->generateNoSppd();
-        // $noSppdCa = $this->generateNoSppdCa();
+        // $noSppdCa = $this->generateNoCa();
         $noSppdTkt = $this->generateNoSppdTkt();
         $noSppdHtl = $this->generateNoSppdHtl();
         $noSppdMess = $this->generateNoSppdMess();
@@ -4313,18 +4242,6 @@ class BusinessTripController extends Controller
             $ca = new CATransaction();
             $businessTripStatus = $request->input('status');
 
-            // Generate new 'no_ca' code
-            $currentYear = date('Y');
-            $currentYearShort = date('y');
-            $prefix = 'CA';
-            $lastTransaction = CATransaction::whereYear('created_at', $currentYear)
-                ->orderBy('no_ca', 'desc')
-                ->first();
-
-            $lastNumber = $lastTransaction && preg_match('/CA' . $currentYearShort . '(\d{6})/', $lastTransaction->no_ca, $matches) ? intval($matches[1]) : 0;
-            $newNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
-            $newNoCa = "$prefix$currentYearShort$newNumber";
-
             if ($statusValue === 'Draft') {
                 // Set CA status to Draft
                 $caStatus = $ca->approval_status = 'Draft';
@@ -4336,7 +4253,7 @@ class BusinessTripController extends Controller
             // Assign values to $ca model
             $ca->id = $ca_id;
             $ca->type_ca = 'dns';
-            $ca->no_ca = $newNoCa;
+            $ca->no_ca = $this->generateNoCa();
             $ca->no_sppd = $noSppd;
             $ca->user_id = $userId;
             $ca->unit = $request->divisi;
@@ -4561,18 +4478,6 @@ class BusinessTripController extends Controller
             $ent = new CATransaction();
             $businessTripStatus = $request->input('status');
 
-            // Generate new 'no_ca' code
-            $currentYear = date('Y');
-            $currentYearShort = date('y');
-            $prefix = 'CA';
-            $lastTransaction = CATransaction::whereYear('created_at', $currentYear)
-                ->orderBy('no_ca', 'desc')
-                ->first();
-
-            $lastNumber = $lastTransaction && preg_match('/CA' . $currentYearShort . '(\d{6})/', $lastTransaction->no_ca, $matches) ? intval($matches[1]) : 0;
-            $newNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
-            $newNoCa = "$prefix$currentYearShort$newNumber";
-
             if ($statusValue === 'Draft') {
                 // Set CA status to Draft
                 $entStatus = $ent->approval_status = 'Draft';
@@ -4584,7 +4489,7 @@ class BusinessTripController extends Controller
             // Assign values to $ent model
             $ent->id = $ent_id;
             $ent->type_ca = 'entr';
-            $ent->no_ca = $newNoCa;
+            $ent->no_ca = $this->generateNoCa();
             $ent->no_sppd = $noSppd;
             $ent->user_id = $userId;
             $ent->unit = $request->divisi;
@@ -9229,96 +9134,124 @@ class BusinessTripController extends Controller
         $currentMonth = date('n');
         $romanMonth = $this->getRomanMonth($currentMonth);
 
-        // Get the last transaction for the current year, including deleted ones
-        $lastTransaction = Hotel::whereYear('created_at', $currentYear)
-            ->orderBy('no_htl', 'desc')
+        // Get all transactions for the current year, including deleted ones
+        $transactions = Hotel::whereYear('created_at', $currentYear)
             ->withTrashed()
-            ->first();
+            ->get();
 
-        if ($lastTransaction && preg_match('/(\d{3})\/HTLD-HRD\/([IVX]+)\/\d{4}/', $lastTransaction->no_htl, $matches)) {
-            $lastNumber = intval($matches[1]);
-        } else {
-            $lastNumber = 0;
+        // Find the highest number by extracting and comparing the numeric part
+        $lastNumber = 0;
+        foreach ($transactions as $transaction) {
+            if (preg_match('/(\d+)\/HTLD-HRD\/([IVX]+)\/\d{4}/', $transaction->no_htl, $matches)) {
+                $number = intval($matches[1]);
+                if ($number > $lastNumber) {
+                    $lastNumber = $number;
+                }
+            }
         }
 
-        $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
-        $newNoSppd = "$newNumber/HTLD-HRD/$romanMonth/$currentYear";
-        // dd($newNoSppd);
+        $newNumber = $lastNumber + 1;
+
+        // Only pad with zeros if less than 1000
+        if ($newNumber < 1000) {
+            $formattedNumber = str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+        } else {
+            $formattedNumber = (string) $newNumber;
+        }
+
+        // Generate the new transaction number
+        $newNoSppd = "$formattedNumber/HTLD-HRD/$romanMonth/$currentYear";
 
         return $newNoSppd;
     }
+
     private function generateNoSppdMess()
     {
         $currentYear = date('Y');
         $currentMonth = date('n');
         $romanMonth = $this->getRomanMonth($currentMonth);
 
-        // Get the last transaction for the current year, including deleted ones
-        $lastTransaction = Mess::whereYear('created_at', $currentYear)
-            ->orderBy('no_mess', 'desc')
+        // Get all transactions for the current year, including deleted ones
+        $transactions = Mess::whereYear('created_at', $currentYear)
             ->withTrashed()
-            ->first();
+            ->get();
 
-        if ($lastTransaction && preg_match('/(\d{3})\/MSD-HRD\/([IVX]+)\/\d{4}/', $lastTransaction->no_mess, $matches)) {
-            $lastNumber = intval($matches[1]);
-        } else {
-            $lastNumber = 0;
+        // Find the highest number by extracting and comparing the numeric part
+        $lastNumber = 0;
+        foreach ($transactions as $transaction) {
+            if (preg_match('/(\d+)\/MSD-HRD\/([IVX]+)\/\d{4}/', $transaction->no_mess, $matches)) {
+                $number = intval($matches[1]);
+                if ($number > $lastNumber) {
+                    $lastNumber = $number;
+                }
+            }
         }
 
-        $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
-        $newNoSppd = "$newNumber/MSD-HRD/$romanMonth/$currentYear";
-        // dd($newNoSppd);
+        $newNumber = $lastNumber + 1;
+
+        // Only pad with zeros if less than 1000
+        if ($newNumber < 1000) {
+            $formattedNumber = str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+        } else {
+            $formattedNumber = (string) $newNumber;
+        }
+
+        // Generate the new transaction number
+        $newNoSppd = "$formattedNumber/MSD-HRD/$romanMonth/$currentYear";
 
         return $newNoSppd;
     }
+
     private function generateNoSppdTkt()
     {
         $currentYear = date('Y');
         $currentMonth = date('n');
         $romanMonth = $this->getRomanMonth($currentMonth);
 
-        // Get the last transaction for the current year, including deleted ones
-        $lastTransaction = Tiket::whereYear('created_at', $currentYear)
+        // Get all transactions for the current year, including deleted ones
+        $transactions = Tiket::whereYear('created_at', $currentYear)
             ->where('no_tkt', 'like', '%TKTD-HRD%')  // Keep the filter for 'TKTD-HRD'
-            ->orderBy('no_tkt', 'desc')
             ->withTrashed()
-            ->first();
+            ->get();
 
-        if ($lastTransaction && preg_match('/(\d{3})\/TKTD-HRD\/([IVX]+)\/\d{4}/', $lastTransaction->no_tkt, $matches)) {
-            $lastNumber = intval($matches[1]);
-        } else {
-            $lastNumber = 0;
+        // Find the highest number by extracting and comparing the numeric part
+        $lastNumber = 0;
+        foreach ($transactions as $transaction) {
+            if (preg_match('/(\d+)\/TKTD-HRD\/([IVX]+)\/\d{4}/', $transaction->no_tkt, $matches)) {
+                $number = intval($matches[1]);
+                if ($number > $lastNumber) {
+                    $lastNumber = $number;
+                }
+            }
         }
 
-        $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
-        $newNoSppd = "$newNumber/TKTD-HRD/$romanMonth/$currentYear";
+        $newNumber = $lastNumber + 1;
 
-        // dd($newNoSppd);
+        // Only pad with zeros if less than 1000
+        if ($newNumber < 1000) {
+            $formattedNumber = str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+        } else {
+            $formattedNumber = (string) $newNumber;
+        }
+
+        // Generate the new transaction number
+        $newNoSppd = "$formattedNumber/TKTD-HRD/$romanMonth/$currentYear";
 
         return $newNoSppd;
     }
-    private function generateNoSppdCa()
+    private function generateNoCa()
     {
         $currentYear = date('Y');
-        $currentMonth = date('n');
-        $romanMonth = $this->getRomanMonth($currentMonth);
-
-        // Assuming you want to generate no_sppd similarly to no_ca
-        $lastTransaction = ca_transaction::whereYear('created_at', $currentYear)
-            ->whereMonth('created_at', $currentMonth)
-            ->orderBy('no_sppd', 'desc')
+        $currentYearShort = date('y');
+        $prefix = 'CA';
+        $lastTransaction = CATransaction::whereYear('created_at', $currentYear)
+            ->orderBy('no_ca', 'desc')
             ->first();
 
-        if ($lastTransaction && preg_match('/(\d{3})\/SPPD-CA\/' . $romanMonth . '\/\d{4}/', $lastTransaction->no_sppd, $matches)) {
-            $lastNumber = intval($matches[1]);
-        } else {
-            $lastNumber = 0;
-        }
-
-        $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
-        $newNoSppd = "$newNumber/SPPD-CA/$romanMonth/$currentYear";
-
-        return $newNoSppd;
+        $lastNumber = $lastTransaction && preg_match('/CA' . $currentYearShort . '(\d{6})/', $lastTransaction->no_ca, $matches) ? intval($matches[1]) : 0;
+        $newNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT);
+        $newNoCa = "$prefix$currentYearShort$newNumber";
+        return $newNoCa;
     }
 
     private function findDepartmentHead($employee)
