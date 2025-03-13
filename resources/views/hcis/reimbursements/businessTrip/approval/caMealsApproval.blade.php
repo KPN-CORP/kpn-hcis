@@ -174,10 +174,10 @@
                             <div class="input-group-append">
                                 <span class="input-group-text">Rp</span>
                             </div>
-                            <input class="form-control" name="nominal_bt_meals[]" id="nominal_bt_meals_1"
-                                type="text" min="0" value="0"
+                            <input class="form-control bg-light" name="nominal_bt_meals[]" id="nominal_bt_meals_1"
+                                type="text" min="0" value="0" placeholder="0"
                                 onfocus="this.value = this.value === '0' ? '' : this.value;"
-                                oninput="formatInput(this)" onblur="formatOnBlur(this)">
+                                oninput="formatInput(this)" onblur="formatOnBlur(this)" readonly>
                         </div>
                     </div>
 
@@ -185,16 +185,8 @@
                     <div class="col-md-12">
                         <div class="mb-2">
                             <label class="form-label">Information</label>
-                            <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ..."></textarea>
+                            <textarea name="keterangan_bt_meals[]" class="form-control bg-light" placeholder="Write your information here ..." readonly></textarea>
                         </div>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="d-flex justify-start w-100">
-                        <button class="btn btn-sm btn-outline-warning" style="margin-right: 10px"
-                            onclick="clearFormMeals(1, event)">Reset</button>
-                        <button class="btn btn-sm btn-outline-primary"
-                            onclick="removeFormMeals(1, event)">Delete</button>
                     </div>
                 </div>
             </div>

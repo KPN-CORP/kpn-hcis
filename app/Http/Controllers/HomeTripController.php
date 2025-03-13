@@ -785,23 +785,33 @@ class HomeTripController extends Controller
         $currentMonth = date('n');
         $romanMonth = $this->getRomanMonth($currentMonth);
 
-        // Get the last transaction for the current year, including deleted ones
-        $lastTransaction = Tiket::whereYear('created_at', $currentYear)
-            ->where('no_tkt', 'like', '%TKTC-HRD%')  // Keep the filter for 'TKTD-HRD'
-            ->orderBy('no_tkt', 'desc')
+        // Get all transactions for the current year with TKTC-HRD, including deleted ones
+        $transactions = Tiket::whereYear('created_at', $currentYear)
+            ->where('no_tkt', 'like', '%TKTC-HRD%')
             ->withTrashed()
-            ->first();
+            ->get();
 
-        if ($lastTransaction && preg_match('/(\d{3})\/TKTC-HRD\/([IVX]+)\/\d{4}/', $lastTransaction->no_tkt, $matches)) {
-            $lastNumber = intval($matches[1]);
-        } else {
-            $lastNumber = 0;
+        // Find the highest number by extracting and comparing the numeric part
+        $lastNumber = 0;
+        foreach ($transactions as $transaction) {
+            if (preg_match('/(\d+)\/TKTC-HRD\/([IVX]+)\/\d{4}/', $transaction->no_tkt, $matches)) {
+                $number = intval($matches[1]);
+                if ($number > $lastNumber) {
+                    $lastNumber = $number;
+                }
+            }
         }
 
-        $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
-        $newNoSppd = "$newNumber/TKTC-HRD/$romanMonth/$currentYear";
+        $newNumber = $lastNumber + 1;
 
-        // dd($newNoSppd);
+        // Only pad with zeros if less than 1000
+        if ($newNumber < 1000) {
+            $formattedNumber = str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+        } else {
+            $formattedNumber = (string) $newNumber;
+        }
+
+        $newNoSppd = "$formattedNumber/TKTC-HRD/$romanMonth/$currentYear";
 
         return $newNoSppd;
     }
