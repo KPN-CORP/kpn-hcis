@@ -24,15 +24,15 @@
                             <input type="date" name="tanggal_bt_lainnya[]" class="form-control" placeholder="mm/dd/yyyy">
                         </div>
                         <div class="col-md-4 mb-2">
-                                <label class="form-label" for="name">Type of Others</label>
-                                <select class="form-control select2" id="type_bt_lainnya_${formCountOthers}" name="type_bt_lainnya[]">
-                                    <option value="">Select Type...</option>
-                                    <option value="Laundry">Laundry</option>
-                                    <option value="Airport Tax">Airport Tax</option>
-                                    <option value="Porter">Porter</option>
-                                    <option value="Excess Baggage">Excess Baggage</option>
-                                </select>
-                            </div>
+                            <label class="form-label" for="name">Type of Others</label>
+                            <select class="form-control select2" id="type_bt_lainnya_${formCountOthers}" name="type_bt_lainnya[]">
+                                <option value="">Select Type...</option>
+                                <option value="Laundry">Laundry</option>
+                                <option value="Airport Tax">Airport Tax</option>
+                                <option value="Porter">Porter</option>
+                                <option value="Excess Baggage">Excess Baggage</option>
+                            </select>
+                        </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Amount</label>
                             <div class="input-group">

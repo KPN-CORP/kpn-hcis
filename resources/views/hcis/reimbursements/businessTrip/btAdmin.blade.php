@@ -222,7 +222,6 @@
                                                             'No. CA' => $transaction->no_ca,
                                                             'No. SPPD' => $transaction->no_sppd,
                                                             'Type' => $transaction->type_ca === 'dns' ? 'Business Trip' : 'Entertain', // Conditional assignment
-                                                            'Unit' => $transaction->unit,
                                                             'Destination' => $transaction->destination,
                                                             'CA Total' => 'Rp ' . number_format($transaction->total_ca, 0, ',', '.'),
                                                             'Total Real' => 'Rp ' . number_format($transaction->total_real, 0, ',', '.'),
@@ -247,7 +246,6 @@
                                                         'No. Hotel' => $hotel->no_htl,
                                                         'No. SPPD' => $hotel->no_sppd,
                                                         'Colleague No. SPPD' => $hotel->no_sppd_htl,
-                                                        'Unit' => $hotel->unit,
                                                         'Hotel Name' => $hotel->nama_htl,
                                                         'Location' => $hotel->lokasi_htl,
                                                         'Room' => $hotel->jmlkmr_htl,
@@ -272,7 +270,6 @@
                                                     return [
                                                         'No. Mess' => $mess->no_mess,
                                                         'No. SPPD' => $mess->no_sppd,
-                                                        'Unit' => $mess->unit,
                                                         'Mess Location' => $mess->lokasi_mess,
                                                         'Room' => $mess->jmlkmr_mess,
                                                         'Check In' => date('d-M-Y', strtotime($mess->tgl_masuk_mess)),
@@ -296,7 +293,6 @@
                                                         // 'No. Ticket' => $ticket->no_tkt ?? 'No Data',
                                                         'No. SPPD' => $ticket->no_sppd,
                                                         'Passengers Name' => $ticket->np_tkt,
-                                                        'Unit' => $ticket->unit,
                                                         'Gender' => $ticket->jk_tkt,
                                                         'NIK' => $ticket->noktp_tkt,
                                                         'Phone No.' => $ticket->tlp_tkt,
@@ -322,7 +318,6 @@
                                             data-taksi="{{ json_encode([
                                                 'Total Voucher' => $taksi[$n->no_sppd]->no_vt . ' Voucher',
                                                 'No. SPPD' => $taksi[$n->no_sppd]->no_sppd,
-                                                'Unit' => $taksi[$n->no_sppd]->unit,
                                                 'Nominal' => 'Rp ' . number_format($taksi[$n->no_sppd]->nominal_vt, 0, ',', '.'),
                                             ]) }}"><u>Details<u></a>
                                     @else

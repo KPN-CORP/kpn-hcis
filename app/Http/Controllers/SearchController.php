@@ -17,7 +17,7 @@ class SearchController extends Controller
         $searchTerm = $request->input('searchTerm');
         $limit = 10; // Adjust as needed
 
-        $employees = Employee::select('ktp', 'fullname')
+        $employees = Employee::select('ktp', 'fullname', 'employee_id')
             ->where(function ($query) use ($searchTerm) {
                 $query->where('fullname', 'LIKE', '%' . $searchTerm . '%')
                     ->orWhere('ktp', 'LIKE', '%' . $searchTerm . '%');

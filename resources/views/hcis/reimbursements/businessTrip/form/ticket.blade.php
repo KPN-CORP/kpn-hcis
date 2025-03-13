@@ -18,7 +18,7 @@
                                 <option value="" selected>Please Select</option>
                                 @foreach ($employees as $employee)
                                     <option value="{{ $employee->ktp }}">
-                                        {{ $employee->ktp . ' - ' . $employee->fullname }}
+                                        {{ $employee->employee_id . ' - ' . $employee->fullname }}
                                     </option>
                                 @endforeach
                             </select>

@@ -1573,7 +1573,7 @@
                                     results: data.map(function(item) {
                                         return {
                                             id: item.ktp,
-                                            text: item.fullname + " - " + item.ktp,
+                                            text: item.employee_id + " - " + item.fullname,
                                         };
                                     }),
                                     pagination: {
@@ -1989,7 +1989,7 @@
                                     results: data.map(function(item) {
                                         return {
                                             id: item.ktp,
-                                            text: item.fullname + " - " + item.ktp,
+                                            text: item.employee_id + " - " + item.fullname,
                                         };
                                     }),
                                     pagination: {
