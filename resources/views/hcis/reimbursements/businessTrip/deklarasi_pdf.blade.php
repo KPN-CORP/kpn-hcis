@@ -748,7 +748,7 @@
             @if ($transactions->approval_status != 'Rejected')
                 @if (isset($detailCA['detail_meals']) &&
                         count($detailCA['detail_meals']) > 0 &&
-                        !empty($detailCA['detail_meals'][0]['keterangan']))
+                        !empty($detailCA['detail_meals'][0]['company_code']))
                     <table class="table-approve">
                         <tr>
                             <th colspan="6"><b>Meals Plan :</b></th>
