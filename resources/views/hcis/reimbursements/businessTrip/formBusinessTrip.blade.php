@@ -287,7 +287,7 @@
                                                     <input type="hidden" name="ca" id="caHidden" value="Tidak">
                                                     <input class="form-check-input" type="checkbox"
                                                         id="cashAdvancedCheckbox" value="Ya"
-                                                        onchange="updateCAValue()" {{ $isDisabled ? 'disabled' : '' }}>
+                                                        onchange="updateCAValue()" {{ $isDisabled ? '' : 'disabled' }}>
                                                     <label class="form-check-label" for="cashAdvancedCheckbox">Cash
                                                         Advanced</label>
                                                 </div>
@@ -538,12 +538,18 @@
 
         function calculateTotalNominalBTMeals() {
             let total = 0;
-            document
-                .querySelectorAll('input[name="nominal_bt_meals[]"]')
-                .forEach((input) => {
-                    total += cleanNumber(input.value);
-                });
-            document.getElementById("total_bt_meals").value = formatNumber(total);
+            document.querySelectorAll('input[name="nominal_bt_meals[]"]').forEach((input) => {
+                // Clean and parse the number, skip invalid values
+                const value = cleanNumber(input.value);
+                if (!isNaN(value)) {
+                    total += value;
+                }
+            });
+            // Update the total meal input safely
+            const totalInput = document.getElementById("total_bt_meals");
+            if (totalInput) {
+                totalInput.value = formatNumber(total);
+            }
         }
 
         function onNominalChange() {
