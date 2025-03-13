@@ -583,10 +583,11 @@
                 @if (count($detailCA['detail_lainnya']) > 0 && !empty($detailCA['detail_lainnya'][0]['keterangan']))
                     <table class="table-approve">
                         <tr>
-                            <th colspan="3"><b>Others Plan :</b></th>
+                            <th colspan="4"><b>Others Plan :</b></th>
                         </tr>
                         <tr class="head-row">
                             <td style="width:12%">Date</td>
+                            <td style="width:12%">Type of Others</td>
                             <td>Information</td>
                             <td style="width:20%">Amount</td>
                         </tr>
@@ -594,6 +595,7 @@
                         @foreach ($detailCA['detail_lainnya'] as $perdiem)
                             <tr style="text-align: center">
                                 <td>{{ \Carbon\Carbon::parse($perdiem['tanggal'])->format('d-M-y') }}</td>
+                                <td style="text-align: left">{{ $perdiem['type'] }}</td>
                                 <td style="text-align: left">{{ $perdiem['keterangan'] }}</td>
                                 <td>
                                     <span style="float: left; margin-left:4px">Rp.</span>
@@ -603,7 +605,7 @@
                             </tr>
                         @endforeach
                         <tr class="total-row">
-                            <td colspan="2" class="head-row">Total</td>
+                            <td colspan="3" class="head-row">Total</td>
                             <td>
                                 <span style="float: left; margin-left:4px">Rp.</span>
                                 <span

@@ -5425,7 +5425,6 @@ class BusinessTripController extends Controller
                             $hotelName = $request->hotel_name_bt_penginapan[$key] ?? '';
                             $companyCode = $request->company_bt_penginapan[$key] ?? '';
                             $nominal = str_replace('.', '', $request->nominal_bt_penginapan[$key] ?? '0');
-                            $totalPenginapan = str_replace('.', '', $request->total_bt_penginapan[$key] ?? '0');
 
                             if (!empty($startDate) && !empty($endDate) && !empty($totalDays) && !empty($hotelName) && !empty($companyCode) && !empty($nominal)) {
                                 $detail_penginapan[] = [
@@ -5435,7 +5434,6 @@ class BusinessTripController extends Controller
                                     'hotel_name' => $hotelName,
                                     'company_code' => $companyCode,
                                     'nominal' => $nominal,
-                                    'totalPenginapan' => $totalPenginapan,
                                 ];
                             }
                         }
@@ -5445,15 +5443,15 @@ class BusinessTripController extends Controller
                     if ($request->has('tanggal_bt_lainnya')) {
                         foreach ($request->tanggal_bt_lainnya as $key => $tanggal) {
                             $keterangan = $request->keterangan_bt_lainnya[$key] ?? '';
+                            $type = $request->type_bt_lainnya[$key] ?? '';
                             $nominal = str_replace('.', '', $request->nominal_bt_lainnya[$key] ?? '0');
-                            $totalLainnya = str_replace('.', '', $request->total_bt_lainnya[$key] ?? '0');
 
                             if (!empty($tanggal) && !empty($nominal)) {
                                 $detail_lainnya[] = [
                                     'tanggal' => $tanggal,
                                     'keterangan' => $keterangan,
+                                    'type' => $type,
                                     'nominal' => $nominal,
-                                    'totalLainnya' => $totalLainnya,
                                 ];
                             }
                         }
