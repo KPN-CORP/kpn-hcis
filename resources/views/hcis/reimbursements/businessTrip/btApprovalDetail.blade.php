@@ -248,7 +248,8 @@
                                             <input type="hidden" name="mess_dalam_kota" value="Tidak">
                                             <input class="form-check-input" type="checkbox" id="messCheckboxDalamKota"
                                                 name="mess_dalam_kota" value="Ya"
-                                                <?= $n->jns_dinas === 'dalam kota' && $n->mess === 'Ya' ? 'checked' : '' ?>>
+                                                <?= $n->jns_dinas === 'dalam kota' && $n->mess === 'Ya' ? 'checked' : '' ?>
+                                                disabled>
                                             <label class="form-check-label" for="messCheckboxDalamKota">
                                                 Mess
                                             </label>
@@ -396,7 +397,8 @@
                                                     <input type="hidden" name="mess" value="Tidak">
                                                     <input class="form-check-input" type="checkbox" id="messCheckbox"
                                                         name="mess" value="Ya"
-                                                        <?= $n->jns_dinas === 'luar kota' && $n->mess == 'Ya' ? 'checked' : '' ?>>
+                                                        <?= $n->jns_dinas === 'luar kota' && $n->mess == 'Ya' ? 'checked' : '' ?>
+                                                        disabled>
                                                     <label class="form-check-label" for="messCheckbox">
                                                         Mess
                                                     </label>
@@ -464,8 +466,7 @@
                                                         style="display: <?= $n->jns_dinas === 'luar kota' && $n->mess == 'Ya' ? 'block' : 'none' ?>;">
                                                         <button class="nav-link" id="pills-mess-tab"
                                                             data-bs-toggle="pill" data-bs-target="#pills-mess"
-                                                            type="button" role="tab"
-                                                            aria-controls="pills-mess"
+                                                            type="button" role="tab" aria-controls="pills-mess"
                                                             aria-selected="false">Mess</button>
                                                     </li>
                                                     <li class="nav-item" role="presentation" id="nav-ticket"
