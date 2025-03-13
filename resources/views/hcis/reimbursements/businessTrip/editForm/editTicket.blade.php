@@ -26,7 +26,7 @@
                             @foreach ($employees as $employee)
                                 <option value="{{ $employee->ktp }}"
                                     {{ $ticket && $ticket['noktp_tkt'] == $employee->ktp ? 'selected' : '' }}>
-                                    {{ $employee->ktp . ' - ' . $employee->fullname }}
+                                    {{ $employee->employee_id . ' - ' . $employee->fullname }}
                                 </option>
                             @endforeach
                         </select>

@@ -4203,6 +4203,7 @@ class BusinessTripController extends Controller
 
             foreach ($ticketData['dari_tkt'] as $key => $value) {
                 if (!empty($value)) {
+                    $ktp = Employee::where('ktp', $ticketData['noktp_tkt'][$key])->first();
                     // $employee_data = Employee::where('ktp', $value)->first();
 
                     $tiket = new Tiket();
@@ -4211,10 +4212,10 @@ class BusinessTripController extends Controller
                     $tiket->no_sppd = $noSppd;
                     $tiket->user_id = $userId;
                     $tiket->unit = $request->divisi;
-                    $tiket->jk_tkt = $employee ? $employee->gender : null;
-                    $tiket->np_tkt = $employee ? $employee->fullname : null;
+                    $tiket->jk_tkt = $ktp ? $ktp->gender : null;
+                    $tiket->np_tkt = $ktp ? $ktp->fullname : null;
                     $tiket->noktp_tkt = $ticketData['noktp_tkt'][$key] ?? null;
-                    $tiket->tlp_tkt = $employee ? $employee->personal_mobile_number : null;
+                    $tiket->tlp_tkt = $ktp ? $ktp->personal_mobile_number : null;
 
                     // Handle each field using the index from $key
                     $tiket->dari_tkt = $ticketData['dari_tkt'][$key] ?? null;
