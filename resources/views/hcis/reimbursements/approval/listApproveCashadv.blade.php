@@ -128,10 +128,10 @@
                                     <select name="ca_type_disabled" id="ca_type" class="form-control bg-light" disabled>
                                         <option value="">-</option>
                                         <option value="dns" {{ $transactions->type_ca == 'dns' ? 'selected' : '' }}>
-                                            Business Trip
+                                            Business Travel
                                         </option>
                                         <option value="ndns" {{ $transactions->type_ca == 'ndns' ? 'selected' : '' }}>
-                                            Non Business Trip
+                                            Non Business Travel
                                         </option>
                                         <option value="entr" {{ $transactions->type_ca == 'entr' ? 'selected' : '' }}>
                                             Entertainment
@@ -205,7 +205,7 @@
                                                             </table>
                                                         </div>
                                                     @endif
-                                                    
+
                                                     @if (!empty($detailCA['detail_meals']) && $detailCA['detail_meals'][0]['tanggal'] !== null)
                                                         <div class="table-responsive">
                                                             <table class="table table-hover table-sm nowrap" id="lainnyaTable" width="100%" cellspacing="0">

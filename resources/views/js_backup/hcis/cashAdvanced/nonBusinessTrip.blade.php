@@ -23,9 +23,9 @@ function addMoreFormNBTReq(event) {
     newForm.className = "card-body p-2 mb-3";
     newForm.style.backgroundColor = "#f8f8f8";
     newForm.innerHTML = `
-            <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Trip ${formCountNBT}</p>
+            <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Travel ${formCountNBT}</p>
             <div id="form-container-nbt-req-${formCountNBT}" class="card-body bg-light p-2">
-                <p class="fs-5 text-primary" style="font-weight: bold; ">Non Business Trip Request</p>
+                <p class="fs-5 text-primary" style="font-weight: bold; ">Non Business Travel Request</p>
                 <div class="row">
                     <div class="col-md-6 mb-2">
                         <label class="form-label">Date</label>
@@ -83,9 +83,9 @@ function addMoreFormNBTDec(event) {
     newForm.className = "card-body p-2 mb-3";
     newForm.style.backgroundColor = "#f8f8f8";
     newForm.innerHTML = `
-            <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Trip ${formCountNBT}</p>
+            <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Travel ${formCountNBT}</p>
             <div class="card-body bg-light p-2 ">
-                <p class="fs-5 text-primary" style="font-weight: bold; ">Non Business Trip Declaration</p>
+                <p class="fs-5 text-primary" style="font-weight: bold; ">Non Business Travel Declaration</p>
                 <div class="row">
                     <div class="col-md-6 mb-2">
                         <label class="form-label">Date</label>

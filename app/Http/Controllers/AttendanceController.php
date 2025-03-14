@@ -28,7 +28,7 @@ class AttendanceController extends Controller
         $attdUpdates = bt_attendance_backup::where('backup_status', 'N')
             ->whereDate('date', '<', Carbon::today()) // Tambahkan filter tanggal
             ->get();
-        
+
         $no=0;
         $processedData = [];
 
@@ -44,7 +44,7 @@ class AttendanceController extends Controller
                 "shift_name" => $attdUpdate->shift_name,
                 "policy_name" => $attdUpdate->policy_name,
                 "weekly_off_name" => $attdUpdate->assigned_weekly_off,
-                "comments" => "Business Trip"
+                "comments" => "Business Travel"
             ];
 
             $this->addBackdatedAttendance($attendanceData);

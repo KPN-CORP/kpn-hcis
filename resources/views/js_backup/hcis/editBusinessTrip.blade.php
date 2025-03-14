@@ -2262,7 +2262,7 @@
                                 <div class="col-md-12">
                                   <label class="form-label">No. SPPD for Colleague (If a colleague uses the same room)</label>
                                     <select class="form-select select2 form-select-sm select-sppd" name="no_sppd[]" id="no_sppd_${formNumber}">
-                                        <option value="-">No Business Trip</option>
+                                        <option value="-">No Business Travel</option>
                                     </select>
                                 </div>
                             </div>
@@ -2527,7 +2527,7 @@
                                 <div class="col-md-12">
                                    <label class="form-label">No. SPPD for Colleague (If a colleague uses the same room)</label>
                                     <select class="form-select select2 form-select-sm select-sppd" name="no_sppd_dalam_kota[]">
-                                        <option value="-">No Business Trip</option>
+                                        <option value="-">No Business Travel</option>
                                     </select>
                                 </div>
                             </div>

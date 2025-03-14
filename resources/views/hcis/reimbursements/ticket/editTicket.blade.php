@@ -60,16 +60,16 @@
                                 </div>
                             </div>
 
-                            <!-- Business Trip Number Selection -->
+                            <!-- Business Travel Number Selection -->
                             <div class="row">
                                 <div class="col-md-5">
                                     <div class="mb-2">
-                                        <label class="form-label" for="bisnis_numb">Business Trip Number</label>
+                                        <label class="form-label" for="bisnis_numb">Business Travel Number</label>
                                         <select class="form-select select2 form-select-sm" id="bisnis_numb"
                                             name="bisnis_numb">
                                             <option value="-" {{ $ticket->no_sppd === '-' ? 'selected' : '' }}>No
                                                 Business
-                                                Trip</option>
+                                                Travel</option>
                                             @foreach ($no_sppds as $no_sppd)
                                                 <option value="{{ $no_sppd->no_sppd }}"
                                                     {{ $ticket->no_sppd == $no_sppd->no_sppd ? 'selected' : '' }}>
@@ -106,10 +106,10 @@
                             <input type="hidden" name="no_tkt" value="{{ $ticket->no_tkt }}">
 
                             @if ($ticket->approval_status == 'Request Revision' || $hotel->approval_status == 'Declaration Revision')
-                                <div class="alert alert-info" role="alert">  
-                                    <h4 class="alert-heading">Revision Note</h4>  
-                                    {!! nl2br(e($revisiInfo)) !!}  
-                                </div>  
+                                <div class="alert alert-info" role="alert">
+                                    <h4 class="alert-heading">Revision Note</h4>
+                                    {!! nl2br(e($revisiInfo)) !!}
+                                </div>
                             @endif
 
                             <div id="tiket_div">

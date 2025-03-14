@@ -1,4 +1,4 @@
-@extends('layouts_.vertical', ['page_title' => 'Business Trip'])
+@extends('layouts_.vertical', ['page_title' => 'Business Travel'])
 
 @section('css')
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -105,7 +105,7 @@
                                         <tr>
                                             <th>Cash Advance Type</th>
                                             <td class="block">:</td>
-                                            <td> Business Trip</td>
+                                            <td> Business Travel</td>
                                         </tr>
                                     </table>
                                 </div>
@@ -229,7 +229,7 @@
                                         @php
                                             use Illuminate\Support\Facades\Storage;
                                         @endphp
-                                        
+
                                         <div class="card-body my-3 p-2 rounded-3" style="background-color:#f8f8f8;">
                                             <div class="row">
         <div class="col-md-6 mb-2">

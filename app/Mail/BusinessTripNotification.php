@@ -108,7 +108,7 @@ class BusinessTripNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Business Trip Notification',
+            subject: 'Business Travel Notification',
         );
     }
 

@@ -179,7 +179,7 @@ class BusinessTripController extends Controller
         $managerL2Names = Employee::whereIn('employee_id', $sppd->pluck('manager_l2_id'))->pluck('fullname', 'employee_id');
 
         $parentLink = 'Reimbursement';
-        $link = 'Business Trip';
+        $link = 'Business Travel';
 
         return view('hcis.reimbursements.businessTrip.businessTrip', compact('sppd', 'parentLink', 'link', 'caTransactions', 'tickets', 'hotel', 'taksi', 'managerL1Names', 'managerL2Names', 'filter', 'btApprovals', 'employeeName', 'disableBT', 'mess'));
     }
@@ -213,7 +213,7 @@ class BusinessTripController extends Controller
         }
 
         // Redirect back with a success message
-        return redirect()->route('businessTrip')->with('success', 'Business Trip marked as deleted along with related records.');
+        return redirect()->route('businessTrip')->with('success', 'Business Travel marked as deleted along with related records.');
     }
 
     public function deleteAdmin($id)
@@ -243,7 +243,7 @@ class BusinessTripController extends Controller
             $businessTrip->delete();
         }
 
-        return redirect()->back()->with('success', 'Business Trip marked as deleted.');
+        return redirect()->back()->with('success', 'Business Travel marked as deleted.');
     }
 
     public function formUpdate($id)
@@ -293,8 +293,8 @@ class BusinessTripController extends Controller
             $isAllowed = $numericPart >= 8;
         }
 
-        $parentLink = 'Business Trip';
-        $link = 'Business Trip Edit';
+        $parentLink = 'Business Travel';
+        $link = 'Business Travel Edit';
 
         // Retrieve the taxi data for the specific BusinessTrip
         $taksi = Taksi::where('no_sppd', $n->no_sppd)->first();
@@ -1290,7 +1290,7 @@ class BusinessTripController extends Controller
             $imageContent = file_get_contents($imagePath);
             $employeeName = Employee::where('id', $n->user_id)->pluck('fullname')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "requesting a Business Trip and waiting for your approval with the following details :";
+            $textNotification = "requesting a Business Travel and waiting for your approval with the following details :";
             $isEnt = $request->ent === 'Ya';
             $isCa = $request->ca === 'Ya';
 
@@ -1379,13 +1379,13 @@ class BusinessTripController extends Controller
                         $messDetails,
                     ));
                 } catch (\Exception $e) {
-                    Log::error('Email Create Business Trip tidak terkirim: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
+                    Log::error('Email Create Business Travel tidak terkirim: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
                     Log::info('messDetails: ' . json_encode($messDetails));
                 }
             }
         }
 
-        return redirect('/businessTrip')->with('success', 'Business trip updated successfully');
+        return redirect('/businessTrip')->with('success', 'Business Travel updated successfully');
     }
 
     public function deklarasi($id)
@@ -1452,8 +1452,8 @@ class BusinessTripController extends Controller
         $perdiem = ListPerdiem::where('grade', $employee_data->job_level)
             ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')->first();
 
-        $parentLink = 'Business Trip';
-        $link = 'Declaration Business Trip';
+        $parentLink = 'Business Travel';
+        $link = 'Declaration Business Travel';
 
         // Prepare hotel data for the view
         $hotelData = [];
@@ -2700,7 +2700,7 @@ class BusinessTripController extends Controller
                 $imageContent = file_get_contents($imagePath);
                 $employeeName = Employee::where('id', $n->user_id)->pluck('fullname')->first();
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-                $textNotification = "requesting a Declaration Business Trip and waiting for your approval with the following details :";
+                $textNotification = "requesting a Declaration Business Travel and waiting for your approval with the following details :";
                 // dd( $detail_ca, $caTrans);
 
                 // dd($caTrans, $n->no_sppd);
@@ -2768,7 +2768,7 @@ class BusinessTripController extends Controller
                         $group_company,
                     ));
                 } catch (\Exception $e) {
-                    Log::error('Email Deklarasi Create Business Trip tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email Deklarasi Create Business Travel tidak terkirim: ' . $e->getMessage());
                 }
             }
         }
@@ -2952,7 +2952,7 @@ class BusinessTripController extends Controller
                 $imageContent = file_get_contents($imagePath);
                 $employeeName = Employee::where('id', $userId)->pluck('fullname')->first();
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-                $textNotification = "requesting Extend for his Business Trip and waiting for your approval with the following details :";
+                $textNotification = "requesting Extend for his Business Travel and waiting for your approval with the following details :";
                 $managerName = Employee::where('employee_id', $managerL1)->pluck('fullname')->first();
 
                 if ($managerEmail) {
@@ -3144,7 +3144,7 @@ class BusinessTripController extends Controller
                 ->get();
         }
         $parentLink = 'Reimbursement';
-        $link = 'Business Trip';
+        $link = 'Business Travel';
 
         return view('hcis.reimbursements.businessTrip.businessTrip', compact('sppd', 'parentLink', 'link', 'caTransactions', 'tickets', 'hotel', 'taksi', 'managerL1Names', 'managerL2Names', 'filter', 'btApprovals', 'employeeName'));
     }
@@ -3196,7 +3196,7 @@ class BusinessTripController extends Controller
             }
 
             $zip = new ZipArchive();
-            $zipFileName = 'Business Trip.zip';
+            $zipFileName = 'Business Travel.zip';
             $zipFilePath = storage_path('app/public/' . $zipFileName);
 
             if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
@@ -3574,7 +3574,7 @@ class BusinessTripController extends Controller
             }
 
             $zip = new ZipArchive();
-            $zipFileName = 'Business Trip.zip';
+            $zipFileName = 'Business Travel.zip';
             $zipFilePath = storage_path('app/public/' . $zipFileName);
 
             if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
@@ -3943,8 +3943,8 @@ class BusinessTripController extends Controller
             $isAllowed = $numericPart >= 8;
         }
 
-        $parentLink = 'Business Trip';
-        $link = 'Business Trip Request';
+        $parentLink = 'Business Travel';
+        $link = 'Business Travel Request';
         return view(
             'hcis.reimbursements.businessTrip.formBusinessTrip',
             [
@@ -4655,7 +4655,7 @@ class BusinessTripController extends Controller
             $imageContent = file_get_contents($imagePath);
             $employeeName = Employee::where('id', $userId)->pluck('fullname')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "requesting a Business Trip and waiting for your approval with the following details :";
+            $textNotification = "requesting a Business Travel and waiting for your approval with the following details :";
             $managerName = Employee::where('employee_id', $managerL1)->pluck('fullname')->first();
             $isEnt = $request->ent === 'Ya';
             $isCa = $request->ca === 'Ya';
@@ -4747,7 +4747,7 @@ class BusinessTripController extends Controller
                         $messDetails,
                     ));
                 } catch (\Exception $e) {
-                    Log::error('Email Create Business Trip tidak terkirim: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
+                    Log::error('Email Create Business Travel tidak terkirim: ' . $e->getMessage() . ' | File: ' . $e->getFile() . ' | Line: ' . $e->getLine());
                     Log::info('messDetails: ' . json_encode($messDetails));
                 }
             }
@@ -4818,7 +4818,7 @@ class BusinessTripController extends Controller
         $managerL2Names = Employee::whereIn('employee_id', $sppd->pluck('manager_l2_id'))->pluck('fullname', 'employee_id');
 
         $parentLink = 'Reimbursement';
-        $link = 'Business Trip (Admin)';
+        $link = 'Business Travel (Admin)';
 
         return view('hcis.reimbursements.businessTrip.btAdminDivison', compact('sppd', 'parentLink', 'link', 'caTransactions', 'tickets', 'hotel', 'taksi', 'managerL1Names', 'managerL2Names', 'filter', 'btApprovals', 'employeeName', 'departments', 'division'));
     }
@@ -4867,7 +4867,7 @@ class BusinessTripController extends Controller
         $managerL2Names = Employee::whereIn('employee_id', $sppd->pluck('manager_l2_id'))->pluck('fullname', 'employee_id');
 
         $parentLink = 'Reimbursement';
-        $link = 'Business Trip (Admin)';
+        $link = 'Business Travel (Admin)';
 
         return view('hcis.reimbursements.businessTrip.btAdminDivison', compact(
             'sppd',
@@ -5058,7 +5058,7 @@ class BusinessTripController extends Controller
         $managerL2Names = [];
 
         $parentLink = 'Reimbursement';
-        $link = 'Business Trip (Admin)';
+        $link = 'Business Travel (Admin)';
 
         return view('hcis.reimbursements.businessTrip.btAdmin', compact('sppd', 'parentLink', 'link', 'caTransactions', 'tickets', 'hotel', 'taksi', 'managerL1Names', 'managerL2Names', 'filter', 'btApprovals', 'employeeName', 'btApproved', 'mess'));
     }
@@ -5166,7 +5166,7 @@ class BusinessTripController extends Controller
         // dd($extendTime);
 
         $parentLink = 'Reimbursement';
-        $link = 'Business Trip (Admin)';
+        $link = 'Business Travel (Admin)';
 
         return view('hcis.reimbursements.businessTrip.btAdmin', compact('sppd', 'parentLink', 'link', 'caTransactions', 'tickets', 'hotel', 'taksi', 'managerL1Names', 'managerL2Names', 'filter', 'btApprovals', 'employeeName', 'btApproved', 'extendTime', 'mess'));
     }
@@ -5274,8 +5274,8 @@ class BusinessTripController extends Controller
         $locations = Location::orderBy('area')->get();
         $companies = Company::orderBy('contribution_level')->get();
 
-        $parentLink = 'Business Trip Admin';
-        $link = 'Declaration Business Trip (Admin)';
+        $parentLink = 'Business Travel Admin';
+        $link = 'Declaration Business Travel (Admin)';
 
         return view('hcis.reimbursements.businessTrip.deklarasiAdmin', [
             'n' => $n,
@@ -5648,7 +5648,7 @@ class BusinessTripController extends Controller
                         $base64Image,
                     ));
                 } catch (\Exception $e) {
-                    Log::error('Email Deklarasi Status Admin Business Trip tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email Deklarasi Status Admin Business Travel tidak terkirim: ' . $e->getMessage());
                 }
             }
         }
@@ -5877,7 +5877,7 @@ class BusinessTripController extends Controller
         $managerL2Names = Employee::whereIn('employee_id', $bt_all->pluck('manager_l2_id'))->pluck('fullname', 'employee_id');
 
         $parentLink = 'Approval';
-        $link = 'Business Trip';
+        $link = 'Business Travel';
 
         return view('hcis.reimbursements.businessTrip.btApproval', compact(
             'bt_all',
@@ -6004,7 +6004,7 @@ class BusinessTripController extends Controller
         $companies = Company::orderBy('contribution_level')->get();
         // dd($taksi->toArray());
 
-        $parentLink = 'Business Trip Approval';
+        $parentLink = 'Business Travel Approval';
         $link = 'Approval Details';
 
         return view('hcis.reimbursements.businessTrip.btApprovalDetail', [
@@ -6395,7 +6395,7 @@ class BusinessTripController extends Controller
             $imageContent = file_get_contents($imagePath);
             $employeeName = Employee::where('id', $businessTrip->user_id)->pluck('fullname')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "requesting a Business Trip and waiting for your approval with the following details :";
+            $textNotification = "requesting a Business Travel and waiting for your approval with the following details :";
             $isEnt = $request->ent === 'Ya';
             $isCa = $request->ca === 'Ya';
 
@@ -6482,7 +6482,7 @@ class BusinessTripController extends Controller
                         $messDetails,
                     ));
                 } catch (\Exception $e) {
-                    Log::error('Email Update Status Business Trip tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email Update Status Business Travel tidak terkirim: ' . $e->getMessage());
                 }
             }
 
@@ -6893,7 +6893,7 @@ class BusinessTripController extends Controller
                 $imageContent = file_get_contents($imagePath);
                 $employeeName = Employee::where('id', $businessTrip->user_id)->pluck('fullname')->first();
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-                $textNotification = "requesting a Business Trip and waiting for your approval with the following details :";
+                $textNotification = "requesting a Business Travel and waiting for your approval with the following details :";
                 $isEnt = CATransaction::where('type_ca', 'entr')->first();
                 $isCa = CATransaction::where('type_ca', 'dns')->first();
 
@@ -6980,7 +6980,7 @@ class BusinessTripController extends Controller
                             $messDetails,
                         ));
                     } catch (\Exception $e) {
-                        Log::error('Email Update Status Business Trip tidak terkirim: ' . $e->getMessage());
+                        Log::error('Email Update Status Business Travel tidak terkirim: ' . $e->getMessage());
                     }
                 }
 
@@ -7344,7 +7344,7 @@ class BusinessTripController extends Controller
                 $imageContent = file_get_contents($imagePath);
                 $employeeName = Employee::where('employee_id', $employeeId)->pluck('fullname')->first();
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-                $textNotification = "requesting a Declaration Business Trip and waiting for your approval with the following details :";
+                $textNotification = "requesting a Declaration Business Travel and waiting for your approval with the following details :";
 
                 // dd($caTrans, $n->no_sppd);
                 $caDetails = [
@@ -7410,7 +7410,7 @@ class BusinessTripController extends Controller
                             $isCa,
                         ));
                     } catch (\Exception $e) {
-                        Log::error('Email Update Status Deklarasi Business Trip tidak terkirim: ' . $e->getMessage());
+                        Log::error('Email Update Status Deklarasi Business Travel tidak terkirim: ' . $e->getMessage());
                     }
                 }
                 // if ($businessTrip->ca == 'Ya') {
@@ -7592,7 +7592,7 @@ class BusinessTripController extends Controller
                     $imageContent = file_get_contents($imagePath);
                     $employeeName = Employee::where('id', $businessTrip->user_id)->pluck('fullname')->first();
                     $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-                    $textNotification = "requesting for Extend Business Trip and waiting for your Approval with the following details :";
+                    $textNotification = "requesting for Extend Business Travel and waiting for your Approval with the following details :";
                     $group_company = Employee::where('id', $businessTrip->user_id)->pluck('group_company')->first();
 
                     $ca = CATransaction::where('no_sppd', $businessTrip->no_sppd)->orWhere('caonly', '!=', 'Y')->get();
@@ -8421,7 +8421,7 @@ class BusinessTripController extends Controller
             $employeeName = Employee::where('employee_id', $employeeId)->pluck('fullname')->first();
             $group_company = Employee::where('employee_id', $employeeId)->pluck('group_company')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "requesting a Declaration Business Trip and waiting for your approval with the following details :";
+            $textNotification = "requesting a Declaration Business Travel and waiting for your approval with the following details :";
             // dd( $detail_ca, $caTrans);
 
             // dd($caTrans, $n->no_sppd);
@@ -8489,7 +8489,7 @@ class BusinessTripController extends Controller
                         $group_company,
                     ));
                 } catch (\Exception $e) {
-                    Log::error('Email Update Status Deklarasi Business Trip tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email Update Status Deklarasi Business Travel tidak terkirim: ' . $e->getMessage());
                 }
             }
             // Handle CA approval for L1
@@ -8976,7 +8976,7 @@ class BusinessTripController extends Controller
         $locations = Location::orderBy('id')->get();
         $companies = Company::orderBy('contribution_level')->get();
 
-        $parentLink = 'Business Trip Approval';
+        $parentLink = 'Business Travel Approval';
         $link = 'Approval Details';
 
         return view('hcis.reimbursements.businessTrip.btApprovalDeklarasi', [
@@ -9090,7 +9090,7 @@ class BusinessTripController extends Controller
         $taksi = Taksi::whereIn('no_sppd', $sppdNos)->get()->keyBy('no_sppd');
 
         $parentLink = 'Reimbursement';
-        $link = 'Business Trip';
+        $link = 'Business Travel';
         $showData = true;
 
         return view('hcis.reimbursements.businessTrip.btApproval', compact('sppd', 'parentLink', 'link', 'caTransactions', 'tickets', 'hotel', 'taksi', 'showData', 'filter', 'requestCount', 'declarationCount'));

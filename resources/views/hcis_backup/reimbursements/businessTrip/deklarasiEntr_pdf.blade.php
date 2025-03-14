@@ -390,7 +390,7 @@
                 <td>Amount</td>
             </tr>
             <tr>
-                <td class="label">Non Business Trip</td>
+                <td class="label">Non Business Travel</td>
                 <td>
                     {{ $transactions->total_days }} Days
                 </td>

@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Log;
 class UpdateBTtoDBJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    
+
     /**
      * Execute the job.
      */
@@ -25,7 +25,7 @@ class UpdateBTtoDBJob implements ShouldQueue
         try {
             $today = date('Y-m-d');
             Log::info('0. cek Business Trips start');
-            
+
             $bisnisTrips = BusinessTrip::with('employee')
                 ->select('user_id', 'mulai', 'kembali', 'update_db', 'no_sppd')
                 ->where('mulai', '<=', $today)
@@ -35,7 +35,7 @@ class UpdateBTtoDBJob implements ShouldQueue
                 ])
                 ->orderBy('mulai', 'asc')
                 ->get();
-    
+
             Log::info('1. Total Business Trips fetched: ' . $bisnisTrips->count());
         } catch (\Exception $e) {
             Log::error('Error in UpdateBTtoDBJob: ' . $e->getMessage());
@@ -72,7 +72,7 @@ class UpdateBTtoDBJob implements ShouldQueue
                     "shift_name" => $attdUpdate->shift_name,
                     "policy_name" => $attdUpdate->policy_name,
                     "weekly_off_name" => $attdUpdate->assigned_weekly_off,
-                    "comments" => "Business Trip"
+                    "comments" => "Business Travel"
                 ];
 
                 $this->addBackdatedAttendance($attendanceData);
@@ -224,11 +224,11 @@ class UpdateBTtoDBJob implements ShouldQueue
                     Log::error('Unexpected attendance entry format', ['entry' => $attendance]);
                     continue; // Skip this entry
                 }
-                
+
                 // Extract the date string from the attendance array
                 $attendanceDateStr = explode('(', $attendance[0])[0];
                 Log::info('Extracted date string', ['date_string' => $attendanceDateStr]);
-                
+
                 try {
                     $attendanceDate = Carbon::createFromFormat('d-M-Y', trim($attendanceDateStr));
                 } catch (\Exception $e) {

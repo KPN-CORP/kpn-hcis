@@ -92,7 +92,7 @@ class DeclarationNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Business Trip Declaration Notification',
+            subject: 'Business Travel Declaration Notification',
         );
     }
 

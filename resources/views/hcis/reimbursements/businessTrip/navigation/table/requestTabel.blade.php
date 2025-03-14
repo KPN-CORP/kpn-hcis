@@ -38,7 +38,7 @@
                                             return [
                                                 'No. CA' => $transaction->no_ca,
                                                 'No. SPPD' => $transaction->no_sppd,
-                                                'Type' => $transaction->type_ca === 'dns' ? 'Business Trip' : 'Entertain', // Conditional assignment
+                                                'Type' => $transaction->type_ca === 'dns' ? 'Business Travel' : 'Entertain', // Conditional assignment
                                                 'Destination' => $transaction->destination,
                                                 'CA Total' => 'Rp ' . number_format($transaction->total_ca, 0, ',', '.'),
                                                 'Total Real' => 'Rp ' . number_format($transaction->total_real, 0, ',', '.'),

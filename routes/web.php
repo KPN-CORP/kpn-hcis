@@ -431,7 +431,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/businessTrip/division/export-pdf', [BusinessTripController::class, 'exportPdfDivision'])->name('export.pdf.division');
     });
 
-    //Business Trip
+    //Business Trip Travel
     Route::get('/businessTrip', [BusinessTripController::class, 'businessTrip'])->name('businessTrip');
     Route::get('/businessTrip/form/add', [BusinessTripController::class, 'businessTripformAdd'])->name('businessTrip.add');
     Route::post('/businessTrip/form/post', [BusinessTripController::class, 'businessTripCreate'])->name('businessTrip.post');

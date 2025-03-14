@@ -22,9 +22,9 @@
                     <td style="text-align: center;">{{ $loop->iteration }}</td>
                     <td style="background-color: white;" class="sticky-col">{{ $transaction->no_ca }}</td>
                     @if($transaction->type_ca == 'dns')
-                        <td>Business Trip</td>
+                        <td>Business Travel</td>
                     @elseif($transaction->type_ca == 'ndns')
-                        <td>Non Business Trip</td>
+                        <td>Non Business Travel</td>
                     @elseif($transaction->type_ca == 'entr')
                         <td>Entertainment</td>
                     @endif
