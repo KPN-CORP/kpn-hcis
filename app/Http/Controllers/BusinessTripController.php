@@ -3214,6 +3214,7 @@ class BusinessTripController extends Controller
                             $ca = CATransaction::where('no_sppd', $sppd->no_sppd)->where('approval_status', '!=', 'Rejected')
                                 ->first();
                             $allCa = CATransaction::where('no_sppd', $sppd->no_sppd)->where('approval_status', '!=', 'Rejected')
+                                ->whereNotNull('date_required')->whereNotNull('status_id')
                                 ->get();
 
                             if ($allCa->isEmpty()) {
@@ -3591,7 +3592,7 @@ class BusinessTripController extends Controller
                         case 'ca':
                             $ca = CATransaction::where('no_sppd', $sppd->no_sppd)->where('approval_status', '!=', 'Rejected')
                                 ->first();
-                            $allCa = CATransaction::where('no_sppd', $sppd->no_sppd)->where('approval_status', '!=', 'Rejected')
+                            $allCa = CATransaction::where('no_sppd', $sppd->no_sppd)->where('approval_status', '!=', 'Rejected')->whereNotNull('date_required')->whereNotNull('status_id')
                                 ->get();
 
                             if ($allCa->isEmpty()) {

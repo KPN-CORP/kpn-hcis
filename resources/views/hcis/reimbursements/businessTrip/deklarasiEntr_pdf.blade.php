@@ -477,8 +477,13 @@
                     </td>
                     <td>
                         <span style="float: left; margin-left:4px">Rp.</span>
-                        <span
-                            style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_e'], 'nominal')), 0, ',', '.') }}</span>
+                        <span style="float: right;">
+                            {{ number_format(
+                                array_sum(empty($detailCA['detail_e']) ? [] : array_column($detailCA['detail_e'], 'nominal')),
+                                0,
+                                ',',
+                                '.',
+                            ) }}</span>
                     </td>
                     <td>
                         {{ $transactions->total_days }} Days
@@ -985,7 +990,10 @@
             @endif
         @elseif ($transactions->type_ca == 'entr')
             @if ($transactions->approval_status != 'Rejected')
-                @if (count($detailCA['detail_e']) > 0 && !empty($detailCA['detail_e'][0]['type']))
+                @if (
+                    !empty($detailCA['detail_e']) &&
+                        isset($detailCA['detail_e'][0]['type']) &&
+                        !empty($detailCA['detail_e'][0]['type']))
                     <table class="table-approve">
                         <tr>
                             <td colspan="3"><b>Detail Entertain :</b></td>
@@ -1020,8 +1028,13 @@
                             <td colspan="2" class="head-row">Total</td>
                             <td>
                                 <span style="float: left; margin-left:4px">Rp.</span>
-                                <span
-                                    style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_e'], 'nominal')), 0, ',', '.') }}</span>
+                                <span style="float: right;">
+                                    {{ number_format(
+                                        array_sum(empty($detailCA['detail_e']) ? [] : array_column($detailCA['detail_e'], 'nominal')),
+                                        0,
+                                        ',',
+                                        '.',
+                                    ) }}</span>
                             </td>
                         </tr>
                     </table>
@@ -1071,7 +1084,10 @@
             @endif
 
             @if ($transactions->approval_status != 'Rejected')
-                @if (count($detailCA['relation_e']) > 0 && !empty($detailCA['relation_e'][0]['name']))
+                @if (
+                    !empty($detailCA['relation_e']) &&
+                        isset($detailCA['relation_e'][0]['name']) &&
+                        !empty($detailCA['relation_e'][0]['name']))
                     <table class="table-approve">
                         <tr>
                             <td colspan="5"><b>Relation Entertain:</b></td>
