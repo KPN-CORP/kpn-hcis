@@ -68,9 +68,9 @@
                         @if($caTransaction->type_ca === 'entr')
                             Entertaiment
                         @elseif($caTransaction->type_ca === 'dns')
-                            Business Trip
+                            Business Travel
                         @elseif($caTransaction->type_ca === 'ndns')
-                            Non Business Trip
+                            Non Business Travel
                         @else
                             Unknown Type
                         @endif
@@ -419,7 +419,7 @@
                             <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Amount</td>
                         </tr>
                         <tr>
-                            <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Non Business Trip</td>
+                            <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Non Business Travel</td>
                             <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">
                                 {{ $caTransaction->total_days }} Days
                             </td>
@@ -456,7 +456,7 @@
                             <td style="border: 1px solid #ddd; padding: 4px; text-align: left; vertical-align: top;">Amount</td>
                         </tr>
                         <tr>
-                            <td style="border: 1px solid #ddd; padding: 4px; text-align: left; vertical-align: top;">Non Business Trip</td>
+                            <td style="border: 1px solid #ddd; padding: 4px; text-align: left; vertical-align: top;">Non Business Travel</td>
                             <td style="border: 1px solid #ddd; padding: 4px; text-align: left; vertical-align: top;">
                                 {{ $caTransaction->total_days }} Days
                             </td>

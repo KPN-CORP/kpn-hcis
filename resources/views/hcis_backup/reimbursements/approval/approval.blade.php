@@ -107,7 +107,7 @@ h5 {
                     <div class="card" style="height: 200px">
                         <div class="card-body">
                             <img src="{{ asset('images/menu/bt.png')}}" alt="logo" style="width: 100px; height: 100px;">
-                            <h5 class="my-3">Business Trip</h5>
+                            <h5 class="my-3">Business Travel</h5>
                         </div> <!-- end card-body-->
                     </div> <!-- end card-->
                 </a>
@@ -119,7 +119,7 @@ h5 {
                     <div class="card" style="height: 200px">
                         <div class="card-body">
                             <img src="/images/menu/bt.png" alt="logo" style="width: 100px; height: 100px;">
-                            <h5 class="my-3">Business Trip (Approval)</h5>
+                            <h5 class="my-3">Business Travel (Approval)</h5>
                         </div> <!-- end card-body-->
                     </div> <!-- end card-->
                 </a>
@@ -132,7 +132,7 @@ h5 {
                                 <div class="card-body">
                                     <img src="/images/menu/bt.png" alt="logo"
                                         style="width: 100px; height: 100px;">
-                                    <h5 class="my-3">Business Trip (Admin)</h5>
+                                    <h5 class="my-3">Business Travel (Admin)</h5>
                                 </div> <!-- end card-body-->
                             </div> <!-- end card-->
 

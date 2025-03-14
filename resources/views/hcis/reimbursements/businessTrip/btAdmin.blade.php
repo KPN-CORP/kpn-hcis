@@ -1,4 +1,4 @@
-@extends('layouts_.vertical', ['page_title' => 'Business Trip'])
+@extends('layouts_.vertical', ['page_title' => 'Business Travel'])
 
 @section('css')
     <style>
@@ -221,7 +221,7 @@
                                                         return [
                                                             'No. CA' => $transaction->no_ca,
                                                             'No. SPPD' => $transaction->no_sppd,
-                                                            'Type' => $transaction->type_ca === 'dns' ? 'Business Trip' : 'Entertain', // Conditional assignment
+                                                            'Type' => $transaction->type_ca === 'dns' ? 'Business Travel' : 'Entertain', // Conditional assignment
                                                             'Destination' => $transaction->destination,
                                                             'CA Total' => 'Rp ' . number_format($transaction->total_ca, 0, ',', '.'),
                                                             'Total Real' => 'Rp ' . number_format($transaction->total_real, 0, ',', '.'),
@@ -423,7 +423,7 @@
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="approvalDecModalLabel">Approval Business Trip Update - <span
+                    <h5 class="modal-title" id="approvalDecModalLabel">Approval Business Travel Update - <span
                             id="modalSPPD"></span></h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                         aria-label="Close"></button>

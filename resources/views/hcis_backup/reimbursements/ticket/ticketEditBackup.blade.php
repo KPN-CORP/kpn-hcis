@@ -36,9 +36,9 @@
 
                     <div class="col-md-12">
                         <div class="mb-2">
-                            <label class="form-label" for="name">Business Trip Number</label>
+                            <label class="form-label" for="name">Business Travel Number</label>
                             <select class="form-control select2" id="bisnis_numb" name="bisnis_numb">
-                                <option value="-">No Business Trip</option>
+                                <option value="-">No Business Travel</option>
                                 @foreach ($no_sppds as $no_sppd)
                                     <option value="{{ $no_sppd->no_sppd }}">{{ $no_sppd->no_sppd }}</option>
                                 @endforeach

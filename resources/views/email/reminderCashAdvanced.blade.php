@@ -5,10 +5,10 @@
 </head>
 <body>
     <div style="width: 100%; height: auto; text-align: center;">
-        <img src="{{ $logoBase64 }}" 
-             alt="Kop Surat" 
+        <img src="{{ $logoBase64 }}"
+             alt="Kop Surat"
              style="height: auto; margin-bottom: 20px; width: 15%;">
-    </div>               
+    </div>
     <h2>Declaration Cash Advanced Reminder</h2>
 
     <p>Dear <strong>{{ $ca_transaction->employee->fullname }}</strong>,</p>
@@ -64,9 +64,9 @@
                     @if($ca_transaction->type_ca === 'entr')
                         Entertaiment
                     @elseif($ca_transaction->type_ca === 'dns')
-                        Business Trip
+                        Business Travel
                     @elseif($ca_transaction->type_ca === 'ndns')
-                        Non Business Trip
+                        Non Business Travel
                     @else
                         Unknown Type
                     @endif
@@ -86,12 +86,12 @@
                     <tr style="font-weight: bold; background-color: #f5f5f5;">
                         <td rowspan="2" style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Types of Down Payments</td>
                         <td colspan="2" style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Estimate Plan</td>
-                        
+
                     </tr>
                     <tr style="font-weight: bold; background-color: #f5f5f5;">
                         <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Total Days</td>
                         <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Amount</td>
-                        
+
                     </tr>
                     <tr>
                         <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">Detail Entertain</td>
@@ -101,12 +101,12 @@
                         <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">
                             Rp. {{ number_format(array_sum(array_column($detailCA['detail_e'], 'nominal')), 0, ',', '.') }}
                         </td>
-                        
+
                     </tr>
                     <tr>
                         <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;" colspan="2">Total</td>
                         <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">Rp. {{ number_format($ca_transaction->total_ca, 0, ',', '.') }}</td>
-                        
+
                     </tr>
                 </table>
             @else
@@ -155,7 +155,7 @@
                             <td style="border: 1px solid #ddd; padding: 4px; text-align: left; vertical-align: top;">Company Code</td>
                             <td style="border: 1px solid #ddd; padding: 4px; text-align: left; vertical-align: top;">Total Days</td>
                         </tr>
-                    
+
                         @foreach($declareCA['detail_perdiem'] as $perdiem)
                         <tr style="text-align: center;">
                             <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">
@@ -175,14 +175,14 @@
                             <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">{{ $perdiem['total_days'] }} Hari</td>
                         </tr>
                         @endforeach
-                    
+
                         <tr style="font-weight: bold; background-color: #f5f5f5;">
                             <td colspan="4" style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Total</td>
                             <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">
                                 {{ array_sum(array_column($declareCA['detail_perdiem'], 'total_days')) }} Hari
                             </td>
                         </tr>
-                    </table>  
+                    </table>
                 @endif
                 <table style="border-collapse: collapse; width: 70%; margin-top: 8px; font-size: 10px;">
                     <tr>
@@ -193,12 +193,12 @@
                     <tr style="font-weight: bold; background-color: #f5f5f5;">
                         <td rowspan="2" style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Types of Down Payments</td>
                         <td colspan="2" style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Estimate Plan</td>
-                        
+
                     </tr>
                     <tr style="font-weight: bold; background-color: #f5f5f5;">
                         <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Total Days</td>
                         <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Amount</td>
-                        
+
                     </tr>
                     <tr>
                         <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">Perdiem</td>
@@ -212,7 +212,7 @@
                         <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">
                             Rp. {{ number_format(array_sum(array_column($detailCA['detail_perdiem'], 'nominal')), 0, ',', '.') }}
                         </td>
-                        
+
                     </tr>
                     <tr>
                         <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">Transport</td>
@@ -220,7 +220,7 @@
                         <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">
                             Rp. {{ number_format(array_sum(array_column($detailCA['detail_transport'], 'nominal')), 0, ',', '.') }}
                         </td>
-                        
+
                     </tr>
                     <tr>
                         <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">Accomodation</td>
@@ -234,7 +234,7 @@
                         <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">
                             Rp. {{ number_format(array_sum(array_column($detailCA['detail_penginapan'], 'nominal')), 0, ',', '.') }}
                         </td>
-                        
+
                     </tr>
                     <tr>
                         <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">Others</td>
@@ -242,16 +242,16 @@
                         <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">
                             Rp. {{ number_format(array_sum(array_column($detailCA['detail_lainnya'], 'nominal')), 0, ',', '.') }}
                         </td>
-                        
+
                     </tr>
                     <tr>
                         <td colspan="2" style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">Total</td>
                         <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">
                             Rp. {{ number_format($ca_transaction->total_ca, 0, ',', '.') }}
                         </td>
-                        
+
                     </tr>
-                </table>                    
+                </table>
             @else
                 @if (count($detailCA['detail_perdiem']) > 0 && !empty($detailCA['detail_perdiem'][0]['company_code']))
                     <table style="border-collapse: collapse; width: 70%; margin-top: 8px; font-size: 10px;">
@@ -267,7 +267,7 @@
                             <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Company Code</td>
                             <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Total Days</td>
                         </tr>
-                    
+
                         @foreach($detailCA['detail_perdiem'] as $perdiem)
                         <tr style="text-align: center;">
                             <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">
@@ -287,15 +287,15 @@
                             <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">{{ $perdiem['total_days'] }} Hari</td>
                         </tr>
                         @endforeach
-                    
+
                         <tr style="font-weight: bold; background-color: #f5f5f5;">
                             <td colspan="4" style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Total</td>
                             <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">
                                 {{ array_sum(array_column($detailCA['detail_perdiem'], 'total_days')) }} Hari
                             </td>
                         </tr>
-                    </table>  
-                    <br><br>                  
+                    </table>
+                    <br><br>
                 @endif
                 <table style="border-collapse: collapse; width: 50%; margin-top: 8px; font-size: 10px;">
                     <tr>
@@ -357,8 +357,8 @@
                             Rp. {{ number_format($ca_transaction->total_ca, 0, ',', '.') }}
                         </td>
                     </tr>
-                </table> 
-                <br>                   
+                </table>
+                <br>
             @endif
         @elseif($ca_transaction->type_ca === 'ndns')
             @if ($declaration == "Declaration")

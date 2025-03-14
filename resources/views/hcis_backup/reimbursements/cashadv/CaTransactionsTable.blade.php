@@ -8,7 +8,7 @@
                         <span class="input-group-text bg-white w-border-dark-subtle"><i class="ri-search-line"></i></span>
                     </div>
                     <input type="text" name="customsearch" id="customsearch" class="form-control w-border-dark-subtle border-left-0" placeholder="search.." aria-label="search" aria-describedby="search" >&nbsp;&nbsp;&nbsp;
-                    
+
                 </div>
             </div>
             <div class="table-responsive">
@@ -35,9 +35,9 @@
                             <tr>
                                 <td class="text-center">{{ $loop->index + 1 }}</td>
                                 @if ($ca_transaction->type_ca == 'dns')
-                                    <td>Business Trip</td>
+                                    <td>Business Travel</td>
                                 @elseif($ca_transaction->type_ca == 'ndns')
-                                    <td>Non Business Trip</td>
+                                    <td>Non Business Travel</td>
                                 @elseif($ca_transaction->type_ca == 'entr')
                                     <td>Entertainment</td>
                                 @endif

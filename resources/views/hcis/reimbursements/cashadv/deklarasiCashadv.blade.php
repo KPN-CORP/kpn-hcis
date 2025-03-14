@@ -120,7 +120,7 @@
                                         @elseif ($transactions->type_ca == 'entr')
                                             Entertainment
                                         @else
-                                            Non Business Trip
+                                            Non Business Travel
                                         @endif
                                     </td>
                                 </tr>
@@ -147,10 +147,10 @@
                                 <select name="ca_type_disabled" id="ca_type" class="form-control bg-light" disabled>
                                     <option value="">-</option>
                                     <option value="dns" {{ $transactions->type_ca == 'dns' ? 'selected' : '' }}>
-                                        Business Trip
+                                        Business Travel
                                     </option>
                                     <option value="ndns" {{ $transactions->type_ca == 'ndns' ? 'selected' : '' }}>
-                                        Non Business Trip
+                                        Non Business Travel
                                     </option>
                                     <option value="entr" {{ $transactions->type_ca == 'entr' ? 'selected' : '' }}>
                                         Entertainment
@@ -284,7 +284,7 @@
                             <!-- Preview untuk file lama -->
                             <div id="existing-files-label" style="margin-bottom: 10px; font-weight: bold;">
                                 @if ($transactions->prove_declare)
-                                    
+
                                     Document on Draft:
                                 @endif
                             </div>
@@ -680,30 +680,30 @@
                 files.forEach(file => {
                     const fileExtension = file.name.split('.').pop().toLowerCase();
                     if (file.size > 2 * 1024 * 1024) {
-                        Swal.fire({  
-                            icon: 'error',  
-                            title: 'File Size Exceeded',  
-                            text: `File "${file.name}" exceeds the 2MB size limit.`,  
-                        });  
-                        return;  
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'File Size Exceeded',
+                            text: `File "${file.name}" exceeds the 2MB size limit.`,
+                        });
+                        return;
                     }
                     if (!['jpg', 'jpeg', 'png', 'gif', 'pdf'].includes(fileExtension)) {
-                        Swal.fire({  
-                            icon: 'error',  
-                            title: 'Unsupported File Type',  
-                            text: `File type "${fileExtension}" not supported.`,  
-                        });  
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Unsupported File Type',
+                            text: `File type "${fileExtension}" not supported.`,
+                        });
                         return;
                     }
                     if (!selectedFiles.some(existingFile => existingFile.name === file.name)) {
                         if (totalFiles < 10) {
                             selectedFiles.push(file);
                         } else {
-                            Swal.fire({  
-                                icon: 'error',  
-                                title: 'File Limit Exceeded',  
-                                text: 'You can upload a maximum of 10 files.',  
-                            });  
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'File Limit Exceeded',
+                                text: 'You can upload a maximum of 10 files.',
+                            });
                         }
                     }
                 });

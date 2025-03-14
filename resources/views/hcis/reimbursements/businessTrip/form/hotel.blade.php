@@ -45,7 +45,7 @@
                                 <div class="col-md-12">
                                     <label class="form-label">No. SPPD for Colleague (If a colleague uses the same room)</label>
                                     <select class="form-select select2 form-select-sm" name="no_sppd[]">
-                                        <option value="-">No Business Trip</option>
+                                        <option value="-">No Business Travel</option>
                                         @foreach ($bt_sppd as $no_sppd)
                                             <option value="{{ $no_sppd->no_sppd }}">{{ $no_sppd->no_sppd }}</option>
                                         @endforeach

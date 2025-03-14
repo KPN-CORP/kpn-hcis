@@ -1,4 +1,4 @@
-@extends('layouts_.vertical', ['page_title' => 'Business Trip'])
+@extends('layouts_.vertical', ['page_title' => 'Business Travel'])
 
 @section('css')
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -105,7 +105,7 @@
                                         <tr>
                                             <th>Cash Advance Type</th>
                                             <td class="block">:</td>
-                                            <td> Business Trip</td>
+                                            <td> Business Travel</td>
                                         </tr>
                                     </table>
                                 </div>
@@ -217,7 +217,7 @@
                                                                 min="0" value="{{ number_format($dnsData->total_ca ?? '0', 0, ',', '.') }}" readonly>
                                                         </div>
                                                     </div>
-                                            
+
                                                     <!-- Cash Advanced Costs Used -->
                                                     <div class="col-md-6 mb-2">
                                                         <label class="form-label">Cash Advanced Costs Used</label>
@@ -230,7 +230,7 @@
                                                                 value="{{ number_format($dnsData->total_cost ?? '0', 0, ',', '.') }}" readonly>
                                                         </div>
                                                     </div>
-                                            
+
                                                     <!-- Hidden Total Cost (for future use or logic) -->
                                                     <div class="col-md-4" style="display:none">
                                                         <label class="form-label">Total Cost</label>
@@ -243,7 +243,7 @@
                                                         </div>
                                                     </div>
                                                     </div>
-                                                    
+
                                                     <hr/>
                                                     <div class="row">
                                                     <!-- Entertainment Costs Requested -->
@@ -257,7 +257,7 @@
                                                                 value="{{ number_format($entrData->total_ca ?? '0', 0, ',', '.') }}" readonly>
                                                         </div>
                                                     </div>
-                                            
+
                                                     <!-- Entertainment Costs Used -->
                                                     <div class="col-md-6 mb-2">
                                                         <label class="form-label">Entertainment Costs Used</label>

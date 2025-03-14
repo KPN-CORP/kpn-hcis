@@ -1,4 +1,4 @@
-@extends('layouts_.vertical', ['page_title' => 'Business Trip'])
+@extends('layouts_.vertical', ['page_title' => 'Business Travel'])
 
 @section('css')
     <style>
@@ -104,16 +104,16 @@
                 <div class="row align-items-end">
                     <h3 class="card-title">SPPD Data</h3>
 
-                    <div class="col-md-5">  
-                        <label for="start-date" class="mb-2 mt-2">Departure Date:</label>  
-                        <input type="date" id="start-date" name="start-date" class="form-control"  
-                            value="{{ request()->query('start-date') }}" onchange="updateEndDate2()">  
-                    </div>  
-                    <div class="col-md-5">  
-                        <label for="end-date" class="mb-2 mt-2">To:</label>  
-                        <input type="date" id="end-date" name="end-date" class="form-control"  
-                            value="{{ request()->query('end-date') }}" disabled>  
-                    </div>  
+                    <div class="col-md-5">
+                        <label for="start-date" class="mb-2 mt-2">Departure Date:</label>
+                        <input type="date" id="start-date" name="start-date" class="form-control"
+                            value="{{ request()->query('start-date') }}" onchange="updateEndDate2()">
+                    </div>
+                    <div class="col-md-5">
+                        <label for="end-date" class="mb-2 mt-2">To:</label>
+                        <input type="date" id="end-date" name="end-date" class="form-control"
+                            value="{{ request()->query('end-date') }}" disabled>
+                    </div>
                     <div class="col-md-2 mt-2">
                         <button type="submit" class="btn btn-primary rounded-pill w-100">Find</button>
                     </div>
@@ -221,7 +221,7 @@
                                                                         return [
                                                                             'No. CA' => $transaction->no_ca,
                                                                             'No. SPPD' => $transaction->no_sppd,
-                                                                            'Type' => $transaction->type_ca === 'dns' ? 'Business Trip' : 'Entertain', // Conditional assignment
+                                                                            'Type' => $transaction->type_ca === 'dns' ? 'Business Travel' : 'Entertain', // Conditional assignment
                                                                             'Unit' => $transaction->unit,
                                                                             'Destination' => $transaction->destination,
                                                                             'CA Total' => 'Rp ' . number_format($transaction->total_ca, 0, ',', '.'),
@@ -425,10 +425,10 @@
                 {{-- APPROVAL MODAL --}}
                 <div class="modal fade" id="approvalDecModal" tabindex="-1" aria-labelledby="approvalDecModalLabel"
                     aria-hidden="true">
-                    <div class="modal-dialog modal-xl">  
+                    <div class="modal-dialog modal-xl">
                         <div class="modal-content">
                             <div class="modal-header bg-primary text-white">
-                                <h5 class="modal-title" id="approvalDecModalLabel">Approval Business Trip Update - <span
+                                <h5 class="modal-title" id="approvalDecModalLabel">Approval Business Travel Update - <span
                                         id="modalSPPD"></span></h5>
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
@@ -711,7 +711,7 @@
                         </div>
                     </div>
                 </div>
-                
+
 
                 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
                 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -1511,41 +1511,41 @@
                     setInterval(updateDateTime, 1000);
                 </script>
 
-                <script>  
-                    function updateEndDate2() {  
-                        const startDateInput = document.getElementById('start-date');  
-                        const endDateInput = document.getElementById('end-date');  
-                        const startDate = new Date(startDateInput.value);  
-                    
-                        // Set min attribute for end date to the selected start date + 1 day  
-                        if (startDateInput.value) {  
-                            const minDate = new Date(startDate);  
-                            minDate.setDate(minDate.getDate() + 1); // Disable the start date  
-                            
-                            // Enable end date input  
-                            endDateInput.disabled = false;  
-                            // Set min and max for end date  
-                            endDateInput.min = minDate.toISOString().split('T')[0];  
-                    
-                            // Set max to 3 months from the start date  
-                            const maxDate = new Date(startDate);  
-                            maxDate.setMonth(startDate.getMonth() + 3);  
-                    
-                            // Set max attribute for end date  
-                            endDateInput.max = maxDate.toISOString().split('T')[0];  
-                    
-                            // Optionally reset the end date if it is before the new min date  
-                            if (new Date(endDateInput.value) < minDate) {  
-                                endDateInput.value = '';  
-                            }  
-                        } else {  
-                            // Disable end date input if no start date is selected  
-                            endDateInput.disabled = true;  
-                            endDateInput.value = ''; // Clear the end date input  
-                        }  
-                    }  
-                    
-                    // Initial call to set dates if there are pre-filled values  
-                    updateEndDate2();  
-                </script>  
+                <script>
+                    function updateEndDate2() {
+                        const startDateInput = document.getElementById('start-date');
+                        const endDateInput = document.getElementById('end-date');
+                        const startDate = new Date(startDateInput.value);
+
+                        // Set min attribute for end date to the selected start date + 1 day
+                        if (startDateInput.value) {
+                            const minDate = new Date(startDate);
+                            minDate.setDate(minDate.getDate() + 1); // Disable the start date
+
+                            // Enable end date input
+                            endDateInput.disabled = false;
+                            // Set min and max for end date
+                            endDateInput.min = minDate.toISOString().split('T')[0];
+
+                            // Set max to 3 months from the start date
+                            const maxDate = new Date(startDate);
+                            maxDate.setMonth(startDate.getMonth() + 3);
+
+                            // Set max attribute for end date
+                            endDateInput.max = maxDate.toISOString().split('T')[0];
+
+                            // Optionally reset the end date if it is before the new min date
+                            if (new Date(endDateInput.value) < minDate) {
+                                endDateInput.value = '';
+                            }
+                        } else {
+                            // Disable end date input if no start date is selected
+                            endDateInput.disabled = true;
+                            endDateInput.value = ''; // Clear the end date input
+                        }
+                    }
+
+                    // Initial call to set dates if there are pre-filled values
+                    updateEndDate2();
+                </script>
             @endsection

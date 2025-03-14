@@ -24,7 +24,7 @@ class MedicalNotification extends Mailable
 
     public function build()
     {
-        return $this->subject('New Business Trip Request')
+        return $this->subject('New Medical Request')
             ->view('hcis.reimbursements.medical.approval.email.mdcNotification');
     }
     public function envelope(): Envelope

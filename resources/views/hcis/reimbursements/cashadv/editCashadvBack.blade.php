@@ -139,10 +139,10 @@
                                     <select name="ca_type_disabled" id="ca_type" class="form-control bg-light" disabled>
                                         <option value="">-</option>
                                         <option value="dns" {{ $transactions->type_ca == 'dns' ? 'selected' : '' }}>
-                                            Business Trip
+                                            Business Travel
                                         </option>
                                         <option value="ndns" {{ $transactions->type_ca == 'ndns' ? 'selected' : '' }}>
-                                            Non Business Trip
+                                            Non Business Travel
                                         </option>
                                         <option value="entr" {{ $transactions->type_ca == 'entr' ? 'selected' : '' }}>
                                             Entertainment
@@ -464,7 +464,7 @@
                                                         <div class="accordion-item">
                                                             <h2 class="accordion-header" id="enter-headingOne">
                                                                 <button class="accordion-button fw-medium" type="button" data-bs-toggle="collapse" data-bs-target="#enter-collapseOne" aria-expanded="true" aria-controls="enter-collapseOne">
-                                                                    Non Business Trip
+                                                                    Non Business Travel
                                                                 </button>
                                                             </h2>
                                                             <div id="enter-collapseOne" class="accordion-collapse show" aria-labelledby="enter-headingOne">

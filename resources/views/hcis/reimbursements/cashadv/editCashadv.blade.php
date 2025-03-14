@@ -60,9 +60,9 @@
                             <div class="row">
                                 <div class="col-md-6 mb-2">
                                     <label class="form-label" for="type">CA Type</label>
-                                    
+
                                     <input type="text" name="ca_type_disabled" id="ca_type_disabled" class="form-control bg-light"
-                                        value="@if($transactions->type_ca=='dns')Business Trip @elseif($transactions->type_ca=='ndns')Non Business Trip @elseif($transactions->type_ca=='entr')Entertainment @endif" readonly>
+                                        value="@if($transactions->type_ca=='dns')Business Travel @elseif($transactions->type_ca=='ndns')Non Business Travel @elseif($transactions->type_ca=='entr')Entertainment @endif" readonly>
                                     <input type="hidden" name="ca_type" id="ca_type" value="{{ $transactions->type_ca }}">
                                 </div>
                             </div>
@@ -143,9 +143,9 @@
                                         <input type="date" name="ca_decla" id="ca_decla" class="form-control bg-light" value="{{ $transactions->declare_estimate }}" readonly>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-md-6 mb-2" style="display:{{ $transactions->type_ca == 'ndns' ? 'none' : 'block' }}">
-                                        <label class="form-label" for="bisnis_numb">Business Trip Number</label>
+                                        <label class="form-label" for="bisnis_numb">Business Travel Number</label>
                                         <input type="text" name="bisnis_numb" id="bisnis_numb" class="form-control bg-light" value="{{ $transactions->no_sppd ?? 'Tidak ada Bussiness Trip Number' }}" readonly>
                                     </div>
                                 </div>

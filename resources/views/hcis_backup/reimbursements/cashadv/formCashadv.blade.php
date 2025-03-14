@@ -69,8 +69,8 @@
                                     <label class="form-label" for="ca_type">CA Type</label>
                                     <select name="ca_type" id="ca_type" class="form-control" onchange="toggleDivs()">
                                         <option value="">-</option>
-                                        {{-- <option value="dns">Business Trip</option> --}}
-                                        <option value="ndns">Non Business Trip</option>
+                                        {{-- <option value="dns">Business Travel</option> --}}
+                                        <option value="ndns">Non Business Travel</option>
                                         <option value="entr">Entertainment</option>
                                     </select>
                                 </div>
@@ -147,10 +147,10 @@
                                         <input type="date" name="ca_decla" id="ca_decla" class="form-control bg-light" placeholder="mm/dd/yyyy" readonly>
                                     </div>
                                 </div>
-                                
+
                             </div>
                             <div class="col-md-6 mb-2" id="div_bisnis_numb_dns" style="display: none;">
-                                <label class="form-label" for="name">Business Trip Number</label>
+                                <label class="form-label" for="name">Business Travel Number</label>
                                 <select class="form-control select2" id="bisnis_numb_dns" name="bisnis_numb_dns">
                                     <option value="">Select</option>
                                     @foreach ($no_sppds as $no_sppd)
@@ -164,7 +164,7 @@
                             </div>
                             <div class="row" id="div_bisnis_numb_ent" style="display: none;">
                                 <div class="col-md-12 mb-2">
-                                    <label class="form-label" for="name">Business Trip Number</label>
+                                    <label class="form-label" for="name">Business Travel Number</label>
                                     <select class="form-control select2" id="bisnis_numb_ent" name="bisnis_numb_ent">
                                         <option value="">Select</option>
                                         @foreach ($no_sppds as $no_sppd)
@@ -327,7 +327,7 @@
             const caRequiredField = document.getElementById('ca_required');
 
             caRequiredField.value = '';
-            
+
             if (startDate) {
                 startDate.setDate(startDate.getDate() - 2);
                 const minDate = startDate.toISOString().split('T')[0];
@@ -335,7 +335,7 @@
                 caRequiredField.value = minDate;
             }
         });
-        
+
     </script>
     <script>
         function cleanNumber(value) {

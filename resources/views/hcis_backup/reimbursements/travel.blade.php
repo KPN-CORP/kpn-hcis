@@ -70,7 +70,7 @@
                         <div class="card-body">
                             <img src="{{ asset('images/menu/bt.png') }}" alt="logo"
                                 style="width: 100px; height: 100px;">
-                            <h5 class="my-3">Business Trip</h5>
+                            <h5 class="my-3">Business Travel</h5>
                         </div> <!-- end card-body-->
                     </div> <!-- end card-->
                 </a>
@@ -137,7 +137,7 @@
                             <div class="card" style="height: 200px">
                                 <div class="card-body">
                                     <img src="/images/menu/report.png" alt="logo">
-                                    <h5 class="my-3">Business Trip (Admin)</h5>
+                                    <h5 class="my-3">Business Travel (Admin)</h5>
                                 </div> <!-- end card-body-->
                             </div> <!-- end card-->
                         </a>

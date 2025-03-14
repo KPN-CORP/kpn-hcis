@@ -138,9 +138,9 @@
                                     <td class="text-center">{{ $loop->index + 1 }}</td>
                                     <td style="background-color: white;" class="sticky-col">{{ $ca_transaction->no_ca }}</td>
                                     @if ($ca_transaction->type_ca == 'dns')
-                                    <td>Business Trip</td>
+                                    <td>Business Travel</td>
                                     @elseif($ca_transaction->type_ca == 'ndns')
-                                    <td>Non Business Trip</td>
+                                    <td>Non Business Travel</td>
                                     @elseif($ca_transaction->type_ca == 'entr')
                                     <td>Entertainment</td>
                                     @endif

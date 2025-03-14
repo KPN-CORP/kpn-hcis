@@ -76,7 +76,7 @@
         <img src="{{ public_path('images/kop.jpg') }}" alt="Kop Surat">
     </div>
     <h5 class="center">TICKET FORM</h5>
-    <h5 class="center">No. {{ $ticket->no_tkt ?? 'Non Business Trip'}}</h5>
+    <h5 class="center">No. {{ $ticket->no_tkt ?? 'Non Business Travel'}}</h5>
 
     <table>
         <p>Please order tickets as follows:</p>
