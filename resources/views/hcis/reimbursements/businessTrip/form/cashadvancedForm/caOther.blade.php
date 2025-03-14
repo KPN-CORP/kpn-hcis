@@ -22,11 +22,15 @@
                                 <label class="form-label" for="name">Type of Others</label>
                                 <select class="form-control select2" id="type_bt_lainnya_${formCountOthers}" name="type_bt_lainnya[]">
                                     <option value="">Select Type...</option>
-                                    <option value="Laundry">Laundry</option>
                                     <option value="Airport Tax">Airport Tax</option>
-                                    <option value="Porter">Porter</option>
                                     <option value="Excess Baggage">Excess Baggage</option>
+                                    <option value="Laundry">Laundry</option>
+                                    <option value="Mandatory Insurance Fees">Mandatory Insurance Fees</option>
+                                    <option value="Parking Fees">Parking Fees</option>
+                                    <option value="Porter Service">Porter Service (for company luggage only)</option>
+                                    <option value="Toll Fees">Toll Fees</option>
                                 </select>
+                                <small class="form-text text-muted">Must be related to the Business Trip.</small>
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Amount</label>
@@ -72,11 +76,15 @@
                             <label class="form-label" for="name">Type of Others</label>  
                             <select class="form-control select2" id="type_bt_lainnya_{{ $loop->index + 1 }}" name="type_bt_lainnya[]">  
                                 <option value="">Select Type...</option>  
-                                <option value="Laundry" {{ $lainnya['type'] == 'Laundry' ? 'selected' : '' }}>Laundry</option>  
-                                <option value="Airport Tax" {{ $lainnya['type'] == 'Airport Tax' ? 'selected' : '' }}>Airport Tax</option>  
-                                <option value="Porter" {{ $lainnya['type'] == 'Porter' ? 'selected' : '' }}>Porter</option>  
-                                <option value="Excess Baggage" {{ $lainnya['type'] == 'Excess Baggage' ? 'selected' : '' }}>Excess Baggage</option>  
+                                <option value="Airport Tax" {{ $lainnya['type'] == 'Airport Tax' ? 'selected' : '' }}>Airport Tax</option>
+                                <option value="Excess Baggage" {{ $lainnya['type'] == 'Excess Baggage' ? 'selected' : '' }}>Excess Baggage</option>
+                                <option value="Laundry" {{ $lainnya['type'] == 'Laundry' ? 'selected' : '' }}>Laundry</option>
+                                <option value="Mandatory Insurance Fees" {{ $lainnya['type'] == 'Mandatory Insurance Fees' ? 'selected' : '' }}>Mandatory Insurance Fees</option>  
+                                <option value="Parking Fees" {{ $lainnya['type'] == 'Parking Fees' ? 'selected' : '' }}>Parking Fees</option>
+                                <option value="Porter Service" {{ $lainnya['type'] == 'Porter Service' ? 'selected' : '' }}>Porter Service (for company luggage only)</option>
+                                <option value="Toll Fees" {{ $lainnya['type'] == 'Toll Fees' ? 'selected' : '' }}>Toll Fees</option>
                             </select>  
+                            <small class="form-text text-muted">Must be related to the Business Trip.</small>
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Amount</label>
@@ -133,11 +141,15 @@
                         <label class="form-label" for="name">Type of Others</label>
                         <select class="form-control select2" id="type_bt_lainnya_1" name="type_bt_lainnya[]">
                             <option value="">Select Type...</option>
-                            <option value="Laundry">Laundry</option>
                             <option value="Airport Tax">Airport Tax</option>
-                            <option value="Porter">Porter</option>
                             <option value="Excess Baggage">Excess Baggage</option>
+                            <option value="Laundry">Laundry</option>
+                            <option value="Mandatory Insurance Fees">Mandatory Insurance Fees</option>
+                            <option value="Parking Fees">Parking Fees</option>
+                            <option value="Porter Service">Porter Service (for company luggage only)</option>
+                            <option value="Toll Fees">Toll Fees</option>
                         </select>
+                        <small class="form-text text-muted">Must be related to the Business Trip.</small>
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Amount</label>
