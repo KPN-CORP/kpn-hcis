@@ -4203,6 +4203,7 @@ class BusinessTripController extends Controller
 
             foreach ($ticketData['dari_tkt'] as $key => $value) {
                 if (!empty($value)) {
+                    $ktp = Employee::where('ktp', $ticketData['noktp_tkt'][$key])->first();
                     // $employee_data = Employee::where('ktp', $value)->first();
 
                     $tiket = new Tiket();
@@ -4211,10 +4212,10 @@ class BusinessTripController extends Controller
                     $tiket->no_sppd = $noSppd;
                     $tiket->user_id = $userId;
                     $tiket->unit = $request->divisi;
-                    $tiket->jk_tkt = $employee ? $employee->gender : null;
-                    $tiket->np_tkt = $employee ? $employee->fullname : null;
+                    $tiket->jk_tkt = $ktp ? $ktp->gender : null;
+                    $tiket->np_tkt = $ktp ? $ktp->fullname : null;
                     $tiket->noktp_tkt = $ticketData['noktp_tkt'][$key] ?? null;
-                    $tiket->tlp_tkt = $employee ? $employee->personal_mobile_number : null;
+                    $tiket->tlp_tkt = $ktp ? $ktp->personal_mobile_number : null;
 
                     // Handle each field using the index from $key
                     $tiket->dari_tkt = $ticketData['dari_tkt'][$key] ?? null;
@@ -5425,7 +5426,6 @@ class BusinessTripController extends Controller
                             $hotelName = $request->hotel_name_bt_penginapan[$key] ?? '';
                             $companyCode = $request->company_bt_penginapan[$key] ?? '';
                             $nominal = str_replace('.', '', $request->nominal_bt_penginapan[$key] ?? '0');
-                            $totalPenginapan = str_replace('.', '', $request->total_bt_penginapan[$key] ?? '0');
 
                             if (!empty($startDate) && !empty($endDate) && !empty($totalDays) && !empty($hotelName) && !empty($companyCode) && !empty($nominal)) {
                                 $detail_penginapan[] = [
@@ -5435,7 +5435,6 @@ class BusinessTripController extends Controller
                                     'hotel_name' => $hotelName,
                                     'company_code' => $companyCode,
                                     'nominal' => $nominal,
-                                    'totalPenginapan' => $totalPenginapan,
                                 ];
                             }
                         }
@@ -5445,15 +5444,15 @@ class BusinessTripController extends Controller
                     if ($request->has('tanggal_bt_lainnya')) {
                         foreach ($request->tanggal_bt_lainnya as $key => $tanggal) {
                             $keterangan = $request->keterangan_bt_lainnya[$key] ?? '';
+                            $type = $request->type_bt_lainnya[$key] ?? '';
                             $nominal = str_replace('.', '', $request->nominal_bt_lainnya[$key] ?? '0');
-                            $totalLainnya = str_replace('.', '', $request->total_bt_lainnya[$key] ?? '0');
 
                             if (!empty($tanggal) && !empty($nominal)) {
                                 $detail_lainnya[] = [
                                     'tanggal' => $tanggal,
                                     'keterangan' => $keterangan,
+                                    'type' => $type,
                                     'nominal' => $nominal,
-                                    'totalLainnya' => $totalLainnya,
                                 ];
                             }
                         }

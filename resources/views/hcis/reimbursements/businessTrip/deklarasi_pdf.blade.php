@@ -1004,6 +1004,7 @@
                         </tr>
                         <tr class="head-row">
                             <td style="width:12%">Date</td>
+                            <td style="width:12%">Type of Others</td>
                             <td>Information</td>
                             <td style="width:20%">Amount</td>
                         </tr>
@@ -1011,6 +1012,7 @@
                         @foreach ($detailCA['detail_lainnya'] as $lainnya)
                             <tr style="text-align: center">
                                 <td>{{ \Carbon\Carbon::parse($lainnya['tanggal'])->format('d-M-y') }}</td>
+                                <td style="text-align: left">{{ $lainnya['type'] }}</td>
                                 <td style="text-align: left">{{ $lainnya['keterangan'] }}</td>
                                 <td>
                                     <span style="float: left; margin-left:4px">Rp.</span>
@@ -1020,7 +1022,7 @@
                             </tr>
                         @endforeach
                         <tr class="total-row">
-                            <td colspan="2" class="head-row">Total</td>
+                            <td colspan="3" class="head-row">Total</td>
                             <td>
                                 <span style="float: left; margin-left:4px">Rp.</span>
                                 <span
@@ -1034,10 +1036,11 @@
             @if (count($declareCA['detail_lainnya']) > 0 && !empty($declareCA['detail_lainnya'][0]['keterangan']))
                 <table class="table-approve">
                     <tr>
-                        <th colspan="3"><b>Others Declaration :</b></th>
+                        <th colspan="4"><b>Others Declaration :</b></th>
                     </tr>
                     <tr class="head-row">
                         <td style="width:12%">Date</td>
+                        <td style="width:12%">Type of Others</td>
                         <td>Information</td>
                         <td style="width:20%">Amount</td>
                     </tr>
@@ -1045,6 +1048,7 @@
                     @foreach ($declareCA['detail_lainnya'] as $lainnya_dec)
                         <tr style="text-align: center">
                             <td>{{ \Carbon\Carbon::parse($lainnya_dec['tanggal'])->format('d-M-y') }}</td>
+                            <td style="text-align: left">{{ $perdiem['type'] }}</td>
                             <td style="text-align: left">{{ $lainnya_dec['keterangan'] }}</td>
                             <td>
                                 <span style="float: left; margin-left:4px">Rp.</span>
@@ -1054,7 +1058,7 @@
                         </tr>
                     @endforeach
                     <tr class="total-row">
-                        <td colspan="2" class="head-row">Total</td>
+                        <td colspan="3" class="head-row">Total</td>
                         <td>
                             <span style="float: left; margin-left:4px">Rp.</span>
                             <span
@@ -1066,7 +1070,7 @@
         @elseif ($transactions->type_ca == 'ndns')
             <table class="table-approve">
                 <tr>
-                    <th colspan="3"><b>Detail Non Business Trip :</b></th>
+                    <th colspan="4"><b>Detail Non Business Trip :</b></th>
                 </tr>
                 <tr class="head-row">
                     <td style="width:12%">Date</td>
@@ -1086,7 +1090,7 @@
                     </tr>
                 @endforeach
                 <tr class="total-row">
-                    <td colspan="2" class="head-row">Total</td>
+                    <td colspan="3" class="head-row">Total</td>
                     <td>
                         <span style="float: left; margin-left:4px">Rp.</span>
                         <span
@@ -1096,7 +1100,7 @@
             </table>
             <table class="table-approve">
                 <tr>
-                    <th colspan="3"><b>Detail Non Business Trip Declaration :</b></th>
+                    <th colspan="4"><b>Detail Non Business Trip Declaration :</b></th>
                 </tr>
                 <tr class="head-row">
                     <td style="width:12%">Date</td>
@@ -1115,7 +1119,7 @@
                     </tr>
                 @endforeach
                 <tr class="total-row">
-                    <td colspan="2" class="head-row">Total</td>
+                    <td colspan="3" class="head-row">Total</td>
                     <td>
                         <span style="float: left; margin-left:4px">Rp.</span>
                         <span
