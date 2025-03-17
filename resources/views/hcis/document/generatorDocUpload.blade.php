@@ -24,7 +24,7 @@
                     </button>
                 </div>
                 <a href="" class="btn btn-outline-secondary ms-2">
-                    <i class="bi bi-gear"></i> Manage Letters ss
+                    <i class="bi bi-gear"></i> Manage Letters
                 </a>
             </div>
         </div>
