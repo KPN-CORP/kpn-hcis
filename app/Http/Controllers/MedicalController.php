@@ -817,25 +817,26 @@ class MedicalController extends Controller
         if($medical->status == 'Done'){
             // Ambil nilai yang diperlukan dari record
             $noMedic = $medical->no_medic;
-            $balanceVerif = $medical->balance_verif; // Misalnya: 999,999
-            $balanceUncoverage = $medical->balance_uncoverage; // Misalnya: 277,768
+            $balanceVerif = $medical->balance_verif; // Misalnya: 2,000,000
+            $balanceUncoverage = $medical->balance_uncoverage; // Misalnya: 1,500,000
             $employeeId = $medical->employee_id;
             $period = $medical->period;
             $medicalType = $medical->medical_type;
             // dd($period);
 
             // Hitung hasil pengurangan balance_verif dengan balance_uncoverage
-            $adjustmentValue = $balanceVerif - $balanceUncoverage; // 999,999 - 277,768 = 722,231
+            // $adjustmentValue = $balanceVerif - $balanceUncoverage; // 2,000,000 - 1,500,000 = 500,000
 
             // Cari data HealthPlan berdasarkan kriteria
             $healthPlan = HealthPlan::where('employee_id', $employeeId)
                 ->where('period', $period)
                 ->where('medical_type', $medicalType)
                 ->first();
+            // dd($healthPlan->balance += $balanceVerif);
 
             if ($healthPlan) {
                 // Tambahkan hasil pengurangan ke balance HealthPlan
-                $healthPlan->balance += $adjustmentValue; // 60,000,000 + 722,231 = 60,722,231
+                $healthPlan->balance += $balanceVerif; // 60,000,000 + 722,231 = 60,722,231
                 $healthPlan->save(); // Simpan perubahan ke database
             }
         }
@@ -862,7 +863,7 @@ class MedicalController extends Controller
             $medicalType = $medical->medical_type;
 
             // Hitung hasil pengurangan balance_verif dengan balance_uncoverage
-            $adjustmentValue = $balanceVerif - $balanceUncoverage; // 999,999 - 277,768 = 722,231
+            // $adjustmentValue = $balanceVerif - $balanceUncoverage; // 999,999 - 277,768 = 722,231
 
             // Cari data HealthPlan berdasarkan kriteria
             $healthPlan = HealthPlan::where('employee_id', $employeeId)
@@ -872,7 +873,7 @@ class MedicalController extends Controller
 
             if ($healthPlan) {
                 // Tambahkan hasil pengurangan ke balance HealthPlan
-                $healthPlan->balance += $adjustmentValue; // 60,000,000 + 722,231 = 60,722,231
+                $healthPlan->balance += $balanceVerif; // 60,000,000 + 722,231 = 60,722,231
                 $healthPlan->save(); // Simpan perubahan ke database
             }
         }
@@ -1850,16 +1851,16 @@ class MedicalController extends Controller
                 // Simpan path file ke session
                 session()->put('failed_import_path', asset('storage/' . $filePath));
             
-                return redirect()->route('medical.admin')->with('failed', 'Transaction successfully added from Excel, but some of them failed.');
+                return redirect()->back()->with('failed', 'Transaction successfully added from Excel, but some of them failed.');
             } else {
-                return redirect()->route('medical.admin')->with('success', 'Transaction successfully added from Excel.');
+                return redirect()->back()->with('success', 'Transaction successfully added from Excel.');
             }
         } catch (\App\Exceptions\ImportDataInvalidException $e) {
             // Catch custom exception and redirect back with error message
-            return redirect()->route('medical.admin')->withErrors(['import_error' => $e->getMessage()]);
+            return redirect()->back()->withErrors(['import_error' => $e->getMessage()]);
         } catch (\Exception $e) {
             // Catch any other unexpected exceptions and redirect with a generic error message
-            return redirect()->route('medical.admin')->withErrors(['import_error' => 'An error occurred during import. Please check the file format.']);
+            return redirect()->back()->withErrors(['import_error' => 'An error occurred during import. Please check the file format.']);
         }
     }
 
