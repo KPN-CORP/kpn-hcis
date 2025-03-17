@@ -3921,7 +3921,9 @@ class BusinessTripController extends Controller
         $perdiem = ListPerdiem::where('grade', $employee_data->job_level)
             ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')->first();
 
-        $isApproved = CATransaction::where('user_id', $userId)->where('ca_status', '!=', 'Done')->where('total_ca', '!=', 0)->get();
+        $isApproved = CATransaction::where('user_id', $userId)
+        ->where('approval_sett', 'Approved')
+        ->where('total_ca', '!=', 0)->get();
 
         $job_level = Employee::where('id', $userId)->pluck('job_level')->first();
         $job_level_number = (int) preg_replace('/[^0-9]/', '', $job_level);

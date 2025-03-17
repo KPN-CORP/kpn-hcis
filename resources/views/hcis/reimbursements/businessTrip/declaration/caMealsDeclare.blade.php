@@ -351,7 +351,7 @@
     }  
 </script>
 
-@if (!empty($caDetail['detail_meals']) && ($caDetail['detail_meals'][0]['start_date'] ?? $caDetail['detail_meals'][0]['tanggal']) !== null)
+@if (!empty($caDetail['detail_meals']) && $caDetail['detail_meals'][0]['nominal'] !== null)
     <div id="form-container-meals">
         @foreach ($caDetail['detail_meals'] as $index => $meals)
             <div id="form-container-bt-meals-{{ $loop->index + 1 }}" class="p-2 mb-2 bg-light rounded-3">
@@ -394,7 +394,7 @@
                                     </th>
                                     <td class="colon" style="border: none; width:1%; padding: 2px 0;">:</td>
                                     <td class="value" style="border: none; padding: 2px 0;">
-                                        {{ $meals['company_code'] ?? ''  }}
+                                        {{ isset($meals['company_code']) ? $meals['company_code'] : "" }}
                                     </td>
                                 </tr>
                                 <tr>
@@ -428,7 +428,7 @@
                                 <label class="form-label">Meals Start Plan</label>
                                 <input type="date" name="start_bt_meals[]"
                                     id="start_bt_meals_{{ $loop->index + 1 }}" class="form-control start-meals"
-                                    value="{{ $meals_dec['start_date'] ?? $meals_dec['tanggal'] ?? '' }}" placeholder="mm/dd/yyyy"
+                                    value="{{ $meals_dec['start_date'] ?? $meals_dec['tanggal'] ?? $meals_dec['tanggal'] ?? '' }}" placeholder="mm/dd/yyyy"
                                     onchange="calculateTotalDaysPenginapan(this, document.getElementById('end_bt_meals_{{ $loop->index + 1 }}'), document.querySelector('#total_days_bt_meals_{{ $loop->index + 1 }}'))">
                             </div>
                             <div class="col-md-4 mb-2">
@@ -458,7 +458,7 @@
                                     <option value="">Select Company...</option>
                                     @foreach ($companies as $company)
                                         <option value="{{ $company->contribution_level_code }}"
-                                            @if ($company->contribution_level_code == ($meals_dec['company_code'] ?? '')) selected @endif>
+                                            @if (isset($meals_dec['company_code']) && $company->contribution_level_code == $meals_dec['company_code']) selected @endif>
                                             {{ $company->contribution_level . ' (' . $company->contribution_level_code . ')' }}
                                         </option>
                                     @endforeach

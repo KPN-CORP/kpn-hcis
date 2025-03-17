@@ -351,7 +351,7 @@
     }  
 </script>
 
-@if (!empty($caDetail['detail_meals']) && ($caDetail['detail_meals'][0]['start_date'] ?? $caDetail['detail_meals'][0]['tanggal']) !== null)
+@if (!empty($caDetail['detail_meals']) && $caDetail['detail_meals'][0]['nominal'] !== null)
     <div id="form-container-meals">
         @foreach ($caDetail['detail_meals'] as $index => $meals)
             <div id="form-container-bt-meals-{{ $loop->index + 1 }}" class="p-2 mb-2 bg-light card-body rounded-3">
@@ -394,7 +394,7 @@
                                     </th>
                                     <td class="colon" style="border: none; width:1%; padding: 2px 0;">:</td>
                                     <td class="value" style="border: none; padding: 2px 0;">
-                                        {{ $meals['company_code'] ?? ''  }}
+                                        {{ isset($meals['company_code']) ? $meals['company_code'] : "-" }}
                                     </td>
                                 </tr>
                                 <tr>
