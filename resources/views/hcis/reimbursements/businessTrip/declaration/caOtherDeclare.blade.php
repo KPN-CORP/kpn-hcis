@@ -192,7 +192,7 @@
                                 <tr>
                                     <th class="label">Type of Others</th>
                                     <td class="block">:</td>
-                                    <td class="value">{{ $lainnya['type'] }}</td>
+                                    <td class="value">{{ $lainnya['type'] ?? ''  }}</td>
                                 </tr>
                                 <tr>
                                     <th class="label">Amount</th>
@@ -224,13 +224,13 @@
                                 <label class="form-label" for="name">Type of Others</label>  
                                 <select class="form-control select2" id="type_bt_lainnya_{{ $loop->index + 1 }}" name="type_bt_lainnya[]">  
                                     <option value="">Select Type...</option>
-                                    <option value="Airport Tax" {{ $lainnya_dec['type'] == 'Airport Tax' ? 'selected' : '' }}>Airport Tax</option>
-                                    <option value="Excess Baggage" {{ $lainnya_dec['type'] == 'Excess Baggage' ? 'selected' : '' }}>Excess Baggage</option>
-                                    <option value="Laundry" {{ $lainnya_dec['type'] == 'Laundry' ? 'selected' : '' }}>Laundry</option>
-                                    <option value="Mandatory Insurance Fees" {{ $lainnya_dec['type'] == 'Mandatory Insurance Fees' ? 'selected' : '' }}>Mandatory Insurance Fees</option>  
-                                    <option value="Parking Fees" {{ $lainnya_dec['type'] == 'Parking Fees' ? 'selected' : '' }}>Parking Fees</option>
-                                    <option value="Porter Service" {{ $lainnya_dec['type'] == 'Porter Service' ? 'selected' : '' }}>Porter Service (for company luggage only)</option>
-                                    <option value="Toll Fees" {{ $lainnya_dec['type'] == 'Toll Fees' ? 'selected' : '' }}>Toll Fees</option>
+                                    <option value="Airport Tax" {{ ($lainnya_dec['type'] ?? '') == 'Airport Tax' ? 'selected' : '' }}>Airport Tax</option>
+                                    <option value="Excess Baggage" {{ ($lainnya_dec['type'] ?? '') == 'Excess Baggage' ? 'selected' : '' }}>Excess Baggage</option>
+                                    <option value="Laundry" {{ ($lainnya_dec['type'] ?? '') == 'Laundry' ? 'selected' : '' }}>Laundry</option>
+                                    <option value="Mandatory Insurance Fees" {{ ($lainnya_dec['type'] ?? '') == 'Mandatory Insurance Fees' ? 'selected' : '' }}>Mandatory Insurance Fees</option>  
+                                    <option value="Parking Fees" {{ ($lainnya_dec['type'] ?? '') == 'Parking Fees' ? 'selected' : '' }}>Parking Fees</option>
+                                    <option value="Porter Service" {{ ($lainnya_dec['type'] ?? '') == 'Porter Service' ? 'selected' : '' }}>Porter Service (for company luggage only)</option>
+                                    <option value="Toll Fees" {{ ($lainnya_dec['type'] ?? '') == 'Toll Fees' ? 'selected' : '' }}>Toll Fees</option>
                                 </select>  
                             </div>
                             <div class="col-md-4 mb-2">

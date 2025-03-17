@@ -137,7 +137,7 @@ function calculateTotalDaysPenginapan(startInput, endInput, totalDaysInput) {
     if (startDate && endDate && endDate >= startDate) {
         const timeDiff = endDate - startDate;
         const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)); // Convert time to days
-        totalDaysInput.value = daysDiff > 0 ? daysDiff : 0; // Ensure non-negative
+        totalDaysInput.value = daysDiff >= 0 ? daysDiff + 1 : 0; // Tambah 1 jika ada penginapan di hari yang sama
     } else {
         totalDaysInput.value = 0; // Set to 0 if invalid dates
         endInput.value = "";
