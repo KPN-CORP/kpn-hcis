@@ -384,7 +384,7 @@
                 <td>Amount</td>
             </tr>
             <tr>
-                <td class="label">Non Business Trip</td>
+                <td class="label">Non Business Travel</td>
                 <td>
                     {{ $transactions->total_days+1 }} Days
                 </td>
@@ -910,7 +910,7 @@
         @elseif ( $transactions->type_ca == 'ndns' )
             <table class="table-approve">
                 <tr>
-                    <th colspan="3"><b>Detail Non Business Trip :</b></th>
+                    <th colspan="3"><b>Detail Non Business Travel :</b></th>
                 </tr>
                 <tr class="head-row">
                     <td style="width:12%">Date</td>
@@ -938,7 +938,7 @@
             </table>
             <table class="table-approve">
                 <tr>
-                    <th colspan="3"><b>Detail Non Business Trip Declaration :</b></th>
+                    <th colspan="3"><b>Detail Non Business Travel Declaration :</b></th>
                 </tr>
                 <tr class="head-row">
                     <td style="width:12%">Date</td>

@@ -1,4 +1,4 @@
-@extends('layouts_.vertical', ['page_title' => 'Business Trip'])
+@extends('layouts_.vertical', ['page_title' => 'Business Travel'])
 
 @section('css')
     <style>
@@ -213,7 +213,7 @@
                                                                     return [
                                                                         'No. CA' => $transaction->no_ca,
                                                                         'No. SPPD' => $transaction->no_sppd,
-                                                                        'Type' => $transaction->type_ca === 'dns' ? 'Business Trip' : 'Entertain', // Conditional assignment
+                                                                        'Type' => $transaction->type_ca === 'dns' ? 'Business Travel' : 'Entertain', // Conditional assignment
                                                                         'Unit' => $transaction->unit,
                                                                         'Destination' => $transaction->destination,
                                                                         'CA Total' => 'Rp ' . number_format($transaction->total_ca, 0, ',', '.'),
@@ -347,11 +347,11 @@
                                                     @elseif ($n->status == 'Declaration L1')
                                                         onclick="showManagerInfo('L1 Manager', '{{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}')"
                                                     @elseif ($n->status == 'Declaration L2')
-                                                        onclick="showManagerInfo('L2 Manager', '{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}')" 
+                                                        onclick="showManagerInfo('L2 Manager', '{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}')"
                                                         @elseif ($n->status == 'Extend L1')
                                                         onclick="showManagerInfo('L1 Manager', '{{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}')"
                                                     @elseif ($n->status == 'Extend L2')
-                                                        onclick="showManagerInfo('L2 Manager', '{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}')" 
+                                                        onclick="showManagerInfo('L2 Manager', '{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}')"
                                                     @endif>
                                                     {{ $n->status == 'Approved' ? 'Request Approved' : $n->status }}
                                                 </span>

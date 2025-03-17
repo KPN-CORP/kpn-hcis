@@ -152,7 +152,7 @@
 
     <table>
         <tr>
-            <td colspan="3"><b>To Make a Business Trip to:</b></td>
+            <td colspan="3"><b>To Make a Business Travel to:</b></td>
         </tr>
         <tr>
             <td class="label">Destination</td>

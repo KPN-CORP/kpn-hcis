@@ -5,9 +5,9 @@
     <div id="form-container-nonb">
         @foreach ($detailCA as $index => $item)
             <div id="form-container-nbt-{{ $loop->index + 1 }}" class="p-2 mb-2 rounded-3 bg-light">
-                <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Trip {{ $loop->index + 1 }}</p>
+                <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Travel {{ $loop->index + 1 }}</p>
                 <div id="form-container-nbt-req-{{ $loop->index + 1 }}" class="card-body bg-white p-2 mb-2 rounded-3">
-                    <p class="fs-5 text-primary" style="font-weight: bold;">Non Business Trip Request</p>
+                    <p class="fs-5 text-primary" style="font-weight: bold;">Non Business Travel Request</p>
                     <div class="row">
                         <div class="col-md-6">
                             <table width="100%">
@@ -31,7 +31,7 @@
                     </div>
                 </div>
                 <div id="form-container-nbt-dec-{{ $loop->index + 1 }}" class="card-body bg-white p-2 mb-2 rounded-3">
-                    <p class="fs-5 text-primary" style="font-weight: bold; ">Non Business Trip Declaration</p>
+                    <p class="fs-5 text-primary" style="font-weight: bold; ">Non Business Travel Declaration</p>
                     @if (isset($declareCA[$index]))
                         @php
                             $item_dec = $declareCA[$index];
@@ -69,9 +69,9 @@
         @foreach ($declareCA  as $index => $item_dec)
             @if (!isset($detailCA [$index]))
                 <div id="form-container-nbt-{{ $loop->index + 1 }}" class="card-body p-2 mb-2 rounded-3 bg-light">
-                    <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Trip {{ $loop->index + 1 }}</p>
+                    <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Travel {{ $loop->index + 1 }}</p>
                     <div class="card-body bg-white rounded-3 p-2 mb-2">
-                        <p class="fs-5 text-primary" style="font-weight: bold; ">Non Business Trip Declaration</p>
+                        <p class="fs-5 text-primary" style="font-weight: bold; ">Non Business Travel Declaration</p>
                         <div class="row">
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">Date</label>
@@ -112,9 +112,9 @@
         @foreach ($declareCA  as $index => $item_dec)
             @if (!isset($detailCA [$index]))
                 <div id="form-container-nbt-{{ $loop->index + 1 }}" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
-                    <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Trip {{ $loop->index + 1 }}</p>
+                    <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Travel {{ $loop->index + 1 }}</p>
                     <div class="card-body bg-light p-2 mb-3" style="border-radius: 1%;">
-                        <p class="fs-5 text-primary" style="font-weight: bold; ">Non Business Trip Declaration</p>
+                        <p class="fs-5 text-primary" style="font-weight: bold; ">Non Business Travel Declaration</p>
                         <div class="row">
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">Date</label>
@@ -133,7 +133,7 @@
                             <div class="col-md-12 mb-2">
                                     <label class="form-label">Information</label>
                                     <textarea name="keterangan_nbt[]" class="form-control">{{ $item_dec['keterangan_nbt'] }}</textarea>
-                            
+
                             </div>
                         </div>
                         <div class="row mt-2">
@@ -154,9 +154,9 @@
 @else
     <div id="form-container-nonb">
         <div id="form-container-nbt-1" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
-            <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Trip 1</p>
+            <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Travel 1</p>
             <div id="form-container-nbt-dec-1" class="card-body bg-light p-2 mb-3">
-                <p class="fs-5 text-primary" style="font-weight: bold;">Non Business Trip Declaration</p>
+                <p class="fs-5 text-primary" style="font-weight: bold;">Non Business Travel Declaration</p>
                 <div class="row">
                     <div class="col-md-6 mb-2">
                         <label class="form-label">Date</label>

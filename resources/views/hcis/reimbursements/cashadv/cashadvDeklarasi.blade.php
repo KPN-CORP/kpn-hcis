@@ -137,9 +137,9 @@
                                             <td class="text-center" >{{ $loop->index + 1 }}</td>
                                             <td style="background-color: white;" class="sticky-col">{{ $ca_transaction->no_ca }}</td>
                                             @if ($ca_transaction->type_ca == 'dns')
-                                                <td>Business Trip</td>
+                                                <td>Business Travel</td>
                                             @elseif($ca_transaction->type_ca == 'ndns')
-                                                <td>Non Business Trip</td>
+                                                <td>Non Business Travel</td>
                                             @elseif($ca_transaction->type_ca == 'entr')
                                                 <td>Entertainment</td>
                                             @endif
@@ -224,7 +224,7 @@
         </div>
     </div>
     @include('hcis.reimbursements.cashadv.navigation.modalCashadv')
-    
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>

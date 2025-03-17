@@ -483,7 +483,7 @@
                 <td>Amount</td>
             </tr>
             <tr>
-                <td class="label">Non Business Trip</td>
+                <td class="label">Non Business Travel</td>
                 <td>
                     {{ $transactions->total_days }} Days
                 </td>
@@ -764,8 +764,8 @@
 
                         @foreach ($detailCA['detail_meals'] as $meals)
                             <tr style="text-align: center">
-                                <td>{{ \Carbon\Carbon::parse($meals['start_date'])->format('d-M-y') }}</td>
-                                <td>{{ \Carbon\Carbon::parse($meals['end_date'])->format('d-M-y') }}</td>
+                                <td>{{ isset($meals['start_date']) ? \Carbon\Carbon::parse($meals['start_date'])->format('d-M-y') : \Carbon\Carbon::parse($meals['tanggal'])->format('d-M-y') }}</td>
+                                <td>{{ isset($meals['end_date']) ? \Carbon\Carbon::parse($meals['end_date'])->format('d-M-y') : \Carbon\Carbon::parse($meals['tanggal'])->format('d-M-y') }}</td>
                                 <td>{{ $perdiem['company_code'] }}</td>
                                 <td>{{ $perdiem['total_days'] }} Days</td>
                                 <td style="text-align: left">{{ $meals['keterangan'] }}</td>
@@ -806,8 +806,10 @@
 
                     @foreach ($declareCA['detail_meals'] as $meals)
                         <tr style="text-align: center">
-                            <td>{{ \Carbon\Carbon::parse($meals['start_date'])->format('d-M-y') }}</td>
-                            <td>{{ \Carbon\Carbon::parse($meals['end_date'])->format('d-M-y') }}</td>
+                            
+                            <td>{{ isset($meals['start_date']) ? \Carbon\Carbon::parse($meals['start_date'])->format('d-M-y') : \Carbon\Carbon::parse($meals['tanggal'])->format('d-M-y') }}</td>
+                            <td>{{ isset($meals['end_date']) ? \Carbon\Carbon::parse($meals['end_date'])->format('d-M-y') : \Carbon\Carbon::parse($meals['tanggal'])->format('d-M-y') }}</td>
+
                             <td>{{ $perdiem['company_code'] }}</td>
                             <td>{{ $perdiem['total_days'] }} Days</td>
                             <td style="text-align: left">{{ $meals['keterangan'] }}</td>
@@ -1012,7 +1014,10 @@
                         @foreach ($detailCA['detail_lainnya'] as $lainnya)
                             <tr style="text-align: center">
                                 <td>{{ \Carbon\Carbon::parse($lainnya['tanggal'])->format('d-M-y') }}</td>
-                                <td style="text-align: left">{{ $lainnya['type'] }}</td>
+                                <td style="text-align: left">@isset($lainnya['type'])
+                                    {{ $lainnya['type'] }}
+                                @endisset</td>
+                                
                                 <td style="text-align: left">{{ $lainnya['keterangan'] }}</td>
                                 <td>
                                     <span style="float: left; margin-left:4px">Rp.</span>
@@ -1048,7 +1053,9 @@
                     @foreach ($declareCA['detail_lainnya'] as $lainnya_dec)
                         <tr style="text-align: center">
                             <td>{{ \Carbon\Carbon::parse($lainnya_dec['tanggal'])->format('d-M-y') }}</td>
-                            <td style="text-align: left">{{ $perdiem['type'] }}</td>
+                            <td style="text-align: left">@isset($lainnya_dec['type'])
+                                {{ $lainnya['type'] }}
+                            @endisset</td>
                             <td style="text-align: left">{{ $lainnya_dec['keterangan'] }}</td>
                             <td>
                                 <span style="float: left; margin-left:4px">Rp.</span>
@@ -1070,7 +1077,7 @@
         @elseif ($transactions->type_ca == 'ndns')
             <table class="table-approve">
                 <tr>
-                    <th colspan="4"><b>Detail Non Business Trip :</b></th>
+                    <th colspan="4"><b>Detail Non Business Travel :</b></th>
                 </tr>
                 <tr class="head-row">
                     <td style="width:12%">Date</td>
@@ -1100,7 +1107,7 @@
             </table>
             <table class="table-approve">
                 <tr>
-                    <th colspan="4"><b>Detail Non Business Trip Declaration :</b></th>
+                    <th colspan="4"><b>Detail Non Business Travel Declaration :</b></th>
                 </tr>
                 <tr class="head-row">
                     <td style="width:12%">Date</td>

@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Business Trip Data</title>
+    <title>Business Travel Data</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style>
         @page {
@@ -61,7 +61,7 @@
 
 <body>
     <img src="{{ public_path('images/kop.jpg') }}" alt="KPNCORP" class="header-logo">
-    <h2>Business Trip Data</h2>
+    <h2>Business Travel Data</h2>
 
     <table>
         <thead>

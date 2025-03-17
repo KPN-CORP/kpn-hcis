@@ -406,7 +406,7 @@
                             </div>
                             <div class="col-md-4 mb-3 text-right border-end border-danger-subtle" id="declarationExtDecList">
                                 <label for="recipient-name" class="col-form-label mb-3">Approval Declaration : </label>
-                            </div> 
+                            </div>
                             <div class="col-md-3 mb-3 text-right" id="extendExtDecList">
                                 <label for="recipient-name" class="col-form-label mb-3">Approval Declaration : </label>
                             </div>
@@ -513,7 +513,7 @@
                     const totalBtTransport = document.getElementById('total_bt_transport').value || '0';
                     const totalBtLainnya = document.getElementById('total_bt_lainnya').value || '0';
 
-                    // Summary for Business Trip
+                    // Summary for Business Travel
                     inputSummary = `
                         <table style="width: 100%;">
                             <tr>
@@ -570,7 +570,7 @@
                         return; // Exit without showing the confirmation if all fields are zero
                     }
                 } else if (caType === "ndns") {
-                    // Summary for Non Business Trip
+                    // Summary for Non Business Travel
                     inputSummary = `
                         <table style="width: 100%;">
                             <tr>
@@ -717,7 +717,7 @@
                     const totalBtTransport = document.getElementById('total_bt_transport').value || '0';
                     const totalBtLainnya = document.getElementById('total_bt_lainnya').value || '0';
 
-                    // Summary for Business Trip
+                    // Summary for Business Travel
                     inputSummary = `
                         <table style="width: 100%;">
                             <tr>
@@ -764,7 +764,7 @@
                         return; // Exit without showing the confirmation if all fields are zero
                     }
                 } else if (caType === "ndns") {
-                    // Summary for Non Business Trip
+                    // Summary for Non Business Travel
                     inputSummary = `
                         <table style="width: 100%;">
                             <tr>
@@ -972,7 +972,7 @@
 
             var date_required = form.querySelector("#date_required");
             date_required.value = dateReq;
-            
+
             var ca_paid_date = form.querySelector("#ca_paid_date");
             ca_paid_date.value = caPaidDate;
 
@@ -1075,16 +1075,16 @@
                     var dateText = document.createElement('p');
 
                     if ("{{ $approval->approval_status }}" === "Approved") {
-                        const approvedBy = "{{ $approval->by_admin }}" === "T" 
-                            ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}" 
+                        const approvedBy = "{{ $approval->by_admin }}" === "T"
+                            ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}"
                             : "{{ $approval->ReqName }}";
-                        
+
                         dateText.innerHTML = `
-                            <div class="border rounded p-2 mb-2">  
-                                <strong>Status:</strong> {{ $approval->approval_status }}<br>  
-                                <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br> 
-                                <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
-                            </div>  
+                            <div class="border rounded p-2 mb-2">
+                                <strong>Status:</strong> {{ $approval->approval_status }}<br>
+                                <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br>
+                                <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
+                            </div>
                         `;
                         buttonCol.appendChild(dateText);
                     } else if (previousLayerApproved) {
@@ -1205,16 +1205,16 @@
                     var dateText = document.createElement('p');
 
                     if ("{{ $approval->approval_status }}" === "Approved") {
-                        const approvedBy = "{{ $approval->by_admin }}" === "T" 
-                            ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}" 
+                        const approvedBy = "{{ $approval->by_admin }}" === "T"
+                            ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}"
                             : "{{ $approval->ReqName }}";
-                        
+
                         dateText.innerHTML = `
-                            <div class="border rounded p-2 mb-2">  
-                                <strong>Status:</strong> {{ $approval->approval_status }}<br>  
-                                <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br> 
-                                <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
-                            </div>  
+                            <div class="border rounded p-2 mb-2">
+                                <strong>Status:</strong> {{ $approval->approval_status }}<br>
+                                <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br>
+                                <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
+                            </div>
                         `;
                         buttonCol.appendChild(dateText);
                     } else if (previousLayerApproved) {
@@ -1255,16 +1255,16 @@
                     var dateTextDec = document.createElement('p');
 
                     if ("{{ $approval_sett->approval_status }}" === "Approved") {
-                        const approvedBy = "{{ $approval_sett->by_admin }}" === "T" 
-                            ? "{{ $approval_sett->admin->name ?? 'Admin tidak tersedia.' }} (Admin)" 
+                        const approvedBy = "{{ $approval_sett->by_admin }}" === "T"
+                            ? "{{ $approval_sett->admin->name ?? 'Admin tidak tersedia.' }} (Admin)"
                             : "{{ $approval_sett->ReqName }}";
 
                         dateTextDec.innerHTML = `
-                            <div class="border rounded p-2 mb-2">  
-                                <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>  
-                                <strong>Approved By:</strong> ${approvedBy}<br> 
-                                <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}  
-                            </div>  
+                            <div class="border rounded p-2 mb-2">
+                                <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>
+                                <strong>Approved By:</strong> ${approvedBy}<br>
+                                <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}
+                            </div>
                         `;
                         buttonColDec.appendChild(dateTextDec);
                     } else if (previousLayerApprovedDec) {
@@ -1316,7 +1316,7 @@
     // Approval Extend Modal
     document.addEventListener('DOMContentLoaded', function () {
         var approvalExtModal = document.getElementById('approvalExtModal');
-        
+
         approvalExtModal.addEventListener('show.bs.modal', function (event) {
             var button = event.relatedTarget;
 
@@ -1384,16 +1384,16 @@
                     var dateText = document.createElement('p');
 
                     if ("{{ $approval->approval_status }}" === "Approved") {
-                        const approvedBy = "{{ $approval->by_admin }}" === "T" 
-                            ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}" 
+                        const approvedBy = "{{ $approval->by_admin }}" === "T"
+                            ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}"
                             : "{{ $approval->ReqName }}";
-                        
+
                         dateText.innerHTML = `
-                            <div class="border rounded p-2 mb-2">  
-                                <strong>Status:</strong> {{ $approval->approval_status }}<br>  
-                                <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br> 
-                                <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
-                            </div>  
+                            <div class="border rounded p-2 mb-2">
+                                <strong>Status:</strong> {{ $approval->approval_status }}<br>
+                                <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br>
+                                <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
+                            </div>
                         `;
                         buttonCol.appendChild(dateText);
                     } else if (previousLayerApproved) {
@@ -1417,7 +1417,7 @@
 
             // Create array to store matching extend items
             var matchingExtendItems = [];
-            
+
             // First collect all matching items
             @foreach ($ca_extend as $approval_extend)
                 if (transactionId === "{{ $approval_extend->ca_id }}") {
@@ -1453,16 +1453,16 @@
                 var dateTextExt = document.createElement('p');
 
                 if (item.approval_status === "Approved") {
-                    const approvedBy = item.by_admin === "T" 
-                        ? item.admin_name 
+                    const approvedBy = item.by_admin === "T"
+                        ? item.admin_name
                         : item.employee_id;
-                    
+
                     dateTextExt.innerHTML = `
-                        <div class="border rounded p-2 mb-2">  
-                            <strong>Status:</strong> ${item.approval_status}<br>  
-                            <strong>Approved By:</strong> ${approvedBy} ${item.by_admin === "T" ? " (Admin)" : ""}<br> 
-                            <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}  
-                        </div>  
+                        <div class="border rounded p-2 mb-2">
+                            <strong>Status:</strong> ${item.approval_status}<br>
+                            <strong>Approved By:</strong> ${approvedBy} ${item.by_admin === "T" ? " (Admin)" : ""}<br>
+                            <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}
+                        </div>
                     `;
                     buttonColExt.appendChild(dateTextExt);
                 } else if (previousLayerApprovedExt) {
@@ -1509,8 +1509,8 @@
 
                 // Add divider after every 4 items, but only if we have more than 4 items total
                 // and we're not at the last item
-                if (matchingExtendItems.length > 4 && 
-                    (index + 1) % 4 === 0 && 
+                if (matchingExtendItems.length > 4 &&
+                    (index + 1) % 4 === 0 &&
                     (index + 1) !== matchingExtendItems.length) {
                     var dividerContainer = document.createElement('div');
                     dividerContainer.className = 'd-flex align-items-center my-3'; // Container fleksibel untuk divider
@@ -1603,16 +1603,16 @@
                     var dateText = document.createElement('p');
 
                     if ("{{ $approval->approval_status }}" === "Approved") {
-                        const approvedBy = "{{ $approval->by_admin }}" === "T" 
-                            ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}" 
+                        const approvedBy = "{{ $approval->by_admin }}" === "T"
+                            ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}"
                             : "{{ $approval->ReqName }}";
-                        
+
                         dateText.innerHTML = `
-                            <div class="border rounded p-2 mb-2">  
-                                <strong>Status:</strong> {{ $approval->approval_status }}<br>  
-                                <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br> 
-                                <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
-                            </div>  
+                            <div class="border rounded p-2 mb-2">
+                                <strong>Status:</strong> {{ $approval->approval_status }}<br>
+                                <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br>
+                                <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
+                            </div>
                         `;
                         buttonCol.appendChild(dateText);
                         // dateText.textContent = "{{ $approval->approval_status }} ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
@@ -1655,16 +1655,16 @@
                     var dateTextDec = document.createElement('p');
 
                     if ("{{ $approval_sett->approval_status }}" === "Approved") {
-                        const approvedBy = "{{ $approval_sett->by_admin }}" === "T" 
-                            ? "{{ $approval_sett->admin->name ?? 'Admin tidak tersedia.' }} (Admin)" 
+                        const approvedBy = "{{ $approval_sett->by_admin }}" === "T"
+                            ? "{{ $approval_sett->admin->name ?? 'Admin tidak tersedia.' }} (Admin)"
                             : "{{ $approval_sett->ReqName }}";
 
                         dateTextDec.innerHTML = `
-                            <div class="border rounded p-2 mb-2">  
-                                <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>  
-                                <strong>Approved By:</strong> ${approvedBy}<br> 
-                                <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}  
-                            </div>  
+                            <div class="border rounded p-2 mb-2">
+                                <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>
+                                <strong>Approved By:</strong> ${approvedBy}<br>
+                                <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}
+                            </div>
                         `;
                         buttonColDec.appendChild(dateTextDec);
                     } else if (previousLayerApprovedDec) {
@@ -1746,16 +1746,16 @@
                 var dateTextExt = document.createElement('p');
 
                 if (item.approval_status === "Approved") {
-                    const approvedBy = item.by_admin === "T" 
-                        ? item.admin_name 
+                    const approvedBy = item.by_admin === "T"
+                        ? item.admin_name
                         : item.employee_id;
-                    
+
                     dateTextExt.innerHTML = `
-                        <div class="border rounded p-2 mb-2">  
-                            <strong>Status:</strong> ${item.approval_status}<br>  
-                            <strong>Approved By:</strong> ${approvedBy} ${item.by_admin === "T" ? " (Admin)" : ""}<br> 
-                            <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}  
-                        </div>  
+                        <div class="border rounded p-2 mb-2">
+                            <strong>Status:</strong> ${item.approval_status}<br>
+                            <strong>Approved By:</strong> ${approvedBy} ${item.by_admin === "T" ? " (Admin)" : ""}<br>
+                            <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}
+                        </div>
                     `;
                     buttonColExt.appendChild(dateTextExt);
                 } else if (previousLayerApprovedExt) {
@@ -1777,8 +1777,8 @@
 
                 // Add divider after every 4 items, but only if we have more than 4 items total
                 // and we're not at the last item
-                if (matchingDeclarationExtendItems.length > 4 && 
-                    (index + 1) % 4 === 0 && 
+                if (matchingDeclarationExtendItems.length > 4 &&
+                    (index + 1) % 4 === 0 &&
                     (index + 1) !== matchingDeclarationExtendItems.length) {
                     var dividerContainer = document.createElement('div');
                     dividerContainer.className = 'd-flex align-items-center my-3'; // Container fleksibel untuk divider

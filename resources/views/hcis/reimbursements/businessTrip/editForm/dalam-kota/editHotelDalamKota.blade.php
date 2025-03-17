@@ -60,7 +60,7 @@
                                 <label class="form-label">No. SPPD for Colleague (If a colleague uses the same
                                     room)</label>
                                 <select class="form-select select2 form-select-sm" name="no_sppd_dalam_kota[]">
-                                    <option value="-">No Business Trip</option>
+                                    <option value="-">No Business Travel</option>
                                     @foreach ($bt_sppd as $no_sppd)
                                         <option value="{{ $no_sppd->no_sppd }}"
                                             {{ isset($hotel['no_sppd_htl']) && $hotel['no_sppd_htl'] === $no_sppd->no_sppd ? 'selected' : '' }}>

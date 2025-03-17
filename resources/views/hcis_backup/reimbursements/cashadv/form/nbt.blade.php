@@ -5,9 +5,9 @@
     <div id="form-container-nonb">
         @foreach ($detailCA as $item)
             <div id="form-container-nbt-{{ $loop->index + 1 }}" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
-                <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Trip {{ $loop->index + 1 }}</p>
+                <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Travel {{ $loop->index + 1 }}</p>
                 <div id="form-container-nbt-req-{{ $loop->index + 1 }}" class="card-body bg-light p-2 ">
-                    <p class="fs-5 text-primary" style="font-weight: bold;">Non Business Trip Request</p>
+                    <p class="fs-5 text-primary" style="font-weight: bold;">Non Business Travel Request</p>
                     <div id="form-container-nbt-{{ $loop->index + 1 }}" class="card-body bg-light p-2 " style="border-radius: 1%;">
                         <div class="row">
                             <div class="col-md-6 mb-2">
@@ -25,10 +25,10 @@
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                
+
                                     <label class="form-label">Information</label>
                                     <textarea name="keterangan_nbt[]" class="form-control">{{ $item['keterangan_nbt'] }}</textarea>
-                                
+
                             </div>
                         </div>
                         <div class="row mt-3">
@@ -48,9 +48,9 @@
 @else
     <div id="form-container-nonb">
         <div id="form-container-nbt-1" class="card-body p-2 mb-3" style="background-color: #f8f8f8">
-            <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Trip 1</p>
+            <p class="fs-4 text-primary" style="font-weight: bold; ">Non Business Travel 1</p>
             <div id="form-container-nbt-req-1" class="card-body bg-light p-2 ">
-                <p class="fs-5 text-primary" style="font-weight: bold;">Non Business Trip Request</p>
+                <p class="fs-5 text-primary" style="font-weight: bold;">Non Business Travel Request</p>
                 <div class="row">
                     <div class="col-md-6 mb-2">
                         <label class="form-label">Date</label>
@@ -66,10 +66,10 @@
                         </div>
                     </div>
                     <div class="col-md-12">
-                        
+
                             <label class="form-label">Information</label>
                             <textarea name="keterangan_nbt[]" class="form-control"></textarea>
-                        
+
                     </div>
                 </div>
                 <div class="row mt-3">

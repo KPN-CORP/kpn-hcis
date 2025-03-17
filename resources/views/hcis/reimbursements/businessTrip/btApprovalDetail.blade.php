@@ -1,4 +1,4 @@
-@extends('layouts_.vertical', ['page_title' => 'Business Trip'])
+@extends('layouts_.vertical', ['page_title' => 'Business Travel'])
 
 @section('css')
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -93,12 +93,12 @@
                             </div>
                             <div class="row mb-2">
                                 <div class="col-md-4 mb-2">
-                                    <label for="mulai" class="form-label">Start Date Business Trip</label>
+                                    <label for="mulai" class="form-label">Start Date Business Travel</label>
                                     <input type="date" class="form-control form-control-sm bg-light" id="mulai"
                                         name="mulai" placeholder="Tanggal Mulai" value="{{ $n->mulai }}" readonly>
                                 </div>
                                 <div class="col-md-4 mb-2">
-                                    <label for="kembali" class="form-label">End Date Business Trip</label>
+                                    <label for="kembali" class="form-label">End Date Business Travel</label>
                                     <input type="date" class="form-control form-control-sm bg-light" id="kembali"
                                         name="kembali" placeholder="Tanggal Kembali" value="{{ $n->kembali }}" readonly>
                                 </div>
@@ -356,7 +356,7 @@
 
                                 <div id="additional-fields" class="row mb-3" style="display: none;">
                                     <div class="col-md-12">
-                                        <label for="additional-fields-title" class="mb-3">Business Trip Needs</label>
+                                        <label for="additional-fields-title" class="mb-3">Business Travel Needs</label>
                                         <div class="row">
                                             <div class="col-md-2">
                                                 <div class="form-check">

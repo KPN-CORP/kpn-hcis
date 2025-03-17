@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 class UpdateBTtoDBCommand extends Command
 {
     protected $signature = 'update:bt-to-db';
-    protected $description = 'Update Business Trip data to Database';
+    protected $description = 'Update Business Travel data to Database';
 
     public function handle()
     {

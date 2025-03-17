@@ -107,72 +107,72 @@
                                 <input type="date" class="form-control mx-2" style="{{ request()->get('from_date') || request()->get('until_date') ? 'display: none' : 'display: block' }}" id="end_date" name="end_date" placeholder="End Date" title="End Date" value="{{ request()->get('end_date') }}" disabled>
                                 <input type="date" class="form-control mx-2" style="{{ request()->get('from_date') || request()->get('until_date') ? 'display: block' : 'display: none' }}" id="until_date" name="until_date" placeholder="Until Date" title="Until Date" value="{{ request()->get('until_date') }}" disabled>
 
-                                <script>  
-                                    function updateEndDate2() {  
-                                        const startDateInput = document.getElementById('start_date');  
-                                        const fromDateInput = document.getElementById('from_date');  
-                                        const endDateInput = document.getElementById('end_date');  
-                                        const untilDateInput = document.getElementById('until_date');  
-                                        const startDate = new Date(startDateInput.value);  
-                                        const fromDate = new Date(fromDateInput.value);  
-                                    
-                                        // Set min attribute for end date to the selected start date + 1 day  
-                                        if (startDateInput.value) {  
-                                            const minDate = new Date(startDate);  
-                                            minDate.setDate(minDate.getDate() + 1); // Disable the start date  
-                                            
-                                            // Enable end date input  
-                                            endDateInput.disabled = false;  
-                                            // Set min and max for end date  
-                                            endDateInput.min = minDate.toISOString().split('T')[0];  
-                                    
-                                            // Set max to 3 months from the start date  
-                                            const maxDate = new Date(startDate);  
-                                            maxDate.setMonth(startDate.getMonth() + 3);  
-                                    
-                                            // Set max attribute for end date  
-                                            endDateInput.max = maxDate.toISOString().split('T')[0];  
-                                    
-                                            // Optionally reset the end date if it is before the new min date  
-                                            if (new Date(endDateInput.value) < minDate) {  
-                                                endDateInput.value = '';  
-                                            }  
-                                        } else {  
-                                            // Disable end date input if no start date is selected  
-                                            endDateInput.disabled = true;  
-                                            endDateInput.value = ''; // Clear the end date input  
-                                        }  
+                                <script>
+                                    function updateEndDate2() {
+                                        const startDateInput = document.getElementById('start_date');
+                                        const fromDateInput = document.getElementById('from_date');
+                                        const endDateInput = document.getElementById('end_date');
+                                        const untilDateInput = document.getElementById('until_date');
+                                        const startDate = new Date(startDateInput.value);
+                                        const fromDate = new Date(fromDateInput.value);
 
-                                        if (fromDateInput.value) {  
-                                            const minDate = new Date(fromDate);  
-                                            minDate.setDate(minDate.getDate() + 1); // Disable the start date  
-                                            
-                                            // Enable end date input  
-                                            untilDateInput.disabled = false;  
-                                            // Set min and max for end date  
-                                            untilDateInput.min = minDate.toISOString().split('T')[0];  
-                                    
-                                            // Set max to 3 months from the start date  
-                                            const maxDate = new Date(fromDate);  
-                                            maxDate.setMonth(fromDate.getMonth() + 3);  
-                                    
-                                            // Set max attribute for end date  
-                                            untilDateInput.max = maxDate.toISOString().split('T')[0];  
-                                    
-                                            // Optionally reset the end date if it is before the new min date  
-                                            if (new Date(untilDateInput.value) < minDate) {  
-                                                untilDateInput.value = '';  
-                                            }  
-                                        } else {  
-                                            // Disable end date input if no start date is selected  
-                                            untilDateInput.disabled = true;  
-                                            untilDateInput.value = ''; // Clear the end date input  
-                                        }  
-                                    }  
-                                    
-                                    // Initial call to set dates if there are pre-filled values  
-                                    updateEndDate2();  
-                                </script>  
+                                        // Set min attribute for end date to the selected start date + 1 day
+                                        if (startDateInput.value) {
+                                            const minDate = new Date(startDate);
+                                            minDate.setDate(minDate.getDate() + 1); // Disable the start date
+
+                                            // Enable end date input
+                                            endDateInput.disabled = false;
+                                            // Set min and max for end date
+                                            endDateInput.min = minDate.toISOString().split('T')[0];
+
+                                            // Set max to 3 months from the start date
+                                            const maxDate = new Date(startDate);
+                                            maxDate.setMonth(startDate.getMonth() + 3);
+
+                                            // Set max attribute for end date
+                                            endDateInput.max = maxDate.toISOString().split('T')[0];
+
+                                            // Optionally reset the end date if it is before the new min date
+                                            if (new Date(endDateInput.value) < minDate) {
+                                                endDateInput.value = '';
+                                            }
+                                        } else {
+                                            // Disable end date input if no start date is selected
+                                            endDateInput.disabled = true;
+                                            endDateInput.value = ''; // Clear the end date input
+                                        }
+
+                                        if (fromDateInput.value) {
+                                            const minDate = new Date(fromDate);
+                                            minDate.setDate(minDate.getDate() + 1); // Disable the start date
+
+                                            // Enable end date input
+                                            untilDateInput.disabled = false;
+                                            // Set min and max for end date
+                                            untilDateInput.min = minDate.toISOString().split('T')[0];
+
+                                            // Set max to 3 months from the start date
+                                            const maxDate = new Date(fromDate);
+                                            maxDate.setMonth(fromDate.getMonth() + 3);
+
+                                            // Set max attribute for end date
+                                            untilDateInput.max = maxDate.toISOString().split('T')[0];
+
+                                            // Optionally reset the end date if it is before the new min date
+                                            if (new Date(untilDateInput.value) < minDate) {
+                                                untilDateInput.value = '';
+                                            }
+                                        } else {
+                                            // Disable end date input if no start date is selected
+                                            untilDateInput.disabled = true;
+                                            untilDateInput.value = ''; // Clear the end date input
+                                        }
+                                    }
+
+                                    // Initial call to set dates if there are pre-filled values
+                                    updateEndDate2();
+                                </script>
 
                                 <select class="form-select mx-2" aria-label="Status" id="stat" name="stat">
                                     <option value="-" {{ request()->get('stat') == '-' ? 'selected' : '' }}>All Status</option>
@@ -243,9 +243,9 @@
                                             <td class="text-center">{{ $loop->index + 1 }}</td>
                                             <td style="background-color: white;" class="sticky-col">{{ $ca_transaction->no_ca }}</td>
                                             @if ($ca_transaction->type_ca == 'dns')
-                                                <td>Business Trip</td>
+                                                <td>Business Travel</td>
                                             @elseif($ca_transaction->type_ca == 'ndns')
-                                                <td>Non Business Trip</td>
+                                                <td>Non Business Travel</td>
                                             @elseif($ca_transaction->type_ca == 'entr')
                                                 <td>Entertainment</td>
                                             @endif
@@ -625,7 +625,7 @@
 
                 var date_required = form.querySelector("#date_required");
                 date_required.value = dateReq;
-                
+
                 var ca_paid_date = form.querySelector("#ca_paid_date");
                 ca_paid_date.value = caPaidDate;
 
@@ -731,20 +731,20 @@
                             if ("{{ $approval->by_admin }}" === "T") {
                                 // dateText.textContent = "{{ $approval->approval_status }} By Admin ({{ $approval->admin->name ?? 'Admin tidak tersedia.' }}) ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
                                 dateText.innerHTML = `
-                                    <div class="border rounded p-2 mb-2">  
-                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>  
-                                        <strong>Approved By Admin :</strong> {{ $approval->employee_admin->name ?? ($approval->admin->name ?? 'Admin tidak tersedia.') }}<br> 
-                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
+                                    <div class="border rounded p-2 mb-2">
+                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>
+                                        <strong>Approved By Admin :</strong> {{ $approval->employee_admin->name ?? ($approval->admin->name ?? 'Admin tidak tersedia.') }}<br>
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
                                     </div>
                                 `;
                                 buttonCol.appendChild(dateText);
                             } else {
                                 // dateText.textContent = "{{ $approval->approval_status }} ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
                                 dateText.innerHTML = `
-                                    <div class="border rounded p-2 mb-2">  
-                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>  
-                                        <strong>Approved By :</strong> {{ $approval->employee->fullname ?? 'Employee tidak tersedia.' }}<br> 
-                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
+                                    <div class="border rounded p-2 mb-2">
+                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>
+                                        <strong>Approved By :</strong> {{ $approval->employee->fullname ?? 'Employee tidak tersedia.' }}<br>
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
                                     </div>
                                 `;
                                 buttonCol.appendChild(dateText);
@@ -868,19 +868,19 @@
                         if ("{{ $approval->approval_status }}" === "Approved") {
                             if ("{{ $approval->by_admin }}" === "T") {
                                 dateText.innerHTML = `
-                                    <div class="border rounded p-2 mb-2">  
-                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>  
-                                        <strong>Approved By Admin :</strong> {{ $approval->employee_admin->name ?? ($approval->admin->name ?? 'Admin tidak tersedia.') }}<br> 
-                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
+                                    <div class="border rounded p-2 mb-2">
+                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>
+                                        <strong>Approved By Admin :</strong> {{ $approval->employee_admin->name ?? ($approval->admin->name ?? 'Admin tidak tersedia.') }}<br>
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
                                     </div>
                                 `;
                                 buttonCol.appendChild(dateText);
                             } else {
                                 dateText.innerHTML = `
-                                    <div class="border rounded p-2 mb-2">  
-                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>  
-                                        <strong>Approved By :</strong> {{ $approval->employee->fullname ?? 'Employee tidak tersedia.' }}<br> 
-                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
+                                    <div class="border rounded p-2 mb-2">
+                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>
+                                        <strong>Approved By :</strong> {{ $approval->employee->fullname ?? 'Employee tidak tersedia.' }}<br>
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
                                     </div>
                                 `;
                                 buttonCol.appendChild(dateText);
@@ -890,19 +890,19 @@
                         } else if ("{{ $approval->approval_status }}" === "Rejected") {
                             if ("{{ $approval->by_admin }}" === "T") {
                                 dateText.innerHTML = `
-                                    <div class="border rounded p-2 mb-2">  
-                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>  
-                                        <strong>Rejected By Admin :</strong> {{ $ca_transaction->ReqName ?? 'Admin tidak tersedia.' }}<br> 
-                                        <strong>Rejected At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
+                                    <div class="border rounded p-2 mb-2">
+                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>
+                                        <strong>Rejected By Admin :</strong> {{ $ca_transaction->ReqName ?? 'Admin tidak tersedia.' }}<br>
+                                        <strong>Rejected At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
                                     </div>
                                 `;
                                 buttonCol.appendChild(dateText);
                             } else {
                                 dateText.innerHTML = `
-                                    <div class="border rounded p-2 mb-2">  
-                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>  
-                                        <strong>Rejected By :</strong> {{ $ca_transaction->ReqName ?? 'Employee tidak tersedia.' }}<br> 
-                                        <strong>Rejected At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
+                                    <div class="border rounded p-2 mb-2">
+                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>
+                                        <strong>Rejected By :</strong> {{ $ca_transaction->ReqName ?? 'Employee tidak tersedia.' }}<br>
+                                        <strong>Rejected At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
                                     </div>
                                 `;
                                 buttonCol.appendChild(dateText);
@@ -947,19 +947,19 @@
                         if ("{{ $approval_sett->approval_status }}" === "Approved") {
                             if ("{{ $approval_sett->by_admin }}" === "T") {
                                 dateTextDec.innerHTML = `
-                                    <div class="border rounded p-2 mb-2">  
-                                        <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>  
-                                        <strong>Approved By Admin :</strong> {{ $approval_sett->employee_admin->name ?? ($approval_sett->admin->name ?? 'Admin tidak tersedia.') }}<br> 
-                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}  
+                                    <div class="border rounded p-2 mb-2">
+                                        <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>
+                                        <strong>Approved By Admin :</strong> {{ $approval_sett->employee_admin->name ?? ($approval_sett->admin->name ?? 'Admin tidak tersedia.') }}<br>
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}
                                     </div>
                                 `;
                                 buttonColDec.appendChild(dateTextDec);
                             } else {
                                 dateTextDec.innerHTML = `
-                                    <div class="border rounded p-2 mb-2">  
-                                        <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>  
-                                        <strong>Approved By :</strong> {{ $approval_sett->employee->fullname ?? 'Employee tidak tersedia.' }}<br> 
-                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}  
+                                    <div class="border rounded p-2 mb-2">
+                                        <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>
+                                        <strong>Approved By :</strong> {{ $approval_sett->employee->fullname ?? 'Employee tidak tersedia.' }}<br>
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}
                                     </div>
                                 `;
                                 buttonColDec.appendChild(dateTextDec);
@@ -1013,7 +1013,7 @@
         // Approval Extend Modal
         document.addEventListener('DOMContentLoaded', function () {
             var approvalExtModal = document.getElementById('approvalExtModal');
-            
+
             approvalExtModal.addEventListener('show.bs.modal', function (event) {
                 var button = event.relatedTarget;
 
@@ -1081,19 +1081,19 @@
                         if ("{{ $approval->approval_status }}" === "Approved") {
                             if ("{{ $approval->by_admin }}" === "T") {
                                 dateText.innerHTML = `
-                                    <div class="border rounded p-2 mb-2">  
-                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>  
-                                        <strong>Approved By Admin :</strong> {{ $approval->employee_admin->name ?? ($approval->admin->name ?? 'Admin tidak tersedia.') }}<br> 
-                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
+                                    <div class="border rounded p-2 mb-2">
+                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>
+                                        <strong>Approved By Admin :</strong> {{ $approval->employee_admin->name ?? ($approval->admin->name ?? 'Admin tidak tersedia.') }}<br>
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
                                     </div>
                                 `;
                                 buttonCol.appendChild(dateText);
                             } else {
                                 dateText.innerHTML = `
-                                    <div class="border rounded p-2 mb-2">  
-                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>  
-                                        <strong>Approved By :</strong> {{ $approval->employee->fullname ?? 'Employee tidak tersedia.' }}<br> 
-                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
+                                    <div class="border rounded p-2 mb-2">
+                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>
+                                        <strong>Approved By :</strong> {{ $approval->employee->fullname ?? 'Employee tidak tersedia.' }}<br>
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
                                     </div>
                                 `;
                                 buttonCol.appendChild(dateText);
@@ -1119,7 +1119,7 @@
 
                 // Create array to store matching extend items
                 var matchingExtendItems = [];
-                
+
                 // First collect all matching items
                 @foreach ($ca_extend as $approval_extend)
                     if (transactionId === "{{ $approval_extend->ca_id }}") {
@@ -1156,20 +1156,20 @@
                         if (item.by_admin === "T") {
                             // dateTextExt.textContent = item.approval_status + " By Admin (" + item.admin_name + ") (" + moment(item.approved_at).format('DD-MMM-YY') + ")";
                             dateTextExt.innerHTML = `
-                                <div class="border rounded p-2 mb-2">  
-                                    <strong>Status:</strong> ${item.approval_status} <br>  
-                                    <strong>Approved By Admin :</strong> ${item.admin_name} <br> 
-                                    <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}  
+                                <div class="border rounded p-2 mb-2">
+                                    <strong>Status:</strong> ${item.approval_status} <br>
+                                    <strong>Approved By Admin :</strong> ${item.admin_name} <br>
+                                    <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}
                                 </div>
                             `;
                             buttonColExt.appendChild(dateTextExt);
                         } else {
                             // dateTextExt.textContent = item.approval_status + " (" + moment(item.approved_at).format('DD-MMM-YY') + ")";
                             dateTextExt.innerHTML = `
-                                <div class="border rounded p-2 mb-2">  
-                                    <strong>Status:</strong> ${item.approval_status} <br>  
-                                    <strong>Approved By :</strong> ${item.employee_id} <br> 
-                                    <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}  
+                                <div class="border rounded p-2 mb-2">
+                                    <strong>Status:</strong> ${item.approval_status} <br>
+                                    <strong>Approved By :</strong> ${item.employee_id} <br>
+                                    <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}
                                 </div>
                             `;
                             buttonColExt.appendChild(dateTextExt);
@@ -1218,8 +1218,8 @@
 
                     // Add divider after every 4 items, but only if we have more than 4 items total
                     // and we're not at the last item
-                    if (matchingExtendItems.length > 4 && 
-                        (index + 1) % 4 === 0 && 
+                    if (matchingExtendItems.length > 4 &&
+                        (index + 1) % 4 === 0 &&
                         (index + 1) !== matchingExtendItems.length) {
                         var dividerContainer = document.createElement('div');
                         dividerContainer.className = 'd-flex align-items-center my-3'; // Container fleksibel untuk divider
@@ -1312,19 +1312,19 @@
                         if ("{{ $approval->approval_status }}" === "Approved") {
                             if ("{{ $approval->by_admin }}" === "T") {
                                 dateText.innerHTML = `
-                                    <div class="border rounded p-2 mb-2">  
-                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>  
-                                        <strong>Approved By Admin :</strong> {{ $approval->employee_admin->name ?? ($approval->admin->name ?? 'Admin tidak tersedia.') }}<br> 
-                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
+                                    <div class="border rounded p-2 mb-2">
+                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>
+                                        <strong>Approved By Admin :</strong> {{ $approval->employee_admin->name ?? ($approval->admin->name ?? 'Admin tidak tersedia.') }}<br>
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
                                     </div>
                                 `;
                                 buttonCol.appendChild(dateText);
                             } else {
                                 dateText.innerHTML = `
-                                    <div class="border rounded p-2 mb-2">  
-                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>  
-                                        <strong>Approved By :</strong> {{ $approval->employee->fullname ?? 'Employee tidak tersedia.' }}<br> 
-                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}  
+                                    <div class="border rounded p-2 mb-2">
+                                        <strong>Status:</strong> {{ $approval->approval_status }}<br>
+                                        <strong>Approved By :</strong> {{ $approval->employee->fullname ?? 'Employee tidak tersedia.' }}<br>
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
                                     </div>
                                 `;
                                 buttonCol.appendChild(dateText);
@@ -1369,19 +1369,19 @@
                         if ("{{ $approval_sett->approval_status }}" === "Approved") {
                             if ("{{ $approval_sett->by_admin }}" === "T") {
                                 dateTextDec.innerHTML = `
-                                    <div class="border rounded p-2 mb-2">  
-                                        <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>  
-                                        <strong>Approved By Admin :</strong> {{ $approval_sett->employee_admin->name ?? ($approval_sett->admin->name ?? 'Admin tidak tersedia.') }}<br> 
-                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}  
+                                    <div class="border rounded p-2 mb-2">
+                                        <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>
+                                        <strong>Approved By Admin :</strong> {{ $approval_sett->employee_admin->name ?? ($approval_sett->admin->name ?? 'Admin tidak tersedia.') }}<br>
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}
                                     </div>
                                 `;
                                 buttonColDec.appendChild(dateTextDec);
                             } else {
                                 dateText.innerHTML = `
-                                    <div class="border rounded p-2 mb-2">  
-                                        <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>  
-                                        <strong>Approved By :</strong> {{ $approval_sett->employee->fullname ?? 'Employee tidak tersedia.' }}<br> 
-                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}  
+                                    <div class="border rounded p-2 mb-2">
+                                        <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>
+                                        <strong>Approved By :</strong> {{ $approval_sett->employee->fullname ?? 'Employee tidak tersedia.' }}<br>
+                                        <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}
                                     </div>
                                 `;
                                 buttonColDec.appendChild(dateTextDec);
@@ -1465,19 +1465,19 @@
                     if (item.approval_status === "Approved") {
                         if (item.by_admin === "T") {
                             dateTextExt.innerHTML = `
-                                <div class="border rounded p-2 mb-2">  
-                                    <strong>Status:</strong> ${item.approval_status} <br>  
-                                    <strong>Approved By Admin :</strong> ${item.admin_name} <br> 
-                                    <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}  
+                                <div class="border rounded p-2 mb-2">
+                                    <strong>Status:</strong> ${item.approval_status} <br>
+                                    <strong>Approved By Admin :</strong> ${item.admin_name} <br>
+                                    <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}
                                 </div>
                             `;
                             buttonColExt.appendChild(dateTextExt);
                         } else {
                             dateTextExt.innerHTML = `
-                                <div class="border rounded p-2 mb-2">  
-                                    <strong>Status:</strong> ${item.approval_status} <br>  
-                                    <strong>Approved By :</strong> ${item.employee_id} <br> 
-                                    <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}  
+                                <div class="border rounded p-2 mb-2">
+                                    <strong>Status:</strong> ${item.approval_status} <br>
+                                    <strong>Approved By :</strong> ${item.employee_id} <br>
+                                    <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}
                                 </div>
                             `;
                             buttonColExt.appendChild(dateTextExt);
@@ -1501,8 +1501,8 @@
 
                     // Add divider after every 4 items, but only if we have more than 4 items total
                     // and we're not at the last item
-                    if (matchingDeclarationExtendItems.length > 4 && 
-                        (index + 1) % 4 === 0 && 
+                    if (matchingDeclarationExtendItems.length > 4 &&
+                        (index + 1) % 4 === 0 &&
                         (index + 1) !== matchingDeclarationExtendItems.length) {
                         var dividerContainer = document.createElement('div');
                         dividerContainer.className = 'd-flex align-items-center my-3'; // Container fleksibel untuk divider
@@ -1726,7 +1726,7 @@
 
         function updateDateTime() {
             const now = new Date();
-            
+
             // Format time
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');

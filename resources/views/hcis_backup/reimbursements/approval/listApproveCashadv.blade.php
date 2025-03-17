@@ -128,10 +128,10 @@
                                     <select name="ca_type_disabled" id="ca_type" class="form-control bg-light" disabled>
                                         <option value="">-</option>
                                         <option value="dns" {{ $transactions->type_ca == 'dns' ? 'selected' : '' }}>
-                                            Business Trip
+                                            Business Travel
                                         </option>
                                         <option value="ndns" {{ $transactions->type_ca == 'ndns' ? 'selected' : '' }}>
-                                            Non Business Trip
+                                            Non Business Travel
                                         </option>
                                         <option value="entr" {{ $transactions->type_ca == 'entr' ? 'selected' : '' }}>
                                             Entertainment

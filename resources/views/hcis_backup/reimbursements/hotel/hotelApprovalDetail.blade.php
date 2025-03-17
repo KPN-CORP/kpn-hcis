@@ -61,10 +61,10 @@
                             </div>
                         </div>
 
-                        <!-- Business Trip Info -->
+                        <!-- Business Travel Info -->
                         <div class="row mb-3">
                             <div class="col-6">
-                                <label class="form-label" for="bisnis_numb">Business Trip Number</label>
+                                <label class="form-label" for="bisnis_numb">Business Travel Number</label>
                                 <select class="form-select select2 form-select-sm" id="bisnis_numb" name="bisnis_numb"
                                     disabled>
                                     <option value="-" {{ $hotel->no_sppd === '-' ? 'selected' : '' }}>No

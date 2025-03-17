@@ -106,7 +106,7 @@ class BTApprovalController extends Controller
         $locations = Location::orderBy('area')->get();
         $companies = Company::orderBy('contribution_level')->get();
 
-        $parentLink = 'Business Trip Approval';
+        $parentLink = 'Business Travel Approval';
         $link = 'Approval Details';
 
         return view('hcis.reimbursements.businessTrip.btRevision', [
@@ -193,7 +193,7 @@ class BTApprovalController extends Controller
         $locations = Location::orderBy('area')->get();
         $companies = Company::orderBy('contribution_level')->get();
 
-        $parentLink = 'Business Trip Approval';
+        $parentLink = 'Business Travel Approval';
         $link = 'Approval Details';
 
         return view('hcis.reimbursements.businessTrip.btReject', [
@@ -643,7 +643,7 @@ class BTApprovalController extends Controller
             $imageContent = file_get_contents($imagePath);
             $employeeName = Employee::where('id', $businessTrip->user_id)->pluck('fullname')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "requesting a Business Trip and waiting for your Approval with the following details :";
+            $textNotification = "requesting a Business Travel and waiting for your Approval with the following details :";
 
             $managerName = Employee::where('employee_id', $businessTrip->manager_l2_id)->pluck('fullname')->first();
 
@@ -1100,7 +1100,7 @@ class BTApprovalController extends Controller
             $imageContent = file_get_contents($imagePath);
             $employeeName = Employee::where('id', $businessTrip->user_id)->pluck('fullname')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "requesting a Business Trip and waiting for your Approval with the following details :";
+            $textNotification = "requesting a Business Travel and waiting for your Approval with the following details :";
 
             // dd($managerL2);
             if ($managerL2) {
@@ -1375,7 +1375,7 @@ class BTApprovalController extends Controller
             $imageContent = file_get_contents($imagePath);
             $employeeName = Employee::where('id', $businessTrip->user_id)->pluck('fullname')->first();
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $textNotification = "requesting for Extend Business Trip and waiting for your Approval with the following details :";
+            $textNotification = "requesting for Extend Business Travel and waiting for your Approval with the following details :";
             $group_company = Employee::where('id', $businessTrip->user_id)->pluck('group_company')->first();
 
             // dd($managerL2);
@@ -1636,7 +1636,7 @@ class BTApprovalController extends Controller
         $locations = Location::orderBy('area')->get();
         $companies = Company::orderBy('contribution_level')->get();
 
-        $parentLink = 'Business Trip Approval';
+        $parentLink = 'Business Travel Approval';
         $link = 'Approval Details';
 
         return view('hcis.reimbursements.businessTrip.btRejectDeclaration', [
@@ -1723,7 +1723,7 @@ class BTApprovalController extends Controller
         $locations = Location::orderBy('area')->get();
         $companies = Company::orderBy('contribution_level')->get();
 
-        $parentLink = 'Business Trip Approval';
+        $parentLink = 'Business Travel Approval';
         $link = 'Approval Details';
 
         return view('hcis.reimbursements.businessTrip.btRevisionDeclaration', [

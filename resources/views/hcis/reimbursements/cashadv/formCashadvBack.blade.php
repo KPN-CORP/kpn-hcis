@@ -132,21 +132,21 @@
                                     <label class="form-label" for="ca_type">CA Type</label>
                                     <select name="ca_type" id="ca_type" class="form-control" onchange="toggleDivs()">
                                         <option value="">-</option>
-                                        <option value="dns">Business Trip</option>
-                                        <option value="ndns">Non Business Trip</option>
+                                        <option value="dns">Business Travel</option>
+                                        <option value="ndns">Non Business Travel</option>
                                         <option value="entr">Entertainment</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="row" id="div_bisnis_numb_dns" style="display: none;">
                                 <div class="col-md-12 mb-2">
-                                    <label class="form-label" for="name">Business Trip Number</label>
+                                    <label class="form-label" for="name">Business Travel Number</label>
                                     <select class="form-control select2" id="bisnis_numb_dns" name="bisnis_numb_dns">
                                         <option value="">Select</option>
                                         @foreach ($no_sppds as $no_sppd)
                                             <option value="{{ $no_sppd->no_sppd }}"
                                                 @if ($noSppdListDNS->contains($no_sppd->no_sppd))
-                                                    disabled title="No. SPPD already has CA Business Trip. Please apply for an extension if you want to add CA."
+                                                    disabled title="No. SPPD already has CA Business Travel. Please apply for an extension if you want to add CA."
                                                 @endif>
                                                 {{ $no_sppd->no_sppd }}
                                             </option>
@@ -156,7 +156,7 @@
                             </div>
                             <div class="row" id="div_bisnis_numb_ent" style="display: none;">
                                 <div class="col-md-12 mb-2">
-                                    <label class="form-label" for="name">Business Trip Number</label>
+                                    <label class="form-label" for="name">Business Travel Number</label>
                                     <select class="form-control select2" id="bisnis_numb_ent" name="bisnis_numb_ent">
                                         <option value="">Select</option>
                                         @foreach ($no_sppds as $no_sppd)
@@ -230,7 +230,7 @@
                                 <div class="col-md-12">
                                     <div class="table-responsive-sm">
                                         <div class="d-flex flex-column gap-2">
-                                            <div class="text-bg-danger p-2" style="text-align:center">Estimated Cash Advanced Non Business Trip
+                                            <div class="text-bg-danger p-2" style="text-align:center">Estimated Cash Advanced Non Business Travel
                                             </div>
                                             @include('hcis.reimbursements.cashadv.form.nbt')
                                             <button type="button" id="add-more" style="display: none"

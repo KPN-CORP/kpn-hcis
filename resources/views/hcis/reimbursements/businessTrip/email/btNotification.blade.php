@@ -3,14 +3,14 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Business Trip Notification</title>
+    <title>Business Travel Notification</title>
 </head>
 
 <body>
     <div style="width: 100%; height: auto; text-align: center;">
         <img src="{{ $base64Image }}" alt="Kop Surat" style="height: auto; margin-bottom: 20px; width: 15%;">
     </div>
-    <h2>Business Trip Request Notification</h2>
+    <h2>Business Travel Request Notification</h2>
     <p>Dear Sir/Madam: <b>{{ $managerName }}</b></p><br>
     <p><b>{{ $employeeName }}</b> {{ $textNotification }}</p>
     <br>
@@ -324,7 +324,7 @@
     @endif
 
     <hr>
-    <p>For approval or rejection of the Business Trip, you can click the following links:</p>
+    <p>For approval or rejection of the Business Travel, you can click the following links:</p>
     <p>
         <a href="{{ $approvalLink }}" style="font-size: 20px;">Approve</a> /
         @if ($revisionLink)
