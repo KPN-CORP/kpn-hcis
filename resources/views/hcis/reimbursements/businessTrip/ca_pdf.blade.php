@@ -595,7 +595,9 @@
                         @foreach ($detailCA['detail_lainnya'] as $perdiem)
                             <tr style="text-align: center">
                                 <td>{{ \Carbon\Carbon::parse($perdiem['tanggal'])->format('d-M-y') }}</td>
-                                <td style="text-align: left">{{ $perdiem['type'] }}</td>
+                                <td style="text-align: left">@isset($perdiem['type'])
+                                    {{ $perdiem['type'] }}
+                                @endisset</td>
                                 <td style="text-align: left">{{ $perdiem['keterangan'] }}</td>
                                 <td>
                                     <span style="float: left; margin-left:4px">Rp.</span>
