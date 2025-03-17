@@ -156,39 +156,38 @@ class ImportHealthCoverage implements ToModel
 
     public function afterImport()
     {
-        return $this->failedRows;  
-
         // Group records by employee_id
         $groupedRecords = collect($this->batchRecords)->groupBy('employee_id');
-        // dd($base64Image);
 
-        // Send one email per employee with all their records
+        foreach ($this->batchRecords as $healthCoverage) {
+            $this->performCalculations($healthCoverage); // Perhitungan hanya dilakukan di sini
+        }
+
+        // Kirim email setelah semua proses selesai
         foreach ($groupedRecords as $employeeId => $records) {
             $email = Employee::where('employee_id', $employeeId)->pluck('email')->first();
-
             if ($email) {
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
+
                 try {
-                    Mail::to($email)->send(new MedicalNotification(
-                        $records,
-                        $base64Image,
-                    ));       
+                    Mail::to($email)->send(new MedicalNotification($records, $base64Image));
                 } catch (\Exception $e) {
                     Log::error('Email Record Medical tidak terkirim: ' . $e->getMessage());
                 }
             }
         }
 
-        // Clear the batch records
-        $this->batchRecords = [];
+        $this->batchRecords = []; // Bersihkan batch
+        return $this->failedRows;
     }
 
     private function performCalculations(HealthCoverage $healthCoverage)
     {
         $healthPlan = HealthPlan::where('employee_id', $healthCoverage->employee_id)
             ->where('medical_type', $healthCoverage->medical_type)
+            ->where('period', $healthCoverage->period)
             ->first();
 
         if ($healthPlan) {
@@ -205,11 +204,10 @@ class ImportHealthCoverage implements ToModel
             } else {
                 $healthCoverage->balance_uncoverage = 0;
             }
+            // dd($healthPlan->balance);
 
             $healthPlan->save();
         }
-
-        $healthCoverage->save();
 
         $this->calculateBalance($healthCoverage);
     }
