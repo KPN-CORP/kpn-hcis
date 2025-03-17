@@ -5674,6 +5674,12 @@ class BusinessTripController extends Controller
         $queryCA = CATransaction::query();
         $queryBtApproval = BTApproval::query();
 
+        $permissionCompanies = $this->permissionCompanies;
+
+        if (!empty($permissionCompanies)) {
+            $query->whereIn('bb_perusahaan', $permissionCompanies);
+        }
+
         // Apply filters if both dates are present
         if ($startDate && $endDate) {
             $query->whereBetween('mulai', [$startDate, $endDate]);
