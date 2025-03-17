@@ -1054,7 +1054,7 @@
                         <tr style="text-align: center">
                             <td>{{ \Carbon\Carbon::parse($lainnya_dec['tanggal'])->format('d-M-y') }}</td>
                             <td style="text-align: left">@isset($lainnya_dec['type'])
-                                {{ $lainnya['type'] }}
+                                {{ $lainnya_dec['type'] }}
                             @endisset</td>
                             <td style="text-align: left">{{ $lainnya_dec['keterangan'] }}</td>
                             <td>
