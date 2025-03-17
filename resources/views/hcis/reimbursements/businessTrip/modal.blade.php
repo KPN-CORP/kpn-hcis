@@ -27,7 +27,7 @@
 @endif
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('click', function() {
         document.querySelectorAll('.delete-button').forEach(button => {
             button.addEventListener('click', function(event) {
                 event.preventDefault(); // Prevent form from submitting immediately
