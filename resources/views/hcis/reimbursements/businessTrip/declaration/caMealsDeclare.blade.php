@@ -309,7 +309,7 @@
     }
 </script>
 
-@if (!empty($caDetail['detail_meals']) && $caDetail['detail_meals'][0]['start_date'] !== null)
+@if (!empty($caDetail['detail_meals']) && $caDetail['detail_meals'][0]['nominal'] !== null)
     <div id="form-container-meals">
         @foreach ($caDetail['detail_meals'] as $index => $meals)
             <div id="form-container-bt-meals-{{ $loop->index + 1 }}" class="p-2 mb-2 bg-light rounded-3">
@@ -325,21 +325,21 @@
                                     <th class="label" style="border: none; width:40%; padding: 2px 0;">Start Date</th>
                                     <td class="colon" style="border: none; width:1%; padding: 2px 0;">:</td>
                                     <td class="value" style="border: none; padding: 2px 0;">
-                                        {{ \Carbon\Carbon::parse($meals['start_date'])->format('d-M-y') }}
+                                        {{ isset($meals['start_date']) ? \Carbon\Carbon::parse($meals['start_date'])->format('d-M-y') : \Carbon\Carbon::parse($meals['tanggal'])->format('d-M-y') }}
                                     </td>
                                 </tr>
                                 <tr>
                                     <th class="label" style="border: none; padding: 2px 0;">End Date</th>
                                     <td class="colon" style="border: none; padding: 2px 0;">:</td>
                                     <td class="value" style="border: none; padding: 2px 0;">
-                                        {{ \Carbon\Carbon::parse($meals['end_date'])->format('d-M-y') }}
+                                        {{ isset($meals['end_date']) ? \Carbon\Carbon::parse($meals['end_date'])->format('d-M-y') : \Carbon\Carbon::parse($meals['tanggal'])->format('d-M-y') }}
                                     </td>
                                 </tr>
                                 <tr style="margin: 0; padding: 0;">
                                     <th class="label" style="border: none; padding: 2px 0;">Total Days</th>
                                     <td class="colon" style="border: none; padding: 2px 0;">:</td>
                                     <td class="value" style="border: none; padding: 2px 0;">
-                                        {{ $meals['total_days'] }} Days
+                                        {{ isset($meals['total_days']) ? $meals['total_days'] : 1 }} Days
                                     </td>
                                 </tr>
                             </table>
@@ -352,7 +352,7 @@
                                     </th>
                                     <td class="colon" style="border: none; width:1%; padding: 2px 0;">:</td>
                                     <td class="value" style="border: none; padding: 2px 0;">
-                                        {{ $meals['company_code'] }}
+                                        {{ isset($meals['company_code']) ? $meals['company_code'] : "" }}
                                     </td>
                                 </tr>
                                 <tr>
@@ -386,13 +386,13 @@
                                 <label class="form-label">Meals Start Plan</label>
                                 <input type="date" name="start_bt_meals[]"
                                     id="start_bt_meals_{{ $loop->index + 1 }}" class="form-control start-meals"
-                                    value="{{ $meals_dec['start_date'] }}" placeholder="mm/dd/yyyy"
+                                    value="{{ $meals_dec['start_date'] ?? $meals_dec['tanggal'] }}" placeholder="mm/dd/yyyy"
                                     onchange="calculateTotalDaysPenginapan(this, document.getElementById('end_bt_meals_1'), document.querySelector('#total_days_bt_meals_1'))">
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Meals End Plan</label>
                                 <input type="date" name="end_bt_meals[]" id="end_bt_meals_{{ $loop->index + 1 }}"
-                                    class="form-control end-meals" value="{{ $meals_dec['end_date'] }}"
+                                    class="form-control end-meals" value="{{ $meals_dec['end_date'] ?? $meals_dec['tanggal'] }}"
                                     placeholder="mm/dd/yyyy"
                                     onchange="calculateTotalDaysPenginapan(document.getElementById('start_bt_meals_{{ $loop->index + 1 }}'), this, document.querySelector('#total_days_bt_meals_1'))">
                             </div>
@@ -401,7 +401,7 @@
                                 <div class="input-group">
                                     <input class="form-control bg-light total-days-meals"
                                         id="total_days_bt_meals_{{ $loop->index + 1 }}" name="total_days_bt_meals[]"
-                                        type="number" min="0" value="{{ $meals_dec['total_days'] }}"
+                                        type="number" min="0" value="{{ $meals_dec['total_days'] ?? 1 }}"
                                         readonly>
                                     <div class="input-group-append">
                                         <span class="input-group-text">days</span>
@@ -416,7 +416,7 @@
                                     <option value="">Select Company...</option>
                                     @foreach ($companies as $company)
                                         <option value="{{ $company->contribution_level_code }}"
-                                            @if ($company->contribution_level_code == $meals_dec['company_code']) selected @endif>
+                                            @if (isset($meals_dec['company_code']) && $company->contribution_level_code == $meals_dec['company_code']) selected @endif>
                                             {{ $company->contribution_level . ' (' . $company->contribution_level_code . ')' }}
                                         </option>
                                     @endforeach

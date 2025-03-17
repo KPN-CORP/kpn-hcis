@@ -183,7 +183,7 @@
                                 <tr>
                                     <th class="label">Type of Others</th>
                                     <td class="block">:</td>
-                                    <td class="value">{{ $lainnya['type'] }}</td>
+                                    <td class="value">{{ $lainnya['type'] ?? "" }}</td>
                                 </tr>
                                 <tr>
                                     <th class="label">Amount</th>
@@ -241,7 +241,7 @@
                     @endif
                     <div class="row mt-3">
                         <div class="d-flex justify-start w-100">
-                            <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px" onclick="clearFormLainnya({{ $loop->index + 1 }}, event)">Reset</button>
+                            <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px" onclick="clearFormLainnya({{ $loop->index + 1 }}, event)">Reset1</button>
                             {{-- <button class="btn btn-warning mr-2" onclick="removeFormLainnya({{ $loop->index + 1 }}, event)">Delete</button> --}}
                         </div>
                     </div>
