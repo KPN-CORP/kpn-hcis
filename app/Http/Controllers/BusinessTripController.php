@@ -5098,7 +5098,7 @@ class BusinessTripController extends Controller
         }
 
         if (!empty($permissionCompanies)) {
-            $query->whereIn('contribution_level_code', $permissionCompanies);
+            $query->whereIn('bb_perusahaan', $permissionCompanies);
         }
 
         if (!empty($permissionGroupCompanies)) {
