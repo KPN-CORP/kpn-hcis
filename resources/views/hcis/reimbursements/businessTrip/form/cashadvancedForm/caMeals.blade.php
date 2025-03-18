@@ -82,6 +82,20 @@
     </div>
 `;
         document.getElementById("form-container-meals").appendChild(newForm);
+
+        $(
+            `#company_bt_meals_${formCountMeals}`
+        ).select2({
+            theme: "bootstrap-5",
+        });
+
+        $(
+            `#company_bt_meals_${formCountMeals}`
+        ).on("change", function () {
+            handleDateChange();
+        });
+
+        handleDateChange();
     }
 </script>
 
