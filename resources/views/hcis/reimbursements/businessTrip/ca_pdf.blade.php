@@ -383,7 +383,7 @@
                                     <td>
                                         @if ($role->approval_status == 'Approved')
                                             {{-- <br><img src="{{ public_path('images/approved_64.png')}}" alt="logo"> --}}
-                                            {{-- <br><img src="{{ asset('images/approved_64.png') }}" alt="logo"> --}}
+                                            <br><img src="{{ asset('images/approved_64.png') }}" alt="logo">
                                         @else
                                             <br><br><br><br><br>
                                         @endif
@@ -595,7 +595,9 @@
                         @foreach ($detailCA['detail_lainnya'] as $perdiem)
                             <tr style="text-align: center">
                                 <td>{{ \Carbon\Carbon::parse($perdiem['tanggal'])->format('d-M-y') }}</td>
-                                <td style="text-align: left">{{ $perdiem['type'] }}</td>
+                                <td style="text-align: left">@isset($perdiem['type'])
+                                    {{ $perdiem['type'] }}
+                                @endisset</td>
                                 <td style="text-align: left">{{ $perdiem['keterangan'] }}</td>
                                 <td>
                                     <span style="float: left; margin-left:4px">Rp.</span>

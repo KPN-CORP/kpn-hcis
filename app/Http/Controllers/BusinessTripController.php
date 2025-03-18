@@ -1949,12 +1949,13 @@ class BusinessTripController extends Controller
                 $model = $ca;
 
                 $model->sett_id = $managerL1;
-
+            }
+            if (isset($ca) && $ca->isDirty()) {
+                $ca->save();
             }
             if (isset($ent) && $ent->isDirty()) {
                 $ent->save();
             }
-            $ca->save();
         }
         if ($caRecords) {
             foreach ($caRecords as $ca) {
@@ -3921,7 +3922,9 @@ class BusinessTripController extends Controller
         $perdiem = ListPerdiem::where('grade', $employee_data->job_level)
             ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')->first();
 
-        $isApproved = CATransaction::where('user_id', $userId)->where('ca_status', '!=', 'Done')->where('total_ca', '!=', 0)->get();
+        $isApproved = CATransaction::where('user_id', $userId)
+        ->where('approval_sett', '!=', 'Approved')
+        ->where('total_ca', '!=', 0)->get();
 
         $job_level = Employee::where('id', $userId)->pluck('job_level')->first();
         $job_level_number = (int) preg_replace('/[^0-9]/', '', $job_level);
@@ -5098,7 +5101,7 @@ class BusinessTripController extends Controller
         }
 
         if (!empty($permissionCompanies)) {
-            $query->whereIn('contribution_level_code', $permissionCompanies);
+            $query->whereIn('bb_perusahaan', $permissionCompanies);
         }
 
         if (!empty($permissionGroupCompanies)) {
@@ -5328,10 +5331,8 @@ class BusinessTripController extends Controller
             foreach ($caRecords as $ca) {
                 // Assign or update values to $ca model
                 if ($ca->type_ca == "dns") {
-                    $ca->user_id = $userId;
                     $ca->no_sppd = $oldNoSppd;
                     $ca->ca_note = $ca_note;
-                    $ca->user_id = $userId;
 
                     $ca->declaration_at = Carbon::now();
 
@@ -5479,9 +5480,7 @@ class BusinessTripController extends Controller
                     }
 
                 } elseif ($ca->type_ca == "entr") {
-                    $ca->user_id = $userId;
                     $ca->no_sppd = $oldNoSppd;
-                    $ca->user_id = $userId;
                     $ca->ca_note = $ca_note;
 
                     $ca->declaration_at = Carbon::now();
@@ -5673,6 +5672,12 @@ class BusinessTripController extends Controller
         $query = BusinessTrip::query();
         $queryCA = CATransaction::query();
         $queryBtApproval = BTApproval::query();
+
+        $permissionCompanies = $this->permissionCompanies;
+
+        if (!empty($permissionCompanies)) {
+            $query->whereIn('bb_perusahaan', $permissionCompanies);
+        }
 
         // Apply filters if both dates are present
         if ($startDate && $endDate) {

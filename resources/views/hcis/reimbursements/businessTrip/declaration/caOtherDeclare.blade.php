@@ -24,15 +24,18 @@
                             <input type="date" name="tanggal_bt_lainnya[]" class="form-control" placeholder="mm/dd/yyyy">
                         </div>
                         <div class="col-md-4 mb-2">
-                            <label class="form-label" for="name">Type of Others</label>
-                            <select class="form-control select2" id="type_bt_lainnya_${formCountOthers}" name="type_bt_lainnya[]">
-                                <option value="">Select Type...</option>
-                                <option value="Laundry">Laundry</option>
-                                <option value="Airport Tax">Airport Tax</option>
-                                <option value="Porter">Porter</option>
-                                <option value="Excess Baggage">Excess Baggage</option>
-                            </select>
-                        </div>
+                                <label class="form-label" for="name">Type of Others</label>
+                                <select class="form-control select2" id="type_bt_lainnya_${formCountOthers}" name="type_bt_lainnya[]">
+                                    <option value="">Select Type...</option>
+                                    <option value="Airport Tax">Airport Tax</option>
+                                    <option value="Excess Baggage">Excess Baggage</option>
+                                    <option value="Laundry">Laundry</option>
+                                    <option value="Mandatory Insurance Fees">Mandatory Insurance Fees</option>
+                                    <option value="Parking Fees">Parking Fees</option>
+                                    <option value="Porter Service">Porter Service (for company luggage only)</option>
+                                    <option value="Toll Fees">Toll Fees</option>
+                                </select>
+                            </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Amount</label>
                             <div class="input-group">
@@ -80,10 +83,13 @@
                                 <label class="form-label" for="name">Type of Others</label>
                                 <select class="form-control select2" id="type_bt_lainnya_${formCountOthers}" name="type_bt_lainnya[]">
                                     <option value="">Select Type...</option>
-                                    <option value="Laundry">Laundry</option>
                                     <option value="Airport Tax">Airport Tax</option>
-                                    <option value="Porter">Porter</option>
                                     <option value="Excess Baggage">Excess Baggage</option>
+                                    <option value="Laundry">Laundry</option>
+                                    <option value="Mandatory Insurance Fees">Mandatory Insurance Fees</option>
+                                    <option value="Parking Fees">Parking Fees</option>
+                                    <option value="Porter Service">Porter Service (for company luggage only)</option>
+                                    <option value="Toll Fees">Toll Fees</option>
                                 </select>
                             </div>
                         <div class="col-md-4 mb-2">
@@ -186,7 +192,7 @@
                                 <tr>
                                     <th class="label">Type of Others</th>
                                     <td class="block">:</td>
-                                    <td class="value">{{ $lainnya['type'] }}</td>
+                                    <td class="value">{{ $lainnya['type'] ?? "-" }}</td>
                                 </tr>
                                 <tr>
                                     <th class="label">Amount</th>
@@ -217,11 +223,14 @@
                             <div class="col-md-4 mb-2">  
                                 <label class="form-label" for="name">Type of Others</label>  
                                 <select class="form-control select2" id="type_bt_lainnya_{{ $loop->index + 1 }}" name="type_bt_lainnya[]">  
-                                    <option value="">Select Type...</option>  
-                                    <option value="Laundry" {{ $lainnya_dec['type'] == 'Laundry' ? 'selected' : '' }}>Laundry</option>  
-                                    <option value="Airport Tax" {{ $lainnya_dec['type'] == 'Airport Tax' ? 'selected' : '' }}>Airport Tax</option>  
-                                    <option value="Porter" {{ $lainnya_dec['type'] == 'Porter' ? 'selected' : '' }}>Porter</option>  
-                                    <option value="Excess Baggage" {{ $lainnya_dec['type'] == 'Excess Baggage' ? 'selected' : '' }}>Excess Baggage</option>  
+                                    <option value="">Select Type...</option>
+                                    <option value="Airport Tax" {{ isset($lainnya_dec['type']) && $lainnya_dec['type'] == 'Airport Tax' ? 'selected' : '' }}>Airport Tax</option>
+                                    <option value="Excess Baggage" {{ isset($lainnya_dec['type']) && $lainnya_dec['type'] == 'Excess Baggage' ? 'selected' : '' }}>Excess Baggage</option>
+                                    <option value="Laundry" {{ isset($lainnya_dec['type']) && $lainnya_dec['type'] == 'Laundry' ? 'selected' : '' }}>Laundry</option>
+                                    <option value="Mandatory Insurance Fees" {{ isset($lainnya_dec['type']) && $lainnya_dec['type'] == 'Mandatory Insurance Fees' ? 'selected' : '' }}>Mandatory Insurance Fees</option>  
+                                    <option value="Parking Fees" {{ isset($lainnya_dec['type']) && $lainnya_dec['type'] == 'Parking Fees' ? 'selected' : '' }}>Parking Fees</option>
+                                    <option value="Porter Service" {{ isset($lainnya_dec['type']) && $lainnya_dec['type'] == 'Porter Service' ? 'selected' : '' }}>Porter Service (for company luggage only)</option>
+                                    <option value="Toll Fees" {{ isset($lainnya_dec['type']) && $lainnya_dec['type'] == 'Toll Fees' ? 'selected' : '' }}>Toll Fees</option>
                                 </select>  
                             </div>
                             <div class="col-md-4 mb-2">
@@ -268,10 +277,13 @@
                                 <label class="form-label" for="name">Type of Others</label>  
                                 <select class="form-control select2" id="type_bt_lainnya_{{ $loop->index + 1 }}" name="type_bt_lainnya[]">  
                                     <option value="">Select Type...</option>  
-                                    <option value="Laundry" {{ $lainnya_dec['type'] == 'Laundry' ? 'selected' : '' }}>Laundry</option>  
-                                    <option value="Airport Tax" {{ $lainnya_dec['type'] == 'Airport Tax' ? 'selected' : '' }}>Airport Tax</option>  
-                                    <option value="Porter" {{ $lainnya_dec['type'] == 'Porter' ? 'selected' : '' }}>Porter</option>  
-                                    <option value="Excess Baggage" {{ $lainnya_dec['type'] == 'Excess Baggage' ? 'selected' : '' }}>Excess Baggage</option>  
+                                    <option value="Airport Tax" {{ isset($lainnya_dec['type']) && $lainnya_dec['type'] == 'Airport Tax' ? 'selected' : '' }}>Airport Tax</option>
+                                    <option value="Excess Baggage" {{ isset($lainnya_dec['type']) && $lainnya_dec['type'] == 'Excess Baggage' ? 'selected' : '' }}>Excess Baggage</option>
+                                    <option value="Laundry" {{ isset($lainnya_dec['type']) && $lainnya_dec['type'] == 'Laundry' ? 'selected' : '' }}>Laundry</option>
+                                    <option value="Mandatory Insurance Fees" {{ isset($lainnya_dec['type']) && $lainnya_dec['type'] == 'Mandatory Insurance Fees' ? 'selected' : '' }}>Mandatory Insurance Fees</option>  
+                                    <option value="Parking Fees" {{ isset($lainnya_dec['type']) && $lainnya_dec['type'] == 'Parking Fees' ? 'selected' : '' }}>Parking Fees</option>
+                                    <option value="Porter Service" {{ isset($lainnya_dec['type']) && $lainnya_dec['type'] == 'Porter Service' ? 'selected' : '' }}>Porter Service (for company luggage only)</option>
+                                    <option value="Toll Fees" {{ isset($lainnya_dec['type']) && $lainnya_dec['type'] == 'Toll Fees' ? 'selected' : '' }}>Toll Fees</option>  
                                 </select>  
                             </div>
                             <div class="col-md-4 mb-2">
@@ -334,10 +346,13 @@
                                 <label class="form-label" for="name">Type of Others</label>  
                                 <select class="form-control select2" id="type_bt_lainnya_{{ $loop->index + 1 }}" name="type_bt_lainnya[]">  
                                     <option value="">Select Type...</option>  
-                                    <option value="Laundry" {{ $lainnya_dec['type'] == 'Laundry' ? 'selected' : '' }}>Laundry</option>  
-                                    <option value="Airport Tax" {{ $lainnya_dec['type'] == 'Airport Tax' ? 'selected' : '' }}>Airport Tax</option>  
-                                    <option value="Porter" {{ $lainnya_dec['type'] == 'Porter' ? 'selected' : '' }}>Porter</option>  
-                                    <option value="Excess Baggage" {{ $lainnya_dec['type'] == 'Excess Baggage' ? 'selected' : '' }}>Excess Baggage</option>  
+                                    <option value="Airport Tax" {{ isset($lainnya_dec['type']) && $lainnya_dec['type'] == 'Airport Tax' ? 'selected' : '' }}>Airport Tax</option>
+                                    <option value="Excess Baggage" {{ isset($lainnya_dec['type']) && $lainnya_dec['type'] == 'Excess Baggage' ? 'selected' : '' }}>Excess Baggage</option>
+                                    <option value="Laundry" {{ isset($lainnya_dec['type']) && $lainnya_dec['type'] == 'Laundry' ? 'selected' : '' }}>Laundry</option>
+                                    <option value="Mandatory Insurance Fees" {{ isset($lainnya_dec['type']) && $lainnya_dec['type'] == 'Mandatory Insurance Fees' ? 'selected' : '' }}>Mandatory Insurance Fees</option>  
+                                    <option value="Parking Fees" {{ isset($lainnya_dec['type']) && $lainnya_dec['type'] == 'Parking Fees' ? 'selected' : '' }}>Parking Fees</option>
+                                    <option value="Porter Service" {{ isset($lainnya_dec['type']) && $lainnya_dec['type'] == 'Porter Service' ? 'selected' : '' }}>Porter Service (for company luggage only)</option>
+                                    <option value="Toll Fees" {{ isset($lainnya_dec['type']) && $lainnya_dec['type'] == 'Toll Fees' ? 'selected' : '' }}>Toll Fees</option>  
                                 </select>  
                             </div>
                             <div class="col-md-4 mb-2">
@@ -398,10 +413,13 @@
                         <label class="form-label" for="name">Type of Others</label>
                         <select class="form-control select2" id="type_bt_lainnya_1" name="type_bt_lainnya[]">
                             <option value="">Select Type...</option>
-                            <option value="Laundry">Laundry</option>
                             <option value="Airport Tax">Airport Tax</option>
-                            <option value="Porter">Porter</option>
                             <option value="Excess Baggage">Excess Baggage</option>
+                            <option value="Laundry">Laundry</option>
+                            <option value="Mandatory Insurance Fees">Mandatory Insurance Fees</option>
+                            <option value="Parking Fees">Parking Fees</option>
+                            <option value="Porter Service">Porter Service (for company luggage only)</option>
+                            <option value="Toll Fees">Toll Fees</option>
                         </select>
                     </div>
                     <div class="col-md-4 mb-2">
