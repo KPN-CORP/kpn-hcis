@@ -98,7 +98,7 @@
         newForm.innerHTML = `
                   <p class="fs-4 text-primary" style="font-weight: bold;">Meals ${formCountMeals}</p>
     <div class="card-body bg-white p-2 rounded-3 mb-2">
-        <p class="fs-5 text-primary" style="font-weight: bold;">Meals Request</p>
+        <p class="fs-5 text-primary" style="font-weight: bold;">Meals Declaration</p>
         <div class="row">
             <!-- Meals Start Plan -->
             <div class="col-md-4 mb-2">
@@ -180,7 +180,7 @@
         newForm.innerHTML = `
                   <p class="fs-4 text-primary" style="font-weight: bold;">Meals ${formCountMeals}</p>
     <div class="card-body bg-white p-2 rounded-3 mb-2">
-        <p class="fs-5 text-primary" style="font-weight: bold;">Meals Request</p>
+        <p class="fs-5 text-primary" style="font-weight: bold;">Meals Declaration</p>
         <div class="row">
             <!-- Meals Start Plan -->
             <div class="col-md-4 mb-2">

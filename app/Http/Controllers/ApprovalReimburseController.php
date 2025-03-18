@@ -316,8 +316,8 @@ class ApprovalReimburseController extends Controller
                 $caTransaction->save();
             }
 
-            // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-            $CANotificationLayer = "erzie.aldrian02@outlook.com";
+            $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+            // $CANotificationLayer = "erzie.aldrian02@outlook.com";
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -325,7 +325,7 @@ class ApprovalReimburseController extends Controller
                 $textNotification = "Your Cash Advanced request has been rejected please discuss further with your supervisor :";
                 try {
                     try {
-                        Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->cc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                             null,
                             $caTransaction,
                             $textNotification,
@@ -502,15 +502,15 @@ class ApprovalReimburseController extends Controller
                 $caTransaction->save();
             }
 
-            // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-            $CANotificationLayer = "erzie.aldrian02@outlook.com";
+            $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+            // $CANotificationLayer = "erzie.aldrian02@outlook.com";
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor: ";
                 try {
-                    Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->cc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
                         $textNotification,
