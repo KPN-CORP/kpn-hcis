@@ -396,12 +396,47 @@
                                             </td>
                                             <!-- Button Delete -->
                                             <td class="text-center">
-                                                <form action="{{ route('cashadvanced.delete', $ca_transaction->id) }}" method="POST" style="display:inline;">
-                                                    @csrf
-                                                    <button onclick="return confirm('Are you sure you want to delete this transaction?')" class="btn btn-outline-danger" title="Delete">
+                                                <form id="delete-form-{{ $ca_transaction->id }}" action="{{ route('cashadvanced.delete', $ca_transaction->id) }}" method="POST" style="display:inline;">  
+                                                    @csrf  
+                                                    <button type="button" class="btn btn-outline-danger delete-button" data-id="{{ $ca_transaction->id }}" data-ca="{{ $ca_transaction->no_ca }}" title="Delete">
                                                         <i class="ri-delete-bin-line"></i>
-                                                    </button>
-                                                </form>
+                                                    </button>                                                                                                        
+                                                </form>  
+                                                
+                                                <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>  
+                                                <script>  
+                                                    document.addEventListener('DOMContentLoaded', function () {
+                                                        document.querySelectorAll('.delete-button').forEach(button => {
+                                                            button.addEventListener('click', function(event) {
+                                                                event.preventDefault();
+
+                                                                const transactionId = button.getAttribute('data-id');
+                                                                const transactionCA = button.getAttribute('data-ca');
+                                                                const form = document.getElementById(`delete-form-${transactionId}`);
+
+                                                                Swal.fire({
+                                                                    title: `Do you want to delete this request?\n (${transactionCA})`,
+                                                                    text: "You won't be able to revert this!",
+                                                                    icon: 'warning',
+                                                                    showCancelButton: true,
+                                                                    confirmButtonColor: '#AB2F2B',
+                                                                    cancelButtonColor: '#CCCCCC',
+                                                                    confirmButtonText: 'Yes, delete it!',
+                                                                    cancelButtonText: 'Cancel'
+                                                                }).then((result) => {
+                                                                    if (result.isConfirmed) {
+                                                                        if (form) {
+                                                                            form.submit();
+                                                                        } else {
+                                                                            console.error("Form tidak ditemukan:", `delete-form-${transactionId}`);
+                                                                        }
+                                                                    }
+                                                                });
+                                                            });
+                                                        });
+                                                    });
+
+                                                </script>  
                                             </td>
                                         </tr>
                                     @endforeach
@@ -416,6 +451,7 @@
 
     @include('hcis.reimbursements.cashadv.navigation.modalCashadv')
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
