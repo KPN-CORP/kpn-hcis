@@ -13,6 +13,48 @@
         removeFormMeals(index, event);
     });
 
+    document.addEventListener("DOMContentLoaded", function() {
+        const startInputs = document.querySelectorAll('.start-meals');
+        const endInputs = document.querySelectorAll('.end-meals');
+        const totalDaysInputs = document.querySelectorAll('[id^="total_days_bt_meals_"]');
+
+        startInputs.forEach((startInput, index) => {
+            const endInput = endInputs[index];
+            const totalDaysInput = totalDaysInputs[index];
+
+            // Call the function to calculate total days on page load
+            calculateTotalDaysMeals(startInput, endInput, totalDaysInput);
+        });
+    });
+
+    function calculateTotalDaysMeals(startInput, endInput, totalDaysInput) {
+        const startDate = new Date(startInput.value);
+        const endDate = new Date(endInput.value);
+
+        // Set the minimum date for the endDate input
+        endInput.min = startInput.value;
+
+        if (startDate && endDate && endDate >= startDate) {
+            const timeDiff = endDate - startDate;
+            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)); // Convert time to days
+            totalDaysInput.value = daysDiff >= 0 ? daysDiff + 1 : 0; // Add 1 if there is a stay on the same day
+        } else {
+            totalDaysInput.value = 0; // Set to 0 if invalid dates
+            endInput.value = "";
+        }
+
+        if (endDate < startDate) {
+            Swal.fire({
+                icon: "error",
+                title: "End Date cannot be earlier than Start Date",
+                text: "Choose another date!",
+                timer: 3000,
+                confirmButtonColor: "#AB2F2B",
+                confirmButtonText: "OK",
+            });
+        }
+    }
+
     function removeFormMeals(index, event) {
         event.preventDefault();
         if (formCountMeals > 0) {
