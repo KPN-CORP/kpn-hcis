@@ -208,7 +208,7 @@
         <tr>
             <td class="label">Date</td>
             <td class="colon">:</td>
-            <td class="value"> {{ $ticket->latestApprovalL2->approved_at ?? '-' }}</td>
+            <td class="value"> {{ $ticket->latestApprovalL1->approved_at ?? '-' }}</td>
         </tr>
         @if ($ticket->manager_l2_id == null)
             {
