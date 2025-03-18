@@ -259,7 +259,7 @@
 
         $(
             `#company_bt_meals_${formCountMeals}`
-        ).on("change", function () {
+        ).on("change", function() {
             handleDateChange();
         });
 
@@ -322,47 +322,47 @@
         calculateTotalNominalBTMeals();
     }
 
-    document.addEventListener("DOMContentLoaded", function() {  
-        const startInputs = document.querySelectorAll('.start-meals');  
-        const endInputs = document.querySelectorAll('.end-meals');  
-        const totalDaysInputs = document.querySelectorAll('[id^="total_days_bt_meals_"]');  
+    document.addEventListener("DOMContentLoaded", function() {
+        const startInputs = document.querySelectorAll('.start-meals');
+        const endInputs = document.querySelectorAll('.end-meals');
+        const totalDaysInputs = document.querySelectorAll('[id^="total_days_bt_meals_"]');
 
-        startInputs.forEach((startInput, index) => {  
-            const endInput = endInputs[index];  
-            const totalDaysInput = totalDaysInputs[index];  
+        startInputs.forEach((startInput, index) => {
+            const endInput = endInputs[index];
+            const totalDaysInput = totalDaysInputs[index];
 
-            // Call the function to calculate total days on page load  
-            calculateTotalDaysMeals(startInput, endInput, totalDaysInput);  
-        });  
-    });  
+            // Call the function to calculate total days on page load
+            calculateTotalDaysMeals(startInput, endInput, totalDaysInput);
+        });
+    });
 
-    function calculateTotalDaysMeals(startInput, endInput, totalDaysInput) {  
-        const startDate = new Date(startInput.value);  
-        const endDate = new Date(endInput.value);  
+    function calculateTotalDaysMeals(startInput, endInput, totalDaysInput) {
+        const startDate = new Date(startInput.value);
+        const endDate = new Date(endInput.value);
 
-        // Set the minimum date for the endDate input  
-        endInput.min = startInput.value;  
+        // Set the minimum date for the endDate input
+        endInput.min = startInput.value;
 
-        if (startDate && endDate && endDate >= startDate) {  
-            const timeDiff = endDate - startDate;  
-            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)); // Convert time to days  
-            totalDaysInput.value = daysDiff >= 0 ? daysDiff + 1 : 0; // Add 1 if there is a stay on the same day  
-        } else {  
-            totalDaysInput.value = 0; // Set to 0 if invalid dates  
-            endInput.value = "";  
-        }  
+        if (startDate && endDate && endDate >= startDate) {
+            const timeDiff = endDate - startDate;
+            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)); // Convert time to days
+            totalDaysInput.value = daysDiff >= 0 ? daysDiff + 1 : 0; // Add 1 if there is a stay on the same day
+        } else {
+            totalDaysInput.value = 0; // Set to 0 if invalid dates
+            endInput.value = "";
+        }
 
-        if (endDate < startDate) {  
-            Swal.fire({  
-                icon: "error",  
-                title: "End Date cannot be earlier than Start Date",  
-                text: "Choose another date!",  
-                timer: 3000,  
-                confirmButtonColor: "#AB2F2B",  
-                confirmButtonText: "OK",  
-            });  
-        }  
-    }  
+        if (endDate < startDate) {
+            Swal.fire({
+                icon: "error",
+                title: "End Date cannot be earlier than Start Date",
+                text: "Choose another date!",
+                timer: 3000,
+                confirmButtonColor: "#AB2F2B",
+                confirmButtonText: "OK",
+            });
+        }
+    }
 </script>
 
 @if (!empty($caDetail['detail_meals']) && $caDetail['detail_meals'][0]['nominal'] !== null)
@@ -408,7 +408,7 @@
                                     </th>
                                     <td class="colon" style="border: none; width:1%; padding: 2px 0;">:</td>
                                     <td class="value" style="border: none; padding: 2px 0;">
-                                        {{ isset($meals['company_code']) ? $meals['company_code'] : "" }}
+                                        {{ isset($meals['company_code']) ? $meals['company_code'] : '' }}
                                     </td>
                                 </tr>
                                 <tr>
@@ -442,13 +442,15 @@
                                 <label class="form-label">Meals Start Plan</label>
                                 <input type="date" name="start_bt_meals[]"
                                     id="start_bt_meals_{{ $loop->index + 1 }}" class="form-control start-meals"
-                                    value="{{ $meals_dec['start_date'] ?? $meals_dec['tanggal'] ?? $meals_dec['tanggal'] ?? '' }}" placeholder="mm/dd/yyyy"
+                                    value="{{ $meals_dec['start_date'] ?? ($meals_dec['tanggal'] ?? ($meals_dec['tanggal'] ?? '')) }}"
+                                    placeholder="mm/dd/yyyy"
                                     onchange="calculateTotalDaysPenginapan(this, document.getElementById('end_bt_meals_{{ $loop->index + 1 }}'), document.querySelector('#total_days_bt_meals_{{ $loop->index + 1 }}'))">
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Meals End Plan</label>
                                 <input type="date" name="end_bt_meals[]" id="end_bt_meals_{{ $loop->index + 1 }}"
-                                    class="form-control end-meals" value="{{ $meals_dec['end_date'] ?? $meals_dec['tanggal'] ?? '' }}"
+                                    class="form-control end-meals"
+                                    value="{{ $meals_dec['end_date'] ?? ($meals_dec['tanggal'] ?? '') }}"
                                     placeholder="mm/dd/yyyy"
                                     onchange="calculateTotalDaysPenginapan(document.getElementById('start_bt_meals_{{ $loop->index + 1 }}'), this, document.querySelector('#total_days_bt_meals_{{ $loop->index + 1 }}'))">
                             </div>
@@ -494,8 +496,8 @@
 
                             <!-- Information -->
                             <div class="col-md-12">
-                                    <label class="form-label">Information</label>
-                                    <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ...">{{ $meals_dec['keterangan'] }}</textarea>
+                                <label class="form-label">Information</label>
+                                <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ...">{{ $meals_dec['keterangan'] }}</textarea>
                             </div>
                         </div>
                     @else
@@ -511,8 +513,7 @@
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Meals End Plan</label>
                                 <input type="date" name="end_bt_meals[]" id="end_bt_meals_{{ $loop->index + 1 }}"
-                                    class="form-control end-meals" value=""
-                                    placeholder="mm/dd/yyyy"
+                                    class="form-control end-meals" value="" placeholder="mm/dd/yyyy"
                                     onchange="calculateTotalDaysPenginapan(document.getElementById('start_bt_meals_{{ $loop->index + 1 }}'), this, document.querySelector('#total_days_bt_meals_{{ $loop->index + 1 }}'))">
                             </div>
                             <div class="col-md-4 mb-2">
@@ -520,8 +521,7 @@
                                 <div class="input-group">
                                     <input class="form-control bg-light total-days-meals"
                                         id="total_days_bt_meals_{{ $loop->index + 1 }}" name="total_days_bt_meals[]"
-                                        type="number" min="0" value=""
-                                        readonly>
+                                        type="number" min="0" value="" readonly>
                                     <div class="input-group-append">
                                         <span class="input-group-text">days</span>
                                     </div>
@@ -548,16 +548,15 @@
                                     </div>
                                     <input class="form-control" name="nominal_bt_meals[]"
                                         id="nominal_bt_meals_{{ $loop->index + 1 }}" type="text" min="0"
-                                        value=""
-                                        onfocus="this.value = this.value === '0' ? '' : this.value;"
+                                        value="" onfocus="this.value = this.value === '0' ? '' : this.value;"
                                         oninput="formatInput(this)" onblur="formatOnBlur(this)">
                                 </div>
                             </div>
 
                             <!-- Information -->
                             <div class="col-md-12">
-                                    <label class="form-label">Information</label>
-                                    <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ..."></textarea>
+                                <label class="form-label">Information</label>
+                                <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ..."></textarea>
                             </div>
                         </div>
                     @endif
@@ -634,8 +633,8 @@
 
                             <!-- Information -->
                             <div class="col-md-12">
-                                    <label class="form-label">Information</label>
-                                    <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ...">{{ $meals_dec['keterangan'] }}</textarea>
+                                <label class="form-label">Information</label>
+                                <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ...">{{ $meals_dec['keterangan'] }}</textarea>
                             </div>
                         </div>
                         <div class="row mt-3">
@@ -655,7 +654,7 @@
         <button class="btn btn-primary btn-sm" id="addMoreButtonLainnya" onclick="addMoreFormMealsDec(event)">Add
             More</button>
     </div>
-    <hr/>
+    <hr />
 
     <div class="mb-2">
         <label class="form-label">Total Meals</label>
@@ -735,8 +734,8 @@
 
                             <!-- Information -->
                             <div class="col-md-12">
-                                    <label class="form-label">Information</label>
-                                    <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ...">{{ $meals_dec['keterangan'] }}</textarea>
+                                <label class="form-label">Information</label>
+                                <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ...">{{ $meals_dec['keterangan'] }}</textarea>
                             </div>
                         </div>
                         <div class="row mt-3">
@@ -756,7 +755,7 @@
         <button class="btn btn-primary" id="addMoreButtonLainnya" onclick="addMoreFormMealsDec(event)">Add
             More</button>
     </div>
-    <hr/>
+    <hr />
     <div class="mb-2">
         <label class="form-label">Total Meals</label>
         <div class="input-group">
@@ -826,8 +825,8 @@
 
                     <!-- Information -->
                     <div class="col-md-12">
-                            <label class="form-label">Information</label>
-                            <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ..."></textarea>
+                        <label class="form-label">Information</label>
+                        <textarea name="keterangan_bt_meals[]" class="form-control" placeholder="Write your information here ..."></textarea>
                     </div>
                 </div>
                 <div class="row mt-3">
@@ -845,7 +844,7 @@
         <button class="btn btn-primary btn-sm" id="addMoreButton" onclick="addMoreFormMealsReq(event)">Add
             More</button>
     </div>
-<hr/>
+    <hr />
     <div class="mb-2">
         <label class="form-label">Total Meals</label>
         <div class="input-group">
