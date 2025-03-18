@@ -1949,12 +1949,13 @@ class BusinessTripController extends Controller
                 $model = $ca;
 
                 $model->sett_id = $managerL1;
-
+            }
+            if (isset($ca) && $ca->isDirty()) {
+                $ca->save();
             }
             if (isset($ent) && $ent->isDirty()) {
                 $ent->save();
             }
-            $ca->save();
         }
         if ($caRecords) {
             foreach ($caRecords as $ca) {
@@ -5330,10 +5331,8 @@ class BusinessTripController extends Controller
             foreach ($caRecords as $ca) {
                 // Assign or update values to $ca model
                 if ($ca->type_ca == "dns") {
-                    $ca->user_id = $userId;
                     $ca->no_sppd = $oldNoSppd;
                     $ca->ca_note = $ca_note;
-                    $ca->user_id = $userId;
 
                     $ca->declaration_at = Carbon::now();
 
@@ -5481,9 +5480,7 @@ class BusinessTripController extends Controller
                     }
 
                 } elseif ($ca->type_ca == "entr") {
-                    $ca->user_id = $userId;
                     $ca->no_sppd = $oldNoSppd;
-                    $ca->user_id = $userId;
                     $ca->ca_note = $ca_note;
 
                     $ca->declaration_at = Carbon::now();
