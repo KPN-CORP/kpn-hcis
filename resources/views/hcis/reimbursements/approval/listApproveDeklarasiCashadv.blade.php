@@ -327,7 +327,8 @@
                                                             </thead>
                                                             <tbody>
                                                                 <?php $totalLainnya = 0; $totalDays = 0; ?>
-                                                                @foreach ($declareCA['detail_meals'] as $lainnya)
+                                                                @if(isset($detailCA['detail_meals']))
+                                                                @foreach ($detailCA['detail_meals'] as $lainnya)
                                                                     <tr style="text-align-last: center;">
                                                                         <td>{{ $loop->index + 1 }}</td>
                                                                         <td>{{ \Carbon\Carbon::parse($lainnya['tanggal'])->format('d-M-y') }}</td>
@@ -344,6 +345,13 @@
                                                                         <td style="text-align: right"> Rp. {{ number_format($totalLainnya, 0, ',', '.') }} </td>
                                                                     </tr>
                                                                 </tbody>
+                                                                @else
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="4" class="text-right">No data available</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                @endif
                                                             </tbody>
                                                         </table>
                                                     </div>
@@ -368,15 +376,16 @@
                                                             </thead>
                                                             <tbody>
                                                                 <?php $totalMeals = 0; $totalDays = 0; ?>
+                                                                @if(isset($detailCA['detail_meals']))
                                                                 @foreach ($detailCA['detail_meals'] as $meals)
                                                                     <tr class="text-center">
                                                                         <td class="text-center">{{ $loop->index + 1 }}</td>
-                                                                        <td>{{ \Carbon\Carbon::parse($meals['start_date'])->format('d-M-y') }}</td>
-                                                                        <td>{{ \Carbon\Carbon::parse($meals['end_date'])->format('d-M-y') }}</td>
+                                                                        <td>{{ \Carbon\Carbon::parse($meals['start_date'] ?? $meals['tanggal'])->format('d-M-y') }}</td>
+                                                                        <td>{{ \Carbon\Carbon::parse($meals['end_date'] ?? $meals['tanggal'])->format('d-M-y') }}</td>
                                                                         <td>
-                                                                            {{$meals['total_days']}}
+                                                                            {{ $meals['total_days'] ?? ""}}
                                                                         </td>
-                                                                        <td>{{ $meals['company_code'] }}</td>
+                                                                        <td>{{ $meals['company_code'] ?? ""}}</td>
                                                                         <td>
                                                                             {{ $meals['keterangan'] }}
                                                                         </td>
@@ -392,6 +401,13 @@
                                                                         <td style="text-align: right"> Rp. {{ number_format($totalMeals, 0, ',', '.') }} </td>
                                                                     </tr>
                                                                 </tbody>
+                                                                @else
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="4" class="text-right">No data available</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                @endif
                                                             </tbody>
                                                         </table>
                                                     </div>
@@ -413,15 +429,16 @@
                                                             </thead>
                                                             <tbody>
                                                                 <?php $totalMeals = 0; $totalDays = 0; ?>
+                                                                @if(isset($declareCA['detail_meals']))
                                                                 @foreach ($declareCA['detail_meals'] as $meals)
                                                                     <tr class="text-center">
                                                                         <td class="text-center">{{ $loop->index + 1 }}</td>
-                                                                        <td>{{ \Carbon\Carbon::parse($meals['start_date'])->format('d-M-y') }}</td>
-                                                                        <td>{{ \Carbon\Carbon::parse($meals['end_date'])->format('d-M-y') }}</td>
+                                                                        <td>{{ \Carbon\Carbon::parse($meals['start_date'] ?? $meals['tanggal'])->format('d-M-y') }}</td>
+                                                                        <td>{{ \Carbon\Carbon::parse($meals['end_date'] ?? $meals['tanggal'])->format('d-M-y') }}</td>
                                                                         <td>
-                                                                            {{$meals['total_days']}}
+                                                                            {{$meals['total_days'] ?? ""}}
                                                                         </td>
-                                                                        <td>{{ $meals['company_code'] }}</td>
+                                                                        <td>{{ $meals['company_code'] ?? ""}}</td>
                                                                         <td>
                                                                             {{ $meals['keterangan'] }}
                                                                         </td>
@@ -437,6 +454,13 @@
                                                                         <td style="text-align: right"> Rp. {{ number_format($totalMeals, 0, ',', '.') }} </td>
                                                                     </tr>
                                                                 </tbody>
+                                                                @else
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="4" class="text-right">No data available</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                @endif
                                                             </tbody>
                                                         </table>
                                                     </div>

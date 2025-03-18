@@ -987,7 +987,7 @@ class ReimburseController extends Controller
                 ]);
 
                 try {
-                    Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->cc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                         $nextApproval,
                         $model,
                         $textNotification,

@@ -3922,7 +3922,7 @@ class BusinessTripController extends Controller
             ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')->first();
 
         $isApproved = CATransaction::where('user_id', $userId)
-        ->where('approval_sett', 'Approved')
+        ->where('approval_sett', '!=', 'Approved')
         ->where('total_ca', '!=', 0)->get();
 
         $job_level = Employee::where('id', $userId)->pluck('job_level')->first();
