@@ -327,7 +327,8 @@
                                                             </thead>
                                                             <tbody>
                                                                 <?php $totalLainnya = 0; $totalDays = 0; ?>
-                                                                @foreach ($declareCA['detail_meals'] as $lainnya)
+                                                                @if(isset($detailCA['detail_meals']))
+                                                                @foreach ($detailCA['detail_meals'] as $lainnya)
                                                                     <tr style="text-align-last: center;">
                                                                         <td>{{ $loop->index + 1 }}</td>
                                                                         <td>{{ \Carbon\Carbon::parse($lainnya['tanggal'])->format('d-M-y') }}</td>
@@ -344,6 +345,13 @@
                                                                         <td style="text-align: right"> Rp. {{ number_format($totalLainnya, 0, ',', '.') }} </td>
                                                                     </tr>
                                                                 </tbody>
+                                                                @else
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="4" class="text-right">No data available</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                @endif
                                                             </tbody>
                                                         </table>
                                                     </div>
@@ -368,15 +376,16 @@
                                                             </thead>
                                                             <tbody>
                                                                 <?php $totalMeals = 0; $totalDays = 0; ?>
+                                                                @if(isset($detailCA['detail_meals']))
                                                                 @foreach ($detailCA['detail_meals'] as $meals)
                                                                     <tr class="text-center">
                                                                         <td class="text-center">{{ $loop->index + 1 }}</td>
-                                                                        <td>{{ \Carbon\Carbon::parse($meals['start_date'])->format('d-M-y') }}</td>
-                                                                        <td>{{ \Carbon\Carbon::parse($meals['end_date'])->format('d-M-y') }}</td>
+                                                                        <td>{{ \Carbon\Carbon::parse($meals['start_date'] ?? $meals['tanggal'])->format('d-M-y') }}</td>
+                                                                        <td>{{ \Carbon\Carbon::parse($meals['end_date'] ?? $meals['tanggal'])->format('d-M-y') }}</td>
                                                                         <td>
-                                                                            {{$meals['total_days']}}
+                                                                            {{ $meals['total_days'] ?? ""}}
                                                                         </td>
-                                                                        <td>{{ $meals['company_code'] }}</td>
+                                                                        <td>{{ $meals['company_code'] ?? ""}}</td>
                                                                         <td>
                                                                             {{ $meals['keterangan'] }}
                                                                         </td>
@@ -392,6 +401,13 @@
                                                                         <td style="text-align: right"> Rp. {{ number_format($totalMeals, 0, ',', '.') }} </td>
                                                                     </tr>
                                                                 </tbody>
+                                                                @else
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="4" class="text-right">No data available</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                @endif
                                                             </tbody>
                                                         </table>
                                                     </div>
@@ -413,15 +429,16 @@
                                                             </thead>
                                                             <tbody>
                                                                 <?php $totalMeals = 0; $totalDays = 0; ?>
+                                                                @if(isset($declareCA['detail_meals']))
                                                                 @foreach ($declareCA['detail_meals'] as $meals)
                                                                     <tr class="text-center">
                                                                         <td class="text-center">{{ $loop->index + 1 }}</td>
-                                                                        <td>{{ \Carbon\Carbon::parse($meals['start_date'])->format('d-M-y') }}</td>
-                                                                        <td>{{ \Carbon\Carbon::parse($meals['end_date'])->format('d-M-y') }}</td>
+                                                                        <td>{{ \Carbon\Carbon::parse($meals['start_date'] ?? $meals['tanggal'])->format('d-M-y') }}</td>
+                                                                        <td>{{ \Carbon\Carbon::parse($meals['end_date'] ?? $meals['tanggal'])->format('d-M-y') }}</td>
                                                                         <td>
-                                                                            {{$meals['total_days']}}
+                                                                            {{$meals['total_days'] ?? ""}}
                                                                         </td>
-                                                                        <td>{{ $meals['company_code'] }}</td>
+                                                                        <td>{{ $meals['company_code'] ?? ""}}</td>
                                                                         <td>
                                                                             {{ $meals['keterangan'] }}
                                                                         </td>
@@ -437,6 +454,13 @@
                                                                         <td style="text-align: right"> Rp. {{ number_format($totalMeals, 0, ',', '.') }} </td>
                                                                     </tr>
                                                                 </tbody>
+                                                                @else
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td colspan="4" class="text-right">No data available</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                                @endif
                                                             </tbody>
                                                         </table>
                                                     </div>
@@ -1018,20 +1042,37 @@
                                             @endif
                                         </div>
                                         <div id="existing-file-preview" class="mt-2">
-                                            @if ($transactions->prove_declare)
+                                            @if (!empty($transactions->prove_declare))
                                                 @php
-                                                    $existingFiles = json_decode($transactions->prove_declare, true);
+                                                    // Coba decode JSON jika memungkinkan
+                                                    $decodedData = json_decode($transactions->prove_declare, true);
+
+                                                    // Jika hasil decode adalah array, gunakan sebagai array, jika bukan, buat array dengan satu elemen
+                                                    $existingFiles = is_array($decodedData) ? $decodedData : [$transactions->prove_declare];
                                                 @endphp
 
                                                 @foreach ($existingFiles as $file)
-                                                    @php $extension = pathinfo($file, PATHINFO_EXTENSION); @endphp
-                                                    <div class="file-preview" data-file="{{ $file }}" style="position: relative; display: inline-block; margin: 10px;">
-                                                        @if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'PNG', 'JPG', 'JPEG']))
-                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
-                                                                <img src="{{ asset($file) }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
+                                                    @php 
+                                                        // Pastikan path menggunakan format yang benar
+                                                        $file = str_replace('\\', '/', $file); 
+
+                                                        // Pastikan path sesuai dengan akses storage
+                                                        if (str_contains($file, 'uploads/proofs/')) {
+                                                            $fileUrl = asset('storage/' . str_replace('uploads/', '', $file));
+                                                        } else {
+                                                            $fileUrl = asset('storage/proofs/' . basename($file));
+                                                        }
+
+                                                        $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION)); 
+                                                    @endphp
+
+                                                    <div class="file-preview" data-file="{{ $fileUrl }}" style="position: relative; display: inline-block; margin: 10px;">
+                                                        @if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif']))
+                                                            <a href="{{ $fileUrl }}" target="_blank" rel="noopener noreferrer">
+                                                                <img src="{{ $fileUrl }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
                                                             </a>
                                                         @elseif($extension === 'pdf')
-                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
+                                                            <a href="{{ $fileUrl }}" target="_blank" rel="noopener noreferrer">
                                                                 <img src="{{ asset('images/pdf_icon.png') }}" alt="PDF File">
                                                                 <p>Click to view PDF</p>
                                                             </a>

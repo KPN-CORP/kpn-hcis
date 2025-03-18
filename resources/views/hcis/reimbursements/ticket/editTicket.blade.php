@@ -105,7 +105,7 @@
                             </div>
                             <input type="hidden" name="no_tkt" value="{{ $ticket->no_tkt }}">
 
-                            @if ($ticket->approval_status == 'Request Revision' || $ticket->approval_status == 'Declaration Revision')
+                            @if ($ticket->approval_status == 'Request Revision')
                                 <div class="alert alert-info" role="alert">
                                     <h4 class="alert-heading">Revision Note</h4>
                                     {!! nl2br(e($revisiInfo)) !!}
