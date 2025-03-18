@@ -4019,7 +4019,6 @@ class BusinessTripController extends Controller
             $vtDalam = $request->taksi;
             $messDalam = $request->mess;
         }
-
         $businessTrip = BusinessTrip::create([
             'id' => $bt->id,
             'user_id' => $userId,
