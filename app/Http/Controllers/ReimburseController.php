@@ -1922,7 +1922,7 @@ class ReimburseController extends Controller
             // dd($req->contribution_level_code);
             $nextApproval = null; // Inisialisasi variabel di luar loop
             foreach ($data_matrix_approvals as $data_matrix_approval) {
-                if ($data_matrix_approval->desc == "Dept Head AR & AP") {
+                // if ($data_matrix_approval->desc == "Dept Head AR & AP") {
                     $employee_id = null;
 
                     if ($data_matrix_approval->employee_id == "cek_L1") {
@@ -1949,7 +1949,7 @@ class ReimburseController extends Controller
                             ->first();
                         break;
                     }
-                }
+                // }
             }
 
             // $CANotificationLayer = Employee::where('employee_id', $managerL1)->pluck('email')->first();
