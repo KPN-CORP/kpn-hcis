@@ -39,7 +39,7 @@ class HomeTripController extends Controller
         if ($designation->dept_head_flag == 'T') {
             return $manager;
         } else {
-            return findDepartmentHead($manager);
+            return $this->findDepartmentHead($manager);
         }
         return null;
     }
