@@ -271,7 +271,6 @@
                                 <label class="form-label">Information</label>
                                 <textarea name="keterangan_bt_lainnya[]" class="form-control bg-light" placeholder="Write your information ..."
                                     readonly>{{ $lainnya_dec['keterangan'] }}</textarea>
-
                             </div>
                         </div>
                     @else
@@ -314,7 +313,6 @@
                                 <label class="form-label">Information</label>
                                 <textarea name="keterangan_bt_lainnya[]" class="form-control bg-light" placeholder="Write your information ..."
                                     readonly></textarea>
-
                             </div>
                         </div>
                     @endif
