@@ -563,13 +563,13 @@
                                 <label class="form-label">Meals Start Plan</label>
                                 <input type="date" name="start_bt_meals[]"
                                     id="start_bt_meals_{{ $loop->index + 1 }}" class="form-control start-meals"
-                                    value="{{ $meals_dec['start_date'] }}" placeholder="mm/dd/yyyy"
+                                    value="{{ $meals_dec['start_date'] ?? $meals_dec['tanggal'] }}" placeholder="mm/dd/yyyy"
                                     onchange="calculateTotalDaysMeals(this, document.getElementById('end_bt_meals_{{ $loop->index + 1 }}'), document.querySelector('#total_days_bt_meals_{{ $loop->index + 1 }}'))">
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Meals End Plan</label>
                                 <input type="date" name="end_bt_meals[]" id="end_bt_meals_{{ $loop->index + 1 }}"
-                                    class="form-control end-meals" value="{{ $meals_dec['end_date'] }}"
+                                    class="form-control end-meals" value="{{ $meals_dec['end_date'] ?? $meals_dec['tanggal'] }}"
                                     placeholder="mm/dd/yyyy"
                                     onchange="calculateTotalDaysMeals(document.getElementById('start_bt_meals_{{ $loop->index + 1 }}'), this, document.querySelector('#total_days_bt_meals_{{ $loop->index + 1 }}'))">
                             </div>
@@ -578,7 +578,7 @@
                                 <div class="input-group">
                                     <input class="form-control bg-light total-days-meals"
                                         id="total_days_bt_meals_{{ $loop->index + 1 }}" name="total_days_bt_meals[]"
-                                        type="number" min="0" value="{{ $meals_dec['total_days'] }}"
+                                        type="number" min="0" value="{{ $meals_dec['total_days'] ?? '1' }}"
                                         readonly>
                                     <div class="input-group-append">
                                         <span class="input-group-text">days</span>
@@ -593,7 +593,7 @@
                                     <option value="">Select Company...</option>
                                     @foreach ($companies as $company)
                                         <option value="{{ $company->contribution_level_code }}"
-                                            @if ($company->contribution_level_code == $meals_dec['company_code']) selected @endif>
+                                            @if ($company->contribution_level_code == $meals_dec['company_code'] ?? '') selected @endif>
                                             {{ $company->contribution_level . ' (' . $company->contribution_level_code . ')' }}
                                         </option>
                                     @endforeach
@@ -665,13 +665,13 @@
                                 <label class="form-label">Meals Start Plan</label>
                                 <input type="date" name="start_bt_meals[]"
                                     id="start_bt_meals_{{ $loop->index + 1 }}" class="form-control start-meals"
-                                    value="{{ $meals_dec['start_date'] ?? '' }}" placeholder="mm/dd/yyyy"  
+                                    value="{{ $meals_dec['start_date'] ?? $meals_dec['tanggal'] }}" placeholder="mm/dd/yyyy"  
                                     onchange="calculateTotalDaysMeals(this, document.getElementById('end_bt_meals_{{ $loop->index + 1 }}'), document.querySelector('#total_days_bt_meals_{{ $loop->index + 1 }}'))">
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Meals End Plan</label>
                                 <input type="date" name="end_bt_meals[]" id="end_bt_meals_{{ $loop->index + 1 }}"
-                                    class="form-control end-meals" value="{{ $meals_dec['end_date'] ?? '' }}"
+                                    class="form-control end-meals" value="{{ $meals_dec['end_date'] ?? $meals_dec['tanggal'] }}"
                                     placeholder="mm/dd/yyyy"
                                     onchange="calculateTotalDaysMeals(document.getElementById('start_bt_meals_{{ $loop->index + 1 }}'), this, document.querySelector('#total_days_bt_meals_{{ $loop->index + 1 }}'))">
                             </div>
