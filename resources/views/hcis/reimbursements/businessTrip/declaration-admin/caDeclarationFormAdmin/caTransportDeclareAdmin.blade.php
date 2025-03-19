@@ -367,7 +367,7 @@
                             <!-- Information -->
                             <div class="col-md-12">
                                     <label class="form-label">Information</label>
-                                    <textarea name="keterangan_bt_transport[]" class="form-control" placeholder="Write your information ..." disabled>{{$transport_dec['keterangan']}}</textarea>
+                                    <textarea name="keterangan_bt_transport[]" class="form-control bg-light" placeholder="Write your information ..." readonly>{{$transport_dec['keterangan']}}</textarea>
                                 </div>
                         </div>
                     @endif
@@ -423,7 +423,7 @@
                         <!-- Information -->
                         <div class="col-md-12">
                                 <label class="form-label">Information</label>
-                                <textarea name="keterangan_bt_transport[]" class="form-control" placeholder="Write your information ..." disabled>{{$transport_dec['keterangan']}}</textarea>
+                                <textarea name="keterangan_bt_transport[]" class="form-control bg-light" placeholder="Write your information ..." readonly>{{$transport_dec['keterangan']}}</textarea>
                         </div>
                     </div>
                     <div class="row mt-3">
@@ -503,7 +503,7 @@
                             <!-- Information -->
                             <div class="col-md-12">
                                     <label class="form-label">Information</label>
-                                    <textarea name="keterangan_bt_transport[]" class="form-control" placeholder="Write your information ..." disabled>{{$transport_dec['keterangan']}}</textarea>
+                                    <textarea name="keterangan_bt_transport[]" class="form-control bg-light" placeholder="Write your information ..." readonly>{{$transport_dec['keterangan']}}</textarea>
                                 </div>
                         </div>
                         <div class="row mt-3">
