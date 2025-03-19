@@ -247,7 +247,7 @@
                             <!-- Information -->
                             <div class="col-md-12">
                                     <label class="form-label">Information</label>
-                                    <textarea name="keterangan_bt_lainnya[]" class="form-control" placeholder="Write your information ..." disabled>{{ $lainnya_dec['keterangan'] }}</textarea>
+                                    <textarea name="keterangan_bt_lainnya[]" class="form-control bg-light" placeholder="Write your information ..." readonly>{{ $lainnya_dec['keterangan'] }}</textarea>
                       
                             </div>
                         </div>
@@ -284,7 +284,7 @@
                             <!-- Information -->
                             <div class="col-md-12">
                                     <label class="form-label">Information</label>
-                                    <textarea name="keterangan_bt_lainnya[]" class="form-control" placeholder="Write your information ..." disabled></textarea>
+                                    <textarea name="keterangan_bt_lainnya[]" class="form-control bg-light" placeholder="Write your information ..." readonly></textarea>
                     
                             </div>
                         </div>
@@ -336,7 +336,7 @@
                             <!-- Information -->
                             <div class="col-md-12">
                                     <label class="form-label">Information</label>
-                                    <textarea name="keterangan_bt_lainnya[]" class="form-control" disabled>{{ $lainnya_dec['keterangan'] }}</textarea>
+                                    <textarea name="keterangan_bt_lainnya[]" class="form-control bg-light" readonly>{{ $lainnya_dec['keterangan'] }}</textarea>
                             </div>
                         </div>
                         <div class="row mt-3">
