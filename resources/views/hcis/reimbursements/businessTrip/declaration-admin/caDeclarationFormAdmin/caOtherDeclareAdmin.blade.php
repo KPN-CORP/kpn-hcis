@@ -153,7 +153,9 @@
 
         // Clear the inputs
         const formContainer = document.getElementById(`form-container-bt-lainnya-${index}`);
-        formContainer.querySelectorAll('input[type="text"], input[type="date"]').forEach((input) => {input.value = "";});
+        formContainer.querySelectorAll('input[type="text"], input[type="date"]').forEach((input) => {
+            input.value = "";
+        });
         formContainer.querySelector("textarea").value = "";
 
         // Reset nilai untuk nominal BT Lainnya
@@ -172,15 +174,15 @@
     function onNominalChange() {
         calculateTotalNominalBTLainnya();
     }
-
 </script>
 
 @if (!empty($caDetail['detail_lainnya']) && $caDetail['detail_lainnya'][0]['tanggal'] !== null)
     <div id="form-container-lainnya">
         @foreach ($caDetail['detail_lainnya'] as $index => $lainnya)
-            <div id="form-container-bt-lainnya-{{ $loop->index + 1 }}" class="p-2 mb-2 bg-light card-body rounded-3" >
+            <div id="form-container-bt-lainnya-{{ $loop->index + 1 }}" class="p-2 mb-2 bg-light card-body rounded-3">
                 <p class="fs-4 text-primary" style="font-weight: bold; ">Other Expenses {{ $loop->index + 1 }}</p>
-                <div id="form-container-bt-lainnya-req-{{ $loop->index + 1 }}" class="card-body bg-white rounded-3 p-2 mb-2">
+                <div id="form-container-bt-lainnya-req-{{ $loop->index + 1 }}"
+                    class="card-body bg-white rounded-3 p-2 mb-2">
                     <p class="fs-5 text-primary" style="font-weight: bold;">Other Expenses Request</p>
                     <div class="row">
                         <div class="col-md-6">
@@ -193,7 +195,7 @@
                                 <tr>
                                     <th class="label">Type of Others</th>
                                     <td class="block">:</td>
-                                    <td class="value">{{ $lainnya['type'] ?? ''  }}</td>
+                                    <td class="value">{{ $lainnya['type'] ?? '' }}</td>
                                 </tr>
                                 <tr>
                                     <th class="label">Amount</th>
@@ -219,20 +221,36 @@
                             <!-- Lainnya Date -->
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Date</label>
-                                <input type="date" name="tanggal_bt_lainnya[]" class="form-control" value="{{$lainnya_dec['tanggal']}}" placeholder="mm/dd/yyyy">
+                                <input type="date" name="tanggal_bt_lainnya[]" class="form-control"
+                                    value="{{ $lainnya_dec['tanggal'] }}" placeholder="mm/dd/yyyy">
                             </div>
-                            <div class="col-md-4 mb-2">  
-                                <label class="form-label" for="name">Type of Others</label>  
-                                <select class="form-control select2" id="type_bt_lainnya_{{ $loop->index + 1 }}" name="type_bt_lainnya[]">  
-                                    <option value="">Select Type...</option>  
-                                    <option value="Airport Tax" {{ ($lainnya_dec['type'] ?? '') == 'Airport Tax' ? 'selected' : '' }}>Airport Tax</option>
-                                    <option value="Excess Baggage" {{ ($lainnya_dec['type'] ?? '') == 'Excess Baggage' ? 'selected' : '' }}>Excess Baggage</option>
-                                    <option value="Laundry" {{ ($lainnya_dec['type'] ?? '') == 'Laundry' ? 'selected' : '' }}>Laundry</option>
-                                    <option value="Mandatory Insurance Fees" {{ ($lainnya_dec['type'] ?? '') == 'Mandatory Insurance Fees' ? 'selected' : '' }}>Mandatory Insurance Fees</option>  
-                                    <option value="Parking Fees" {{ ($lainnya_dec['type'] ?? '') == 'Parking Fees' ? 'selected' : '' }}>Parking Fees</option>
-                                    <option value="Porter Service" {{ ($lainnya_dec['type'] ?? '') == 'Porter Service' ? 'selected' : '' }}>Porter Service (for company luggage only)</option>
-                                    <option value="Toll Fees" {{ ($lainnya_dec['type'] ?? '') == 'Toll Fees' ? 'selected' : '' }}>Toll Fees</option>
-                                </select>   
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label" for="name">Type of Others</label>
+                                <select class="form-control select2" id="type_bt_lainnya_{{ $loop->index + 1 }}"
+                                    name="type_bt_lainnya[]">
+                                    <option value="">Select Type...</option>
+                                    <option value="Airport Tax"
+                                        {{ ($lainnya_dec['type'] ?? '') == 'Airport Tax' ? 'selected' : '' }}>Airport
+                                        Tax</option>
+                                    <option value="Excess Baggage"
+                                        {{ ($lainnya_dec['type'] ?? '') == 'Excess Baggage' ? 'selected' : '' }}>Excess
+                                        Baggage</option>
+                                    <option value="Laundry"
+                                        {{ ($lainnya_dec['type'] ?? '') == 'Laundry' ? 'selected' : '' }}>Laundry
+                                    </option>
+                                    <option value="Mandatory Insurance Fees"
+                                        {{ ($lainnya_dec['type'] ?? '') == 'Mandatory Insurance Fees' ? 'selected' : '' }}>
+                                        Mandatory Insurance Fees</option>
+                                    <option value="Parking Fees"
+                                        {{ ($lainnya_dec['type'] ?? '') == 'Parking Fees' ? 'selected' : '' }}>Parking
+                                        Fees</option>
+                                    <option value="Porter Service"
+                                        {{ ($lainnya_dec['type'] ?? '') == 'Porter Service' ? 'selected' : '' }}>Porter
+                                        Service (for company luggage only)</option>
+                                    <option value="Toll Fees"
+                                        {{ ($lainnya_dec['type'] ?? '') == 'Toll Fees' ? 'selected' : '' }}>Toll Fees
+                                    </option>
+                                </select>
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Amount</label>
@@ -240,15 +258,20 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
-                                    <input class="form-control" name="nominal_bt_lainnya[]" id="nominal_bt_lainnya_{{ $loop->index + 1 }}" type="text" min="0" value="{{ number_format($lainnya_dec['nominal'], 0, ',', '.') }}" onfocus="this.value = this.value === '0' ? '' : this.value;" oninput="formatInput(this)" onblur="formatOnBlur(this)">
+                                    <input class="form-control" name="nominal_bt_lainnya[]"
+                                        id="nominal_bt_lainnya_{{ $loop->index + 1 }}" type="text" min="0"
+                                        value="{{ number_format($lainnya_dec['nominal'], 0, ',', '.') }}"
+                                        onfocus="this.value = this.value === '0' ? '' : this.value;"
+                                        oninput="formatInput(this)" onblur="formatOnBlur(this)">
                                 </div>
                             </div>
 
                             <!-- Information -->
                             <div class="col-md-12">
-                                    <label class="form-label">Information</label>
-                                    <textarea name="keterangan_bt_lainnya[]" class="form-control" placeholder="Write your information ..." disabled>{{ $lainnya_dec['keterangan'] }}</textarea>
-                      
+                                <label class="form-label">Information</label>
+                                <textarea name="keterangan_bt_lainnya[]" class="form-control bg-light" placeholder="Write your information ..."
+                                    readonly>{{ $lainnya_dec['keterangan'] }}</textarea>
+
                             </div>
                         </div>
                     @else
@@ -256,20 +279,22 @@
                             <!-- Lainnya Date -->
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Date</label>
-                                <input type="date" name="tanggal_bt_lainnya[]" class="form-control" value="" placeholder="mm/dd/yyyy">
+                                <input type="date" name="tanggal_bt_lainnya[]" class="form-control" value=""
+                                    placeholder="mm/dd/yyyy">
                             </div>
-                            <div class="col-md-4 mb-2">  
-                                <label class="form-label" for="name">Type of Others</label>  
-                                <select class="form-control select2" id="type_bt_lainnya_{{ $loop->index + 1 }}" name="type_bt_lainnya[]">  
-                                    <option value="">Select Type...</option>  
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label" for="name">Type of Others</label>
+                                <select class="form-control select2" id="type_bt_lainnya_{{ $loop->index + 1 }}"
+                                    name="type_bt_lainnya[]">
+                                    <option value="">Select Type...</option>
                                     <option value="Airport Tax">Airport Tax</option>
                                     <option value="Excess Baggage">Excess Baggage</option>
                                     <option value="Laundry">Laundry</option>
-                                    <option value="Mandatory Insurance Fees">Mandatory Insurance Fees</option>  
+                                    <option value="Mandatory Insurance Fees">Mandatory Insurance Fees</option>
                                     <option value="Parking Fees">Parking Fees</option>
                                     <option value="Porter Service">Porter Service (for company luggage only)</option>
                                     <option value="Toll Fees">Toll Fees</option>
-                                </select>  
+                                </select>
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Amount</label>
@@ -277,21 +302,26 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
-                                    <input class="form-control" name="nominal_bt_lainnya[]" id="nominal_bt_lainnya_{{ $loop->index + 1 }}" type="text" min="0" value="" onfocus="this.value = this.value === '0' ? '' : this.value;" oninput="formatInput(this)" onblur="formatOnBlur(this)">
+                                    <input class="form-control" name="nominal_bt_lainnya[]"
+                                        id="nominal_bt_lainnya_{{ $loop->index + 1 }}" type="text" min="0"
+                                        value="" onfocus="this.value = this.value === '0' ? '' : this.value;"
+                                        oninput="formatInput(this)" onblur="formatOnBlur(this)">
                                 </div>
                             </div>
 
                             <!-- Information -->
                             <div class="col-md-12">
-                                    <label class="form-label">Information</label>
-                                    <textarea name="keterangan_bt_lainnya[]" class="form-control" placeholder="Write your information ..." disabled></textarea>
-                    
+                                <label class="form-label">Information</label>
+                                <textarea name="keterangan_bt_lainnya[]" class="form-control bg-light" placeholder="Write your information ..."
+                                    readonly></textarea>
+
                             </div>
                         </div>
                     @endif
                     <div class="row mt-3">
                         <div class="d-flex justify-start w-100">
-                            <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px" onclick="clearFormLainnya({{ $loop->index + 1 }}, event)">Reset1</button>
+                            <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px"
+                                onclick="clearFormLainnya({{ $loop->index + 1 }}, event)">Reset</button>
                             {{-- <button class="btn btn-warning mr-2" onclick="removeFormLainnya({{ $loop->index + 1 }}, event)">Delete</button> --}}
                         </div>
                     </div>
@@ -300,28 +330,46 @@
         @endforeach
         @foreach ($declareCa['detail_lainnya'] as $index => $lainnya_dec)
             @if (!isset($caDetail['detail_lainnya'][$index]))
-                <div id="form-container-bt-lainnya-{{ $loop->index + 1 }}" class="p-2 mb-2 card-body bg-light rounded-3 ">
-                    <p class="fs-4 text-primary" style="font-weight: bold; ">Other Expenses {{ $loop->index + 1 }}</p>
+                <div id="form-container-bt-lainnya-{{ $loop->index + 1 }}"
+                    class="p-2 mb-2 card-body bg-light rounded-3 ">
+                    <p class="fs-4 text-primary" style="font-weight: bold; ">Other Expenses {{ $loop->index + 1 }}
+                    </p>
                     <div class="card-body rounded-3 bg-white p-2">
                         <p class="fs-5 text-primary" style="font-weight: bold; ">Other Expenses Declaration</p>
                         <div class="row">
                             <!-- Lainnya Date -->
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Date</label>
-                                <input type="date" name="tanggal_bt_lainnya[]" class="form-control" value="{{$lainnya_dec['tanggal']}}" placeholder="mm/dd/yyyy">
+                                <input type="date" name="tanggal_bt_lainnya[]" class="form-control"
+                                    value="{{ $lainnya_dec['tanggal'] }}" placeholder="mm/dd/yyyy">
                             </div>
-                            <div class="col-md-4 mb-2">  
-                                <label class="form-label" for="name">Type of Others</label>  
-                                <select class="form-control select2" id="type_bt_lainnya_{{ $loop->index + 1 }}" name="type_bt_lainnya[]">  
-                                    <option value="">Select Type...</option>  
-                                    <option value="Airport Tax" {{ ($lainnya_dec['type'] ?? '') == 'Airport Tax' ? 'selected' : '' }}>Airport Tax</option>
-                                    <option value="Excess Baggage" {{ ($lainnya_dec['type'] ?? '') == 'Excess Baggage' ? 'selected' : '' }}>Excess Baggage</option>
-                                    <option value="Laundry" {{ ($lainnya_dec['type'] ?? '') == 'Laundry' ? 'selected' : '' }}>Laundry</option>
-                                    <option value="Mandatory Insurance Fees" {{ ($lainnya_dec['type'] ?? '') == 'Mandatory Insurance Fees' ? 'selected' : '' }}>Mandatory Insurance Fees</option>  
-                                    <option value="Parking Fees" {{ ($lainnya_dec['type'] ?? '') == 'Parking Fees' ? 'selected' : '' }}>Parking Fees</option>
-                                    <option value="Porter Service" {{ ($lainnya_dec['type'] ?? '') == 'Porter Service' ? 'selected' : '' }}>Porter Service (for company luggage only)</option>
-                                    <option value="Toll Fees" {{ ($lainnya_dec['type'] ?? '') == 'Toll Fees' ? 'selected' : '' }}>Toll Fees</option>
-                                </select>  
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label" for="name">Type of Others</label>
+                                <select class="form-control select2" id="type_bt_lainnya_{{ $loop->index + 1 }}"
+                                    name="type_bt_lainnya[]">
+                                    <option value="">Select Type...</option>
+                                    <option value="Airport Tax"
+                                        {{ ($lainnya_dec['type'] ?? '') == 'Airport Tax' ? 'selected' : '' }}>Airport
+                                        Tax</option>
+                                    <option value="Excess Baggage"
+                                        {{ ($lainnya_dec['type'] ?? '') == 'Excess Baggage' ? 'selected' : '' }}>Excess
+                                        Baggage</option>
+                                    <option value="Laundry"
+                                        {{ ($lainnya_dec['type'] ?? '') == 'Laundry' ? 'selected' : '' }}>Laundry
+                                    </option>
+                                    <option value="Mandatory Insurance Fees"
+                                        {{ ($lainnya_dec['type'] ?? '') == 'Mandatory Insurance Fees' ? 'selected' : '' }}>
+                                        Mandatory Insurance Fees</option>
+                                    <option value="Parking Fees"
+                                        {{ ($lainnya_dec['type'] ?? '') == 'Parking Fees' ? 'selected' : '' }}>Parking
+                                        Fees</option>
+                                    <option value="Porter Service"
+                                        {{ ($lainnya_dec['type'] ?? '') == 'Porter Service' ? 'selected' : '' }}>Porter
+                                        Service (for company luggage only)</option>
+                                    <option value="Toll Fees"
+                                        {{ ($lainnya_dec['type'] ?? '') == 'Toll Fees' ? 'selected' : '' }}>Toll Fees
+                                    </option>
+                                </select>
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Amount</label>
@@ -329,20 +377,26 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
-                                    <input class="form-control" name="nominal_bt_lainnya[]" id="nominal_bt_lainnya_{{ $loop->index + 1 }}" type="text" min="0" value="{{ number_format($lainnya_dec['nominal'], 0, ',', '.') }}" onfocus="this.value = this.value === '0' ? '' : this.value;" oninput="formatInput(this)" onblur="formatOnBlur(this)">
+                                    <input class="form-control" name="nominal_bt_lainnya[]"
+                                        id="nominal_bt_lainnya_{{ $loop->index + 1 }}" type="text" min="0"
+                                        value="{{ number_format($lainnya_dec['nominal'], 0, ',', '.') }}"
+                                        onfocus="this.value = this.value === '0' ? '' : this.value;"
+                                        oninput="formatInput(this)" onblur="formatOnBlur(this)">
                                 </div>
                             </div>
 
                             <!-- Information -->
                             <div class="col-md-12">
-                                    <label class="form-label">Information</label>
-                                    <textarea name="keterangan_bt_lainnya[]" class="form-control" disabled>{{ $lainnya_dec['keterangan'] }}</textarea>
+                                <label class="form-label">Information</label>
+                                <textarea name="keterangan_bt_lainnya[]" class="form-control bg-light" readonly>{{ $lainnya_dec['keterangan'] }}</textarea>
                             </div>
                         </div>
                         <div class="row mt-3">
                             <div class="d-flex justify-start w-100">
-                                <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px" onclick="clearFormLainnya({{ $loop->index + 1 }}, event)">Reset</button>
-                                <button class="btn btn-outline-danger btn-sm" onclick="removeFormLainnya({{ $loop->index + 1 }}, event)">Delete</button>
+                                <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px"
+                                    onclick="clearFormLainnya({{ $loop->index + 1 }}, event)">Reset</button>
+                                <button class="btn btn-outline-danger btn-sm"
+                                    onclick="removeFormLainnya({{ $loop->index + 1 }}, event)">Delete</button>
                             </div>
                         </div>
                     </div>
@@ -352,44 +406,66 @@
     </div>
 
     <div class="mt-3">
-        <button class="btn btn-primary btn-sm" id="addMoreButtonLainnya" onclick="addMoreFormLainnyaDec(event)">Add More</button>
+        <button class="btn btn-primary btn-sm" id="addMoreButtonLainnya" onclick="addMoreFormLainnyaDec(event)">Add
+            More</button>
     </div>
-    <hr/>
+    <hr />
     <div>
         <label class="form-label">Total Other Expenses</label>
         <div class="input-group">
             <div class="input-group-append">
                 <span class="input-group-text">Rp</span>
             </div>
-            <input class="form-control bg-light" name="total_bt_lainnya" id="total_bt_lainnya" type="text" min="0" value="{{ number_format(array_sum(array_column($declareCa['detail_lainnya'], 'nominal')), 0, ',', '.') }}" readonly>
+            <input class="form-control bg-light" name="total_bt_lainnya" id="total_bt_lainnya" type="text"
+                min="0"
+                value="{{ number_format(array_sum(array_column($declareCa['detail_lainnya'], 'nominal')), 0, ',', '.') }}"
+                readonly>
         </div>
     </div>
 @elseif (!empty($declareCa['detail_lainnya']) && $declareCa['detail_lainnya'][0]['nominal'] !== null)
     <div id="form-container-lainnya">
         @foreach ($declareCa['detail_lainnya'] as $index => $lainnya_dec)
             @if (!isset($caDetail['detail_lainnya'][$index]))
-                <div id="form-container-bt-lainnya-{{ $loop->index + 1 }}" class="card-body p-2 rounded-3 mb-2 bg-light">
-                    <p class="fs-4 text-primary" style="font-weight: bold; ">Other Expenses {{ $loop->index + 1 }}</p>
+                <div id="form-container-bt-lainnya-{{ $loop->index + 1 }}"
+                    class="card-body p-2 rounded-3 mb-2 bg-light">
+                    <p class="fs-4 text-primary" style="font-weight: bold; ">Other Expenses {{ $loop->index + 1 }}
+                    </p>
                     <div class="card-body bg-white p-2 rounded-3">
                         <p class="fs-5 text-primary" style="font-weight: bold;">Other Expenses Declaration</p>
                         <div class="row">
                             <!-- Lainnya Date -->
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Date</label>
-                                <input type="date" name="tanggal_bt_lainnya[]" class="form-control" value="{{$lainnya_dec['tanggal']}}" placeholder="mm/dd/yyyy">
+                                <input type="date" name="tanggal_bt_lainnya[]" class="form-control"
+                                    value="{{ $lainnya_dec['tanggal'] }}" placeholder="mm/dd/yyyy">
                             </div>
-                            <div class="col-md-4 mb-2">  
-                                <label class="form-label" for="name">Type of Others</label>  
-                                <select class="form-control select2" id="type_bt_lainnya_{{ $loop->index + 1 }}" name="type_bt_lainnya[]">  
-                                    <option value="">Select Type...</option>  
-                                    <option value="Airport Tax" {{ ($lainnya_dec['type'] ?? '') == 'Airport Tax' ? 'selected' : '' }}>Airport Tax</option>
-                                    <option value="Excess Baggage" {{ ($lainnya_dec['type'] ?? '') == 'Excess Baggage' ? 'selected' : '' }}>Excess Baggage</option>
-                                    <option value="Laundry" {{ ($lainnya_dec['type'] ?? '') == 'Laundry' ? 'selected' : '' }}>Laundry</option>
-                                    <option value="Mandatory Insurance Fees" {{ ($lainnya_dec['type'] ?? '') == 'Mandatory Insurance Fees' ? 'selected' : '' }}>Mandatory Insurance Fees</option>  
-                                    <option value="Parking Fees" {{ ($lainnya_dec['type'] ?? '') == 'Parking Fees' ? 'selected' : '' }}>Parking Fees</option>
-                                    <option value="Porter Service" {{ ($lainnya_dec['type'] ?? '') == 'Porter Service' ? 'selected' : '' }}>Porter Service (for company luggage only)</option>
-                                    <option value="Toll Fees" {{ ($lainnya_dec['type'] ?? '') == 'Toll Fees' ? 'selected' : '' }}>Toll Fees</option>
-                                </select>  
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label" for="name">Type of Others</label>
+                                <select class="form-control select2" id="type_bt_lainnya_{{ $loop->index + 1 }}"
+                                    name="type_bt_lainnya[]">
+                                    <option value="">Select Type...</option>
+                                    <option value="Airport Tax"
+                                        {{ ($lainnya_dec['type'] ?? '') == 'Airport Tax' ? 'selected' : '' }}>Airport
+                                        Tax</option>
+                                    <option value="Excess Baggage"
+                                        {{ ($lainnya_dec['type'] ?? '') == 'Excess Baggage' ? 'selected' : '' }}>Excess
+                                        Baggage</option>
+                                    <option value="Laundry"
+                                        {{ ($lainnya_dec['type'] ?? '') == 'Laundry' ? 'selected' : '' }}>Laundry
+                                    </option>
+                                    <option value="Mandatory Insurance Fees"
+                                        {{ ($lainnya_dec['type'] ?? '') == 'Mandatory Insurance Fees' ? 'selected' : '' }}>
+                                        Mandatory Insurance Fees</option>
+                                    <option value="Parking Fees"
+                                        {{ ($lainnya_dec['type'] ?? '') == 'Parking Fees' ? 'selected' : '' }}>Parking
+                                        Fees</option>
+                                    <option value="Porter Service"
+                                        {{ ($lainnya_dec['type'] ?? '') == 'Porter Service' ? 'selected' : '' }}>Porter
+                                        Service (for company luggage only)</option>
+                                    <option value="Toll Fees"
+                                        {{ ($lainnya_dec['type'] ?? '') == 'Toll Fees' ? 'selected' : '' }}>Toll Fees
+                                    </option>
+                                </select>
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label">Amount</label>
@@ -397,20 +473,26 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
-                                    <input class="form-control" name="nominal_bt_lainnya[]" id="nominal_bt_lainnya_{{ $loop->index + 1 }}" type="text" min="0" value="{{ number_format($lainnya_dec['nominal'], 0, ',', '.') }}" onfocus="this.value = this.value === '0' ? '' : this.value;" oninput="formatInput(this)" onblur="formatOnBlur(this)">
+                                    <input class="form-control" name="nominal_bt_lainnya[]"
+                                        id="nominal_bt_lainnya_{{ $loop->index + 1 }}" type="text" min="0"
+                                        value="{{ number_format($lainnya_dec['nominal'], 0, ',', '.') }}"
+                                        onfocus="this.value = this.value === '0' ? '' : this.value;"
+                                        oninput="formatInput(this)" onblur="formatOnBlur(this)">
                                 </div>
                             </div>
 
                             <!-- Information -->
                             <div class="col-md-12">
-                                    <label class="form-label">Information</label>
-                                    <textarea name="keterangan_bt_lainnya[]" class="form-control">{{ $lainnya_dec['keterangan'] }}</textarea>
+                                <label class="form-label">Information</label>
+                                <textarea name="keterangan_bt_lainnya[]" class="form-control bg-light">{{ $lainnya_dec['keterangan'] }}</textarea readonly>
                             </div>
                         </div>
                         <div class="row mt-3">
                             <div class="d-flex justify-start w-100">
-                                <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px" onclick="clearFormLainnya({{ $loop->index + 1 }}, event)">Reset</button>
-                                <button class="btn btn-outline-danger btn-sm" onclick="removeFormLainnya({{ $loop->index + 1 }}, event)">Delete</button>
+                                <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px"
+                                    onclick="clearFormLainnya({{ $loop->index + 1 }}, event)">Reset</button>
+                                <button class="btn btn-outline-danger btn-sm"
+                                    onclick="removeFormLainnya({{ $loop->index + 1 }}, event)">Delete</button>
                             </div>
                         </div>
                     </div>
@@ -420,16 +502,20 @@
     </div>
 
     <div class="mt-3">
-        <button class="btn btn-primary btn-sm" id="addMoreButtonLainnya" onclick="addMoreFormLainnyaDec(event)">Add More</button>
+        <button class="btn btn-primary btn-sm" id="addMoreButtonLainnya" onclick="addMoreFormLainnyaDec(event)">Add
+            More</button>
     </div>
-    <hr/>
+    <hr />
     <div>
         <label class="form-label">Total Other Expenses</label>
         <div class="input-group">
             <div class="input-group-append">
                 <span class="input-group-text">Rp</span>
             </div>
-            <input class="form-control bg-light" name="total_bt_lainnya" id="total_bt_lainnya" type="text" min="0" value="{{ number_format(array_sum(array_column($declareCa['detail_lainnya'], 'nominal')), 0, ',', '.') }}" readonly>
+            <input class="form-control bg-light" name="total_bt_lainnya" id="total_bt_lainnya" type="text"
+                min="0"
+                value="{{ number_format(array_sum(array_column($declareCa['detail_lainnya'], 'nominal')), 0, ',', '.') }}"
+                readonly>
         </div>
     </div>
 @else
@@ -442,16 +528,17 @@
                     <!-- Lainnya Date -->
                     <div class="col-md-4 mb-2">
                         <label class="form-label">Date</label>
-                        <input type="date" name="tanggal_bt_lainnya[]" class="form-control" placeholder="mm/dd/yyyy">
+                        <input type="date" name="tanggal_bt_lainnya[]" class="form-control"
+                            placeholder="mm/dd/yyyy">
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label" for="name">Type of Others</label>
                         <select class="form-control select2" id="type_bt_lainnya_1" name="type_bt_lainnya[]">
-                            <option value="">Select Type...</option>  
+                            <option value="">Select Type...</option>
                             <option value="Airport Tax">Airport Tax</option>
                             <option value="Excess Baggage">Excess Baggage</option>
                             <option value="Laundry">Laundry</option>
-                            <option value="Mandatory Insurance Fees">Mandatory Insurance Fees</option>  
+                            <option value="Mandatory Insurance Fees">Mandatory Insurance Fees</option>
                             <option value="Parking Fees">Parking Fees</option>
                             <option value="Porter Service">Porter Service (for company luggage only)</option>
                             <option value="Toll Fees">Toll Fees</option>
@@ -463,20 +550,25 @@
                             <div class="input-group-append">
                                 <span class="input-group-text">Rp</span>
                             </div>
-                            <input class="form-control" name="nominal_bt_lainnya[]" id="nominal_bt_lainnya_1" type="text" min="0" value="0" onfocus="this.value = this.value === '0' ? '' : this.value;" oninput="formatInput(this)" onblur="formatOnBlur(this)">
+                            <input class="form-control" name="nominal_bt_lainnya[]" id="nominal_bt_lainnya_1"
+                                type="text" min="0" value="0"
+                                onfocus="this.value = this.value === '0' ? '' : this.value;"
+                                oninput="formatInput(this)" onblur="formatOnBlur(this)">
                         </div>
                     </div>
 
                     <!-- Information -->
                     <div class="col-md-12">
-                            <label class="form-label">Information</label>
-                            <textarea name="keterangan_bt_lainnya[]" class="form-control" placeholder="Write your information ..." ></textarea>
+                        <label class="form-label">Information</label>
+                        <textarea name="keterangan_bt_lainnya[]" class="form-control" placeholder="Write your information ..."></textarea>
                     </div>
                 </div>
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
-                        <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px" onclick="clearFormLainnya(1, event)">Reset</button>
-                        <button class="btn btn-outline-danger btn-sm" onclick="removeFormLainnya(1, event)">Delete</button>
+                        <button class="btn btn-outline-warning btn-sm" style="margin-right: 10px"
+                            onclick="clearFormLainnya(1, event)">Reset</button>
+                        <button class="btn btn-outline-danger btn-sm"
+                            onclick="removeFormLainnya(1, event)">Delete</button>
                     </div>
                 </div>
             </div>
@@ -484,17 +576,18 @@
     </div>
 
     <div class="mt-3">
-        <button class="btn btn-primary btn-sm" id="addMoreButton" onclick="addMoreFormLainnyaDec(event)">Add More</button>
+        <button class="btn btn-primary btn-sm" id="addMoreButton" onclick="addMoreFormLainnyaDec(event)">Add
+            More</button>
     </div>
-    <hr/>
+    <hr />
     <div>
         <label class="form-label">Total Other Expenses</label>
         <div class="input-group">
             <div class="input-group-append">
                 <span class="input-group-text">Rp</span>
             </div>
-            <input class="form-control bg-light" name="total_bt_lainnya" id="total_bt_lainnya" type="text" min="0" value="0" readonly>
+            <input class="form-control bg-light" name="total_bt_lainnya" id="total_bt_lainnya" type="text"
+                min="0" value="0" readonly>
         </div>
     </div>
 @endif
-
