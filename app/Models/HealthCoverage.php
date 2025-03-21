@@ -33,6 +33,7 @@ class HealthCoverage extends Model
         'balance_verif',
         'balance_bpjs',
         'verif_by',
+        'verif_at',
         'approved_by',
         'approved_at',
         'reject_info',
