@@ -169,14 +169,14 @@ class MedicalController extends Controller
                 }
             } elseif ($yearsWorked == 0) {
                 $startDate = date_create($employee->date_of_joining);
-                
+
                 $tanggal = date_format($startDate, "d");
                 if ($tanggal > 15) {
                     $bulan_awal = date_format($startDate, "m") + 1; // Bulan setelahnya
                     // Jika bulan menjadi 13 (Desember ke Januari), reset ke 01
                     if ($bulan_awal == 13) {
                         $bulan_awal = '1';
-                    } 
+                    }
                 } else {
                     $bulan_awal = date_format($startDate, "m"); // Bulan tetap
                 }
@@ -223,7 +223,7 @@ class MedicalController extends Controller
 
         $year = date('Y');
         $month = date('m');
-        $ym = $year.'-'.$month;
+        $ym = $year . '-' . $month;
         $today = date('Y-m-d');
 
         $count = Dependents::where('employee_id', $employee_id)
@@ -352,7 +352,7 @@ class MedicalController extends Controller
         $parentLink = 'Medical';
         $link = 'Add Medical Coverage Usage';
 
-        return view('hcis.reimbursements.medical.form.medicalForm', compact('diseases', 'medical_type', 'families', 'parentLink', 'link', 'employee_name', 'balanceData', 'hasGlasses', 'isMarried', 'isProbation','hasScalling'));
+        return view('hcis.reimbursements.medical.form.medicalForm', compact('diseases', 'medical_type', 'families', 'parentLink', 'link', 'employee_name', 'balanceData', 'hasGlasses', 'isMarried', 'isProbation', 'hasScalling'));
     }
 
     public function medicalCreate(Request $request)
@@ -371,7 +371,7 @@ class MedicalController extends Controller
         if ($request->has('removed_medical_proof')) {
             $removedFiles = json_decode($request->removed_medical_proof, true);
             $existingFiles = $request->existing_medical_proof ? json_decode($request->existing_medical_proof, true) : [];
-        
+
             // Hapus file yang ada di server
             foreach ($removedFiles as $fileToRemove) {
                 if (in_array($fileToRemove, $existingFiles)) {
@@ -386,30 +386,30 @@ class MedicalController extends Controller
             $existingFiles = $request->existing_medical_proof ? json_decode($request->existing_medical_proof, true) : [];
 
         }
-        
+
         // Proses file baru
         if ($request->hasFile('medical_proof')) {
             $request->validate([
                 'medical_proof.*' => 'required|mimes:jpeg,png,jpg,gif,pdf|max:2048',
             ]);
-        
+
             foreach ($request->file('medical_proof') as $file) {
                 // Generate a unique filename
                 $filename = time() . '_' . $file->getClientOriginalName();
-            
+
                 // Define the upload path within storage (relative to storage/app/public)
                 $upload_path = 'uploads/proofs/' . $employee_data->employee_id;
-            
+
                 // Save the file to storage/app/public/{upload_path}
                 $file->storeAs($upload_path, $filename, 'public');
-            
+
                 // Add the public URL path for the stored file
                 $existingFiles[] = $upload_path . '/' . $filename;
             }
         }
 
         // Simpan semua file yang tersisa ke database
-        $medical_proof_path = json_encode(array_values($existingFiles));    
+        $medical_proof_path = json_encode(array_values($existingFiles));
 
         $medical_costs = $request->input('medical_costs', []);
         $date = Carbon::parse($request->date);
@@ -539,7 +539,7 @@ class MedicalController extends Controller
             if (!is_array($existingFiles)) {
                 $existingFiles = [];
             }
-        
+
             // Hapus file yang ada di server
             foreach ($removedFiles as $fileToRemove) {
                 if (in_array($fileToRemove, $existingFiles)) {
@@ -553,29 +553,29 @@ class MedicalController extends Controller
         } else {
             $existingFiles = $request->existing_medical_proof ? json_decode($request->existing_medical_proof, true) : [];
         }
-        
+
         // Proses file baru
         if ($request->hasFile('medical_proof')) {
             $request->validate([
                 'medical_proof.*' => 'required|mimes:jpeg,png,jpg,gif,pdf|max:2048',
             ]);
-        
+
             foreach ($request->file('medical_proof') as $file) {
                 $filename = time() . '_' . $file->getClientOriginalName();
                 $upload_path = 'uploads/proofs/' . $employee_data->employee_id;
                 $full_path = public_path($upload_path);
-        
+
                 if (!is_dir($full_path)) {
                     mkdir($full_path, 0755, true);
                 }
-        
+
                 $file->move($full_path, $filename);
                 $existingFiles[] = $upload_path . '/' . $filename;
             }
         }
-        
+
         // Simpan semua file yang tersisa ke database
-        $medical_proof_path = json_encode(array_values($existingFiles));    
+        $medical_proof_path = json_encode(array_values($existingFiles));
 
         $medical_costs = $request->input('medical_costs', []);
         $date = Carbon::parse($request->date);
@@ -793,11 +793,12 @@ class MedicalController extends Controller
             $existingCoverage = $existingCoverages->where('medical_type', $medical_type)->first();
 
             if ($existingCoverage) {
-                $bpjs_cost = isset($bpjs_costs[$medical_type]) ? (int) str_replace('.', '', $bpjs_costs[$medical_type]) : 0;  
+                $bpjs_cost = isset($bpjs_costs[$medical_type]) ? (int) str_replace('.', '', $bpjs_costs[$medical_type]) : 0;
 
                 $existingCoverage->update([
                     'balance_verif' => $verif_cost,
                     'verif_by' => $employee_id,
+                    'verif_at' => Carbon::now(),
                     'status' => 'Pending',
                     'balance_bpjs' => $bpjs_cost,
                 ]);
@@ -829,8 +830,8 @@ class MedicalController extends Controller
     public function medicalAdminDelete($id)
     {
         $medical = HealthCoverage::findOrFail($id);
-        
-        if($medical->status == 'Done'){
+
+        if ($medical->status == 'Done') {
             // Ambil nilai yang diperlukan dari record
             $noMedic = $medical->no_medic;
             $balanceVerif = $medical->balance_verif; // Misalnya: 2,000,000
@@ -869,7 +870,7 @@ class MedicalController extends Controller
         // Ambil data HealthCoverage berdasarkan ID
         $medical = HealthCoverage::findOrFail($id);
 
-        if($medical->status == 'Done'){
+        if ($medical->status == 'Done') {
             // Ambil nilai yang diperlukan dari record
             $noMedic = $medical->no_medic;
             $balanceVerif = $medical->balance_verif; // Misalnya: 999,999
@@ -1389,7 +1390,7 @@ class MedicalController extends Controller
         )
             ->where('employee_id', $employee_id)
             ->where('status', '!=', 'Draft')
-            ->groupBy('no_medic', 'date', 'period', 'hospital_name', 'patient_name', 'disease', 'status', 'verif_by', 'balance_verif', 'approved_by','medical_proof')
+            ->groupBy('no_medic', 'date', 'period', 'hospital_name', 'patient_name', 'disease', 'status', 'verif_by', 'balance_verif', 'approved_by', 'medical_proof')
             ->orderBy('latest_created_at', 'desc')
             ->get();
 
@@ -1450,7 +1451,7 @@ class MedicalController extends Controller
 
         $year = date('Y');
         $month = date('m');
-        $ym = $year.'-'.$month;
+        $ym = $year . '-' . $month;
         $today = date('Y-m-d');
 
         $count = Dependents::where('employee_id', $employee_id)
@@ -1491,18 +1492,18 @@ class MedicalController extends Controller
                                 ['array_id' => $dependent[2]],
                                 [
                                     'id' => Str::uuid(),
-                                    'employee_id' => $dependent[0], 
-                                    'name' => trim($dependent[3] .''. $dependent[4] . ' ' . $dependent[5]), 
-                                    'array_id' => $dependent[2], 
-                                    'first_name' => $dependent[3], 
-                                    'middle_name' => $dependent[4], 
-                                    'last_name' => $dependent[5], 
+                                    'employee_id' => $dependent[0],
+                                    'name' => trim($dependent[3] . '' . $dependent[4] . ' ' . $dependent[5]),
+                                    'array_id' => $dependent[2],
+                                    'first_name' => $dependent[3],
+                                    'middle_name' => $dependent[4],
+                                    'last_name' => $dependent[5],
                                     'relation_type' => ($dependent[6] == 'Son') ? 'Child' : $dependent[6],
                                     'contact_details' => $dependent[7],
-                                    'phone' => $dependent[8], 
-                                    'date_of_birth' => Carbon::createFromFormat('d-m-Y', $dependent[9])->format('Y-m-d'), 
+                                    'phone' => $dependent[8],
+                                    'date_of_birth' => Carbon::createFromFormat('d-m-Y', $dependent[9])->format('Y-m-d'),
                                     'nationality' => $dependent[14],
-                                    'updated_on' => Carbon::createFromFormat('d-m-Y', $dependent[15])->format('Y-m-d'), 
+                                    'updated_on' => Carbon::createFromFormat('d-m-Y', $dependent[15])->format('Y-m-d'),
                                     'jobs' => $dependent[16],
                                     'gender' => explode('/', $dependent[17])[0],
                                     'no_bpjs' => $dependent[18],
@@ -1531,7 +1532,7 @@ class MedicalController extends Controller
         $link = 'Detail';
 
         // Kirim data ke view
-        return view('hcis.reimbursements.medical.admin.medicalAdmin', compact('family', 'medical_plan', 'medical', 'parentLink','sublink', 'link', 'rejectMedic', 'employees', 'employee_id', 'master_medical', 'formatted_data', 'medicalGroup', 'gaFullname'));
+        return view('hcis.reimbursements.medical.admin.medicalAdmin', compact('family', 'medical_plan', 'medical', 'parentLink', 'sublink', 'link', 'rejectMedic', 'employees', 'employee_id', 'master_medical', 'formatted_data', 'medicalGroup', 'gaFullname'));
     }
 
     public function medicalAdminEditPlafon(Request $request, $period, $employee)
@@ -1601,8 +1602,8 @@ class MedicalController extends Controller
         $statusValue = $request->has('action_draft') ? 'Draft' : 'Pending';
 
         $contribution_level_code = Employee::where('employee_id', $employee_id)
-        ->pluck('contribution_level_code')
-        ->first();
+            ->pluck('contribution_level_code')
+            ->first();
 
         // Handle medical proof file upload
         $employee_data = Employee::where('id', $userId)->first();
@@ -1610,7 +1611,7 @@ class MedicalController extends Controller
         if ($request->has('removed_medical_proof')) {
             $removedFiles = json_decode($request->removed_medical_proof, true);
             $existingFiles = $request->existing_medical_proof ? json_decode($request->existing_medical_proof, true) : [];
-        
+
             // Hapus file yang ada di server
             foreach ($removedFiles as $fileToRemove) {
                 if (in_array($fileToRemove, $existingFiles)) {
@@ -1624,13 +1625,13 @@ class MedicalController extends Controller
         } else {
             $existingFiles = $request->existing_medical_proof ? json_decode($request->existing_medical_proof, true) : [];
         }
-        
+
         // Proses file baru
         if ($request->hasFile('medical_proof')) {
             $request->validate([
                 'medical_proof.*' => 'required|mimes:jpeg,png,jpg,gif,pdf|max:2048',
             ]);
-        
+
             foreach ($request->file('medical_proof') as $file) {
                 $filename = time() . '_' . $file->getClientOriginalName();
                 $upload_path = 'uploads/proofs/' . $employee_data->employee_id;
@@ -1638,9 +1639,9 @@ class MedicalController extends Controller
                 $existingFiles[] = $upload_path . '/' . $filename;
             }
         }
-        
+
         // Simpan semua file yang tersisa ke database
-        $medical_proof_path = json_encode(array_values($existingFiles));    
+        $medical_proof_path = json_encode(array_values($existingFiles));
 
         $medical_costs = $request->input('medical_costs', []);
         $date = Carbon::parse($request->date);
@@ -1841,7 +1842,7 @@ class MedicalController extends Controller
                 $attachment = $request->file('imp_attachment');
                 $attachmentName = 'proof_' . time() . '_' . $attachment->getClientOriginalName();
                 $uploadPath = 'uploads/proofs/import_medical';
-            
+
                 // Save file to storage
                 $attachmentPath = $attachment->storeAs($uploadPath, $attachmentName, 'public');
                 $existingFiles[] = $uploadPath . '/' . $attachmentName;
@@ -1863,10 +1864,10 @@ class MedicalController extends Controller
                 // Simpan file gagal ke session (sementara)
                 $filePath = 'failed_imports/failed_import_' . time() . '.xlsx';
                 Excel::store(new \App\Exports\MedicalFailedImportExport($failedRows), $filePath, 'public');
-            
+
                 // Simpan path file ke session
                 session()->put('failed_import_path', asset('storage/' . $filePath));
-            
+
                 return redirect()->back()->with('failed', 'Transaction successfully added from Excel, but some of them failed.');
             } else {
                 return redirect()->back()->with('success', 'Transaction successfully added from Excel.');
