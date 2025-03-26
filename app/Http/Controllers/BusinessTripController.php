@@ -3923,8 +3923,8 @@ class BusinessTripController extends Controller
             ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')->first();
 
         $isApproved = CATransaction::where('user_id', $userId)
-        ->where('approval_sett', '!=', 'Approved')
-        ->where('total_ca', '!=', 0)->get();
+            ->where('approval_sett', '!=', 'Approved')
+            ->where('total_ca', '!=', 0)->get();
 
         $job_level = Employee::where('id', $userId)->pluck('job_level')->first();
         $job_level_number = (int) preg_replace('/[^0-9]/', '', $job_level);
@@ -5653,6 +5653,14 @@ class BusinessTripController extends Controller
         }
 
         $n->status = $request->input('accept_status');
+        $acceptStatus = $n->status;
+        if ($acceptStatus === 'Doc Accepted') {
+            $n->doc_at = Carbon::now();
+        } elseif ($acceptStatus === 'Return/Refund') {
+            $n->return_at = Carbon::now();
+        } else {
+            $n->verified_at = Carbon::now();
+        }
         $n->save();
 
         // return redirect('/businessTrip/admin')->with('success', 'Status updated successfully');
