@@ -40,7 +40,7 @@
     }
 </script>
 
-@if (!empty($caDetail['detail_meals']) && $caDetail['detail_meals'][0]['start_date'] !== null)
+@if (!empty($caDetail['detail_meals']) && $caDetail['detail_meals'][0]['nominal'] !== null)
     <div id="form-container-meals">
         @foreach ($caDetail['detail_meals'] as $meals)
             <div id="form-container-bt-meals-{{ $loop->index + 1 }}" class="card-body p-2 mb-3"
@@ -53,14 +53,14 @@
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Meals Start Plan</label>
                             <input type="date" name="start_bt_meals[]" id="start_bt_meals_{{ $loop->index + 1 }}"
-                                class="form-control start-meals bg-light" value="{{ $meals['start_date'] }}"
+                                class="form-control start-meals bg-light" value="{{ $meals['start_date'] ?? $meals['tanggal'] }}"
                                 placeholder="mm/dd/yyyy"
                                 onchange="calculateTotalDaysPenginapan(this, document.getElementById('end_bt_meals_1'), document.querySelector('#total_days_bt_meals_1'))" readonly>
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Meals End Plan</label>
                             <input type="date" name="end_bt_meals[]" id="end_bt_meals_{{ $loop->index + 1 }}"
-                                class="form-control end-meals bg-light" value="{{ $meals['end_date'] }}" placeholder="mm/dd/yyyy"
+                                class="form-control end-meals bg-light" value="{{ $meals['end_date'] ?? $meals['tanggal'] }}" placeholder="mm/dd/yyyy"
                                 onchange="calculateTotalDaysPenginapan(document.getElementById('start_bt_meals_{{ $loop->index + 1 }}'), this, document.querySelector('#total_days_bt_meals_1'))" readonly>
                         </div>
                         <div class="col-md-4 mb-2">
@@ -68,7 +68,7 @@
                             <div class="input-group">
                                 <input class="form-control bg-light total-days-meals"
                                     id="total_days_bt_meals_{{ $loop->index + 1 }}" name="total_days_bt_meals[]"
-                                    type="number" min="0" value="{{ $meals['total_days'] }}" readonly>
+                                    type="number" min="0" value="{{ $meals['total_days'] ?? 1 }}" readonly>
                                 <div class="input-group-append">
                                     <span class="input-group-text">days</span>
                                 </div>
@@ -82,7 +82,7 @@
                                 <option value="">Select Company...</option>
                                 @foreach ($companies as $company)
                                     <option value="{{ $company->contribution_level_code }}"
-                                        @if ($company->contribution_level_code == $meals['company_code']) selected @endif>
+                                        @if ($company->contribution_level_code == ($meals['company_code'] ?? '')) selected @endif>
                                         {{ $company->contribution_level . ' (' . $company->contribution_level_code . ')' }}
                                     </option>
                                 @endforeach

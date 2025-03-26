@@ -36,6 +36,22 @@ class MedicalController extends Controller
     protected $permissionLocations;
     protected $permissionCompanies;
     protected $permissionGroupCompanies;
+    protected $roles;
+
+    public function __construct()
+    {
+        // $this->category = 'Goals';
+        $this->roles = Auth()->user()->roles;
+
+        $restrictionData = [];
+        if (!is_null($this->roles) && $this->roles->isNotEmpty()) {
+            $restrictionData = json_decode($this->roles->first()->restriction, true);
+        }
+
+        $this->permissionGroupCompanies = $restrictionData['group_company'] ?? [];
+        $this->permissionCompanies = $restrictionData['contribution_level_code'] ?? [];
+        $this->permissionLocations = $restrictionData['work_area_code'] ?? [];
+    }
 
     public function medical()
     {

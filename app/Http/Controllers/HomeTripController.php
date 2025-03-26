@@ -436,7 +436,7 @@ class HomeTripController extends Controller
             if ($managerEmail) {
                 // Send email to the manager
                 try {
-                    Mail::to($managerEmail)->send(new HomeTripNotification([
+                    Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new HomeTripNotification([
                         'noTkt' => $noTktList,
                         'namaPenumpang' => $npTkt,
                         'dariTkt' => $dariTkt,
@@ -744,7 +744,7 @@ class HomeTripController extends Controller
             if ($managerEmail) {
                 // Send email to the manager with all ticket details
                 try {
-                    Mail::to($managerEmail)->send(new HomeTripNotification([
+                    Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new HomeTripNotification([
                         'noTkt' => $noTktList,  // all ticket numbers
                         'namaPenumpang' => $npTkt,  // all passengers
                         'dariTkt' => $dariTkt,  // all departure locations

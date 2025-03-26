@@ -31,7 +31,7 @@
 
                     <!-- Location Agency -->
                     <div class="col-md-6 mb-2">
-                        <label class="form-label" for="locationFilter">Location Agency</label>
+                        <label class="form-label" for="locationFilter">Location</label>
                         <select class="form-control select2" name="location_bt_perdiem[]" id="location_bt_perdiem_${formCountPerdiem}" onchange="toggleOtherLocation(this, ${formCountPerdiem})">
                             <option value="">Select location...</option>
                             @foreach ($locations as $location)
@@ -148,7 +148,7 @@
                                         {{ $perdiem['company_code'] }}</td>
                                 </tr>
                                 <tr>
-                                    <th class="label" style="border: none; padding: 2px 0;">Location Agency</th>
+                                    <th class="label" style="border: none; padding: 2px 0;">Location</th>
                                     <td class="colon" style="border: none; padding: 2px 0;">:</td>
                                     <td class="value" style="border: none; padding: 2px 0;">
                                         @if ($perdiem['location'] == 'Others')
@@ -218,7 +218,7 @@
 
                             <!-- Location Agency -->
                             <div class="col-md-6 mb-2">
-                                <label class="form-label" for="locationFilter">Location Agency</label>
+                                <label class="form-label" for="locationFilter">Location</label>
                                 <select class="form-control select2" name="location_bt_perdiem[]"
                                     id="location_bt_perdiem_{{ $loop->index + 1 }}"
                                     onchange="toggleOtherLocation(this, {{ $loop->index + 1 }})">
@@ -332,9 +332,9 @@
                                 </select>
                             </div>
 
-                            <!-- Location Agency -->
+                            <!-- Location -->
                             <div class="col-md-6 mb-2">
-                                <label class="form-label" for="locationFilter">Location Agency</label>
+                                <label class="form-label" for="locationFilter">Location</label>
                                 <select class="form-control select2" name="location_bt_perdiem[]"
                                     id="location_bt_perdiem_{{ $loop->index + 1 }}"
                                     onchange="toggleOtherLocation(this, {{ $loop->index + 1 }})">
@@ -470,9 +470,9 @@
                                 </select>
                             </div>
 
-                            <!-- Location Agency -->
+                            <!-- Location -->
                             <div class="col-md-6 mb-2">
-                                <label class="form-label" for="locationFilter">Location Agency</label>
+                                <label class="form-label" for="locationFilter">Location</label>
                                 <select class="form-control select2" name="location_bt_perdiem[]"
                                     id="location_bt_perdiem_{{ $loop->index + 1 }}"
                                     onchange="toggleOtherLocation(this, {{ $loop->index + 1 }})">
@@ -602,9 +602,9 @@
                         </select>
                     </div>
 
-                    <!-- Location Agency -->
+                    <!-- Location -->
                     <div class="col-md-6 mb-2">
-                        <label class="form-label" for="locationFilter">Location Agency</label>
+                        <label class="form-label" for="locationFilter">Location</label>
                         <select class="form-control select2" name="location_bt_perdiem[]" id="location_bt_perdiem_1"
                             onchange="toggleOtherLocation(this, 1)">
                             <option value="">Select location...</option>

@@ -5216,9 +5216,9 @@ class BusinessTripController extends Controller
         $caDetail = [];
         $declareCa = [];
         foreach ($ca as $cas) {
-            $currentDetail = json_decode($cas->detail_ca, true);
+            $currentDetail = json_decode($cas->detail_ca, true) ?? [];
             $currentDeclare = json_decode($cas->declare_ca, true);
-            if (is_array($currentDetail)) {
+            if (is_array($currentDetail) || is_array($currentDeclare)) {
                 $caDetail = array_merge($caDetail, $currentDetail);
                 $declareCa = array_merge($declareCa, $currentDeclare);
             }
@@ -8917,7 +8917,7 @@ class BusinessTripController extends Controller
         $caDetail = [];
         $declareCa = [];
         foreach ($ca as $cas) {
-            $currentDetail = json_decode($cas->detail_ca, true);
+            $currentDetail = json_decode($cas->detail_ca, true) ?? [];
             $currentDeclare = json_decode($cas->declare_ca, true);
             if (is_array($currentDetail) || is_array($currentDeclare)) {
                 $caDetail = array_merge($caDetail, $currentDetail);

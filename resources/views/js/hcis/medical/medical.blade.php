@@ -94,7 +94,7 @@ function formatCurrency(input) {
 const today = new Date();
 // Set the date for two weeks ago
 const twoWeeksAgo = new Date();
-twoWeeksAgo.setDate(today.getDate() - 60);
+twoWeeksAgo.setDate(today.getDate() - 120); //ubah ke 60 jika mau dikunci 2 bulan
 
 // Format the dates to YYYY-MM-DD
 const formattedToday = today.toISOString().split("T")[0];

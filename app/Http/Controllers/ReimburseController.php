@@ -987,7 +987,7 @@ class ReimburseController extends Controller
                 ]);
 
                 try {
-                    Mail::to($CANotificationLayer)->cc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                         $nextApproval,
                         $model,
                         $textNotification,
@@ -1364,7 +1364,7 @@ class ReimburseController extends Controller
                 ]);
 
                 try {
-                    Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                         $nextApproval,
                         $model,
                         $textNotification,
@@ -1495,7 +1495,7 @@ class ReimburseController extends Controller
                 ]);
 
                 try {
-                    Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                         $nextApproval,
                         $model,
                         $textNotification,
@@ -1943,17 +1943,15 @@ class ReimburseController extends Controller
                         $model_approval->layer = $data_matrix_approval->layer;
                         $model_approval->approval_status = 'Pending';
                         $model_approval->save();
-
-                        $nextApproval = ca_sett_approval::where('ca_id', $model->id)
-                            ->where('employee_id', $employee_id)
-                            ->first();
-                        break;
                     }
                 // }
             }
-
-            // $CANotificationLayer = Employee::where('employee_id', $managerL1)->pluck('email')->first();
-            $CANotificationLayer = "eriton.dewa@kpn-corp.com";
+            $nextApproval = ca_sett_approval::where('ca_id', $model->id)
+            ->where('employee_id', $managerL1)
+            ->orderBy('layer', 'asc')
+            ->first();
+            $CANotificationLayer = Employee::where('employee_id', $managerL1)->pluck('email')->first();
+            // $CANotificationLayer = "eriton.dewa@kpn-corp.com";
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1973,7 +1971,7 @@ class ReimburseController extends Controller
                 ]);
 
                 try {
-                    Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                         $nextApproval,
                         $model,
                         $textNotification,
@@ -2318,7 +2316,7 @@ class ReimburseController extends Controller
             if ($managerEmail) {
                 // Send email to the manager
                 try {
-                    Mail::to($managerEmail)->send(new HotelNotification([
+                    Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new HotelNotification([
                         'noSppd' => $req->bisnis_numb,
                         'noHtl' => $noHtlList,
                         'namaHtl' => $namaHtl,
@@ -2406,7 +2404,7 @@ class ReimburseController extends Controller
 
                 // Send email with all hotel details
                 try {
-                    Mail::to($managerEmail)->send(new HotelNotification([
+                    Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new HotelNotification([
                         'noSppd' => $hotel->no_sppd,
                         'noHtl' => $noHtlList,
                         'namaHtl' => $namaHtl,
@@ -2722,7 +2720,7 @@ class ReimburseController extends Controller
             if ($managerEmail) {
                 // Send email to the manager
                 try {
-                    Mail::to($managerEmail)->send(new HotelNotification([
+                    Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new HotelNotification([
                         'noSppd' => $req->bisnis_numb,
                         'noHtl' => $noHtlList,
                         'namaHtl' => $namaHtl,
@@ -3165,7 +3163,7 @@ class ReimburseController extends Controller
 
                 // Send email with all hotel details
                 try {
-                    Mail::to($managerEmail)->send(new HotelNotification([
+                    Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new HotelNotification([
                         'noSppd' => $hotel->no_sppd,
                         'noHtl' => $noHtlList,
                         'namaHtl' => $namaHtl,
@@ -3338,7 +3336,7 @@ class ReimburseController extends Controller
 
                 // Send email with all hotel details
                 try {
-                    Mail::to($managerEmail)->send(new HotelNotification([
+                    Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new HotelNotification([
                         'noSppd' => $hotel->no_sppd,
                         'noHtl' => $noHtlList,
                         'namaHtl' => $namaHtl,
@@ -3965,7 +3963,7 @@ class ReimburseController extends Controller
             if ($managerEmail) {
                 // Send email to the manager
                 try {
-                    Mail::to($managerEmail)->send(new TicketNotification([
+                    Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new TicketNotification([
                         'noSppd' => $req->bisnis_numb,
                         'noTkt' => $noTktList,
                         'namaPenumpang' => $npTkt,
@@ -4064,7 +4062,7 @@ class ReimburseController extends Controller
 
                 // Send email with all hotel details
                 try {
-                    Mail::to($managerEmail)->send(new TicketNotification([
+                    Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new TicketNotification([
                         'noSppd' => $ticket->no_sppd,
                         'noTkt' => $noTktList,
                         'namaPenumpang' => $npTkt,
@@ -4432,7 +4430,7 @@ class ReimburseController extends Controller
             if ($managerEmail) {
                 // Send email to the manager with all ticket details
                 try {
-                    Mail::to($managerEmail)->send(new TicketNotification([
+                    Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new TicketNotification([
                         'noSppd' => $req->bisnis_numb,
                         'noTkt' => $noTktList,  // all ticket numbers
                         'namaPenumpang' => $npTkt,  // all passengers
@@ -4943,7 +4941,7 @@ class ReimburseController extends Controller
 
                 if ($ticket->jns_dinas_tkt == 'Dinas') {
                     try {
-                        Mail::to($managerEmail)->send(new TicketNotification([
+                        Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new TicketNotification([
                             'noSppd' => $ticket->no_sppd,
                             'noTkt' => $noTktList,
                             'namaPenumpang' => $npTkt,
@@ -4968,7 +4966,7 @@ class ReimburseController extends Controller
                     }
                 } else {
                     try {
-                        Mail::to($managerEmail)->send(new HomeTripNotification([
+                        Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new HomeTripNotification([
                             'noTkt' => $noTktList,
                             'namaPenumpang' => $npTkt,
                             'dariTkt' => $dariTkt,
@@ -5231,7 +5229,7 @@ class ReimburseController extends Controller
 
                 if ($ticket->jns_dinas_tkt == 'Dinas') {
                     try {
-                        Mail::to($managerEmail)->send(new TicketNotification([
+                        Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new TicketNotification([
                             'noSppd' => $ticket->no_sppd,
                             'noTkt' => $noTktList,
                             'namaPenumpang' => $npTkt,
@@ -5256,7 +5254,7 @@ class ReimburseController extends Controller
                     }
                 } else {
                     try {
-                        Mail::to($managerEmail)->send(new HomeTripNotification([
+                        Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new HomeTripNotification([
                             'noTkt' => $noTktList,
                             'namaPenumpang' => $npTkt,
                             'dariTkt' => $dariTkt,

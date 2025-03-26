@@ -199,8 +199,8 @@
                                 <div id="existing-file-preview" class="mt-2">
                                     @if (optional($dns)->prove_declare ?? optional($entr)->prove_declare)
                                         @php
-                                            $proveDeclare = $dns->prove_declare ?? $entr->prove_declare; // Fix kondisi ternary yang salah
-
+                                            $proveDeclare = $dns->prove_declare ?? $entr->prove_declare;
+                                
                                             // Cek apakah data dalam format JSON atau masih string lama
                                             if (!empty($proveDeclare)) {
                                                 $decodedData = json_decode($proveDeclare, true);
@@ -209,18 +209,22 @@
                                                 $existingFiles = [];
                                             }
                                         @endphp
-
+                                
                                         <div id="existing-file-preview" class="mt-2">
                                             @if (count($existingFiles) > 1)
                                                 @foreach ($existingFiles as $file)
-                                                    @php $extension = pathinfo($file, PATHINFO_EXTENSION); @endphp
-                                                    <div class="file-preview" data-file="{{ $file }}" style="position: relative; display: inline-block; margin: 10px;">
+                                                    @php
+                                                        $file = str_replace('public/', '', $file); // Pastikan path tidak mengandung 'public/'
+                                                        $fileUrl = asset("storage/{$file}"); // Gunakan storage URL
+                                                        $extension = pathinfo($file, PATHINFO_EXTENSION);
+                                                    @endphp
+                                                    <div class="file-preview" data-file="{{ $fileUrl }}" style="position: relative; display: inline-block; margin: 10px;">
                                                         @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
-                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
-                                                                <img src="{{ asset($file) }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
+                                                            <a href="{{ $fileUrl }}" target="_blank" rel="noopener noreferrer">
+                                                                <img src="{{ $fileUrl }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
                                                             </a>
                                                         @elseif ($extension === 'pdf')
-                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
+                                                            <a href="{{ $fileUrl }}" target="_blank" rel="noopener noreferrer">
                                                                 <img src="{{ asset('images/pdf_icon.png') }}" alt="PDF File">
                                                                 <p>Click to view PDF</p>
                                                             </a>
@@ -232,17 +236,19 @@
                                             @else
                                                 @php
                                                     $file = $existingFiles[0] ?? ''; // Ambil satu file jika hanya ada satu file
+                                                    $file = str_replace('public/', '', $file); // Pastikan path tidak mengandung 'public/'
+                                                    $fileUrl = asset("storage/{$file}"); // Gunakan storage URL
                                                     $extension = pathinfo($file, PATHINFO_EXTENSION);
                                                 @endphp
-
+                                
                                                 @if (!empty($file))
-                                                    <div class="file-preview" data-file="{{ $file }}" style="position: relative; display: inline-block; margin: 10px;">
+                                                    <div class="file-preview" data-file="{{ $fileUrl }}" style="position: relative; display: inline-block; margin: 10px;">
                                                         @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
-                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
-                                                                <img src="{{ asset($file) }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
+                                                            <a href="{{ $fileUrl }}" target="_blank" rel="noopener noreferrer">
+                                                                <img src="{{ $fileUrl }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
                                                             </a>
                                                         @elseif ($extension === 'pdf')
-                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
+                                                            <a href="{{ $fileUrl }}" target="_blank" rel="noopener noreferrer">
                                                                 <img src="{{ asset('images/pdf_icon.png') }}" alt="PDF File">
                                                                 <p>Click to view PDF</p>
                                                             </a>
@@ -254,7 +260,6 @@
                                             @endif
                                         </div>
                                     @endif
-
                                 </div>
                             @endif
                         </div>

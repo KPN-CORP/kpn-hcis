@@ -328,57 +328,43 @@
                                                         @php
                                                             // Ambil data dari dnsData atau entrData
                                                             $proveDeclare = $dnsData->prove_declare ?? $entrData->prove_declare;
-
-                                                            // Cek apakah data adalah JSON atau string biasa
+                                                
+                                                            // Cek apakah data berbentuk JSON (array) atau string biasa
                                                             $decodedData = json_decode($proveDeclare, true);
-                                                            $existingFiles = is_array($decodedData) ? $decodedData : (!empty($proveDeclare) ? [$proveDeclare] : []);
+                                                            $existingFiles = is_array($decodedData) ? $decodedData : [$proveDeclare];
+                                                
+                                                            // Pastikan setiap path mengarah ke penyimpanan yang benar
+                                                            $existingFiles = array_map(function ($file) {
+                                                                // Pastikan file tidak mengandung 'public/' di dalam path
+                                                                $file = str_replace('public/', '', $file);
+                                                            
+                                                                // Cek apakah file benar-benar ada di storage
+                                                                return Storage::exists("public/{$file}") 
+                                                                    ? asset("storage/{$file}") 
+                                                                    : asset($file);
+                                                            }, $existingFiles);
                                                         @endphp
-
+                                                
                                                         <div id="existing-file-preview" class="mt-2">
-                                                            @if (count($existingFiles) > 1)
-                                                                @foreach ($existingFiles as $file)
-                                                                    @php $extension = pathinfo($file, PATHINFO_EXTENSION); @endphp
-                                                                    <div class="file-preview" data-file="{{ $file }}" style="position: relative; display: inline-block; margin: 10px;">
-                                                                        @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
-                                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
-                                                                                <img src="{{ asset($file) }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
-                                                                            </a>
-                                                                        @elseif ($extension === 'pdf')
-                                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
-                                                                                <img src="{{ asset('images/pdf_icon.png') }}" alt="PDF File">
-                                                                                <p>Click to view PDF</p>
-                                                                            </a>
-                                                                        @else
-                                                                            <p>File type not supported.</p>
-                                                                        @endif
-                                                                    </div>
-                                                                @endforeach
-                                                            @else
-                                                                @php
-                                                                    $file = $existingFiles[0] ?? ''; // Ambil satu file jika hanya ada satu file
-                                                                    $extension = pathinfo($file, PATHINFO_EXTENSION);
-                                                                @endphp
-
-                                                                @if (!empty($file))
-                                                                    <div class="file-preview" data-file="{{ $file }}" style="position: relative; display: inline-block; margin: 10px;">
-                                                                        @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
-                                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
-                                                                                <img src="{{ asset($file) }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
-                                                                            </a>
-                                                                        @elseif ($extension === 'pdf')
-                                                                            <a href="{{ asset($file) }}" target="_blank" rel="noopener noreferrer">
-                                                                                <img src="{{ asset('images/pdf_icon.png') }}" alt="PDF File">
-                                                                                <p>Click to view PDF</p>
-                                                                            </a>
-                                                                        @else
-                                                                            <p>File type not supported.</p>
-                                                                        @endif
-                                                                    </div>
-                                                                @endif
-                                                            @endif
+                                                            @foreach ($existingFiles as $file)
+                                                                @php $extension = pathinfo($file, PATHINFO_EXTENSION); @endphp
+                                                                <div class="file-preview" data-file="{{ $file }}" style="position: relative; display: inline-block; margin: 10px;">
+                                                                    @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
+                                                                        <a href="{{ $file }}" target="_blank" rel="noopener noreferrer">
+                                                                            <img src="{{ $file }}" alt="Proof Image" style="width: 100px; height: 100px; border: 1px solid rgb(221, 221, 221); border-radius: 5px; padding: 5px;">
+                                                                        </a>
+                                                                    @elseif ($extension === 'pdf')
+                                                                        <a href="{{ $file }}" target="_blank" rel="noopener noreferrer">
+                                                                            <img src="{{ asset('images/pdf_icon.png') }}" alt="PDF File">
+                                                                            <p>Click to view PDF</p>
+                                                                        </a>
+                                                                    @else
+                                                                        <p>File type not supported.</p>
+                                                                    @endif
+                                                                </div>
+                                                            @endforeach
                                                         </div>
                                                     @endif
-
                                                 </div>
                                             @else
                                                 <div class="text-danger">No proof uploaded</div>
