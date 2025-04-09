@@ -117,6 +117,13 @@
                                             <td class="block">:</td>
                                             <td> Business Travel</td>
                                         </tr>
+                                        @if($ca->isEmpty())
+                                            <tr>
+                                                <th>Claimed Amount</th>
+                                                <td class="block">:</td>
+                                                <td>Rp 0 (No declaration submitted)</td>
+                                            </tr>
+                                        @endif
                                     </table>
                                 </div>
 

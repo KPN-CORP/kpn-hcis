@@ -1089,8 +1089,11 @@ class MedicalController extends Controller
                     'rejected_at' => now(),
                 ]);
             }
-
-            return redirect()->route('medical.approval')->with('success', 'Medical request rejected and balances updated.');
+            if ($request->input('from') == 'adminGA') {
+                return redirect()->route('medical.confirmation')->with('success', 'Medical request rejected and balances updated.');
+            }else{
+                return redirect()->route('medical.approval')->with('success', 'Medical request rejected and balances updated.');
+            }
         } elseif ($action == 'Done') {
             $statusValue = 'Done';
 

@@ -32,8 +32,8 @@
                     <td>{{ $transaction->contribution_level_code }}</td>
                     <td>{{ \Carbon\Carbon::parse($transaction->start_date)->format('d-m-Y') }}</td>
                     <td>{{ \Carbon\Carbon::parse($transaction->end_date)->format('d-m-Y') }}</td>
-                    <td>{{ $extendTime[$transaction->id]['ext_end_date'] }}</td>
-                    <td style="width: 1px">{{ $extendTime[$transaction->id]['reason_extend'] }}</td>
+                    <td>{{ $extendTime[$transaction->id]['ext_end_date'] ?? '' }}</td>
+                    <td style="width: 1px">{{ $extendTime[$transaction->id]['reason_extend']  ?? ''}}</td>
                     <td>
                         <p class="badge text-bg-{{ $transaction->approval_extend == 'Approved' ? 'success' : ($transaction->approval_extend == 'Declaration' ? 'info' : ($transaction->approval_extend == 'Pending' ? 'warning' : ($transaction->approval_extend == 'Rejected' ? 'danger' : ($transaction->approval_extend == 'Draft' ? 'secondary' : 'success')))) }}"
                             onclick="showManagerInfo('All Approval', {{ json_encode($fullnames_ext[$transaction->id] ?? []) }})">
@@ -47,9 +47,9 @@
                                 data-start-date="{{ $transaction->start_date }}"
                                 data-end-date="{{ $transaction->end_date }}"
                                 data-total-days="{{ $transaction->total_days }}"
-                                data-end-date-ext="{{ $extendTime[$transaction->id]['ext_end_date'] }}"
-                                data-total-days-ext="{{ $extendTime[$transaction->id]['ext_total_days'] }}"
-                                data-reason-ext="{{ $extendTime[$transaction->id]['reason_extend'] }}"
+                                data-end-date-ext="{{ $extendTime[$transaction->id]['ext_end_date']  ?? '' }}"
+                                data-total-days-ext="{{ $extendTime[$transaction->id]['ext_total_days']  ?? '' }}"
+                                data-reason-ext="{{ $extendTime[$transaction->id]['reason_extend']  ?? '' }}"
                                 >
                             <i class="ri-calendar-line"></i>
                         </button>
@@ -148,7 +148,7 @@
                 document.getElementById('ext_no_ca').textContent = caNumber;
                 document.getElementById('no_id').value = idNumber; // Mengisi input no_id
                 document.getElementById('ext_end_date').value = extEnd; // Mengisi input no_id
-                document.getElementById('ext_reason').value = extReason || "Ga masuk sumpah";
+                document.getElementById('ext_reason').value = extReason || "";
 
                 calculateTotalDays(); // Hitung total hari saat modal dibuka
                 calculateExtTotalDays(); // Hitung total hari untuk ext saat modal dibuka

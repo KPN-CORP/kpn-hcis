@@ -287,7 +287,7 @@
                                                                 @foreach ($detailCA['detail_meals'] as $lainnya)
                                                                     <tr style="text-align-last: center;">
                                                                         <td>{{ $loop->index + 1 }}</td>
-                                                                        <td>{{ \Carbon\Carbon::parse($lainnya['tanggal'])->format('d-M-y') }}</td>
+                                                                        <td>{{ \Carbon\Carbon::parse($lainnya['start_date'] ?? $lainnya['tanggal'])->format('d-M-y') }}</td>
                                                                         <td>{{$lainnya['keterangan']}}</td>
                                                                         <td style="text-align-last: right;">Rp. {{ number_format($lainnya['nominal'], 0, ',', '.') }}</td>
                                                                     </tr>
@@ -331,7 +331,7 @@
                                                                 @foreach ($detailCA['detail_meals'] as $lainnya)
                                                                     <tr style="text-align-last: center;">
                                                                         <td>{{ $loop->index + 1 }}</td>
-                                                                        <td>{{ \Carbon\Carbon::parse($lainnya['tanggal'])->format('d-M-y') }}</td>
+                                                                        <td>{{ \Carbon\Carbon::parse($lainnya['start_date'] ?? $lainnya['tanggal'])->format('d-M-y') }}</td>
                                                                         <td>{{$lainnya['keterangan']}}</td>
                                                                         <td style="text-align-last: right;">Rp. {{ number_format($lainnya['nominal'], 0, ',', '.') }}</td>
                                                                     </tr>

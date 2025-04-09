@@ -375,8 +375,8 @@ class ApprovalReimburseController extends Controller
                     // $caTransaction->approval_sett = 'On Progress';
                     $caTransaction->save();
 
-                    // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-                    $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                    $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+                    // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                     $imagePath = public_path('images/kop.jpg');
                     $imageContent = file_get_contents($imagePath);
                     $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -414,8 +414,8 @@ class ApprovalReimburseController extends Controller
                 }
 
                 // Mengambil email employee di layer berikutnya dan mengirimkan notifikasi
-                // $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
-                $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
+                // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -555,8 +555,8 @@ class ApprovalReimburseController extends Controller
                     // $caTransaction->approval_sett = 'On Progress';
                     $caTransaction->save();
 
-                    // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-                    $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                    $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+                    // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                     $imagePath = public_path('images/kop.jpg');
                     $imageContent = file_get_contents($imagePath);
                     $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -596,8 +596,8 @@ class ApprovalReimburseController extends Controller
                 }
 
                 // Mengambil email employee di layer berikutnya dan mengirimkan notifikasi
-                // $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
-                $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
+                // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -680,8 +680,8 @@ class ApprovalReimburseController extends Controller
                 $caTransaction->save();
             }
 
-            // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-            $CANotificationLayer = "erzie.aldrian02@outlook.com";
+            $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+            // $CANotificationLayer = "erzie.aldrian02@outlook.com";
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -735,8 +735,8 @@ class ApprovalReimburseController extends Controller
                     $caTransaction->approval_status = 'Approved'; // Set ke Approved untuk transaksi
                     $caTransaction->save();
 
-                    // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-                    $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                    $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+                    // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                     $imagePath = public_path('images/kop.jpg');
                     $imageContent = file_get_contents($imagePath);
                     $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -777,9 +777,9 @@ class ApprovalReimburseController extends Controller
                 }
 
                 // Mengambil email employee di layer berikutnya dan mengirimkan notifikasi
-                // $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
+                $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
                 // $CANotificationLayer = "eriton.dewa@kpn-corp.com";
-                $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -912,8 +912,8 @@ class ApprovalReimburseController extends Controller
                 $caTransaction->save();
             }
 
-            // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-            $CANotificationLayer = "erzie.aldrian02@outlook.com";
+            $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+            // $CANotificationLayer = "erzie.aldrian02@outlook.com";
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -965,8 +965,8 @@ class ApprovalReimburseController extends Controller
                     $caTransaction->approval_sett = 'Approved'; // Set ke ID user layer tertinggi
                     $caTransaction->save();
 
-                    // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-                    $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                    $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+                    // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                     $imagePath = public_path('images/kop.jpg');
                     $imageContent = file_get_contents($imagePath);
                     $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1005,8 +1005,8 @@ class ApprovalReimburseController extends Controller
                 }
 
                 // Mengambil email employee di layer berikutnya dan mengirimkan notifikasi
-                // $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
-                $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
+                // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1084,8 +1084,8 @@ class ApprovalReimburseController extends Controller
                 $caTransaction->save();
             }
 
-            // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-            $CANotificationLayer = "erzie.aldrian02@outlook.com";
+            $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+            // $CANotificationLayer = "erzie.aldrian02@outlook.com";
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1136,8 +1136,8 @@ class ApprovalReimburseController extends Controller
                     $caTransaction->approval_sett = 'Approved'; // Set ke ID user layer tertinggi
                     $caTransaction->save();
 
-                    // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-                    $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                    $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+                    // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                     $imagePath = public_path('images/kop.jpg');
                     $imageContent = file_get_contents($imagePath);
                     $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1178,8 +1178,8 @@ class ApprovalReimburseController extends Controller
                 }
 
                 // Mengambil email employee di layer berikutnya dan mengirimkan notifikasi
-                // $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
-                $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
+                // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1255,8 +1255,8 @@ class ApprovalReimburseController extends Controller
                 $caTransaction->save();
             }
 
-            // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-            $CANotificationLayer = "erzie.aldrian02@outlook.com";
+            $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+            // $CANotificationLayer = "erzie.aldrian02@outlook.com";
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1310,8 +1310,8 @@ class ApprovalReimburseController extends Controller
                     $caTransaction->approval_sett = 'Approved'; // Set ke Approved untuk transaksi
                     $caTransaction->save();
 
-                    // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-                    $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                    $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+                    // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                     $imagePath = public_path('images/kop.jpg');
                     $imageContent = file_get_contents($imagePath);
                     $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1352,8 +1352,8 @@ class ApprovalReimburseController extends Controller
                 }
 
 
-                // $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
-                $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
+                // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1458,8 +1458,8 @@ class ApprovalReimburseController extends Controller
                 $caTransaction->save();
             }
 
-            // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-            $CANotificationLayer = "erzie.aldrian02@outlook.com";
+            $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+            // $CANotificationLayer = "erzie.aldrian02@outlook.com";
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1515,8 +1515,8 @@ class ApprovalReimburseController extends Controller
                 }
 
                 // dd($caTransaction);
-                // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-                $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+                // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1552,8 +1552,8 @@ class ApprovalReimburseController extends Controller
                     $caTransaction->save();
                 }
 
-                // $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
-                $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
+                // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1627,8 +1627,8 @@ class ApprovalReimburseController extends Controller
                 $caTransaction->save();
             }
 
-            // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-            $CANotificationLayer = "erzie.aldrian02@outlook.com";
+            $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+            // $CANotificationLayer = "erzie.aldrian02@outlook.com";
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1685,8 +1685,8 @@ class ApprovalReimburseController extends Controller
                     $caTransaction->save();
 
 
-                    // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-                    $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                    $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+                    // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                     $imagePath = public_path('images/kop.jpg');
                     $imageContent = file_get_contents($imagePath);
                     $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1726,8 +1726,8 @@ class ApprovalReimburseController extends Controller
                 }
 
 
-                // $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
-                $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
+                // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1804,8 +1804,8 @@ class ApprovalReimburseController extends Controller
                 $caTransaction->save();
             }
 
-            // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-            $CANotificationLayer = "erzie.aldrian02@outlook.com";
+            $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+            // $CANotificationLayer = "erzie.aldrian02@outlook.com";
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1866,8 +1866,8 @@ class ApprovalReimburseController extends Controller
                     $caTransaction->reason_extend = $extendData->ext_reason;
                     $caTransaction->save();
 
-                    // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-                    $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                    $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+                    // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                     $imagePath = public_path('images/kop.jpg');
                     $imageContent = file_get_contents($imagePath);
                     $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1908,8 +1908,8 @@ class ApprovalReimburseController extends Controller
                 }
 
                 // Mengambil email employee di layer berikutnya dan mengirimkan notifikasi
-                // $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
-                $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
+                // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);

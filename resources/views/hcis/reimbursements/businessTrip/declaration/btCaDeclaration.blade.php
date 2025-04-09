@@ -4,8 +4,8 @@
 <div style="background-color:#f8f8f8;" class="tab-pane fade p-2 rounded-3  <?php echo ($entrTab && $dnsTab) || (!$entrTab && $dnsTab) || (!$entrTab && !$dnsTab) ? 'show active' : ''; ?>" id="pills-cashAdvanced" role="tabpanel"
     aria-labelledby="pills-cashAdvanced-tab">
     <ul class="nav mb-2" id="pills-tab-inner" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="pills-perdiem-tab" data-bs-toggle="pill" data-bs-target="#pills-perdiem"
+        <li class="nav-item" role="presentation" style="display:none">
+            <button class="nav-link" id="pills-perdiem-tab" data-bs-toggle="pill" data-bs-target="#pills-perdiem"
                 type="button" role="tab" aria-controls="pills-perdiem"
                 aria-selected="true">{{ $allowance }}</button>
         </li>
@@ -16,7 +16,7 @@
             </li>
         @endif
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="pills-transport-tab" data-bs-toggle="pill" data-bs-target="#pills-transport"
+            <button class="nav-link active" id="pills-transport-tab" data-bs-toggle="pill" data-bs-target="#pills-transport"
                 type="button" role="tab" aria-controls="pills-transport" aria-selected="false">Transport</button>
         </li>
         <li class="nav-item" role="presentation">
@@ -27,16 +27,17 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="pills-other-tab" data-bs-toggle="pill" data-bs-target="#pills-other"
                 type="button" role="tab" aria-controls="pills-other" aria-selected="false">Other Expenses</button>
-        </li>
+        </li>       
     </ul>
     <div class="tab-content">
-        <div class="tab-pane fade show active" id="pills-perdiem" role="tabpanel" aria-labelledby="pills-perdiem-tab">
+        <div class="tab-pane fade" id="pills-perdiem" role="tabpanel" aria-labelledby="pills-perdiem-tab">
             @include('hcis.reimbursements.businessTrip.declaration.caPerdiemDeclare')
         </div>
+        
         <div class="tab-pane fade" id="pills-meals" role="tabpanel" aria-labelledby="pills-meals-tab">
             @include('hcis.reimbursements.businessTrip.declaration.caMealsDeclare')
         </div>
-        <div class="tab-pane fade" id="pills-transport" role="tabpanel" aria-labelledby="pills-transport-tab">
+        <div class="tab-pane fade show active" id="pills-transport" role="tabpanel" aria-labelledby="pills-transport-tab">
             @include('hcis.reimbursements.businessTrip.declaration.caTransportDeclare')
         </div>
         <div class="tab-pane fade" id="pills-accomodation" role="tabpanel" aria-labelledby="pills-accomodation-tab">
@@ -45,5 +46,6 @@
         <div class="tab-pane fade" id="pills-other" role="tabpanel" aria-labelledby="pills-other-tab">
             @include('hcis.reimbursements.businessTrip.declaration.caOtherDeclare')
         </div>
+        
     </div>
 </div>
