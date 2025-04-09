@@ -167,7 +167,7 @@
                 @if ($hotel->no_sppd !== null && $hotel->no_sppd !== '-')
                     {{ $hotel->businessTrip->checkCompany->contribution_level }}
                 @elseif($hotel->contribution_level_code !== null && $hotel->contribution_level_code !== '-')
-                    {{ $hotel->contribution_level_code }}
+                    {{ $hotel->checkCompany->contribution_level }}
                 @else
                     N/A
                 @endif

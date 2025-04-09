@@ -237,7 +237,11 @@
                     </td>
                 </tr>
                 @if (isset($declareCA['detail_meals']) &&
-                        !in_array($transactions->employee->group_company, ['KPN Plantations', 'Plantations']))
+                        !(
+                            in_array($transactions->employee->group_company, ['KPN Plantations', 'Plantations']) &&
+                            $transactions->employee->job_level < '8A'
+                        )
+                    )
                     <tr>
                         <td>Meals</td>
                         <td>
@@ -349,8 +353,12 @@
                             style="float: right;">{{ number_format(array_sum(array_column($declareCA['detail_perdiem'], 'nominal')), 0, ',', '.') }}</span>
                     </td>
                 </tr>
-                @if (isset($detailCA['detail_meals']) &&
-                        !in_array($transactions->employee->group_company, ['KPN Plantations', 'Plantations']))
+                @if (isset($declareCA['detail_meals']) &&
+                        !(
+                            in_array($transactions->employee->group_company, ['KPN Plantations', 'Plantations']) &&
+                            $transactions->employee->job_level < '8A'
+                        )
+                    )
                     <tr>
                         <td>Meals</td>
                         <td>
@@ -618,6 +626,9 @@
                                     @if ($role->approval_status == 'Approved')
                                         {{-- <br><img src="{{ public_path('images/approved_64.png')}}" alt="logo"> --}}
                                         <br><img src="{{ asset('images/approved_64.png')}}" alt="logo">
+                                    @elseif (isset($sppds) && (($role->layer==1 && $sppds->latestApprovalDecL1->approved_at<>'') || ($role->layer==2 && $sppds->latestApprovalDecL2->approved_at<>'')))
+                                        {{-- <br><img src="{{ public_path('images/approved_64.png')}}" alt="logo"> --}}
+                                        <br><img src="{{ asset('images/approved_64.png')}}" alt="logo">
                                     @else
                                         <br><br><br><br><br>
                                     @endif
@@ -632,7 +643,15 @@
                         <tr>
                             @foreach ($approval as $role)
                                 <td>
-                                    {{ $role->approved_at ? \Carbon\Carbon::parse($role->approved_at) : 'Date : ' }}
+                                    @if ($role->approval_status == 'Approved')
+                                        {{ $role->approved_at ? \Carbon\Carbon::parse($role->approved_at) : 'Date : ' }}
+                                    @elseif (isset($sppds) && $role->layer==1 && $sppds->latestApprovalDecL1->approved_at<>'')
+                                        {{ $sppds->latestApprovalDecL1->approved_at }}
+                                    @elseif (isset($sppds) && $role->layer==2 && $sppds->latestApprovalDecL2->approved_at<>'')
+                                        {{ $sppds->latestApprovalDecL2->approved_at }}
+                                    @else
+                                        &nbsp;
+                                    @endif
                                 </td>
                             @endforeach
                         </tr>
@@ -766,8 +785,8 @@
                             <tr style="text-align: center">
                                 <td>{{ isset($meals['start_date']) ? \Carbon\Carbon::parse($meals['start_date'])->format('d-M-y') : \Carbon\Carbon::parse($meals['tanggal'])->format('d-M-y') }}</td>
                                 <td>{{ isset($meals['end_date']) ? \Carbon\Carbon::parse($meals['end_date'])->format('d-M-y') : \Carbon\Carbon::parse($meals['tanggal'])->format('d-M-y') }}</td>
-                                <td>{{ $perdiem['company_code'] }}</td>
-                                <td>{{ $perdiem['total_days'] }} Days</td>
+                                <td>{{ $meals['company_code'] }}</td>
+                                <td>{{ $meals['total_days'] }} Days</td>
                                 <td style="text-align: left">{{ $meals['keterangan'] }}</td>
                                 <td>
                                     <span style="float: left; margin-left:4px">Rp.</span>
@@ -810,8 +829,8 @@
                             <td>{{ isset($meals['start_date']) ? \Carbon\Carbon::parse($meals['start_date'])->format('d-M-y') : \Carbon\Carbon::parse($meals['tanggal'])->format('d-M-y') }}</td>
                             <td>{{ isset($meals['end_date']) ? \Carbon\Carbon::parse($meals['end_date'])->format('d-M-y') : \Carbon\Carbon::parse($meals['tanggal'])->format('d-M-y') }}</td>
 
-                            <td>{{ $perdiem['company_code'] }}</td>
-                            <td>{{ $perdiem['total_days'] }} Days</td>
+                            <td>{{ $meals['company_code'] }}</td>
+                            <td>{{ $meals['total_days'] }} Days</td>
                             <td style="text-align: left">{{ $meals['keterangan'] }}</td>
                             <td>
                                 <span style="float: left; margin-left:4px">Rp.</span>

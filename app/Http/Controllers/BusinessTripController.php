@@ -1573,7 +1573,7 @@ class BusinessTripController extends Controller
         $employee_data = Employee::where('id', $userId)->first();
 
         if ($request->totalca_ca_deklarasi == 0 && $request->totalca == 0) {
-            return redirect()->back()->with('error', 'CA Real cannot be zero.')->withInput();
+            //return redirect()->back()->with('error', 'CA Real cannot be zero.')->withInput();
         }
 
         if ($request->has('removed_prove_declare')) {
@@ -1670,7 +1670,7 @@ class BusinessTripController extends Controller
 
                 if ($total_real === 0) {
                     // Redirect back with a SweetAlert message
-                    return redirect()->back()->with('error', 'CA Real cannot be zero.')->withInput();
+                    //return redirect()->back()->with('error', 'CA Real cannot be zero.')->withInput();
                 }
 
                 // Assign total_real and calculate total_cost
@@ -1795,7 +1795,7 @@ class BusinessTripController extends Controller
 
                 if ($total_real === 0) {
                     // Redirect back with a SweetAlert message
-                    return redirect()->back()->with('error', 'CA Real cannot be zero.')->withInput();
+                    //return redirect()->back()->with('error', 'CA Real cannot be zero.')->withInput();
                 }
 
                 // Assign total_real and calculate total_cost
@@ -2275,7 +2275,7 @@ class BusinessTripController extends Controller
 
                     if ($total_real === 0) {
                         // Redirect back with a SweetAlert message
-                        return redirect()->back()->with('error', 'CA Real cannot be zero.')->withInput();
+                        //return redirect()->back()->with('error', 'CA Real cannot be zero.')->withInput();
                     }
 
                     // Assign total_real and calculate total_cost
@@ -2399,7 +2399,7 @@ class BusinessTripController extends Controller
 
                     if ($total_real === 0) {
                         // Redirect back with a SweetAlert message
-                        return redirect()->back()->with('error', 'CA Real cannot be zero.')->withInput();
+                        //return redirect()->back()->with('error', 'CA Real cannot be zero.')->withInput();
                     }
 
                     // Assign total_real and calculate total_cost
@@ -3256,6 +3256,7 @@ class BusinessTripController extends Controller
                                     'transactions' => $dnsCA,
                                     'approval' => $approval,
                                     'allowance' => $allowance,
+                                    'sppds' => $sppd,
                                 ];
 
 
@@ -3296,6 +3297,7 @@ class BusinessTripController extends Controller
                                     'transactions' => $entrCA,
                                     'approval' => $approval,
                                     'allowance' => $allowance,
+                                    'sppds' => $sppd,
                                 ];
 
 
@@ -3420,6 +3422,7 @@ class BusinessTripController extends Controller
                                     'transactions' => $dnsCA,
                                     'approval' => $approval,
                                     'allowance' => $allowance,
+                                    'sppds' => $sppd,
                                 ];
 
                                 $pdfFiles[] = [
@@ -3457,6 +3460,7 @@ class BusinessTripController extends Controller
                                     'transactions' => $entrCA,
                                     'approval' => $approval,
                                     'allowance' => $allowance,
+                                    'sppds' => $sppd,
                                 ];
 
                                 $pdfFiles[] = [
@@ -3634,6 +3638,7 @@ class BusinessTripController extends Controller
                                     'transactions' => $dnsCA,
                                     'approval' => $approval,
                                     'allowance' => $allowance,
+                                    'sppds' => $sppd,
                                 ];
 
                                 $pdfFiles[] = [
@@ -3673,6 +3678,7 @@ class BusinessTripController extends Controller
                                     'transactions' => $entrCA,
                                     'approval' => $approval,
                                     'allowance' => $allowance,
+                                    'sppds' => $sppd,
                                 ];
 
                                 $pdfFiles[] = [
@@ -3796,6 +3802,7 @@ class BusinessTripController extends Controller
                                     'transactions' => $dnsCA,
                                     'approval' => $approval,
                                     'allowance' => $allowance,
+                                    'sppds' => $sppd,
                                 ];
 
                                 $pdfFiles[] = [
@@ -3833,6 +3840,7 @@ class BusinessTripController extends Controller
                                     'transactions' => $entrCA,
                                     'approval' => $approval,
                                     'allowance' => $allowance,
+                                    'sppds' => $sppd,
                                 ];
 
                                 $pdfFiles[] = [
@@ -3923,8 +3931,9 @@ class BusinessTripController extends Controller
             ->where('bisnis_unit', 'like', '%' . $employee_data->group_company . '%')->first();
 
         $isApproved = CATransaction::where('user_id', $userId)
-            ->where('approval_sett', '!=', 'Approved')
+            ->where('ca_status', '!=', 'Done')
             ->where('total_ca', '!=', 0)->get();
+        //->where('approval_sett', '!=', 'Approved')
 
         $job_level = Employee::where('id', $userId)->pluck('job_level')->first();
         $job_level_number = (int) preg_replace('/[^0-9]/', '', $job_level);
@@ -5216,9 +5225,9 @@ class BusinessTripController extends Controller
         $caDetail = [];
         $declareCa = [];
         foreach ($ca as $cas) {
-            $currentDetail = json_decode($cas->detail_ca, true);
+            $currentDetail = json_decode($cas->detail_ca, true) ?? [];
             $currentDeclare = json_decode($cas->declare_ca, true);
-            if (is_array($currentDetail)) {
+            if (is_array($currentDetail) || is_array($currentDeclare)) {
                 $caDetail = array_merge($caDetail, $currentDetail);
                 $declareCa = array_merge($declareCa, $currentDeclare);
             }
@@ -8925,7 +8934,7 @@ class BusinessTripController extends Controller
         $caDetail = [];
         $declareCa = [];
         foreach ($ca as $cas) {
-            $currentDetail = json_decode($cas->detail_ca, true);
+            $currentDetail = json_decode($cas->detail_ca, true) ?? [];
             $currentDeclare = json_decode($cas->declare_ca, true);
             if (is_array($currentDetail) || is_array($currentDeclare)) {
                 $caDetail = array_merge($caDetail, $currentDetail);

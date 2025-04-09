@@ -325,7 +325,7 @@ class ApprovalReimburseController extends Controller
                 $textNotification = "Your Cash Advanced request has been rejected please discuss further with your supervisor :";
                 try {
                     try {
-                        Mail::to($CANotificationLayer)->cc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                             null,
                             $caTransaction,
                             $textNotification,
@@ -375,15 +375,15 @@ class ApprovalReimburseController extends Controller
                     // $caTransaction->approval_sett = 'On Progress';
                     $caTransaction->save();
 
-                    // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-                    $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                    $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+                    // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                     $imagePath = public_path('images/kop.jpg');
                     $imageContent = file_get_contents($imagePath);
                     $base64Image = "data:image/png;base64," . base64_encode($imageContent);
                     if ($CANotificationLayer) {
                         $textNotification = "Your Cash Advanced request has been Approved, please check your request again or can download your submission in the email attachment :";
                         try {
-                            Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                            Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
                                 $textNotification,
@@ -414,8 +414,8 @@ class ApprovalReimburseController extends Controller
                 }
 
                 // Mengambil email employee di layer berikutnya dan mengirimkan notifikasi
-                // $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
-                $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
+                // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -435,7 +435,7 @@ class ApprovalReimburseController extends Controller
 
                     // $pdfContent = $this->cashadvancedDownload (encrypt($caTransaction->id));
                     try {
-                        Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
                             $textNotification,
@@ -510,7 +510,7 @@ class ApprovalReimburseController extends Controller
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor: ";
                 try {
-                    Mail::to($CANotificationLayer)->cc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
                         $textNotification,
@@ -555,15 +555,15 @@ class ApprovalReimburseController extends Controller
                     // $caTransaction->approval_sett = 'On Progress';
                     $caTransaction->save();
 
-                    // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-                    $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                    $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+                    // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                     $imagePath = public_path('images/kop.jpg');
                     $imageContent = file_get_contents($imagePath);
                     $base64Image = "data:image/png;base64," . base64_encode($imageContent);
                     if ($CANotificationLayer) {
                         $textNotification = "Your Cash Advanced request has been Approved, please check your request again or can download your submission in the email attachment: ";
                         try {
-                            Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                            Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
                                 $textNotification,
@@ -596,8 +596,8 @@ class ApprovalReimburseController extends Controller
                 }
 
                 // Mengambil email employee di layer berikutnya dan mengirimkan notifikasi
-                // $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
-                $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
+                // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -615,7 +615,7 @@ class ApprovalReimburseController extends Controller
                         'autoOpen' => 'reject'
                     ]);
                     try {
-                        Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
                             $textNotification,
@@ -680,15 +680,15 @@ class ApprovalReimburseController extends Controller
                 $caTransaction->save();
             }
 
-            // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-            $CANotificationLayer = "erzie.aldrian02@outlook.com";
+            $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+            // $CANotificationLayer = "erzie.aldrian02@outlook.com";
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor.: ";
                 try {
-                    Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
                         $textNotification,
@@ -735,8 +735,8 @@ class ApprovalReimburseController extends Controller
                     $caTransaction->approval_status = 'Approved'; // Set ke Approved untuk transaksi
                     $caTransaction->save();
 
-                    // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-                    $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                    $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+                    // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                     $imagePath = public_path('images/kop.jpg');
                     $imageContent = file_get_contents($imagePath);
                     $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -744,7 +744,7 @@ class ApprovalReimburseController extends Controller
                     if ($CANotificationLayer) {
                         $textNotification = "Your Cash Advanced request has been Approved, please check your request again or can download your submission in the email attachment :";
                         try {
-                            Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                            Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
                                 $textNotification,
@@ -777,9 +777,9 @@ class ApprovalReimburseController extends Controller
                 }
 
                 // Mengambil email employee di layer berikutnya dan mengirimkan notifikasi
-                // $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
+                $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
                 // $CANotificationLayer = "eriton.dewa@kpn-corp.com";
-                $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -797,7 +797,7 @@ class ApprovalReimburseController extends Controller
                         'autoOpen' => 'reject'
                     ]);
                     try {
-                        Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
                             $textNotification,
@@ -912,15 +912,15 @@ class ApprovalReimburseController extends Controller
                 $caTransaction->save();
             }
 
-            // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-            $CANotificationLayer = "erzie.aldrian02@outlook.com";
+            $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+            // $CANotificationLayer = "erzie.aldrian02@outlook.com";
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor :";
                 try {
-                    Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
                         $textNotification,
@@ -965,8 +965,8 @@ class ApprovalReimburseController extends Controller
                     $caTransaction->approval_sett = 'Approved'; // Set ke ID user layer tertinggi
                     $caTransaction->save();
 
-                    // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-                    $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                    $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+                    // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                     $imagePath = public_path('images/kop.jpg');
                     $imageContent = file_get_contents($imagePath);
                     $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -974,7 +974,7 @@ class ApprovalReimburseController extends Controller
                         $textNotification = "Your Declaration Cash Advanced request has been approved, please check your request again or can download your submission in the email attachment :";
                         $declaration = "Declaration";
                         try {
-                            Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                            Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
                                 $textNotification,
@@ -1005,8 +1005,8 @@ class ApprovalReimburseController extends Controller
                 }
 
                 // Mengambil email employee di layer berikutnya dan mengirimkan notifikasi
-                // $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
-                $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
+                // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1025,7 +1025,7 @@ class ApprovalReimburseController extends Controller
                         'autoOpen' => 'reject'
                     ]);
                     try {
-                        Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
                             $textNotification,
@@ -1084,15 +1084,15 @@ class ApprovalReimburseController extends Controller
                 $caTransaction->save();
             }
 
-            // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-            $CANotificationLayer = "erzie.aldrian02@outlook.com";
+            $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+            // $CANotificationLayer = "erzie.aldrian02@outlook.com";
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor :";
                 try {
-                    Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
                         $textNotification,
@@ -1136,8 +1136,8 @@ class ApprovalReimburseController extends Controller
                     $caTransaction->approval_sett = 'Approved'; // Set ke ID user layer tertinggi
                     $caTransaction->save();
 
-                    // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-                    $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                    $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+                    // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                     $imagePath = public_path('images/kop.jpg');
                     $imageContent = file_get_contents($imagePath);
                     $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1145,7 +1145,7 @@ class ApprovalReimburseController extends Controller
                         $textNotification = "Your Declaration Cash Advanced request has been approved, please check your request again or can download your submission in the email attachment :";
                         $declaration = "Declaration";
                         try {
-                            Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                            Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
                                 $textNotification,
@@ -1178,8 +1178,8 @@ class ApprovalReimburseController extends Controller
                 }
 
                 // Mengambil email employee di layer berikutnya dan mengirimkan notifikasi
-                // $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
-                $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
+                // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1199,7 +1199,7 @@ class ApprovalReimburseController extends Controller
                         'autoOpen' => 'reject'
                     ]);
                     try {
-                        Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
                             $textNotification,
@@ -1255,15 +1255,15 @@ class ApprovalReimburseController extends Controller
                 $caTransaction->save();
             }
 
-            // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-            $CANotificationLayer = "erzie.aldrian02@outlook.com";
+            $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+            // $CANotificationLayer = "erzie.aldrian02@outlook.com";
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor :";
                 try {
-                    Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
                         $textNotification,
@@ -1310,8 +1310,8 @@ class ApprovalReimburseController extends Controller
                     $caTransaction->approval_sett = 'Approved'; // Set ke Approved untuk transaksi
                     $caTransaction->save();
 
-                    // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-                    $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                    $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+                    // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                     $imagePath = public_path('images/kop.jpg');
                     $imageContent = file_get_contents($imagePath);
                     $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1319,7 +1319,7 @@ class ApprovalReimburseController extends Controller
                         $textNotification = "Your Declaration Cash Advanced request has been approved, please check your request again or can download your submission in the email attachment :";
                         $declaration = "Declaration";
                         try {
-                            Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                            Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
                                 $textNotification,
@@ -1352,8 +1352,8 @@ class ApprovalReimburseController extends Controller
                 }
 
 
-                // $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
-                $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
+                // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1372,7 +1372,7 @@ class ApprovalReimburseController extends Controller
                         'autoOpen' => 'reject'
                     ]);
                     try {
-                        Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
                             $textNotification,
@@ -1458,15 +1458,15 @@ class ApprovalReimburseController extends Controller
                 $caTransaction->save();
             }
 
-            // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-            $CANotificationLayer = "erzie.aldrian02@outlook.com";
+            $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+            // $CANotificationLayer = "erzie.aldrian02@outlook.com";
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor :";
                 try {
-                    Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
                         $textNotification,
@@ -1515,15 +1515,15 @@ class ApprovalReimburseController extends Controller
                 }
 
                 // dd($caTransaction);
-                // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-                $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+                // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
                 if ($CANotificationLayer) {
                     $textNotification = "Your Declaration Cash Advanced request has been approved, please check your request again or can download your submission in the email attachment :";
                     try {
-                        Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                             null,
                             $caTransaction,
                             $textNotification,
@@ -1552,8 +1552,8 @@ class ApprovalReimburseController extends Controller
                     $caTransaction->save();
                 }
 
-                // $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
-                $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
+                // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1571,7 +1571,7 @@ class ApprovalReimburseController extends Controller
                         'autoOpen' => 'reject'
                     ]);
                     try {
-                        Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
                             $textNotification,
@@ -1627,15 +1627,15 @@ class ApprovalReimburseController extends Controller
                 $caTransaction->save();
             }
 
-            // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-            $CANotificationLayer = "erzie.aldrian02@outlook.com";
+            $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+            // $CANotificationLayer = "erzie.aldrian02@outlook.com";
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor :";
                 try {
-                    Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
                         $textNotification,
@@ -1685,15 +1685,15 @@ class ApprovalReimburseController extends Controller
                     $caTransaction->save();
 
 
-                    // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-                    $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                    $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+                    // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                     $imagePath = public_path('images/kop.jpg');
                     $imageContent = file_get_contents($imagePath);
                     $base64Image = "data:image/png;base64," . base64_encode($imageContent);
                     if ($CANotificationLayer) {
                         $textNotification = "Your Extend Cash Advanced request has been approved, please check your request again or can download your submission in the email attachment :";
                         try {
-                            Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                            Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
                                 $textNotification,
@@ -1726,8 +1726,8 @@ class ApprovalReimburseController extends Controller
                 }
 
 
-                // $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
-                $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
+                // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1745,7 +1745,7 @@ class ApprovalReimburseController extends Controller
                         'autoOpen' => 'reject'
                     ]);
                     try {
-                        Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
                             $textNotification,
@@ -1804,15 +1804,15 @@ class ApprovalReimburseController extends Controller
                 $caTransaction->save();
             }
 
-            // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-            $CANotificationLayer = "erzie.aldrian02@outlook.com";
+            $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+            // $CANotificationLayer = "erzie.aldrian02@outlook.com";
             $imagePath = public_path('images/kop.jpg');
             $imageContent = file_get_contents($imagePath);
             $base64Image = "data:image/png;base64," . base64_encode($imageContent);
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor :";
                 try {
-                    Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
                         $textNotification,
@@ -1866,8 +1866,8 @@ class ApprovalReimburseController extends Controller
                     $caTransaction->reason_extend = $extendData->ext_reason;
                     $caTransaction->save();
 
-                    // $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
-                    $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                    $CANotificationLayer = Employee::where('id', $caTransaction->user_id)->pluck('email')->first();
+                    // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                     $imagePath = public_path('images/kop.jpg');
                     $imageContent = file_get_contents($imagePath);
                     $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1875,7 +1875,7 @@ class ApprovalReimburseController extends Controller
                         $textNotification = "Your Extend Cash Advanced request has been approved, please check your request again or can download your submission in the email attachment:";
                         $declaration = "Extend";
                         try {
-                            Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                            Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
                                 $textNotification,
@@ -1908,8 +1908,8 @@ class ApprovalReimburseController extends Controller
                 }
 
                 // Mengambil email employee di layer berikutnya dan mengirimkan notifikasi
-                // $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
-                $CANotificationLayer = "erzie.aldrian02@outlook.com";
+                $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
+                // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -1929,7 +1929,7 @@ class ApprovalReimburseController extends Controller
                         'autoOpen' => 'reject'
                     ]);
                     try {
-                        Mail::to($CANotificationLayer)->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
                             $textNotification,
@@ -2048,7 +2048,7 @@ class ApprovalReimburseController extends Controller
 
                 // Send email with all hotel details
                 try {
-                    Mail::to($managerEmail)->send(new HotelNotification([
+                    Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new HotelNotification([
                         'noSppd' => $hotel->no_sppd,
                         'noHtl' => $noHtlList,
                         'namaHtl' => $namaHtl,
@@ -2288,7 +2288,7 @@ class ApprovalReimburseController extends Controller
                 if ($ticket->jns_dinas_tkt == 'Dinas') {
                     // Send email with all hotel details
                     try {
-                        Mail::to($managerEmail)->send(new TicketNotification([
+                        Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new TicketNotification([
                             'noSppd' => $ticket->no_sppd,
                             'noTkt' => $noTktList,
                             'namaPenumpang' => $npTkt,
@@ -2312,7 +2312,7 @@ class ApprovalReimburseController extends Controller
                     }
                 } else {
                     try {
-                        Mail::to($managerEmail)->send(new HomeTripNotification([
+                        Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new HomeTripNotification([
                             'noTkt' => $noTktList,
                             'namaPenumpang' => $npTkt,
                             'dariTkt' => $dariTkt,

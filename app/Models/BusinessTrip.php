@@ -65,6 +65,25 @@ class BusinessTrip extends Model
             ->with('manager2');
     }
 
+    // BusinessTrip.php
+    public function latestApprovalDecL1()
+    {
+        return $this->hasOne(BTApproval::class, 'bt_id', 'id')
+            ->where('layer', 1)
+            ->where('approval_status', 'Declaration L2')
+            ->latest('approved_at')
+            ->with('manager1');
+    }
+
+   public function latestApprovalDecL2()
+    {
+        return $this->hasOne(BTApproval::class, 'bt_id', 'id')
+            ->where('layer', 2)
+            ->where('approval_status', 'Declaration Approved')
+            ->latest('approved_at')
+            ->with('manager2');
+    }
+
     protected $keyType = 'string';
     public $incrementing = false;
 

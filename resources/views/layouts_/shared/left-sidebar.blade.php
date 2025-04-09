@@ -138,9 +138,11 @@
                                         <a href="{{ route('roles') }}">Role</a>
                                     </li>
                                     @endcan
+                                    @can('viewdesignation')
                                     <li>
                                         <a href="{{ route('designations') }}">Designations</a>
                                     </li>
+                                    @endcan
                                 </ul>
                             </div>
                         </li>

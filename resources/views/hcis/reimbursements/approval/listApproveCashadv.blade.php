@@ -206,7 +206,7 @@
                                                         </div>
                                                     @endif
 
-                                                    @if (!empty($detailCA['detail_meals']) && $detailCA['detail_meals'][0]['tanggal'] !== null)
+                                                    @if (!empty($detailCA['detail_meals']) && $detailCA['detail_meals'][0]['nominal'] !== null)
                                                         <div class="table-responsive">
                                                             <table class="table table-hover table-sm nowrap" id="lainnyaTable" width="100%" cellspacing="0">
                                                                 <thead class="thead-light">
@@ -225,7 +225,7 @@
                                                                     @foreach ($detailCA['detail_meals'] as $lainnya)
                                                                         <tr style="text-align-last: center;">
                                                                             <td>{{ $loop->index + 1 }}</td>
-                                                                            <td>{{ \Carbon\Carbon::parse($lainnya['tanggal'])->format('d-M-y') }}</td>
+                                                                            <td>{{ \Carbon\Carbon::parse($lainnya['tanggal'] ?? $lainnya['start_date'])->format('d-M-y') }}</td>
                                                                             <td>{{$lainnya['keterangan']}}</td>
                                                                             <td style="text-align-last: right;">Rp. {{ number_format($lainnya['nominal'], 0, ',', '.') }}</td>
                                                                         </tr>

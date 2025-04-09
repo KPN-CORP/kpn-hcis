@@ -395,7 +395,7 @@
                                     @php
                                         $today = \Carbon\Carbon::today()->format('Y-m-d');
                                     @endphp
-                                    @if ($n->status == 'Doc Accepted' || $n->status == 'Declaration Approved' || $n->status == 'Return/Refund')
+                                    @if ($n->status == 'Doc Accepted' || $n->status == 'Declaration Approved' || $n->status == 'Approved' || $n->status == 'Return/Refund')
                                         <form method="GET"
                                             action="{{ route('businessTrip.deklarasi.admin', ['id' => $n->id, 'previous_url' => request()->fullUrl()]) }}"
                                             style="display: inline-block;">

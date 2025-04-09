@@ -171,7 +171,7 @@
         <tr>
             <td class="label">Company</td>
             <td class="colon">:</td>
-            <td class="value">{{ $ticket->contribution_level_code ?? '-' }}</td>
+            <td class="value">{{ $ticket->checkcompany->contribution_level ?? '-' }}</td>
         </tr>
         <tr>
             <td class="label">Cost Center</td>

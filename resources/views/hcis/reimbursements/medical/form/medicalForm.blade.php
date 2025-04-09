@@ -279,20 +279,22 @@
         }
     }
     
-    //date medical
+    // Ambil tanggal hari ini
     const today = new Date();
-    // Set the date for two weeks ago
-    const twoWeeksAgo = new Date();
-    twoWeeksAgo.setDate(today.getDate() - 60);
-    
-    // Format the dates to YYYY-MM-DD
+
+    // Set tanggal ke 2 bulan yang lalu
+    const twoMonthsAgo = new Date();
+    twoMonthsAgo.setMonth(today.getMonth() - 2);
+    twoMonthsAgo.setDate(today.getDate() + 1); // Ditambah 1 agar hasilnya H-2 bulan + 1 hari
+
+    // Format tanggal ke YYYY-MM-DD
     const formattedToday = today.toISOString().split("T")[0];
-    const formattedTwoWeeksAgo = twoWeeksAgo.toISOString().split("T")[0];
-    
-    // Set the min attribute for the input to two weeks ago
+    const formattedTwoMonthsAgo = twoMonthsAgo.toISOString().split("T")[0];
+
+    // Set atribut min dan max untuk input date
     const dateInput = document.getElementById("date");
-    dateInput.setAttribute("min", formattedTwoWeeksAgo);
-    dateInput.setAttribute("max", formattedToday); // Optional: To limit selection to today
+    dateInput.setAttribute("min", formattedTwoMonthsAgo);
+    dateInput.setAttribute("max", formattedToday); // Opsional: Batasi sampai hari ini
 
     </script>
     <script>

@@ -593,7 +593,7 @@
                                     <option value="">Select Company...</option>
                                     @foreach ($companies as $company)
                                         <option value="{{ $company->contribution_level_code }}"
-                                            @if ($company->contribution_level_code == $meals_dec['company_code'] ?? '') selected @endif>
+                                            @if ($company->contribution_level_code == ($meals_dec['company_code'] ?? '')) selected @endif>
                                             {{ $company->contribution_level . ' (' . $company->contribution_level_code . ')' }}
                                         </option>
                                     @endforeach
