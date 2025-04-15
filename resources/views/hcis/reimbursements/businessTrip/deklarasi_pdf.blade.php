@@ -626,7 +626,7 @@
                                     @if ($role->approval_status == 'Approved')
                                         {{-- <br><img src="{{ public_path('images/approved_64.png')}}" alt="logo"> --}}
                                         <br><img src="{{ asset('images/approved_64.png')}}" alt="logo">
-                                    @elseif (isset($sppds) && (($role->layer==1 && $sppds->latestApprovalDecL1->approved_at<>'') || ($role->layer==2 && $sppds->latestApprovalDecL2->approved_at<>'')))
+                                    @elseif (isset($sppds) && (($role->layer==1 && optional($sppds->latestApprovalDecL1)->approved_at<>'') || ($role->layer==2 && optional($sppds->latestApprovalDecL2)->approved_at<>'')))
                                         {{-- <br><img src="{{ public_path('images/approved_64.png')}}" alt="logo"> --}}
                                         <br><img src="{{ asset('images/approved_64.png')}}" alt="logo">
                                     @else
@@ -645,9 +645,9 @@
                                 <td>
                                     @if ($role->approval_status == 'Approved')
                                         {{ $role->approved_at ? \Carbon\Carbon::parse($role->approved_at) : 'Date : ' }}
-                                    @elseif (isset($sppds) && $role->layer==1 && $sppds->latestApprovalDecL1->approved_at<>'')
+                                    @elseif (isset($sppds) && $role->layer==1 && optional($sppds->latestApprovalDecL1)->approved_at<>'')
                                         {{ $sppds->latestApprovalDecL1->approved_at }}
-                                    @elseif (isset($sppds) && $role->layer==2 && $sppds->latestApprovalDecL2->approved_at<>'')
+                                    @elseif (isset($sppds) && $role->layer==2 && optional($sppds->latestApprovalDecL2)->approved_at<>'')
                                         {{ $sppds->latestApprovalDecL2->approved_at }}
                                     @else
                                         &nbsp;

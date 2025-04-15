@@ -259,7 +259,7 @@ class BusinessTripController extends Controller
 
         $isApproved = CATransaction::where('user_id', $userId)->where('approval_status', '!=', 'Done')->where('approval_status', '!=', 'Rejected')->get();
 
-        $isDisabled = $isApproved->count() >= 1;
+        $isDisabled = $isApproved->count() >= 2;
 
         if ($employee_data->group_company == 'Plantations' || $employee_data->group_company == 'KPN Plantations') {
             $allowance = "Perdiem";
@@ -1730,7 +1730,7 @@ class BusinessTripController extends Controller
                 $declare_ent_ntf = $declare_ca;
                 $ent->prove_declare = json_encode(array_values($existingFiles));
 
-                $ent->detail_ca = '[{"detail_e":[],"relation_e":[]}]';
+                $ent->detail_ca = '{"detail_e":[],"relation_e":[]}';
                 $ent->declare_ca = json_encode($declare_ca);
                 $model = $ent;
 
@@ -2335,7 +2335,7 @@ class BusinessTripController extends Controller
                     $declare_ent_ntf = $declare_ca;
                     $ca->prove_declare = json_encode(array_values($existingFiles));
 
-                    $ca->detail_ca = '[{"detail_e":[],"relation_e":[]}]';
+                    $ca->detail_ca = '{"detail_e":[],"relation_e":[]}';
                     $ca->declare_ca = json_encode($declare_ca);
                     $model = $ca;
 
@@ -3938,7 +3938,7 @@ class BusinessTripController extends Controller
         $job_level = Employee::where('id', $userId)->pluck('job_level')->first();
         $job_level_number = (int) preg_replace('/[^0-9]/', '', $job_level);
 
-        $isDisabled = $isApproved->count() >= 1;
+        $isDisabled = $isApproved->count() >= 2;
 
         // dd($employee_data, $companies, $perdiem);
 
