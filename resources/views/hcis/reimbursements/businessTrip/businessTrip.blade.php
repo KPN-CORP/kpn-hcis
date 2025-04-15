@@ -86,15 +86,15 @@
 
             <!-- Add Data Button -->
             <div class="col-md-6 mt-4 mb-2 text-end">
-                @if ($disableBT >= 2)
+                {{-- @if ($disableBT >= 2)
                     <a href="#" class="btn btn-primary rounded-pill" onclick="showPendingAlert(); return false;">
                         <i class="bi bi-plus-circle"></i> Add Data
                     </a>
-                @else
+                @else --}}
                     <a href="{{ route('businessTrip.add') }}" class="btn btn-primary rounded-pill">
                         <i class="bi bi-plus-circle"></i> Add Data
                     </a>
-                @endif
+                {{-- @endif --}}
             </div>
         </div>
     </div>

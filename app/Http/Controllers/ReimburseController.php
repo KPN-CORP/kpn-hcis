@@ -308,6 +308,7 @@ class ReimburseController extends Controller
 
             // Dapatkan hasil query
             $ca_transactions = $query->get();
+            $ca_transaction_ids = $ca_transactions->pluck('id')->toArray();
 
             // Format data transaksi
             foreach ($ca_transactions as $transaction) {
@@ -320,6 +321,7 @@ class ReimburseController extends Controller
 
             // Query data approval lainnya hanya jika filter diterapkan
             $ca_approvals = ca_approval::with(['employee', 'statusReqEmployee'])
+                ->whereIn('ca_id', $ca_transaction_ids)
                 ->orderBy('layer', 'asc')
                 ->get();
 
@@ -328,6 +330,7 @@ class ReimburseController extends Controller
             }
 
             $ca_sett = ca_sett_approval::where('approval_status', '<>', 'Rejected')
+                ->whereIn('ca_id', $ca_transaction_ids)
                 ->orderBy('layer', 'asc')
                 ->get();
 
@@ -336,6 +339,7 @@ class ReimburseController extends Controller
             }
 
             $ca_extend = ca_extend::where('approval_status', '<>', 'Rejected')
+                ->whereIn('ca_id', $ca_transaction_ids)
                 ->orderBy('created_at', 'desc')
                 ->orderBy('layer', 'asc')
                 ->get();
@@ -1662,13 +1666,7 @@ class ReimburseController extends Controller
             foreach ($req->file('prove_declare') as $file) {
                 $filename = time() . '_' . $file->getClientOriginalName();
                 $upload_path = 'uploads/proofs/' . $employee_data->employee_id;
-                $full_path = public_path($upload_path);
-
-                if (!is_dir($full_path)) {
-                    mkdir($full_path, 0755, true);
-                }
-
-                $file->move($full_path, $filename);
+                $file->storeAs($upload_path, $filename, 'public');
                 $existingFiles[] = $upload_path . '/' . $filename;
             }
         }

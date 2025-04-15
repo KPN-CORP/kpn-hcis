@@ -1249,7 +1249,7 @@ class MedicalController extends Controller
         $hasFilter = false;
         $medicalGroup = [];
 
-        $userRole = auth()->user()->roles->first();
+        $userRole = auth()->user()->roles->last();
         $roleRestriction = json_decode($userRole->restriction, true);
         $restrictedWorkAreas = $roleRestriction['work_area_code'] ?? [];
         $restrictedGroupCompanies = $roleRestriction['group_company'] ?? [];

@@ -179,7 +179,13 @@
         <tr>
             <td class="label">Start Date</td>
             <td class="colon">:</td>
-            <td class="value">{{ \Carbon\Carbon::parse($transactions->start_date)->format('d-M-y') }} to {{ \Carbon\Carbon::parse($transactions->end_date)->format('d-M-y') }} ({{ $transactions->total_days+1 }} days)</td>
+            <td class="value">{{ \Carbon\Carbon::parse($transactions->start_date)->format('d-M-y') }} to {{ \Carbon\Carbon::parse($transactions->end_date)->format('d-M-y') }} (
+                @if($transactions->type_ca == 'dns')
+                    {{ $transactions->total_days+1 }} days
+                @else
+                    {{ $transactions->total_days }} days
+                @endif
+                )</td>
         </tr>
         <tr>
             <td class="label">Date CA Required</td>
@@ -323,7 +329,7 @@
             <tr>
                 <td class="label">Non Bussiness Trip</td>
                 <td>
-                    {{ $transactions->total_days+1 }} Days
+                    {{ $transactions->total_days }} Days
                 </td>
                 <td>  
                     <span style="float: left; margin-left:4px">Rp.</span>  
@@ -354,7 +360,7 @@
             <tr>
                 <td class="label">Detail Entertain</td>
                 <td>
-                    {{ $transactions->total_days+1 }} Days
+                    {{ $transactions->total_days }} Days
                 </td>
                 <td>  
                     <span style="float: left; margin-left:4px">Rp.</span>  

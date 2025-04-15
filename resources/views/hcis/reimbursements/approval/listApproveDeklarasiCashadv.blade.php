@@ -1058,7 +1058,7 @@
 
                                                         // Pastikan path sesuai dengan akses storage
                                                         if (str_contains($file, 'uploads/proofs/')) {
-                                                            $fileUrl = asset('storage/' . str_replace('uploads/', '', $file));
+                                                            $fileUrl = asset('storage/uploads/' . str_replace('uploads/', '', $file));
                                                         } else {
                                                             $fileUrl = asset('storage/proofs/' . basename($file));
                                                         }

@@ -138,7 +138,7 @@
                                                 </div>
                                                 <div class="col-md-5">
                                                     <div class="mb-2">
-                                                        <input type="number" name="noktp_tkt[]"
+                                                        <input type="text" name="noktp_tkt[]"
                                                             id="noktp_tkt_<?php echo $i; ?>"
                                                             class="form-control form-control-sm" required
                                                             placeholder="No KTP"
@@ -557,7 +557,7 @@
                             </div>
                             <div class="col-md-5">
                                 <div class="mb-2">
-                                    <input type="number" name="noktp_tkt[]" id="noktp_tkt_${formNumber}" class="form-control form-control-sm" placeholder="No KTP">
+                                    <input type="text" name="noktp_tkt[]" id="noktp_tkt_${formNumber}" class="form-control form-control-sm" placeholder="No KTP">
                                 </div>
                             </div>
                         </div>
