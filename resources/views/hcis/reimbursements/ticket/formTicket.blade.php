@@ -191,7 +191,7 @@
                                                 <div class="col-md-6 mb-2">
                                                     <label for="type_tkt_<?php echo $i; ?>" class="form-label">Ticket
                                                         Type</label>
-                                                    <select class="form-select form-select-sm" name="type_tkt[]" required>
+                                                    <select class="form-select form-select-sm" name="type_tkt[]" id="type_tkts_<?php echo $i; ?>" required>
                                                         {{-- <option value="" selected>Choose Ticket Type</option> --}}
                                                         <option value="One Way" selected>One Way</option>
                                                         <option value="Round Trip">Round Trip</option>
@@ -323,21 +323,46 @@
     </script>
     <script>
         function validateDates(index) {
+            console.log("validateDates dipanggil untuk index:", index);
+            const ticketTypeSelect = document.getElementById(`type_tkts_${index}`);
             const departureDateInput = document.getElementById(`tgl_brkt_tkt_${index}`);
             const returnDateInput = document.getElementById(`tgl_plg_tkt_${index}`);
             const departureTimeInput = document.getElementById(`jam_brkt_tkt_${index}`);
             const returnTimeInput = document.getElementById(`jam_plg_tkt_${index}`);
 
-            if (
-                departureDateInput &&
-                returnDateInput &&
-                departureTimeInput &&
-                returnTimeInput
-            ) {
+            // console.log({
+            //     ticketType: ticketTypeSelect ? ticketTypeSelect.value : null,
+            //     departureDate: departureDateInput ? departureDateInput.value : null,
+            //     returnDate: returnDateInput ? returnDateInput.value : null,
+            //     departureTime: departureTimeInput ? departureTimeInput.value : null,
+            //     returnTime: returnTimeInput ? returnTimeInput.value : null,
+            // });
+
+            if (departureDateInput) {
+                const departureDate = new Date(departureDateInput.value);
+
+                // Auto set return date H+1 jika tipe Round Trip
+                if (ticketTypeSelect && ticketTypeSelect.value === "Round Trip" && departureDateInput.value &&
+                returnDateInput && !returnDateInput.value) {
+                    const nextDay = new Date(departureDate);
+                    nextDay.setDate(nextDay.getDate() + 1);
+
+                    const year = nextDay.getFullYear();
+                    const month = String(nextDay.getMonth() + 1).padStart(2, '0');
+                    const day = String(nextDay.getDate()).padStart(2, '0');
+                    const formattedDate = `${year}-${month}-${day}`;
+
+                    if (returnDateInput) {
+                        returnDateInput.value = formattedDate;
+                    }
+                }
+            }
+
+            // Validasi setelah Return Date dan Return Time diisi
+            if (departureDateInput && returnDateInput && departureDateInput.value && returnDateInput.value) {
                 const departureDate = new Date(departureDateInput.value);
                 const returnDate = new Date(returnDateInput.value);
 
-                // Check if return date is earlier than departure date
                 if (returnDate < departureDate) {
                     Swal.fire({
                         title: "Warning!",
@@ -346,14 +371,13 @@
                         confirmButtonColor: "#AB2F2B",
                         confirmButtonText: "OK",
                     });
-                    returnDateInput.value = ""; // Reset the return date if it's invalid
-                    return; // Stop further validation
+                    returnDateInput.value = "";
+                    return;
                 }
 
-                // If the dates are the same, check the times
                 if (returnDate.getTime() === departureDate.getTime()) {
-                    const departureTime = departureTimeInput.value;
-                    const returnTime = returnTimeInput.value;
+                    const departureTime = departureTimeInput ? departureTimeInput.value : null;
+                    const returnTime = returnTimeInput ? returnTimeInput.value : null;
 
                     if (departureTime && returnTime && returnTime < departureTime) {
                         Swal.fire({
@@ -363,7 +387,9 @@
                             confirmButtonColor: "#AB2F2B",
                             confirmButtonText: "OK",
                         });
-                        returnTimeInput.value = ""; // Reset the return time if it's invalid
+                        if (returnTimeInput) {
+                            returnTimeInput.value = "";
+                        }
                     }
                 }
             }
@@ -595,7 +621,7 @@
                             </div>
                             <div class="col-md-6 mb-2">
                                 <label for="type_tkt_${formNumber}" class="form-label">Ticket Type</label>
-                                <select class="form-select form-select-sm" name="type_tkt[]">
+                                <select class="form-select form-select-sm" name="type_tkt[]" id="type_tkts_${formNumber}">
                                     <option value="One Way" selected>One Way</option>
                                     <option value="Round Trip">Round Trip</option>
                                 </select>

@@ -840,6 +840,52 @@
                         `;
                     }
 
+                    if (entCheckbox) {
+                        const entertainForm = document.getElementById('form-container-detail');
+                        const relationForm = document.getElementById('form-container-relation');
+
+                        const selects = entertainForm.querySelectorAll('select[name="enter_type_e_detail[]"]');
+                        const amounts = entertainForm.querySelectorAll('input[name="nominal_e_detail[]"]');
+                        const details = entertainForm.querySelectorAll('textarea[name="enter_fee_e_detail[]"]');
+
+                        const namer = relationForm.querySelectorAll('input[name="rname_e_relation[]"]');
+                        const positionr = relationForm.querySelectorAll('input[name="rposition_e_relation[]"]');
+                        const companyr = relationForm.querySelectorAll('input[name="rcompany_e_relation[]"]');
+                        const purposer = relationForm.querySelectorAll('textarea[name="rpurpose_e_relation[]"]'); // <- ini textarea, bukan input
+
+                        let hasEmptyField = false;
+                        let relationField = false;
+
+                        selects.forEach(select => { if (!select.value) hasEmptyField = true; });
+                        amounts.forEach(input => { if (!input.value) hasEmptyField = true; });
+                        details.forEach(textarea => { if (!textarea.value.trim()) hasEmptyField = true; });
+
+                        namer.forEach(input => { if (!input.value.trim()) relationField = true; });
+                        positionr.forEach(input => { if (!input.value.trim()) relationField = true; });
+                        companyr.forEach(input => { if (!input.value.trim()) relationField = true; });
+                        purposer.forEach(textarea => { if (!textarea.value.trim()) relationField = true; });
+
+                        if (hasEmptyField) {
+                            Swal.fire({
+                                title: "Incomplete Form",
+                                text: "Please fill in all Entertainment detail fields before submitting.",
+                                icon: "warning",
+                                confirmButtonColor: "#AB2F2B"
+                            });
+                            return;
+                        }
+
+                        if (relationField) {
+                            Swal.fire({
+                                title: "Incomplete Form",
+                                text: "Please fill in all Relation detail fields before submitting.",
+                                icon: "warning",
+                                confirmButtonColor: "#AB2F2B"
+                            });
+                            return;
+                        }
+                    }
+
                     // Show SweetAlert confirmation with the input summary
                     Swal.fire({
                         title: "Do you want to submit this request?",

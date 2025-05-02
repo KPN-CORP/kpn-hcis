@@ -86,15 +86,15 @@
 
             <!-- Add Data Button -->
             <div class="col-md-6 mt-4 mb-2 text-end">
-                {{-- @if ($disableBT >= 2)
-                    <a href="#" class="btn btn-primary rounded-pill" onclick="showPendingAlert(); return false;">
-                        <i class="bi bi-plus-circle"></i> Add Data
-                    </a>
-                @else --}}
+                @if($employees->bank_account_number != '' && $employees->bank_name != '' && $employees->bank_account_name != '')
                     <a href="{{ route('businessTrip.add') }}" class="btn btn-primary rounded-pill">
                         <i class="bi bi-plus-circle"></i> Add Data
                     </a>
-                {{-- @endif --}}
+                @else
+                    <a href="#" class="btn btn-primary rounded-pill" onclick="showBankAlert(); return false;">
+                        <i class="bi bi-plus-circle"></i> Add Data
+                    </a>
+                @endif
             </div>
         </div>
     </div>
@@ -570,6 +570,15 @@
                     Swal.fire({
                         title: 'Cannot Add Data!',
                         text: 'You still have 2 Outstanding BT Please Check Your Request or Declaration',
+                        icon: 'warning',
+                        confirmButtonColor: "#9a2a27",
+                        confirmButtonText: 'OK'
+                    });
+                }
+                function showBankAlert() {
+                    Swal.fire({
+                        title: 'Cannot Add Data!',
+                        text: 'Please complete your Bank Account Details in Darwinbox before submitting a Business Travel Request',
                         icon: 'warning',
                         confirmButtonColor: "#9a2a27",
                         confirmButtonText: 'OK'

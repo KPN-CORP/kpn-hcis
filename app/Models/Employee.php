@@ -21,6 +21,8 @@ class Employee extends Model
         'email',
         'group_company',
         'designation',
+        'designation_code',
+        'designation_name',
         'job_level',
         'company_name',
         'contribution_level_code',

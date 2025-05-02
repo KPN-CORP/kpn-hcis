@@ -44,7 +44,7 @@ class Taksi extends Model
     {
         return $this->hasOne(TaksiApproval::class, 'vt_id', 'id')
             ->where('layer', 1)
-            ->where('approval_status', 'Pending L2')
+            ->whereIn('approval_status', ['Pending L2', 'Approved'])
             ->latest('approved_at');
     }
     public function latestApprovalL2()

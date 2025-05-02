@@ -25,7 +25,7 @@ class AttendanceController extends Controller
 
     public function UpdateBTtoDBnextstep()
     {
-        $attdUpdates = bt_attendance_backup::where('backup_status', 'N')
+        $attdUpdates = bt_attendance_backup::where('update_db', 'N')
             ->whereDate('date', '<', Carbon::today()) // Tambahkan filter tanggal
             ->get();
 
