@@ -809,7 +809,7 @@
 
             @if (isset($declareCA['detail_meals']) &&
                     count($declareCA['detail_meals']) > 0 &&
-                    !empty($declareCA['detail_meals'][0]['keterangan']))
+                    !empty($declareCA['detail_meals'][0]['company_code']))
                 <table class="table-approve">
                     <tr>
                         <th colspan="6"><b>Meals Declaration :</b></th>

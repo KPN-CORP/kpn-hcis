@@ -43,7 +43,7 @@ class MedicalExport implements FromCollection, WithHeadings, WithStyles, WithEve
     {
 
         $currentYear = date('Y');
-        $userRole = auth()->user()->roles->first();
+        $userRole = auth()->user()->roles->last();
         $roleRestriction = json_decode($userRole->restriction, true);
 
         $restrictedWorkAreas = $roleRestriction['work_area_code'] ?? [];
@@ -108,6 +108,7 @@ class MedicalExport implements FromCollection, WithHeadings, WithStyles, WithEve
                         'NoMed' => $coverage->no_medic,
                         'Employee ID' => $employee->employee_id,
                         'Name' => $employee->fullname,
+                        'Month (Transaction Date)' => \Carbon\Carbon::parse($coverage->date)->format('M-y'),
                         'Transaction Date' => \Carbon\Carbon::parse($coverage->date)->format('d-F-Y'),
                         'Submission Date' => \Carbon\Carbon::parse($coverage->created_at)->format('d-F-Y'),
                         'Patient Name' => $coverage->patient_name,
@@ -119,11 +120,11 @@ class MedicalExport implements FromCollection, WithHeadings, WithStyles, WithEve
                         'NoRek' => $employee->bank_name . ' - ' . $employee->bank_account_number,
                         'NoInvoice' => $coverage->no_invoice,
                         'MedicalType' => $coverage->medical_type,
-                        'Amount' => 'Rp ' . number_format($coverage->balance, 0, ',', '.'),
-                        'AmountUncoverage' => 'Rp ' . number_format($coverage->balance_uncoverage, 0, ',', '.'),
-                        'AmountVerify' => 'Rp ' . number_format($amountVerify, 0, ',', '.'),  
-                        'AmountBPJS' => 'Rp ' . number_format($amountBPJS, 0, ',', '.'),  
-                        'AmountInovice' => 'Rp ' . number_format($amountInvoice, 0, ',', '.'),
+                        'Amount' => $coverage->balance,
+                        'AmountUncoverage' => $coverage->balance_uncoverage,
+                        'AmountVerify' => $amountVerify,  
+                        'AmountBPJS' => $amountBPJS,  
+                        'AmountInovice' => $amountInvoice,
                         'AdminNotes' => $coverage->admin_notes,
                         'PT' => $employee->company_name,
                         'CostCenter' => $employee->contribution_level_code,
@@ -146,6 +147,7 @@ class MedicalExport implements FromCollection, WithHeadings, WithStyles, WithEve
             'No Medical',
             'Employee ID',
             'Employee Name',
+            'Month (Transaction Date)',
             'Transaction Date',
             'Submission Date',
             'Patient Name',

@@ -551,7 +551,7 @@
                 </div>
             </div>
         @endforeach
-        @foreach ($declareCa['detail_meals'] as $index => $meals_dec)
+        @foreach ($caDetail['detail_meals'] as $index => $meals_dec)
             @if (!isset($caDetail['detail_meals'][$index]))
                 <div id="form-container-bt-meals-{{ $loop->index + 1 }}" class="p-2 mb-2 bg-light card-body rounded-2">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Meals {{ $loop->index + 1 }}</p>

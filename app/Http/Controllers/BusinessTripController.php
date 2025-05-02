@@ -41,6 +41,7 @@ use App\Mail\BusinessTripNotification;
 use App\Mail\DeclarationNotification;
 use App\Mail\RefundNotification;
 use App\Models\ca_extend;
+use Illuminate\Support\Facades\Http;
 
 class BusinessTripController extends Controller
 {
@@ -160,9 +161,13 @@ class BusinessTripController extends Controller
         $btApprovals = $btApprovals->keyBy('bt_id');
         // dd($btApprovals);
         // Log::info('BT Approvals:', $btApprovals->toArray());
+        
+        $employees = Employee::where('id', $user->id)->first();
+        if (!$employees->updated_at->isToday()) {
+            $this->UpdateDetailEmployees($user->employee_id);
+        }
 
         $employeeIds = $sppd->pluck('user_id')->unique();
-        $employees = Employee::whereIn('id', $employeeIds)->get()->keyBy('id');
         $employeeName = Employee::pluck('fullname', 'employee_id');
         // Fetch related data
         $caTransactions = ca_transaction::whereIn('no_sppd', $sppdNos)
@@ -181,7 +186,7 @@ class BusinessTripController extends Controller
         $parentLink = 'Reimbursement';
         $link = 'Business Travel';
 
-        return view('hcis.reimbursements.businessTrip.businessTrip', compact('sppd', 'parentLink', 'link', 'caTransactions', 'tickets', 'hotel', 'taksi', 'managerL1Names', 'managerL2Names', 'filter', 'btApprovals', 'employeeName', 'disableBT', 'mess'));
+        return view('hcis.reimbursements.businessTrip.businessTrip', compact('sppd', 'parentLink', 'link', 'caTransactions', 'tickets', 'hotel', 'taksi', 'managerL1Names', 'managerL2Names', 'filter', 'btApprovals', 'employeeName', 'disableBT', 'mess','employees'));
     }
 
     public function delete($id)
@@ -257,7 +262,10 @@ class BusinessTripController extends Controller
         $group_company = Employee::where('id', $userId)->pluck('group_company')->first();
         $bt_sppd = BusinessTrip::where('status', '!=', 'Done')->where('status', '!=', 'Rejected')->where('status', '!=', 'Draft')->orderBy('no_sppd', 'desc')->get();
 
-        $isApproved = CATransaction::where('user_id', $userId)->where('approval_status', '!=', 'Done')->where('approval_status', '!=', 'Rejected')->get();
+        $isApproved = CATransaction::where('user_id', $userId)
+            ->where('ca_status', '!=', 'Done')
+            ->where('approval_status', '!=', 'Rejected')
+            ->where('total_ca', '!=', 0)->get();
 
         $isDisabled = $isApproved->count() >= 2;
 
@@ -3932,6 +3940,7 @@ class BusinessTripController extends Controller
 
         $isApproved = CATransaction::where('user_id', $userId)
             ->where('ca_status', '!=', 'Done')
+            ->where('approval_status', '!=', 'Rejected')
             ->where('total_ca', '!=', 0)->get();
         //->where('approval_sett', '!=', 'Approved')
 
@@ -4468,7 +4477,7 @@ class BusinessTripController extends Controller
                     } else {
                         $employee_id = $data_matrix_approval->employee_id;
                     }
-                    if ($employee_id != null) {
+                    if (!empty($employee_id) && $employee_id !== "-") {
                         $model_approval = new ca_approval;
                         $model_approval->ca_id = $ca_id;
                         $model_approval->role_name = $data_matrix_approval->desc;
@@ -5560,10 +5569,10 @@ class BusinessTripController extends Controller
 
                     $ca->declare_ca = json_encode($declare_ca);
 
-                    if ($ca->total_cost <= 0 && $request->input('accept_status') === 'Return/Refund') {
+                    if ($ca->total_cost < 0 && $request->input('accept_status') === 'Return/Refund') {
                         return redirect()->back()->with('error', 'Cannot set status to Return/Refund when the Total Cost is negative.');
                     }
-                    if ($ca->total_cost > 0 && $request->input('accept_status') === 'Return/Refund') {
+                    if ($ca->total_cost >= 0 && $request->input('accept_status') === 'Return/Refund') {
                         $employeeEmail = Employee::where('id', $n->user_id)->pluck('email')->first();
                         // $employeeEmail = "erzie.aldrian02@gmail.com";
                         $employeeName = Employee::where('id', $n->user_id)->pluck('fullname')->first();
@@ -9316,5 +9325,102 @@ class BusinessTripController extends Controller
             12 => 'XII'
         ];
         return $romanMonths[$month];
+    }
+
+    private function UpdateDetailEmployees($employeeId)
+    {
+        Log::info('UpdateDetailEmployees method started.');
+
+        // URL API
+        $url = 'https://kpncorporation.darwinbox.com/masterapi/employee';
+
+        // Header
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Basic ZGFyd2luYm94c3R1ZGlvOkRCc3R1ZGlvMTIzNDUh'
+        ];
+
+        // Data untuk request dengan limit dan start
+        $data = [
+            "api_key" => "46313f36ab8a8bc5aad64ff1c80c769a07716d9af8f07850f6ad2465a0c991b4d42e84414b5775ba151e7f2833223bfb1e0ecf49b89c7d6d0f6a6d39231666f8",
+            "datasetKey" => "11f8ded39d3f22e7c71900d90605c7bf8ef211ac94956b07cc2f8c340d61a4528342feb5afc4b9a9db0b980427007db0dd61db52ae857699d80d9c79a28078cc",
+            "employee_ids" => [$employeeId]
+        ];
+
+        try {
+            Log::info('Sending request to API', ['url' => $url, 'data' => $data]);
+
+            // Request ke API menggunakan Laravel Http Client
+            $response = Http::withHeaders($headers)->post($url, $data);
+
+            // Check response status
+            if ($response->failed()) {
+                Log::error('API request failed', ['status' => $response->status(), 'response' => $response->body()]);
+                return; // Lanjutkan iterasi berikutnya
+            }
+
+            // Parse response
+            $employees = $response->json('employee_data');
+            if (empty($employees)) {
+                Log::info('No employees data returned from API', ['start' => $start]);
+                return;
+            }
+
+            Log::info('API response received', ['employee_count' => count($employees)]);
+            $totalSaved = 0;
+            
+            // Simpan data ke database
+            foreach ($employees as $employee) {
+                Employee::where('employee_id', $employee['employee_id'])->update([
+                    'fullname' => $employee['full_name'],
+                    'gender' => $employee['gender'],
+                    'email' => $employee['company_email_id'],
+                    'group_company' => $employee['group_company'],
+                    'designation' => $employee['designation'],
+                    'designation_code' => $employee['designation_code'],
+                    'designation_name' => $employee['designation_name'],
+                    'job_level' => $employee['job_level'],
+                    'company_name' => $employee['contribution_level'],
+                    'contribution_level_code' => $employee['contribution_level_code'],
+                    'work_area_code' => $employee['work_area_code'],
+                    'office_area' => $employee['office_area'],
+                    'manager_l1_id' => $employee['direct_manager_employee_id'],
+                    'manager_l2_id' => $employee['l2_manager_employee_id'],
+                    'employee_type' => $employee['employee_type'],
+                    'unit' => $employee['unit'],
+                    'date_of_joining' => $employee['date_of_joining'],
+                    'users_id' => $employee['user_unique_id'],
+                    'personal_email' => $employee['personal_email_id'],
+                    'personal_mobile_number' => $employee['personal_mobile_no'],
+                    'date_of_birth' => $employee['date_of_birth'],
+                    'place_of_birth' => $employee['place_of_birth'],
+                    'nationality' => $employee['nationality'],
+                    'religion' => $employee['religion'],
+                    'marital_status' => $employee['marital_status'],
+                    'citizenship_status' => $employee['citizenship_status'],
+                    'ethnic_group' => $employee['suku'],
+                    'homebase' => $employee['homebase'],
+                    'current_address' => $employee['current_address'],
+                    'current_city' => $employee['current_city'],
+                    'permanent_address' => $employee['permanent_address'],
+                    'permanent_city' => $employee['permanent_city'],
+                    'blood_group' => $employee['blood_group'],
+                    'tax_status' => $employee['status_ptkp'],
+                    'bpjs_tk' => $employee['badan_penyelenggara_jaminan_sosial_(bpjs)_tenaga_kerja_(bpjstk)'],
+                    'bpjs_ks' => $employee['badan_penyelenggara_jaminan_sosial_(bpjs)_kesehatan_(bpjskes)'],
+                    'ktp' => $employee['nomor_ktp'],
+                    'kk' => $employee['family_card_number_(nomor_kk)'],
+                    'npwp' => $employee['nomor_npwp'],
+                    'mother_name' => $employee['mother_name'],
+                    'bank_name' => $employee['nama_bank'],
+                    'bank_account_number' => $employee['bank_account'],
+                    'bank_account_name' => $employee['nama_pemilik_rekening']
+                ]);
+
+                $totalSaved++;
+            }
+        } catch (\Exception $e) {
+            Log::error('Exception occurred during API fetch', ['error' => $e->getMessage()]);
+        }
     }
 }

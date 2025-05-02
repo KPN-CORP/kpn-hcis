@@ -51,7 +51,7 @@ class BusinessTrip extends Model
     {
         return $this->hasOne(BTApproval::class, 'bt_id', 'id')
             ->where('layer', 1)
-            ->where('approval_status', 'Pending L2')
+            ->whereIn('approval_status', ['Pending L2', 'Approved'])
             ->latest('approved_at')
             ->with('manager1');
     }
@@ -70,7 +70,7 @@ class BusinessTrip extends Model
     {
         return $this->hasOne(BTApproval::class, 'bt_id', 'id')
             ->where('layer', 1)
-            ->where('approval_status', 'Declaration L2')
+            ->whereIn('approval_status', ['Declaration L2', 'Declaration Approved'])
             ->latest('approved_at')
             ->with('manager1');
     }

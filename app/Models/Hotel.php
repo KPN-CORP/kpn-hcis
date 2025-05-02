@@ -99,7 +99,7 @@ class Hotel extends Model
     {
         return $this->hasOne(HotelApproval::class, 'htl_id', 'id')
             ->where('layer', 1)
-            ->where('approval_status', 'Pending L2')
+            ->whereIn('approval_status', ['Pending L2', 'Approved'])
             ->latest('approved_at');
     }
     public function latestApprovalL2()
