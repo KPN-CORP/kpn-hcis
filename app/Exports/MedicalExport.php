@@ -130,6 +130,7 @@ class MedicalExport implements FromCollection, WithHeadings, WithStyles, WithEve
                         'CostCenter' => $employee->contribution_level_code,
                         'JobLevel' => $employee->job_level,
                         'GroupCompany' => $employee->group_company,
+                        'VerifDate' => \Carbon\Carbon::parse($coverage->approved_at)->format('d-F-Y'),
                     ];
                 // }
             }
@@ -169,6 +170,7 @@ class MedicalExport implements FromCollection, WithHeadings, WithStyles, WithEve
             'Cost Center',
             'Job Level',
             'Group Company',
+            'Verification Date',
         ];
 
         return $headings;

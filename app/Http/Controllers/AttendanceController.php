@@ -52,7 +52,7 @@ class AttendanceController extends Controller
 
             $processedData[] = $attendanceData;
 
-            $attdUpdate->update(['backup_status' => 'Y']);
+            $attdUpdate->update(['update_db' => 'Y']);
         }
         return response()->json([
             'message' => 'Job dispatched successfully!',

@@ -100,7 +100,7 @@
                         <div class="col-md-12 mb-2">
                             <label for="ket_tkt_<?php echo $i; ?>" class="form-label">Information</label>
                             <textarea class="form-control" id="ket_tkt_<?php echo $i; ?>" name="ket_tkt[]" rows="3"
-                                placeholder="This field is for adding ticket details, e.g., Citilink, Garuda Indonesia, etc."></textarea>
+                                placeholder="This field is for adding ticket details"></textarea>
                         </div>
                     </div>
                     <div class="mt-2">

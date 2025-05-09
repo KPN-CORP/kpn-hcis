@@ -744,7 +744,7 @@
                     //     });
                     //     return; // Exit without showing the confirmation if all fields are zero
                     // }
-
+                    
                     const caChecked = caCheckbox ? 'CA' : '';
                     const entChecked = entCheckbox ? 'ENT' : '';
                     const ticketChecked = document.getElementById('ticketCheckbox').checked ?
@@ -886,6 +886,38 @@
                         }
                     }
 
+                    const ticketChecked = document.getElementById('ticketCheckbox').checked;
+                    if (ticketChecked) {
+                        const tiketForm = document.getElementById('tiket_div');
+
+                        const fieldsToCheck = [
+                            { nodes: tiketForm.querySelectorAll('select[name="noktp_tkt[]"]'), label: 'Employee Name' },
+                            { nodes: tiketForm.querySelectorAll('input[name="dari_tkt[]"]'), label: 'From (Dari)' },
+                            { nodes: tiketForm.querySelectorAll('input[name="ke_tkt[]"]'), label: 'To (Ke)' },
+                            { nodes: tiketForm.querySelectorAll('select[name="jenis_tkt[]"]'), label: 'Transportation Type' },
+                            { nodes: tiketForm.querySelectorAll('select[name="type_tkt[]"]'), label: 'Ticket Type' },
+                            { nodes: tiketForm.querySelectorAll('input[name="tgl_brkt_tkt[]"]'), label: 'Date' },
+                            { nodes: tiketForm.querySelectorAll('input[name="jam_brkt_tkt[]"]'), label: 'Time' },
+                            { nodes: tiketForm.querySelectorAll('textarea[name="ket_tkt[]"]'), label: 'Information' },
+                        ];
+
+                        for (const field of fieldsToCheck) {
+                            for (const node of field.nodes) {
+                                if (!node.value.trim()) {
+                                    Swal.fire({
+                                        title: "Field Required",
+                                        text: `Please fill in the "${field.label}" field.`,
+                                        icon: "warning",
+                                        confirmButtonColor: "#AB2F2B"
+                                    }).then(() => {
+                                        node.scrollIntoView({ behavior: "smooth", block: "center" });
+                                        node.focus();
+                                    });
+                                    return; // Stop checking further fields
+                                }
+                            }
+                        }
+                    }
                     // Show SweetAlert confirmation with the input summary
                     Swal.fire({
                         title: "Do you want to submit this request?",

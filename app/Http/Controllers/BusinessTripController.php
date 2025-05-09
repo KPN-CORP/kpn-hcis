@@ -5601,19 +5601,19 @@ class BusinessTripController extends Controller
                 $detail_ent_req = isset($entrNtfRe) && isset($entrNtfRe->detail_ca) ? json_decode($entrNtfRe->detail_ca, true) : [];
 
                 $caDetails = [
-                    'total_days_perdiem' => array_sum(array_column($detail_ca_req['detail_perdiem'] ?? [], 'total_days')),
+                    // 'total_days_perdiem' => array_sum(array_column($detail_ca_req['detail_perdiem'] ?? [], 'total_days')),
                     'total_amount_perdiem' => array_sum(array_column($detail_ca_req['detail_perdiem'] ?? [], 'nominal')),
 
-                    'total_days_transport' => count($detail_ca_req['detail_transport'] ?? []),
+                    // 'total_days_transport' => count($detail_ca_req['detail_transport'] ?? []),
                     'total_amount_transport' => array_sum(array_column($detail_ca_req['detail_transport'] ?? [], 'nominal')),
 
-                    'total_days_accommodation' => array_sum(array_column($detail_ca_req['detail_penginapan'] ?? [], 'total_days')),
+                    // 'total_days_accommodation' => array_sum(array_column($detail_ca_req['detail_penginapan'] ?? [], 'total_days')),
                     'total_amount_accommodation' => array_sum(array_column($detail_ca_req['detail_penginapan'] ?? [], 'nominal')),
 
-                    'total_days_others' => count($detail_ca_req['detail_lainnya'] ?? []),
+                    // 'total_days_others' => count($detail_ca_req['detail_lainnya'] ?? []),
                     'total_amount_others' => array_sum(array_column($detail_ca_req['detail_lainnya'] ?? [], 'nominal')),
 
-                    'total_days_meals' => array_sum(array_column($detail_ca_req['detail_meals'] ?? [], 'total_days')),
+                    // 'total_days_meals' => array_sum(array_column($detail_ca_req['detail_meals'] ?? [], 'total_days')),
                     'total_amount_meals' => array_sum(array_column($detail_ca_req['detail_meals'] ?? [], 'nominal')),
                 ];
                 $entDetails = [
@@ -5624,19 +5624,19 @@ class BusinessTripController extends Controller
                 $declare_ca_ntf = isset($dnsNtfRe) && isset($dnsNtfRe->detail_ca) ? json_decode($dnsNtfRe->declare_ca, true) : [];
                 $declare_ent_ntf = isset($entrNtfRe) && isset($entrNtfRe->detail_ca) ? json_decode($entrNtfRe->declare_ca, true) : [];
                 $caDeclare = [
-                    'total_days_perdiem' => array_sum(array_column($declare_ca_ntf['detail_perdiem'] ?? [], 'total_days')),
+                    // 'total_days_perdiem' => array_sum(array_column($declare_ca_ntf['detail_perdiem'] ?? [], 'total_days')),
                     'total_amount_perdiem' => array_sum(array_column($declare_ca_ntf['detail_perdiem'] ?? [], 'nominal')),
 
-                    'total_days_transport' => count($declare_ca_ntf['detail_transport'] ?? []),
+                    // 'total_days_transport' => count($declare_ca_ntf['detail_transport'] ?? []),
                     'total_amount_transport' => array_sum(array_column($declare_ca_ntf['detail_transport'] ?? [], 'nominal')),
 
-                    'total_days_accommodation' => array_sum(array_column($declare_ca_ntf['detail_penginapan'] ?? [], 'total_days')),
+                    // 'total_days_accommodation' => array_sum(array_column($declare_ca_ntf['detail_penginapan'] ?? [], 'total_days')),
                     'total_amount_accommodation' => array_sum(array_column($declare_ca_ntf['detail_penginapan'] ?? [], 'nominal')),
 
-                    'total_days_others' => count($declare_ca_ntf['detail_lainnya'] ?? []),
+                    // 'total_days_others' => count($declare_ca_ntf['detail_lainnya'] ?? []),
                     'total_amount_others' => array_sum(array_column($declare_ca_ntf['detail_lainnya'] ?? [], 'nominal')),
 
-                    'total_days_meals' => array_sum(array_column($declare_ca_ntf['detail_meals'] ?? [], 'total_days')),
+                    // 'total_days_meals' => array_sum(array_column($declare_ca_ntf['detail_meals'] ?? [], 'total_days')),
                     'total_amount_meals' => array_sum(array_column($declare_ca_ntf['detail_meals'] ?? [], 'nominal')),
                 ];
                 // dd($caDeclare);
@@ -5644,9 +5644,12 @@ class BusinessTripController extends Controller
                     'total_amount_ent' => array_sum(array_column($declare_ent_ntf['detail_e'] ?? [], 'nominal')),
                 ];
 
+                $dnsNtfRe = $caTrans->where('type_ca', 'dns')->first();
+                $entrNtfRe = $caTrans->where('type_ca', 'entr')->first();
+
                 $selisihCa = array_sum($caDetails) - array_sum($caDeclare);
                 $selisihEnt = array_sum($entDetails) - array_sum($entDeclare);
-                // dd($newDeclareCa, $selisih);
+                // dd($newDeclareCa, $selisih);asd
 
                 // Send email to the manager
                 try {
