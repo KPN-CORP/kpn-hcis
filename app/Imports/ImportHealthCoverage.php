@@ -85,12 +85,13 @@ class ImportHealthCoverage implements ToModel
         // Validasi apakah telah ada record yang sama
         $expectedRecord = HealthCoverage::where('employee_id', $row[2])
         ->where('no_invoice', $row[4])
+        ->where('patient_name', $row[6])
         ->where('disease', $row[7])
         ->where('medical_type', $row[11])
         ->where('balance', $row[12])
         ->first();
         if ($expectedRecord) {
-            $errorMessage = "Transaksi Medical dengan Employee Name '{$row[1]}' Invoice '{$row[4]}', Desease '{$row[7]}', Medical Type '{$row[11]}' dan Nominal '{$row[12]}' sudah pernah di ajukan.";
+            $errorMessage = "Transaksi Medical dengan Employee Name '{$row[1]}', Pasien '{$row[6]}', Invoice '{$row[4]}', Desease '{$row[7]}', Medical Type '{$row[11]}' dan Nominal '{$row[12]}' sudah pernah di ajukan.";
         }
 
         // Validasi Medical Type
@@ -152,6 +153,7 @@ class ImportHealthCoverage implements ToModel
             'verif_by' => $employee->employee_id,
             'approved_by' => $employee->employee_id,
             'created_at' => now(),
+            'approved_at' => now(),
         ]);
 
         $this->batchRecords[] = $healthCoverage;

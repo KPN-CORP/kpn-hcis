@@ -1121,7 +1121,6 @@ class MedicalController extends Controller
                 // Update the medical record to mark it as done and store verification info
                 $coverage->update([
                     'status' => $statusValue,
-                    'verif_by' => Auth::user()->employee_id,
                     'approved_by' => $employee_id,
                     'approved_at' => now(),
                 ]);
@@ -1333,17 +1332,17 @@ class MedicalController extends Controller
             $balances[$plan->employee_id][$plan->medical_type] = $plan->balance;
         }
 
-        foreach ($med_employee as $transaction) {
-            $transaction->ReqName = $transaction->statusReqEmployee ? $transaction->statusReqEmployee->fullname : '';
-            $transaction->settName = $transaction->statusSettEmployee ? $transaction->statusSettEmployee->fullname : '';
+        // foreach ($med_employee as $transaction) {
+        //     $transaction->ReqName = $transaction->statusReqEmployee ? $transaction->statusReqEmployee->fullname : '';
+        //     $transaction->settName = $transaction->statusSettEmployee ? $transaction->statusSettEmployee->fullname : '';
 
-            $employeeMedicalPlan = $medical_plans->where('employee_id', $transaction->employee_id)->first();
-            $transaction->period = $employeeMedicalPlan ? $employeeMedicalPlan->period : '-';
+        //     $employeeMedicalPlan = $medical_plans->where('employee_id', $transaction->employee_id)->first();
+        //     $transaction->period = $employeeMedicalPlan ? $employeeMedicalPlan->period : '-';
 
-            if (isset($medicalGroup[$transaction->employee_id])) {
-                $transaction->medical_coverage = $medicalGroup[$transaction->employee_id];
-            }
-        }
+        //     if (isset($medicalGroup[$transaction->employee_id])) {
+        //         $transaction->medical_coverage = $medicalGroup[$transaction->employee_id];
+        //     }
+        // }
 
         return view('hcis.reimbursements.medical.admin.reportMedicalAdmin', [
             'link' => $link,
@@ -1450,6 +1449,98 @@ class MedicalController extends Controller
         $formatted_data = [];
         foreach ($medical_plan as $plan) {
             $formatted_data[$plan->period][$plan->medical_type] = $plan->balance;
+        }
+
+        $employees_cast = Employee::where('employee_id', $employee_id)->get();
+        $currentYear = date('Y');
+
+        foreach ($employees_cast as $employee) {
+            $startDate = $employee->date_of_joining;
+            $job_level = $employee->job_level;
+            $endDate = date('Y-12-31');
+
+            $startDate = date_create($startDate);
+            $endDate = date_create($endDate);
+            $difference = date_diff($startDate, $endDate);
+            $yearsWorked = $difference->y;
+
+            $plafond_list = MasterPlafond::where('group_name', $job_level)->get();
+
+            if ($yearsWorked > 0) {
+                foreach ($plafond_list as $plafond_lists) {
+                    $existingHealthPlan = HealthPlan::where('employee_id', $employee->employee_id)
+                        ->where('period', $currentYear)
+                        ->where('medical_type', $plafond_lists->medical_type)
+                        ->first();
+
+                    if (!$existingHealthPlan) {
+                        $newHealthPlan = HealthPlan::create([
+                            'plan_id' => (string) Str::uuid(),
+                            'employee_id' => $employee->employee_id,
+                            'medical_type' => $plafond_lists->medical_type,
+                            'balance' => $plafond_lists->balance,
+                            'period' => $currentYear,
+                            'created_by' => $employee_id,
+                            'created_at' => now(),
+                        ]);
+
+                        if ($newHealthPlan) {
+                            session()->flash('refresh', true);
+                        }
+                    }
+                }
+            } elseif ($yearsWorked == 0) {
+                $startDate = date_create($employee->date_of_joining);
+
+                $tanggal = date_format($startDate, "d");
+                if ($tanggal > 15) {
+                    $bulan_awal = date_format($startDate, "m") + 1; // Bulan setelahnya
+                    // Jika bulan menjadi 13 (Desember ke Januari), reset ke 01
+                    if ($bulan_awal == 13) {
+                        $bulan_awal = '1';
+                    }
+                } else {
+                    $bulan_awal = date_format($startDate, "m"); // Bulan tetap
+                }
+
+                $bulan_akhir = 12;
+                $bulan = ($bulan_akhir - $bulan_awal) + 1;
+
+                foreach ($plafond_list as $plafond_lists) {
+                    $balance = 0;
+
+                    $existingHealthPlan = HealthPlan::where('employee_id', $employee->employee_id)
+                        ->where('period', $currentYear)
+                        ->where('medical_type', $plafond_lists->medical_type)
+                        ->first();
+
+                    if (!$existingHealthPlan) {
+                        if ($plafond_lists->medical_type == 'Maternity') {
+                            $balance = $plafond_lists->balance * ($bulan / 12);
+                        } elseif ($plafond_lists->medical_type == 'Inpatient') {
+                            $balance = $plafond_lists->balance * ($bulan / 12);
+                        } elseif ($plafond_lists->medical_type == 'Outpatient') {
+                            $balance = $plafond_lists->balance * ($bulan / 12);
+                        } elseif ($plafond_lists->medical_type == 'Glasses') {
+                            $balance = $plafond_lists->balance * ($bulan / 12);
+                        }
+
+                        $newHealthPlan = HealthPlan::create([
+                            'plan_id' => (string) Str::uuid(),
+                            'employee_id' => $employee->employee_id,
+                            'medical_type' => $plafond_lists->medical_type,
+                            'balance' => $balance,
+                            'period' => $currentYear,
+                            'created_by' => $employee_id,
+                            'created_at' => now(),
+                        ]);
+
+                        if ($newHealthPlan) {
+                            session()->flash('refresh', true);
+                        }
+                    }
+                }
+            }
         }
 
         $year = date('Y');
