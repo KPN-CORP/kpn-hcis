@@ -45,6 +45,7 @@
                             <select class="form-select form-select-sm" name="jenis_tkt_dalam_kota[]"
                                 id="jenis_tkt_dalam_kota_<?php echo $i; ?>">
                                 <option value="">Select Transportation Type</option>
+                                <option value="Airplane">Airplane</option>
                                 <option value="Train">Train</option>
                                 <option value="Ferry">Ferry</option>
                             </select>

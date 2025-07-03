@@ -647,7 +647,7 @@
             </div>
             <input class="form-control bg-light" name="total_bt_meals" id="total_bt_meals" type="text"
                 min="0"
-                value="{{ number_format(array_sum(array_column($declareCa['detail_meals'], 'nominal')), 0, ',', '.') }}"
+                value="{{ isset($declareCa['detail_meals']) ? number_format(array_sum(array_column($declareCa['detail_meals'], 'nominal')), 0, ',', '.') : '0' }}"
                 readonly>
         </div>
     </div>
@@ -749,7 +749,7 @@
             </div>
             <input class="form-control bg-light" name="total_bt_meals" id="total_bt_meals" type="text"
                 min="0"
-                value="{{ number_format(array_sum(array_column($declareCa['detail_meals'], 'nominal')), 0, ',', '.') }}"
+                value="{{ isset($declareCa['detail_meals']) ? number_format(array_sum(array_column($declareCa['detail_meals'], 'nominal')), 0, ',', '.') : '0' }}"
                 readonly>
         </div>
     </div>

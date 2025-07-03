@@ -132,7 +132,11 @@
         <tr>
             <td class="label">Name</td>
             <td class="colon">:</td>
-            <td class="value">{{ $transactions->employee->fullname }}</td>
+            <td class="value">{{ $transactions->employee->fullname }}
+                @if($transactions->employee->group_company === 'Plantations')
+                    ({{ $transactions->employee->job_level }})
+                @endif
+            </td>
         </tr>
         <tr>
             <td class="label">NIK</td>
@@ -307,7 +311,7 @@
                     @if (array_sum(array_column($detailCA['detail_penginapan'], 'total_days')) <= 0)
                         -
                     @else
-                        {{ array_sum(array_column($detailCA['detail_penginapan'], 'total_days')) }} Night
+                        {{ array_sum(array_column($detailCA['detail_penginapan'], 'total_days'))-1 }} Night
                     @endif
                 </td>
                 <td>
@@ -569,7 +573,7 @@
                                 <td>{{ \Carbon\Carbon::parse($perdiem['end_date'])->format('d-M-y') }}</td>
                                 <td>{{ $perdiem['hotel_name'] }}</td>
                                 <td>{{ $perdiem['company_code'] }}</td>
-                                <td>{{ $perdiem['total_days'] }} Night</td>
+                                <td>{{ $perdiem['total_days']-1 }} Night</td>
                                 <td>
                                     <span style="float: left; margin-left:4px">Rp.</span>
                                     <span
@@ -580,7 +584,7 @@
                         <tr class="total-row">
                             <td colspan="4" class="head-row">Total</td>
                             <td>
-                                {{ array_sum(array_column($detailCA['detail_penginapan'], 'total_days')) }} Night
+                                {{ array_sum(array_column($detailCA['detail_penginapan'], 'total_days'))-1 }} Night
                             </td>
                             <td>
                                 <span style="float: left; margin-left:4px">Rp.</span>

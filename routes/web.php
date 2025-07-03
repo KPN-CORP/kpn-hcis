@@ -61,6 +61,7 @@ Route::get('sourcermb/dbauth', [SsoController::class, 'dbauthReimburse']);
 Route::get('sourcetrv/dbauth', [SsoController::class, 'dbauthTravel']);
 
 Route::get('fetch-employees', [EmployeeController::class, 'fetchAndStoreEmployees']);
+Route::get('fetch-employees2', [EmployeeController::class, 'fetchAndStoreEmployees2']);
 Route::get('inactive-employees', [EmployeeController::class, 'EmployeeInactive']);
 Route::get('updmenu-employees', [EmployeeController::class, 'updateEmployeeAccessMenu']);
 Route::get('daily-schedules', [ScheduleController::class, 'reminderDailySchedules']);
