@@ -178,27 +178,36 @@ class ApprovalReimburseController extends Controller
             ->where('approval_medical', $employee->employee_id)
             ->where('nama_bisnis', $employee->group_company)
             ->exists();
+        
+        $accessBisnis = DB::table('master_bisnisunits')
+            ->where('approval_medical', $employee->employee_id)
+            ->pluck('nama_bisnis') // Ambil hanya kolom nama_bisnis
+            ->toArray();
 
         if ($hasApprovalRights) {
-            $medicalGroup = HealthCoverage::select(
-                'no_medic',
-                'date',
-                'period',
-                'hospital_name',
-                'patient_name',
-                'disease',
-                DB::raw('SUM(CASE WHEN medical_type = "Maternity" THEN balance_verif ELSE 0 END) as maternity_balance_verif'),
-                DB::raw('SUM(CASE WHEN medical_type = "Inpatient" THEN balance_verif ELSE 0 END) as inpatient_balance_verif'),
-                DB::raw('SUM(CASE WHEN medical_type = "Outpatient" THEN balance_verif ELSE 0 END) as outpatient_balance_verif'),
-                DB::raw('SUM(CASE WHEN medical_type = "Glasses" THEN balance_verif ELSE 0 END) as glasses_balance_verif'),
-                'status'
+            $medicalGroup = HealthCoverage::from('mdc_transactions as mdc_transactions')
+            ->join('employees as e', 'mdc_transactions.employee_id', '=', 'e.employee_id')
+            ->select(
+                'mdc_transactions.no_medic',
+                'mdc_transactions.date',
+                'mdc_transactions.period',
+                'mdc_transactions.hospital_name',
+                'mdc_transactions.patient_name',
+                'mdc_transactions.disease',
+                DB::raw('SUM(CASE WHEN mdc_transactions.medical_type = "Maternity" THEN mdc_transactions.balance_verif ELSE 0 END) as maternity_balance_verif'),
+                DB::raw('SUM(CASE WHEN mdc_transactions.medical_type = "Inpatient" THEN mdc_transactions.balance_verif ELSE 0 END) as inpatient_balance_verif'),
+                DB::raw('SUM(CASE WHEN mdc_transactions.medical_type = "Outpatient" THEN mdc_transactions.balance_verif ELSE 0 END) as outpatient_balance_verif'),
+                DB::raw('SUM(CASE WHEN mdc_transactions.medical_type = "Glasses" THEN mdc_transactions.balance_verif ELSE 0 END) as glasses_balance_verif'),
+                'mdc_transactions.status',
+                'mdc_transactions.created_at'
             )
-                ->whereNotNull('verif_by')   // Only include records where verif_by is not null
-                ->whereNotNull('balance_verif')
-                ->where('status', 'Pending')
-                ->groupBy('no_medic', 'date', 'period', 'hospital_name', 'patient_name', 'disease', 'status', 'created_at')
-                ->orderBy('created_at', 'desc')
-                ->get();
+            ->whereNotNull('mdc_transactions.verif_by')
+            ->whereNotNull('mdc_transactions.balance_verif')
+            ->where('mdc_transactions.status', 'Pending')
+            ->whereIn('e.group_company', $accessBisnis)
+            ->groupBy('mdc_transactions.no_medic', 'mdc_transactions.date', 'mdc_transactions.period', 'mdc_transactions.hospital_name', 'mdc_transactions.patient_name', 'mdc_transactions.disease', 'mdc_transactions.status', 'mdc_transactions.created_at')
+            ->orderBy('mdc_transactions.created_at', 'desc')
+            ->get();
 
             // Add usage_id for each medical record without filtering by employee_id
             $medical = $medicalGroup->map(function ($item) {

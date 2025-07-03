@@ -55,7 +55,7 @@ class DesignationController extends Controller
 
             // Simpan data ke database
             foreach ($designations as $designation) {
-
+                $existing = Designation::where('job_code', $designation['job_code'])->first();
                 Designation::updateOrCreate(
                     ['job_code' => $designation['job_code']],
                     [
@@ -77,7 +77,9 @@ class DesignationController extends Controller
                         'number_of_positions' => $designation['number_of_positions'],
                         'number_of_existing_incumbents' => $designation['number_of_existing_incumbents'],
                         'department_hierarchy' => $designation['department_hierarchy'],
-                        'status' => $designation['status']
+                        'status' => $designation['status'],
+                        'dept_head_flag' => $existing?->dept_head_flag ?? 'F',
+                        'director_flag' => $existing?->director_flag ?? 'F'
                     ]
                 );
                 $number_data++;

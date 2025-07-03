@@ -147,8 +147,9 @@ class HomeTripController extends Controller
             $joiningDate = date_create($employee->date_of_joining);
             $monthDay = $joiningDate->format('m-d');
             $eligibleYear = (int) $joiningDate->format('Y') + 1;
+            $eligibleDateThisYear = $currentYear . '-' . $monthDay;
 
-            if ($eligibleYear <= $currentYear) {
+            if ($eligibleYear <= $currentYear && date('Y-m-d') >= $eligibleDateThisYear) {
                 $dependents = Dependents::where('employee_id', $employee->employee_id)->get();
                 $totalFamilyMembers = $dependents->count() + 1;
 
@@ -166,7 +167,7 @@ class HomeTripController extends Controller
                     $homeTrip->name = $employee->fullname;
                     $homeTrip->relation_type = 'Employee';
                     $homeTrip->quota = $quota;
-                    $homeTrip->last_generate = $currentYear . '-' . $monthDay;
+                    $homeTrip->last_generate = $eligibleDateThisYear;
                     $homeTrip->period = $currentYear;
                     $homeTrip->created_by = $userId;
                     $homeTrip->save();
@@ -269,9 +270,10 @@ class HomeTripController extends Controller
                 $passengerRequests[$selectedName] = [
                     'tickets' => [],
                     'quota' => HomeTrip::where('employee_id', $employee_id)
-                        ->where('period', $currentYear)
-                        ->pluck('quota')
-                        ->sum() // Mengambil total kuota untuk employee_id
+                        ->orderByDesc('period')     // sortir dari tahun terbaru
+                        ->limit(1)                  // ambil hanya 1 baris
+                        ->pluck('quota')            // ambil kolom quota
+                        ->first() ?? 0
                 ];
             }
             $passengerRequests[$selectedName]['tickets'][] = $request->type_tkt[$key];
@@ -576,10 +578,10 @@ class HomeTripController extends Controller
                 $passengerRequests[$selectedName] = [
                     'tickets' => [],
                     'quota' => HomeTrip::where('employee_id', $employee_id)
-                        ->where('period', $currentYear)
-                        ->where('name', $selectedName)
-                        ->pluck('quota')
-                        ->first()
+                        ->orderByDesc('period')     // sortir dari tahun terbaru
+                        ->limit(1)                  // ambil hanya 1 baris
+                        ->pluck('quota')            // ambil kolom quota
+                        ->first() ?? 0
                 ];
             }
             $passengerRequests[$selectedName]['tickets'][] = $request->type_tkt[$key];

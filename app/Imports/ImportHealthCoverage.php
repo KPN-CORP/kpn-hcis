@@ -89,9 +89,10 @@ class ImportHealthCoverage implements ToModel
         ->where('disease', $row[7])
         ->where('medical_type', $row[11])
         ->where('balance', $row[12])
+        ->where('date', $row[8])
         ->first();
         if ($expectedRecord) {
-            $errorMessage = "Transaksi Medical dengan Employee Name '{$row[1]}', Pasien '{$row[6]}', Invoice '{$row[4]}', Desease '{$row[7]}', Medical Type '{$row[11]}' dan Nominal '{$row[12]}' sudah pernah di ajukan.";
+            $errorMessage = "Transaksi Medical dengan Employee Name '{$row[1]}', Pasien '{$row[6]}', Invoice '{$row[4]}', Desease '{$row[7]}', Medical Type '{$row[11]}' dan Nominal '{$row[12]}' dan Tanggal '{$row[8]}' sudah pernah di ajukan.";
         }
 
         // Validasi Medical Type
@@ -200,9 +201,9 @@ class ImportHealthCoverage implements ToModel
         if ($healthPlan) {
             $initialBalance = $healthPlan->balance;
 
-            if ($initialBalance > 0) {
+            // if ($initialBalance > 0) {
                 $healthPlan->balance -= $healthCoverage->balance;
-            }
+            // }
 
             if ($initialBalance >= 0 && $healthCoverage->balance > $initialBalance) {
                 $healthCoverage->balance_uncoverage = $healthCoverage->balance - $initialBalance;

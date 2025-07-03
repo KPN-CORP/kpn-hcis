@@ -25,9 +25,34 @@ class AttendanceController extends Controller
 
     public function UpdateBTtoDBnextstep()
     {
-        $attdUpdates = bt_attendance_backup::where('update_db', 'N')
-            ->whereDate('date', '<', Carbon::today()) // Tambahkan filter tanggal
-            ->get();
+        \Log::info('📌 [Controller] UpdateBTtoDBnextstep() triggered at ' . now());
+
+        $today = Carbon::today()->toDateString();
+        // $attdUpdates = bt_attendance_backup::where('update_db', 'N')
+        //     ->whereDate('date', '<', Carbon::today()) // Tambahkan filter tanggal
+        //     ->get();
+        $attdUpdates = DB::table('bt_attendance_backups as ba')
+        ->leftJoin('bt_transaction as bt', 'bt.no_sppd', '=', 'ba.no_sppd')
+        ->select(
+            'ba.id', 'ba.date', 'ba.no_sppd', 'ba.employee_id',
+            'ba.shift_name','ba.shift_in', 'ba.shift_out', 'ba.clock_in', 'ba.clock_out','ba.policy_name','ba.assigned_weekly_off',
+            'ba.edit_comment', 'ba.backup_status', 'ba.update_db', 'ba.updated_at'
+        )
+        ->where('ba.update_db', 'N')
+        ->whereDate('ba.date', '<', $today)
+        ->whereNull('bt.deleted_at')
+        ->whereIn('bt.status', [
+            'Approved',
+            'Declaration Draft',
+            'Declaration Approved',
+            'Declaration L1',
+            'Declaration L2',
+            'Doc Accepted',
+            'Verified',
+            'Return/Refund'
+        ])
+        ->orderBy('ba.date', 'asc')
+        ->get();
 
         $no=0;
         $processedData = [];
@@ -52,7 +77,10 @@ class AttendanceController extends Controller
 
             $processedData[] = $attendanceData;
 
-            $attdUpdate->update(['update_db' => 'Y']);
+            // $attdUpdate->update(['update_db' => 'Y']);
+            DB::table('bt_attendance_backups')
+            ->where('id', $attdUpdate->id)
+            ->update(['update_db' => 'Y']);
         }
         return response()->json([
             'message' => 'Job dispatched successfully!',

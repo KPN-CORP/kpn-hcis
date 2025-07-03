@@ -106,7 +106,7 @@ class BusinessTripExport implements FromCollection, WithMapping, ShouldAutoSize,
             $businessTrip->jns_dinas,
             $businessTrip->checkCompany->contribution_level,
             $businessTrip->no_sppd,
-            Carbon::parse($businessTrip->created_date)->format('d-m-Y'), //Request Date (tgl karyawan submit request travel)
+            Carbon::parse($businessTrip->created_at)->format('d-m-Y'), //Request Date (tgl karyawan submit request travel)
             $displayReqStatus, //Request Status (pilihan : approved/ pending L1/ pending L2/ etc)
             $declarationAt, //Declaration Date (tgl karyawan submit declaration)
             $displayDecStatus, //Declaration Status (pilihan : approved/ pending L1/ pending L2/ etc)

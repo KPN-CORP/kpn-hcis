@@ -44,7 +44,7 @@ class HealthCoverage extends Model
         'status',
         'medical_proof',
         'submission_type',
-        'created_by',
+        'deleted_at',
     ];
 
     public function employee()
