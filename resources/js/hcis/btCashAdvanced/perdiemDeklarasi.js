@@ -225,6 +225,10 @@ function calculateTotalDaysPerdiem(input) {
                 allowance *= 0.5;
             }
 
+            if (totalDays >= 30) {
+                allowance *= 0.75;
+            }
+
             allowanceInput.value = formatNumberPerdiem(allowance);
             calculateTotalNominalBTPerdiem();
         } else {

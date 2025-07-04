@@ -2520,6 +2520,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 allowance *= 0.5;
             }
 
+            if (totalDays >= 30) {
+                allowance *= 0.75;
+            }
+
             allowanceInput.value = formatNumber(Math.floor(allowance));
         } else {
             totalDaysInput.value = 0;

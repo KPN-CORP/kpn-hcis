@@ -180,6 +180,7 @@ class EmployeeController extends Controller
                             'employee_type' => $employee['employee_type'],
                             'unit' => $employee['unit'],
                             'date_of_joining' => $employee['date_of_joining'],
+                            'date_of_birth' => $employee['date_of_birth'],
                             'place_of_birth' => $employee['place_of_birth'],
                             'nationality' => $employee['nationality'],
                             'religion' => $employee['religion'],
