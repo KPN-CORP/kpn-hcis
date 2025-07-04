@@ -184,7 +184,7 @@
                                                         <button class="nav-link <?php echo (!$entrTab && $dnsTab) ? 'active' : (($dnsTab && $entrTab) ? 'active' : ''); ?>" id="pills-cashAdvanced-tab"
                                                             data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced"
                                                             type="button" role="tab" aria-controls="pills-cashAdvanced"
-                                                            aria-selected="true">Cash Advanced</button>
+                                                            aria-selected="true">Travel Declaration</button>
                                                     </li>
                                                 @endif
                                                 @if ($entrTab == true)
@@ -192,7 +192,7 @@
                                                         <button class="nav-link <?php echo ($entrTab && !$dnsTab) ? 'active' : ''; ?>" id="pills-caEntertain-tab"
                                                             data-bs-toggle="pill" data-bs-target="#pills-caEntertain"
                                                             type="button" role="tab" aria-controls="pills-caEntertain"
-                                                            aria-selected="false">CA Entertainment</button>
+                                                            aria-selected="false">Entertainment Declaration</button>
                                                     </li>
                                                 @endif
                                             </ul>
@@ -220,7 +220,7 @@
 
                                                     <!-- Cash Advanced Costs Used -->
                                                     <div class="col-md-6 mb-2">
-                                                        <label class="form-label">Cash Advanced Costs Used</label>
+                                                        <label class="form-label">Travel Declaration Costs</label>
                                                         <div class="input-group">
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text">Rp</span>
@@ -260,7 +260,7 @@
 
                                                     <!-- Entertainment Costs Used -->
                                                     <div class="col-md-6 mb-2">
-                                                        <label class="form-label">Entertainment Costs Used</label>
+                                                        <label class="form-label">Entertainment Declaration Costs</label>
                                                         <div class="input-group">
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text">Rp</span>
@@ -376,6 +376,8 @@
                                         <input type="hidden" name="ca_id" value="{{ $date->no_ca ?? 0 }}">
                                         <input class="form-control" id="group_company" name="group_company"
                                             type="hidden" value="{{ $employee_data->group_company }}" readonly>
+                                        <input class="form-control" id="jns_dinas" name="jns_dinas"
+                                            type="hidden" value="{{ $n->jns_dinas }}" readonly>
                                         <input class="form-control" id="perdiem" name="perdiem" type="hidden"
                                             value="{{ $perdiem->amount ?? 0 }}" readonly>
                                         {{-- <input type="hidden" name="status" value="Declaration L1" id="status"> --}}
@@ -773,6 +775,10 @@
                         allowance *= 0.5;
                     }
 
+                    if (totalDays >= 30) {
+                        allowance *= 0.75;
+                    }
+
                     allowanceInput.value = formatNumber(Math.floor(allowance));
                 } else {
                     totalDaysInput.value = 0;
@@ -859,6 +865,7 @@
                     }
 
                     // Retrieve the values from the input fields
+                    const jns_dinas = document.getElementById('jns_dinas').value;
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
                     const totalBtMeals = document.getElementById('total_bt_meals').value;
                     const totalBtPenginapan = document.getElementById('total_bt_penginapan').value;
@@ -893,6 +900,7 @@
 
                     // Tambahkan total allowance jika totalBtCa tidak kosong
                     if (parseFloat(totalBtCa) > 0) {
+                        if (parseFloat(totalBtPerdiem) > 0 || jns_dinas != 'dalam kota') {
                         inputSummary += `
                             <tr>
                                 <th style="width: 40%; text-align: left; padding: 8px;">Total {{ $allowance }}</th>
@@ -900,9 +908,10 @@
                                 <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPerdiem}</strong></td>
                             </tr>
                             `;
+                        }
 
                         // Conditionally add the "Total Meals" row
-                        if (group_company != 'KPN Plantations' && group_company != 'Plantations') {
+                        if (group_company != 'Plantations' && jns_dinas != 'dalam kota') {
                             inputSummary += `
                             <tr>
                                 <th style="width: 40%; text-align: left; padding: 8px;">Total Meals</th>
@@ -940,7 +949,7 @@
                     if (parseFloat(totalBtCa) > 0) {
                         inputSummary += `
                             <tr>
-                                <th style="width: 45%; text-align: left; padding: 8px;">Total Declaration</th>
+                                <th style="width: 45%; text-align: left; padding: 8px;">Total Cost Declaration</th>
                                 <td style="width: 5%; text-align: right; padding: 8px;">:</td>
                                 <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtCa}</strong></td>
                             </tr>

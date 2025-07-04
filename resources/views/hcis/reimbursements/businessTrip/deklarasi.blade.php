@@ -189,8 +189,7 @@
                                                     <button class="nav-link <?php echo ($entrTab && $dnsTab) || (!$entrTab && $dnsTab) || (!$entrTab && !$dnsTab) ? 'show active' : ''; ?>" id="pills-cashAdvanced-tab"
                                                         data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced"
                                                         type="button" role="tab" aria-controls="pills-cashAdvanced"
-                                                        aria-selected="true">Cash
-                                                        Advanced</button>
+                                                        aria-selected="true">Travel Declaration</button>
                                                 </li>
                                                 {{-- @endif
                                                 @if ($entrTab == true) --}}
@@ -198,7 +197,7 @@
                                                     <button class="nav-link <?php echo $entrTab && !$dnsTab ? 'active' : ''; ?>" id="pills-caEntertain-tab"
                                                         data-bs-toggle="pill" data-bs-target="#pills-caEntertain"
                                                         type="button" role="tab" aria-controls="pills-caEntertain"
-                                                        aria-selected="false">CA Entertainment</button>
+                                                        aria-selected="false">Entertainment Declaration</button>
                                                 </li>
                                                 {{-- @endif --}}
                                             </ul>
@@ -246,7 +245,7 @@
         </div>
 
         <div class="col-md-6 mb-2">
-            <label class="form-label">Entertainment Costs Used</label>
+            <label class="form-label">Entertainment Declaration Costs</label>
             <div class="input-group">
                 <div class="input-group-append">
                     <span class="input-group-text">Rp</span>
@@ -273,7 +272,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6 mb-2">
-                                                    <label class="form-label">Cash Advanced Costs Used</label>
+                                                    <label class="form-label">Travel Declaration Costs</label>
                                                     <div class="input-group">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">Rp</span>
@@ -412,6 +411,8 @@
                                         <input type="hidden" name="ca_id" value="{{ $date->no_ca ?? 0 }}">
                                         <input class="form-control" id="group_company" name="group_company"
                                             type="hidden" value="{{ $employee_data->group_company }}" readonly>
+                                        <input class="form-control" id="jns_dinas" name="jns_dinas"
+                                            type="hidden" value="{{ $n->jns_dinas }}" readonly>
                                         <input class="form-control" id="perdiem" name="perdiem" type="hidden"
                                             value="{{ $perdiem->amount ?? 0 }}" readonly>
 
@@ -852,6 +853,10 @@
                         allowance *= 0.5;
                     }
 
+                    if (totalDays >= 30) {
+                        allowance *= 0.75;
+                    }
+
                     allowanceInput.value = formatNumber(Math.floor(allowance));
                 } else {
                     totalDaysInput.value = 0;
@@ -1022,7 +1027,40 @@
                         return; // Exit if the form is not valid
                     }
 
+                    const entTypes = document.querySelectorAll('select[name="enter_type_e_detail[]"]');
+                    let validationErrors = [];
+
+                    entTypes.forEach((typeSelect, i) => {
+                        if (typeSelect.value.trim() !== '') {
+                            const amount = document.querySelectorAll('input[name="nominal_e_detail[]"]')[i]?.value.trim();
+                            const fee = document.querySelectorAll('input[name="enter_fee_e_detail[]"]')[i]?.value.trim();
+                            // const receiver = document.querySelectorAll('select[name="receiver_type[]"]')[i]?.value.trim();
+                            const name = document.querySelectorAll('input[name="rname_e_relation[]"]')[0]?.value.trim();
+                            const position = document.querySelectorAll('input[name="rposition_e_relation[]"]')[0]?.value.trim();
+                            const company = document.querySelectorAll('input[name="rcompany_e_relation[]"]')[0]?.value.trim();
+                            const purpose = document.querySelectorAll('textarea[name="rpurpose_e_relation[]"]')[0]?.value.trim();
+                            
+                            if (!amount) validationErrors.push(`Amount row ${i + 1}`);
+                            // if (!fee) validationErrors.push(`Fee Detail row ${i + 1}`);
+                            // if (!receiver) validationErrors.push(`Receiver Type row ${i + 1}`);
+                            if (!name) validationErrors.push(`Name Detail Receiver `);
+                            if (!position) validationErrors.push(`Position Detail Receiver`);
+                            if (!company) validationErrors.push(`Company Detail Receiver`);
+                            if (!purpose) validationErrors.push(`Purpose Detail Receiver`);
+                        }
+                    });
+
+                    if (validationErrors.length > 0) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Incomplete Entertainment Data',
+                            html: `<ul style="text-align: left;">${validationErrors.map(e => `<li>${e}</li>`).join('')}</ul>`,
+                        });
+                        return; // Hentikan proses submit
+                    }
+
                     // Retrieve the values from the input fields
+                    const jns_dinas = document.getElementById('jns_dinas').value;
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
                     const totalBtMeals = document.getElementById('total_bt_meals').value;
                     const totalBtPenginapan = document.getElementById('total_bt_penginapan').value;
@@ -1031,6 +1069,7 @@
                     const totalBtCa = document.getElementById('totalca_ca_deklarasi').value;
                     const totalEntCa = document.getElementById('totalca').value;
                     const group_company = document.getElementById('group_company').value;
+                    
 
                     function parseCurrency(value) {
                         // Hapus tanda titik dan ubah ke angka
@@ -1057,6 +1096,7 @@
 
                     // Tambahkan total allowance jika totalBtCa tidak kosong
                     if (parseFloat(totalBtCa) > 0) {
+                        if (parseFloat(totalBtPerdiem) > 0 || jns_dinas != 'dalam kota') {
                         inputSummary += `
                             <tr>
                                 <th style="width: 40%; text-align: left; padding: 8px;">Total {{ $allowance }}</th>
@@ -1064,9 +1104,10 @@
                                 <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPerdiem}</strong></td>
                             </tr>
                             `;
+                        }
 
                         // Conditionally add the "Total Meals" row
-                        if (group_company != 'KPN Plantations' && group_company != 'Plantations') {
+                        if (group_company != 'Plantations' && jns_dinas != 'dalam kota') {
                             inputSummary += `
                             <tr>
                                 <th style="width: 40%; text-align: left; padding: 8px;">Total Meals</th>
@@ -1104,7 +1145,7 @@
                     if (parseFloat(totalBtCa) > 0) {
                         inputSummary += `
                             <tr>
-                                <th style="width: 45%; text-align: left; padding: 8px;">Total Cash Advanced Declaration</th>
+                                <th style="width: 45%; text-align: left; padding: 8px;">Total Cost Declaration</th>
                                 <td style="width: 5%; text-align: right; padding: 8px;">:</td>
                                 <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtCa}</strong></td>
                             </tr>
