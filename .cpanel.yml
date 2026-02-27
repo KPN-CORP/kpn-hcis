@@ -37,7 +37,7 @@ deployment:
     - mkdir -p $DEPLOYPATH/bootstrap/cache
 
     # Copy all project files except .git
-    - rsync -av --exclude=".git" ./ $DEPLOYPATH
+    # - rsync -av --exclude=".git" ./ $DEPLOYPATH
 
     # Change to deployment directory
     - cd $DEPLOYPATH
