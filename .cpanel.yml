@@ -1,26 +1,56 @@
+# ---
+# deployment:
+#   tasks:
+#     # - export DEPLOYPATH=/home/hcispanel/kpn-pm
+#     - export DEPLOYPATH=/home/hcispanel/kpn-hcis-stage
+
+#     # Copy essential Laravel application directories to deployment path
+#     - /bin/cp -r app bootstrap config database routes resources $DEPLOYPATH
+
+#     - /bin/cp -r public/build $DEPLOYPATH/public
+
+#     # Copy public assets to the public_html directory
+#     # - /bin/cp -r public/assets public/css public/img public/images public/js public/scss public/vendor /home/hcispanel/public_html
+#     - /bin/cp -r public/assets public/build public/css public/img public/images public/js public/scss public/vendor /home/hcispanel/public_html/travel-dev
+
+#     # Change directory to the deployment path
+#     - cd $DEPLOYPATH
+
+#     # Install production dependencies using Composer
+#     # - composer install --no-dev --optimize-autoloader
+
+#     # Run database migrations (for first deployment)
+#     # - php artisan migrate --force
+
+#     # Clear Laravel application cache
+#     - php artisan optimize:clear
+
 ---
 deployment:
   tasks:
-    # - export DEPLOYPATH=/home/hcispanel/kpn-pm
     - export DEPLOYPATH=/home/hcispanel/kpn-hcis-stage
 
-    # Copy essential Laravel application directories to deployment path
-    - /bin/cp -r app bootstrap config database routes resources $DEPLOYPATH
+    # Ensure deployment folder exists
+    - /bin/mkdir -p $DEPLOYPATH
+    - /bin/mkdir -p $DEPLOYPATH/public
+    - /bin/mkdir -p $DEPLOYPATH/storage
+    - /bin/mkdir -p $DEPLOYPATH/bootstrap/cache
 
-    - /bin/cp -r public/build $DEPLOYPATH/public
+    # Copy all project files except .git
+    - /bin/rsync -av --exclude=".git" ./ $DEPLOYPATH
 
-    # Copy public assets to the public_html directory
-    # - /bin/cp -r public/assets public/css public/img public/images public/js public/scss public/vendor /home/hcispanel/public_html
-    - /bin/cp -r public/assets public/build public/css public/img public/images public/js public/scss public/vendor /home/hcispanel/public_html/travel-dev
-
-    # Change directory to the deployment path
+    # Change to deployment directory
     - cd $DEPLOYPATH
 
-    # Install production dependencies using Composer
-    # - composer install --no-dev --optimize-autoloader
+    # Install composer dependencies (production)
+    - /usr/local/bin/php /opt/cpanel/composer/bin/composer install --ignore-platform-reqs --no-dev --optimize-autoloader
 
-    # Run database migrations (for first deployment)
-    # - php artisan migrate --force
+    # Set correct permissions
+    - /bin/chmod -R 755 storage
+    - /bin/chmod -R 755 bootstrap/cache
 
-    # Clear Laravel application cache
-    - php artisan optimize:clear
+    # Clear and optimize Laravel
+    - /usr/local/bin/php artisan optimize:clear
+    - /usr/local/bin/php artisan config:cache
+    - /usr/local/bin/php artisan route:cache
+    - /usr/local/bin/php artisan view:cache
