@@ -39,9 +39,6 @@ deployment:
     # Copy all project files except .git
     - rsync -av --exclude=".git" ./ $DEPLOYPATH
 
-    # Copy public assets to the public_html directory
-    - cp -r public/assets public/build public/css public/img public/images public/js public/scss public/vendor /home/hcispanel/public_html/travel-dev
-
     # Change to deployment directory
     - cd $DEPLOYPATH
 
@@ -55,5 +52,8 @@ deployment:
     # Clear and optimize Laravel
     - php artisan optimize:clear
     - php artisan config:cache
-    - php artisan route:cache
+    # - php artisan route:cache
     - php artisan view:cache
+
+    # Copy public assets to the public_html directory
+    - cp -r public/assets public/build public/css public/img public/images public/js public/scss public/vendor /home/hcispanel/public_html/travel-dev
