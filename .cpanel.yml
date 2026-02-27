@@ -45,6 +45,10 @@ deployment:
     # Install composer dependencies (production)
     - composer install --ignore-platform-reqs --no-dev --optimize-autoloader
 
+    # Install Node
+    - npm install
+    - npm run build
+
     # Set correct permissions
     - chmod -R 755 storage
     - chmod -R 755 bootstrap/cache
