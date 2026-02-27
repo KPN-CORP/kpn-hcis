@@ -113,9 +113,21 @@
                                         @endforeach
                                         <option value="Others">Others</option>
                                     </select>
-                                    <br><input type="text" name="others_location" id="others_location"
-                                        class="form-control form-control-sm mt-2" placeholder="Other Location"
-                                        value="" style="display: none;">
+                                    <br>
+                                    <div class="row mt-2">
+                                        <div class="col-7">
+                                            <input type="text" name="others_location" id="others_location"
+                                            class="form-control form-control-sm" placeholder="Other Location"
+                                            value="" style="display: none;">
+                                        </div>
+                                        <div class="col-5 align-items-center" id="overseas_stat" name="overseas_stat" style="display: none;">
+                                            <input type="hidden" name="is_overseas" value="F">
+                                            <input class="form-check-input" type="checkbox" value="T" id="is_overseas" name="is_overseas">
+                                            <label class="form-check-label" for="is_overseas">
+                                                Dinas Luar Negeri
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row mb-2">
@@ -157,7 +169,17 @@
                                     Business Travel Needs
                                 </label>
                                 <div class="row">
-                                    <div class="col-md-3">
+                                    <div class="col-md-2" id="div-ca-dalam-kota" style="display: none;">
+                                        <div class="form-check">
+                                            <input type="hidden" name="ca_dalam" id="caHiddenDalam" value="Tidak">
+                                            <input class="form-check-input" type="checkbox"
+                                            id="caCheckboxDalamKota" value="Ya" onchange="updateCAValue()">
+                                            <label class="form-check-label" for="caCheckboxDalamKota">
+                                                Cash Advanced
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
                                         <div class="form-check">
                                             <input type="hidden" name="hotel_dalam_kota" value="Tidak">
                                             <input class="form-check-input" type="checkbox" id="hotelCheckboxDalamKota"
@@ -168,7 +190,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <div class="form-check">
                                             <input type="hidden" name="mess_dalam_kota" value="Tidak">
                                             <input class="form-check-input" type="checkbox" id="messCheckboxDalamKota"
@@ -179,7 +201,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <div class="form-check">
                                             <input type="hidden" name="tiket_dalam_kota" value="Tidak">
                                             <input class="form-check-input" type="checkbox" id="ticketCheckboxDalamKota"
@@ -190,7 +212,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <div class="form-check">
                                             <input type="hidden" name="taksi_dalam_kota" value="Tidak">
                                             <input class="form-check-input" type="checkbox" id="taksiCheckboxDalamKota"
@@ -204,7 +226,13 @@
                                 <div class="row mt-3">
                                     <div class="col-md-12">
                                         <ul class="nav nav-tabs nav-pills mb-2" id="dalam-kota-pills-tab" role="tablist">
-
+                                            <li class="nav-item" role="presentation" id="nav-cashAdvanced-dalam-kota"
+                                                style="display: none;">
+                                                <button class="nav-link" id="pills-cashAdvanced-dalam-kota-tab"
+                                                    data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced-dalam-kota"
+                                                    type="button" role="tab"
+                                                    aria-controls="pills-cashAdvanced-dalam-kota" aria-selected="false">{{$allowance}}</button>
+                                            </li>
                                             <!-- Hotel Tab -->
                                             <li class="nav-item" role="presentation" id="nav-hotel-dalam-kota"
                                                 style="display: none;">
@@ -243,6 +271,11 @@
 
                                         <div id="dalam-kota-pills-tabContent" class="tab-content">
                                             <!-- Hotel Content -->
+                                            <div class="tab-pane fade" id="pills-cashAdvanced-dalam-kota" role="tabpanel"
+                                                aria-labelledby="pills-cashAdvanced-dalam-kota-tab">
+                                                {{-- Perdiem content --}}
+                                                @include('hcis.reimbursements.businessTrip.form.cashadvancedForm.caPerdiem')
+                                            </div>
                                             <div class="tab-pane fade" id="pills-hotel-dalam-kota" role="tabpanel"
                                                 aria-labelledby="pills-hotel-dalam-kota-tab">
                                                 {{-- Hotel content --}}
@@ -462,6 +495,9 @@
 
     <!-- JavaScript Part -->
     {{-- <script src="{{ asset('/js/businessTrip.js') }}"></script> --}}
+    @include('js.hcis.common.businessTrip')
+    @include('js.hcis.common.perdiem')
+    @include('js.hcis.common.req')
     @include('js.hcis.businessTrip')
     <link href="{{ asset('vendor/select2/dist/css/select2.min.css') }}" rel="stylesheet" />
     <script src="{{ asset('vendor/select2/dist/js/select2.min.js') }}"></script>
@@ -498,8 +534,8 @@
                         total -= nominalValue;
                         document.querySelector('input[name="total_bt_meals"]').value =
                             formatNumber(total);
-                        calculateTotalNominalBTTotal();
-                        calculateTotalNominalBTENTTotal();
+                        calculateTotalBTCA();
+                        calculateTotalReq();
                     }
                     $(`#form-container-bt-meals-${index}`).remove();
                     formCountMeals--;
@@ -532,8 +568,8 @@
 
             // Reset nilai untuk nominal BT Meals
             document.querySelector(`#nominal_bt_meals_${index}`).value = 0;
-            calculateTotalNominalBTTotal();
-            calculateTotalNominalBTENTTotal();
+            calculateTotalBTCA();
+            calculateTotalReq();
         }
 
         function calculateTotalNominalBTMeals() {
@@ -744,7 +780,7 @@
                     //     });
                     //     return; // Exit without showing the confirmation if all fields are zero
                     // }
-                    
+
                     const caChecked = caCheckbox ? 'CA' : '';
                     const entChecked = entCheckbox ? 'ENT' : '';
                     const ticketChecked = document.getElementById('ticketCheckbox').checked ?
@@ -840,84 +876,6 @@
                         `;
                     }
 
-                    if (entCheckbox) {
-                        const entertainForm = document.getElementById('form-container-detail');
-                        const relationForm = document.getElementById('form-container-relation');
-
-                        const selects = entertainForm.querySelectorAll('select[name="enter_type_e_detail[]"]');
-                        const amounts = entertainForm.querySelectorAll('input[name="nominal_e_detail[]"]');
-                        const details = entertainForm.querySelectorAll('textarea[name="enter_fee_e_detail[]"]');
-
-                        const namer = relationForm.querySelectorAll('input[name="rname_e_relation[]"]');
-                        const positionr = relationForm.querySelectorAll('input[name="rposition_e_relation[]"]');
-                        const companyr = relationForm.querySelectorAll('input[name="rcompany_e_relation[]"]');
-                        const purposer = relationForm.querySelectorAll('textarea[name="rpurpose_e_relation[]"]'); // <- ini textarea, bukan input
-
-                        let hasEmptyField = false;
-                        let relationField = false;
-
-                        selects.forEach(select => { if (!select.value) hasEmptyField = true; });
-                        amounts.forEach(input => { if (!input.value) hasEmptyField = true; });
-                        details.forEach(textarea => { if (!textarea.value.trim()) hasEmptyField = true; });
-
-                        namer.forEach(input => { if (!input.value.trim()) relationField = true; });
-                        positionr.forEach(input => { if (!input.value.trim()) relationField = true; });
-                        companyr.forEach(input => { if (!input.value.trim()) relationField = true; });
-                        purposer.forEach(textarea => { if (!textarea.value.trim()) relationField = true; });
-
-                        if (hasEmptyField) {
-                            Swal.fire({
-                                title: "Incomplete Form",
-                                text: "Please fill in all Entertainment detail fields before submitting.",
-                                icon: "warning",
-                                confirmButtonColor: "#AB2F2B"
-                            });
-                            return;
-                        }
-
-                        if (relationField) {
-                            Swal.fire({
-                                title: "Incomplete Form",
-                                text: "Please fill in all Relation detail fields before submitting.",
-                                icon: "warning",
-                                confirmButtonColor: "#AB2F2B"
-                            });
-                            return;
-                        }
-                    }
-
-                    const ticketChecked = document.getElementById('ticketCheckbox').checked;
-                    if (ticketChecked) {
-                        const tiketForm = document.getElementById('tiket_div');
-
-                        const fieldsToCheck = [
-                            { nodes: tiketForm.querySelectorAll('select[name="noktp_tkt[]"]'), label: 'Employee Name' },
-                            { nodes: tiketForm.querySelectorAll('input[name="dari_tkt[]"]'), label: 'From (Dari)' },
-                            { nodes: tiketForm.querySelectorAll('input[name="ke_tkt[]"]'), label: 'To (Ke)' },
-                            { nodes: tiketForm.querySelectorAll('select[name="jenis_tkt[]"]'), label: 'Transportation Type' },
-                            { nodes: tiketForm.querySelectorAll('select[name="type_tkt[]"]'), label: 'Ticket Type' },
-                            { nodes: tiketForm.querySelectorAll('input[name="tgl_brkt_tkt[]"]'), label: 'Date' },
-                            { nodes: tiketForm.querySelectorAll('input[name="jam_brkt_tkt[]"]'), label: 'Time' },
-                            { nodes: tiketForm.querySelectorAll('textarea[name="ket_tkt[]"]'), label: 'Information' },
-                        ];
-
-                        for (const field of fieldsToCheck) {
-                            for (const node of field.nodes) {
-                                if (!node.value.trim()) {
-                                    Swal.fire({
-                                        title: "Field Required",
-                                        text: `Please fill in the "${field.label}" field.`,
-                                        icon: "warning",
-                                        confirmButtonColor: "#AB2F2B"
-                                    }).then(() => {
-                                        node.scrollIntoView({ behavior: "smooth", block: "center" });
-                                        node.focus();
-                                    });
-                                    return; // Stop checking further fields
-                                }
-                            }
-                        }
-                    }
                     // Show SweetAlert confirmation with the input summary
                     Swal.fire({
                         title: "Do you want to submit this request?",
@@ -1085,46 +1043,48 @@
             } else {
                 input.value = formatNumber(0);
             }
-            calculateTotalNominalBTPerdiem();
+            calculateTotalBTPerdiem();
             calculateTotalNominalBTMeals();
             calculateTotalNominalBTTransport();
             calculateTotalNominalBTPenginapan();
             calculateTotalNominalBTLainnya();
-            calculateTotalNominalBTTotal();
-            calculateTotalNominalBTENTTotal();
+            calculateTotalBTCA();
+            calculateTotalReq();
         }
 
-        function calculateTotalNominalBTTotal() {
-            let total = 0;
-            document.querySelectorAll('input[name="total_bt_perdiem"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelectorAll('input[name="total_bt_meals"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelectorAll('input[name="total_bt_transport"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelectorAll('input[name="total_bt_penginapan"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelectorAll('input[name="total_bt_lainnya"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelector('input[name="totalca"]').value = formatNumber(total);
-        }
+        // WE COMMENT THIS TO AVOID DUPLICATION
+        // function calculateTotalNominalBTTotal() {
+        //     let total = 0;
+        //     document.querySelectorAll('input[name="total_bt_perdiem"]').forEach(input => {
+        //         total += parseNumber(input.value);
+        //     });
+        //     document.querySelectorAll('input[name="total_bt_meals"]').forEach(input => {
+        //         total += parseNumber(input.value);
+        //     });
+        //     document.querySelectorAll('input[name="total_bt_transport"]').forEach(input => {
+        //         total += parseNumber(input.value);
+        //     });
+        //     document.querySelectorAll('input[name="total_bt_penginapan"]').forEach(input => {
+        //         total += parseNumber(input.value);
+        //     });
+        //     document.querySelectorAll('input[name="total_bt_lainnya"]').forEach(input => {
+        //         total += parseNumber(input.value);
+        //     });
+        //     document.querySelector('input[name="totalca"]').value = formatNumber(total);
+        // }
 
-        function calculateTotalNominalBTENTTotal() {
-            let total = 0;
-            document.querySelectorAll('input[name="totalca"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelectorAll('input[name="total_ent_detail"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelector('input[name="totalreq"]').value = formatNumber(total);
-            document.querySelector('input[name="totalreq2"]').value = formatNumber(total);
-        }
+        // WE COMMENT THIS TO AVOID DUPLICATION
+        // function calculateTotalNominalBTENTTotal() {
+        //     let total = 0;
+        //     document.querySelectorAll('input[name="totalca"]').forEach(input => {
+        //         total += parseNumber(input.value);
+        //     });
+        //     document.querySelectorAll('input[name="total_ent_detail"]').forEach(input => {
+        //         total += parseNumber(input.value);
+        //     });
+        //     document.querySelector('input[name="totalreq"]').value = formatNumber(total);
+        //     document.querySelector('input[name="totalreq2"]').value = formatNumber(total);
+        // }
     </script>
     <script>
         function toggleDivs() {

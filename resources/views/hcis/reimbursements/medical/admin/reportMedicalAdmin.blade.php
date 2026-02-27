@@ -104,7 +104,7 @@
 
                                     <div class="col-12 col-md-2">
                                         <label class="form-label">Business Units :</label>
-                                        <select class="form-select select2" aria-label="Unit" id="stat" name="stat">
+                                        <select class="form-select select2" aria-label="Unit" id="stat" name="stat" required>
                                             <option value="" {{ request()->get('stat') == '-' ? 'selected' : '' }}>- Select Bussiness Unit -</option>
                                             @foreach ($unit as $units)
                                                 <option value="{{ $units->nama_bisnis }}" {{ $units->nama_bisnis == request()->get('stat') ? 'selected' : '' }}>
@@ -145,9 +145,23 @@
                                             || isset($_GET['customsearch']) && $_GET['customsearch'] !== ''
                                             || isset($_GET['unit']) && $_GET['unit'] !== ''
                                             || (isset($_GET['start_date']) && $_GET['start_date'] !== '' && isset($_GET['end_date']) && $_GET['end_date'] !== ''))
-                                            <button style="display: block" class="btn btn-success w-100" type="button" onclick="redirectToExportExcel()">
-                                                Export <i class="ri-file-excel-2-line"></i>
-                                            </button>
+                                            <div class="btn-group w-100">
+                                                <button type="button" class="btn btn-success w-100 dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    Export
+                                                </button>
+                                                <ul class="dropdown-menu w-100">
+                                                    <li>
+                                                        <a class="dropdown-item" onclick="redirectToExportExcel()">
+                                                            Transaction Medical
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" onclick="redirectToExportPlafond()">
+                                                            Plafond Medical
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                             {{-- block --}}
                                         @else
                                             <button style="display: none" class="btn btn-success w-100" type="button" onclick="redirectToExportExcel()">
@@ -330,6 +344,67 @@
 
         function redirectToExportExcel() {
             const route = "{{ route('exportmed.excel') }}";
+
+            // Ambil nilai dari input
+            const statusMDC = document.getElementById("statusMDC").value;
+            const stat = document.getElementById("stat").value;
+            const customSearch = document.getElementById("customsearch").value;
+            const endDate = document.getElementById("end_date").value;
+            const startDate = document.getElementById("start_date").value;
+            const unit = document.getElementById("unit").value;
+
+            // Buat elemen form
+            const form = document.createElement("form");
+            form.method = "GET";
+            form.action = route;
+
+            // Tambahkan input tersembunyi untuk setiap parameter
+            const statusMDCInput = document.createElement("input");
+            statusMDCInput.type = "hidden";
+            statusMDCInput.name = "statusMDC";
+            statusMDCInput.value = statusMDC;
+
+            const statInput = document.createElement("input");
+            statInput.type = "hidden";
+            statInput.name = "stat";
+            statInput.value = stat;
+
+            const customSearchInput = document.createElement("input");
+            customSearchInput.type = "hidden";
+            customSearchInput.name = "customsearch";
+            customSearchInput.value = customSearch;
+
+            const startDateInput = document.createElement("input");
+            startDateInput.type = "hidden";
+            startDateInput.name = "start_date";
+            startDateInput.value = startDate;
+
+            const endDateInput = document.createElement("input");
+            endDateInput.type = "hidden";
+            endDateInput.name = "end_date";
+            endDateInput.value = endDate;
+
+            const unitInput = document.createElement("input");
+            unitInput.type = "hidden";
+            unitInput.name = "unit";
+            unitInput.value = unit;
+
+
+            // Tambahkan input ke form
+            form.appendChild(statusMDCInput);
+            form.appendChild(statInput);
+            form.appendChild(customSearchInput);
+            form.appendChild(startDateInput);
+            form.appendChild(endDateInput);
+            form.appendChild(unitInput);
+
+            // Tambahkan form ke body dan kirim
+            document.body.appendChild(form);
+            form.submit();
+        }
+        
+        function redirectToExportPlafond() {
+            const route = "{{ route('exportplf.excel') }}";
 
             // Ambil nilai dari input
             const statusMDC = document.getElementById("statusMDC").value;

@@ -31,7 +31,7 @@
 
                     <!-- Location Agency -->
                     <div class="col-md-6 mb-2">
-                        <label class="form-label" for="locationFilter">Location</label>
+                        <label class="form-label" for="locationFilter">Location Agency</label>
                         <select class="form-control select2" name="location_bt_perdiem[]" id="location_bt_perdiem_${formCountPerdiem}" onchange="toggleOtherLocation(this, ${formCountPerdiem})">
                             <option value="">Select location...</option>
                             @foreach ($locations as $location)
@@ -87,12 +87,12 @@
                         oninput="formatInput(this)">
                 @else
                     <input
-                        class="form-control bg-light"
+                        class="form-control {{ $n->is_overseas === 'T' ? '' : 'bg-light' }}"
                         name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_${formCountPerdiem}"
                         type="text"
                         value="0"
                         onchange="onNominalChange()"
-                        readonly>
+                        oninput="formatInput(this)" {{ $n->is_overseas === 'T' ? '' : 'readonly' }}>
                 @endif
             </div>
                 <!-- Action Buttons -->
@@ -148,7 +148,7 @@
                                         {{ $perdiem['company_code'] }}</td>
                                 </tr>
                                 <tr>
-                                    <th class="label" style="border: none; padding: 2px 0;">Location</th>
+                                    <th class="label" style="border: none; padding: 2px 0;">Location Agency</th>
                                     <td class="colon" style="border: none; padding: 2px 0;">:</td>
                                     <td class="value" style="border: none; padding: 2px 0;">
                                         @if ($perdiem['location'] == 'Others')
@@ -218,7 +218,7 @@
 
                             <!-- Location Agency -->
                             <div class="col-md-6 mb-2">
-                                <label class="form-label" for="locationFilter">Location</label>
+                                <label class="form-label" for="locationFilter">Location Agency</label>
                                 <select class="form-control select2" name="location_bt_perdiem[]"
                                     id="location_bt_perdiem_{{ $loop->index + 1 }}"
                                     onchange="toggleOtherLocation(this, {{ $loop->index + 1 }})">
@@ -287,12 +287,12 @@
                                             oninput="formatInput(this)">
                                     @else
                                         <input
-                                            class="form-control bg-light"
+                                            class="form-control {{ $n->is_overseas === 'T' ? '' : 'bg-light' }}"
                                             name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}"
                                             type="text"
                                             value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
                                             onchange="onNominalChange()"
-                                            readonly>
+                                            oninput="formatInput(this)" {{ $n->is_overseas === 'T' ? '' : 'readonly' }}>
                                     @endif
                                 </div>
                             </div>
@@ -332,9 +332,9 @@
                                 </select>
                             </div>
 
-                            <!-- Location -->
+                            <!-- Location Agency -->
                             <div class="col-md-6 mb-2">
-                                <label class="form-label" for="locationFilter">Location</label>
+                                <label class="form-label" for="locationFilter">Location Agency</label>
                                 <select class="form-control select2" name="location_bt_perdiem[]"
                                     id="location_bt_perdiem_{{ $loop->index + 1 }}"
                                     onchange="toggleOtherLocation(this, {{ $loop->index + 1 }})">
@@ -403,12 +403,12 @@
                                             oninput="formatInput(this)">
                                     @else
                                         <input
-                                            class="form-control bg-light"
+                                            class="form-control {{ $n->is_overseas === 'T' ? '' : 'bg-light' }}"
                                             name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}"
                                             type="text"
                                             value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
                                             onchange="onNominalChange()"
-                                            readonly>
+                                            oninput="formatInput(this)" {{ $n->is_overseas === 'T' ? '' : 'readonly' }}>
                                     @endif
                                 </div>
                             </div>
@@ -470,9 +470,9 @@
                                 </select>
                             </div>
 
-                            <!-- Location -->
+                            <!-- Location Agency -->
                             <div class="col-md-6 mb-2">
-                                <label class="form-label" for="locationFilter">Location</label>
+                                <label class="form-label" for="locationFilter">Location Agency</label>
                                 <select class="form-control select2" name="location_bt_perdiem[]"
                                     id="location_bt_perdiem_{{ $loop->index + 1 }}"
                                     onchange="toggleOtherLocation(this, {{ $loop->index + 1 }})">
@@ -541,12 +541,12 @@
                                             oninput="formatInput(this)">
                                     @else
                                         <input
-                                            class="form-control bg-light"
+                                            class="form-control {{ $n->is_overseas === 'T' ? '' : 'bg-light' }}"
                                             name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}"
                                             type="text"
                                             value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
                                             onchange="onNominalChange()"
-                                            readonly>
+                                            oninput="formatInput(this)" {{ $n->is_overseas === 'T' ? '' : 'readonly' }}>
                                     @endif
                                 </div>
                             </div>
@@ -602,9 +602,9 @@
                         </select>
                     </div>
 
-                    <!-- Location -->
+                    <!-- Location Agency -->
                     <div class="col-md-6 mb-2">
-                        <label class="form-label" for="locationFilter">Location</label>
+                        <label class="form-label" for="locationFilter">Location Agency</label>
                         <select class="form-control select2" name="location_bt_perdiem[]" id="location_bt_perdiem_1"
                             onchange="toggleOtherLocation(this, 1)">
                             <option value="">Select location...</option>
@@ -668,12 +668,12 @@
                             oninput="formatInput(this)">
                     @else
                         <input
-                            class="form-control bg-light"
+                            class="form-control {{ $n->is_overseas === 'T' ? '' : 'bg-light' }}"
                             name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_1"
                             type="text"
                             value="0"
                             onchange="onNominalChange()"
-                            readonly>
+                            oninput="formatInput(this)" {{ $n->is_overseas === 'T' ? '' : 'readonly' }}>
                     @endif
                 </div>
                 <br>

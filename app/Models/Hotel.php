@@ -47,12 +47,12 @@ class Hotel extends Model
             }
         });
     }
-
+    
     public function checkCompany()
     {
         return $this->belongsTo(Company::class, 'contribution_level_code', 'contribution_level_code');
     }
-
+    
     public function getRouteKey()
     {
         return encrypt($this->getKey());

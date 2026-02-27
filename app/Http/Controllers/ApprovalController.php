@@ -259,7 +259,7 @@ class ApprovalReimburseController extends Controller
 
         // Cek jika tombol reject ditekan
         if ($req->input('action_ca_reject')) {
-            ca_sett_approval::where('ca_id', $ca_id)->update(['approval_status' => 'Rejected', 'approved_at' => Carbon::now()]);
+            ca_sett_approval::where('ca_id', $ca_id)->update(['approval_status' => 'Rejected', 'approved_at' => Carbon::now(),'deleted_at' => Carbon::now()]);
             $caTransaction = ca_transaction::where('id', $ca_id)->first();
             if ($caTransaction) {
                 $caTransaction->approval_sett = 'Rejected';

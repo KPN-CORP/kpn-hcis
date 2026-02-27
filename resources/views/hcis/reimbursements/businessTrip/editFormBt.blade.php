@@ -131,12 +131,21 @@
                                             {{ !in_array($n->tujuan, $locations->pluck('area')->toArray()) ? 'selected' : '' }}>
                                             Others</option>
                                     </select>
-
-                                    <br>
-                                    <input type="text" name="others_location" id="others_location"
-                                        class="form-control form-control-sm" placeholder="Other Location"
-                                        value="{{ !in_array($n->tujuan, $locations->pluck('area')->toArray()) ? $n->tujuan : '' }}"
-                                        style="{{ !in_array($n->tujuan, $locations->pluck('area')->toArray()) ? '' : 'display: none;' }}">
+                                    <div class="row mt-2">
+                                        <div class="col-7">
+                                            <input type="text" name="others_location" id="others_location"
+                                            class="form-control form-control-sm" placeholder="Other Location"
+                                            value="{{ !in_array($n->tujuan, $locations->pluck('area')->toArray()) ? $n->tujuan : '' }}"
+                                            style="{{ !in_array($n->tujuan, $locations->pluck('area')->toArray()) ? '' : 'display: none;' }}">
+                                        </div>
+                                        <div class="col-5 align-items-center" id="overseas_stat" name="overseas_stat" style="{{ !in_array($n->tujuan, $locations->pluck('area')->toArray()) ? '' : 'display: none;' }}">
+                                            <input type="hidden" name="is_overseas" value="F">
+                                            <input class="form-check-input" type="checkbox" value="T" id="is_overseas" name="is_overseas" {{ $n->is_overseas === 'T' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="is_overseas">
+                                                Dinas Luar Negeri
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -272,7 +281,17 @@
                                     Business Travel Needs <br>
                                 </label>
                                 <div class="row">
-                                    <div class="col-md-3">
+                                    <div class="col-md-2" id="div-ca-dalam-kota" style="display: <?= $showCashAdvanced == 'true' ? 'block' : 'none' ?>;">
+                                        <div class="form-check">
+                                            <input type="hidden" name="ca_dalam" id="caHiddenDalam" value="{{ $showCashAdvanced ? 'Ya' : 'Tidak' }}">
+                                            <input class="form-check-input" type="checkbox"
+                                            id="caCheckboxDalamKota" value="Ya" onchange="updateCAValue()" @checked($showCashAdvanced)>
+                                            <label class="form-check-label" for="caCheckboxDalamKota">
+                                                Cash Advanced
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
                                         <div class="form-check">
                                             <input type="hidden" name="hotel_dalam_kota" value="Tidak">
                                             <input class="form-check-input" type="checkbox" id="hotelCheckboxDalamKota"
@@ -285,7 +304,7 @@
                                     </div>
 
 
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <div class="form-check">
                                             <input type="hidden" name="mess_dalam_kota" value="Tidak">
                                             <input class="form-check-input" type="checkbox" id="messCheckboxDalamKota"
@@ -297,7 +316,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <div class="form-check">
                                             <input type="hidden" name="tiket_dalam_kota" value="Tidak">
                                             <input class="form-check-input" type="checkbox" id="ticketCheckboxDalamKota"
@@ -309,7 +328,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <div class="form-check">
                                             <input type="hidden" name="taksi_dalam_kota" value="Tidak">
                                             <input class="form-check-input" type="checkbox" id="taksiCheckboxDalamKota"
@@ -324,6 +343,13 @@
                                 <div class="row mt-3">
                                     <div class="col-md-12">
                                         <ul class="nav nav-tabs nav-pills mb-2" id="dalam-kota-pills-tab" role="tablist">
+                                            <li class="nav-item" role="presentation" id="nav-cashAdvanced-dalam-kota"
+                                                style="display: <?= $showCashAdvanced == 'true' ? 'block' : 'none' ?>;">
+                                                <button class="nav-link" id="pills-cashAdvanced-dalam-kota-tab"
+                                                    data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced-dalam-kota"
+                                                    type="button" role="tab"
+                                                    aria-controls="pills-cashAdvanced-dalam-kota" aria-selected="false">{{$allowance}}</button>
+                                            </li>
                                             <!-- Ticket Tab -->
                                             <li class="nav-item" role="presentation" id="nav-ticket-dalam-kota"
                                                 style="display: <?= $n->jns_dinas === 'dalam kota' && $n->tiket == 'Ya' ? 'block' : 'none' ?>;">
@@ -363,6 +389,11 @@
 
 
                                         <div id="dalam-kota-pills-tabContent" class="tab-content">
+                                            <div class="tab-pane fade" id="pills-cashAdvanced-dalam-kota" role="tabpanel"
+                                                aria-labelledby="pills-cashAdvanced-dalam-kota-tab">
+                                                {{-- Perdiem content --}}
+                                                @include('hcis.reimbursements.businessTrip.form.cashadvancedForm.caPerdiem')
+                                            </div>
                                             <!-- Ticket Content -->
                                             <div class="tab-pane fade" id="pills-ticket-dalam-kota" role="tabpanel"
                                                 aria-labelledby="pills-ticket-dalam-kota-tab">
@@ -587,6 +618,9 @@
 
     <!-- JavaScript Part -->
     {{-- <script src="{{ asset('/js/editBusinessTrip.js') }}"></script> --}}
+    @include('js.hcis.common.businessTrip')
+    @include('js.hcis.common.perdiem')
+    @include('js.hcis.common.req')
     @include('js.hcis.editBusinessTrip')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
@@ -623,8 +657,8 @@
                         total -= nominalValue;
                         document.querySelector('input[name="total_bt_meals"]').value =
                             formatNumber(total);
-                        calculateTotalNominalBTTotal();
-                        calculateTotalNominalBTENTTotal();
+                        calculateTotalBTCA();
+                        calculateTotalReq();
                     }
                     $(`#form-container-bt-meals-${index}`).remove();
                     formCountMeals--;
@@ -657,8 +691,8 @@
 
             // Reset nilai untuk nominal BT Meals
             document.querySelector(`#nominal_bt_meals_${index}`).value = 0;
-            calculateTotalNominalBTTotal();
-            calculateTotalNominalBTENTTotal();
+            calculateTotalBTCA();
+            calculateTotalReq();
         }
 
         function calculateTotalNominalBTMeals() {
@@ -1095,6 +1129,8 @@
                     input.name = button.name; // Use the button's name attribute
                     input.value = button.value; // Use the button's value attribute
 
+                    removeFormSubmitBTPerdiemDuplicateElement(form);
+
                     form.appendChild(input); // Append the hidden input to the form
                     form.submit(); // Submit the form only if confirmed
                 });
@@ -1130,48 +1166,54 @@
             } else {
                 input.value = formatNumber(0);
             }
-            calculateTotalNominalBTPerdiem();
+
+            calculateTotalBTPerdiem();
+
             if (document.querySelector('input[name="total_bt_meals"]')) {
                 calculateTotalNominalBTMeals();
             }
             calculateTotalNominalBTTransport();
             calculateTotalNominalBTPenginapan();
             calculateTotalNominalBTLainnya();
-            calculateTotalNominalBTTotal();
-            calculateTotalNominalBTENTTotal();
+            calculateTotalBTCA();
+            calculateTotalReq();
         }
 
-        function calculateTotalNominalBTTotal() {
-            let total = 0;
-            document.querySelectorAll('input[name="total_bt_perdiem"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelectorAll('input[name="total_bt_meals"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelectorAll('input[name="total_bt_transport"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelectorAll('input[name="total_bt_penginapan"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelectorAll('input[name="total_bt_lainnya"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelector('input[name="totalca"]').value = formatNumber(total);
-        }
+        // WE COMMENT THIS TO AVOID DUPLICATION
+        // function calculateTotalNominalBTTotal() {
+        //     let total = 0;
 
-        function calculateTotalNominalBTENTTotal() {
-            let total = 0;
-            document.querySelectorAll('input[name="totalca"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelectorAll('input[name="total_ent_detail"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelector('input[name="totalreq"]').value = formatNumber(total);
-            document.querySelector('input[name="totalreq2"]').value = formatNumber(total);
-        }
+        //     // document.querySelectorAll('input[name="total_bt_perdiem"]').forEach(input => {
+        //     //     total += parseNumber(input.value);
+        //     // });
+        //     // document.querySelectorAll('input[name="total_bt_meals"]').forEach(input => {
+        //     //     total += parseNumber(input.value);
+        //     // });
+        //     // document.querySelectorAll('input[name="total_bt_transport"]').forEach(input => {
+        //     //     total += parseNumber(input.value);
+        //     // });
+        //     // document.querySelectorAll('input[name="total_bt_penginapan"]').forEach(input => {
+        //     //     total += parseNumber(input.value);
+        //     // });
+        //     // document.querySelectorAll('input[name="total_bt_lainnya"]').forEach(input => {
+        //     //     total += parseNumber(input.value);
+        //     // });
+
+        //     document.querySelector('input[name="totalca"]').value = formatNumber(total);
+        // }
+
+        // WE COMMENT THIS TO AVOID DUPLICATION
+        // function calculateTotalNominalBTENTTotal() {
+        //     let total = 0;
+        //     document.querySelectorAll('input[name="totalca"]').forEach(input => {
+        //         total += parseNumber(input.value);
+        //     });
+        //     document.querySelectorAll('input[name="total_ent_detail"]').forEach(input => {
+        //         total += parseNumber(input.value);
+        //     });
+        //     document.querySelector('input[name="totalreq"]').value = formatNumber(total);
+        //     document.querySelector('input[name="totalreq2"]').value = formatNumber(total);
+        // }
     </script>
     <script>
         function toggleDivs() {

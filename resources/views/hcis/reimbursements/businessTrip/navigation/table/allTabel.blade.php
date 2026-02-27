@@ -257,7 +257,7 @@
                             <label class="form-label" for="reason">Reason</label>
                             <textarea name="ext_reason" id="ext_reason" class="form-control bg-light" readonly></textarea>
                         </div>
-                        <input type="text" name="no_id" id="no_id">
+                        <input type="hidden" name="no_id" id="no_id">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -269,7 +269,6 @@
         </div>
     </div>
 </div>
-
 
 <script>
     $(document).ready(function() {

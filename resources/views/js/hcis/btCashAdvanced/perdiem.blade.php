@@ -8,35 +8,37 @@ window.addEventListener("DOMContentLoaded", function () {
     ).length;
 });
 
-function calculateTotalNominalBTTotal() {
-    let total = 0;
-    document
-        .querySelectorAll('input[name="total_bt_perdiem"]')
-        .forEach((input) => {
-            total += parseNumber(input.value);
-        });
-    document
-        .querySelectorAll('input[name="total_bt_transport"]')
-        .forEach((input) => {
-            total += parseNumber(input.value);
-        });
-    document
-        .querySelectorAll('input[name="total_bt_penginapan"]')
-        .forEach((input) => {
-            total += parseNumber(input.value);
-        });
-    document
-        .querySelectorAll('input[name="total_bt_lainnya"]')
-        .forEach((input) => {
-            total += parseNumber(input.value);
-        });
-    document.querySelector('input[name="totalca"]').value = formatNumber(total);
-}
+// WE COMMENT THIS TO AVOID DUPLICATION
+// function calculateTotalNominalBTTotal() {
+//     let total = 0;
+
+//     document
+//         .querySelectorAll('input[name="total_bt_perdiem"]')
+//         .forEach((input) => {
+//             total += parseNumber(input.value);
+//         });
+//     document
+//         .querySelectorAll('input[name="total_bt_transport"]')
+//         .forEach((input) => {
+//             total += parseNumber(input.value);
+//         });
+//     document
+//         .querySelectorAll('input[name="total_bt_penginapan"]')
+//         .forEach((input) => {
+//             total += parseNumber(input.value);
+//         });
+//     document
+//         .querySelectorAll('input[name="total_bt_lainnya"]')
+//         .forEach((input) => {
+//             total += parseNumber(input.value);
+//         });
+//     document.querySelector('input[name="totalca"]').value = formatNumber(total);
+// }
 
 // Run the function on page load
 document.addEventListener("DOMContentLoaded", function () {
-    calculateTotalNominalBTTotal(); // Calculate the total immediately when the page loads
-    calculateTotalNominalBTENTTotal();
+    calculateTotalBTCA(); // Calculate the total immediately when the page loads
+    calculateTotalReq();
 });
 
 function isDateInRange(date, startDate, endDate) {
@@ -89,8 +91,8 @@ function removeFormPerdiem(index, event) {
                 total -= nominalValue;
                 document.querySelector('input[name="total_bt_perdiem"]').value =
                     formatNumber(total);
-                calculateTotalNominalBTTotal();
-                calculateTotalNominalBTENTTotal();
+                calculateTotalBTCA();
+                calculateTotalReq();
             }
             formContainer.remove();
 
@@ -99,7 +101,7 @@ function removeFormPerdiem(index, event) {
             );
             console.log("Data setelah dihapus:", perdiemData); // Cek di console
 
-            calculateTotalNominalBTPerdiem();
+            calculateTotalBTPerdiem();
         }
     }
 }
@@ -119,8 +121,8 @@ function clearFormPerdiem(index, event) {
             document.querySelector('input[name="total_bt_perdiem"]').value =
                 formatNumber(total);
             nominalInput.value = 0;
-            calculateTotalNominalBTTotal();
-            calculateTotalNominalBTENTTotal();
+            calculateTotalBTCA();
+            calculateTotalReq();
         }
 
         const formContainer = document.getElementById(
@@ -165,8 +167,8 @@ function clearFormPerdiem(index, event) {
                 textarea.value = "";
             });
 
-            calculateTotalNominalBTTotal();
-            calculateTotalNominalBTENTTotal();
+            calculateTotalBTCA();
+            calculateTotalReq();
         }
 
         perdiemData = perdiemData.filter(
@@ -175,114 +177,126 @@ function clearFormPerdiem(index, event) {
     }
 }
 
-function calculateTotalDaysPerdiem(input) {
-    const formGroup = input.closest(".row").parentElement;
-    const startDateInput = formGroup.querySelector("input.start-perdiem");
-    const endDateInput = formGroup.querySelector("input.end-perdiem");
-    const totalDaysInput = formGroup.querySelector("input.total-days-perdiem");
-    const perdiemInput = document.getElementById("perdiem");
-    const groupCompany = document.getElementById("group_company");
+// WE COMMENT THIS TO AVOID DUPLICATION
+// function calculateTotalDaysPerdiem(input) {
 
-    const allowanceInput = formGroup.querySelector(
-        'input[name="nominal_bt_perdiem[]"]'
-    );
+//     const formGroup = input.closest(".row").parentElement;
+//     const startDateInput = formGroup.querySelector("input.start-perdiem");
+//     const endDateInput = formGroup.querySelector("input.end-perdiem");
+//     const totalDaysInput = formGroup.querySelector("input.total-days-perdiem");
+//     const perdiemInput = document.getElementById("perdiem");
+//     const groupCompany = document.getElementById("group_company");
+//     const isOverseas = document.getElementById('is_overseas').checked;
+//     const allowanceInput = formGroup.querySelector(
+//         'input[name="nominal_bt_perdiem[]"]'
+//     );
 
-    const formIndex = formGroup.getAttribute("id").match(/\d+/)[0];
-    // Cek apakah tanggal sudah digunakan di form lain
-    if (isDateUsed(startDateInput.value, endDateInput.value, formIndex)) {
-        Swal.fire({
-            icon: "error",
-            title: "Date has been used",
-            text: "Please choose another date!",
-            timer: 2000,
-            confirmButtonColor: "#AB2F2B",
-            confirmButtonText: "OK",
-        });
-        startDateInput.value = "";
-        endDateInput.value = "";
-        return;
-    }
+//     const formIndex = formGroup.getAttribute("id").match(/\d+/)[0];
+//     // Cek apakah tanggal sudah digunakan di form lain
+//     if (isDateUsed(startDateInput.value, endDateInput.value, formIndex)) {
+//         Swal.fire({
+//             icon: "error",
+//             title: "Date has been used",
+//             text: "Please choose another date!",
+//             timer: 2000,
+//             confirmButtonColor: "#AB2F2B",
+//             confirmButtonText: "OK",
+//         });
+//         startDateInput.value = "";
+//         endDateInput.value = "";
+//         return;
+//     }
 
-    if (startDateInput.value && endDateInput.value) {
-        const startDate = new Date(startDateInput.value);
-        const endDate = new Date(endDateInput.value);
+//     if (startDateInput.value && endDateInput.value) {
+//         const startDate = new Date(startDateInput.value);
+//         const endDate = new Date(endDateInput.value);
 
-        // console.log("Group Company:", groupCompany.value);
+//         // console.log("Group Company:", groupCompany.value);
 
-        if (!isNaN(startDate) && !isNaN(endDate) && startDate <= endDate) {
-            const diffTime = Math.abs(endDate - startDate);
-            const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-            totalDaysInput.value = totalDays;
+//         if (!isNaN(startDate) && !isNaN(endDate) && startDate <= endDate) {
+//             const diffTime = Math.abs(endDate - startDate);
+//             const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+//             totalDaysInput.value = totalDays;
 
-            const perdiem = parseFloat(perdiemInput.value) || 0;
-            let allowance = totalDays * perdiem;
+//             const perdiem = parseFloat(perdiemInput.value) || 0;
+//             let allowance = totalDays * perdiem;
 
-            const locationSelect = formGroup.querySelector(
-                'select[name="location_bt_perdiem[]"]'
-            );
-            const otherLocationInput = formGroup.querySelector(
-                'input[name="other_location_bt_perdiem[]"]'
-            );
+//             const locationSelect = formGroup.querySelector(
+//                 'select[name="location_bt_perdiem[]"]'
+//             );
+//             const otherLocationInput = formGroup.querySelector(
+//                 'input[name="other_location_bt_perdiem[]"]'
+//             );
 
-            if (groupCompany.value !== "Plantations") {
-                allowance *= 1;
-            } else if (
-                locationSelect.value === "Others" ||
-                otherLocationInput.value.trim() !== ""
-            ) {
-                allowance *= 1;
-            } else {
-                allowance *= 0.5;
-            }
+//             // TODO: Perhitungan perdiem antara Business Travel dan Reimbursement berbeda
 
-            if (totalDays >= 30) {
-                allowance *= 0.75;
-            }
+//             if (groupCompany.value !== "Plantations") {
+//                 allowance *= 1;
+//             } else if (
+//                 locationSelect.value === "Others" ||
+//                 otherLocationInput.value.trim() !== ""
+//             ) {
+//                 allowance *= 1;
+//             } else {
+//                 allowance *= 0.5;
+//             }
 
-            allowanceInput.value = formatNumberPerdiem(allowance);
-            calculateTotalNominalBTPerdiem();
-        } else {
-            totalDaysInput.value = 0;
-            allowanceInput.value = 0;
-        }
-    } else {
-        totalDaysInput.value = 0;
-        allowanceInput.value = 0;
-    }
+//             if (totalDays >= 30) {
+//                 allowance *= 0.75;
+//             }
 
-    // Cek apakah data Perdiem untuk index ini sudah ada, jika ada update, jika belum tambahkan
-    const existingPerdiemIndex = perdiemData.findIndex(
-        (data) => data.index === formIndex
-    );
+//             if(isOverseas){
 
-    if (existingPerdiemIndex !== -1) {
-        // Jika ada, perbarui data di array
-        perdiemData[existingPerdiemIndex].startDate = startDateInput.value;
-        perdiemData[existingPerdiemIndex].endDate = endDateInput.value;
-    } else {
-        perdiemData.push({
-            index: formIndex,
-            startDate: startDateInput.value,
-            endDate: endDateInput.value,
-        });
-    }
-}
+//             }else{
+//                 allowanceInput.value = formatNumberPerdiem(allowance);
+//             }
 
-function calculateTotalNominalBTPerdiem() {
-    let total = 0;
-    document
-        .querySelectorAll('input[name="nominal_bt_perdiem[]"]')
-        .forEach((input) => {
-            total += cleanNumber(input.value);
-        });
-    document.querySelector('input[name="total_bt_perdiem"]').value =
-        formatNumber(total);
-    calculateTotalNominalBTTotal();
-    calculateTotalNominalBTENTTotal();
-}
+//             calculateTotalBTPerdiem();
+//         } else {
+//             totalDaysInput.value = 0;
+//             allowanceInput.value = 0;
+//         }
+//     } else {
+//         totalDaysInput.value = 0;
+//         allowanceInput.value = 0;
+//     }
+
+//     // Cek apakah data Perdiem untuk index ini sudah ada, jika ada update, jika belum tambahkan
+//     const existingPerdiemIndex = perdiemData.findIndex(
+//         (data) => data.index === formIndex
+//     );
+
+//     if (existingPerdiemIndex !== -1) {
+//         // Jika ada, perbarui data di array
+//         perdiemData[existingPerdiemIndex].startDate = startDateInput.value;
+//         perdiemData[existingPerdiemIndex].endDate = endDateInput.value;
+//     } else {
+//         perdiemData.push({
+//             index: formIndex,
+//             startDate: startDateInput.value,
+//             endDate: endDateInput.value,
+//         });
+//     }
+// }
+
+// WE COMMENT THIS TO AVOID DUPLICATION
+// function calculateTotalNominalBTPerdiem() {
+//     let total = 0;
+//     document
+//         .querySelectorAll('input[name="nominal_bt_perdiem[]"]')
+//         .forEach((input) => {
+//             total += cleanNumber(input.value);
+//         });
+
+//     document.getElementById("total_bt_perdiem").value =
+//     formatNumber(total);
+
+//     calculateTotalCA();
+//     calculateTotalNominalBTENTTotal();
+// }
 
 function onNominalChange() {
-    calculateTotalNominalBTPerdiem();
+    calculateTotalBTPerdiem();
 }
 
 function toggleOtherLocation(selectElement, index) {
@@ -356,4 +370,46 @@ function handleDateChange() {
         });
 }
 document.addEventListener("DOMContentLoaded", initializeDateInputs);
+
+    function checkPerDiemEditable() {
+        const tujuan = document.getElementById('tujuan').value;
+        const othersLocation = document.getElementById('others_location').value.trim();
+        const isOverseas = document.getElementById('is_overseas').checked;
+        const jenisDinas = document.getElementById('jns_dinas').value;
+        const perDiemInputs = document.querySelectorAll('.per-diem-input');
+
+        const editable = (
+            tujuan === 'Others' &&
+            othersLocation !== '' &&
+            isOverseas &&
+            jenisDinas === 'luar kota'
+        );
+
+        perDiemInputs.forEach(input => {
+            if (editable) {
+                input.removeAttribute('readonly');
+                input.classList.remove('bg-light');
+            } else {
+                input.setAttribute('readonly', true);
+                input.classList.add('bg-light');
+                // input.value = 0;
+                formatInput(input);
+            }
+        });
+    }
+
+    // Event listeners
+    document.getElementById('tujuan').addEventListener('change', checkPerDiemEditable);
+    document.getElementById('others_location').addEventListener('input', checkPerDiemEditable);
+    document.getElementById('is_overseas').addEventListener('change', checkPerDiemEditable);
+    document.getElementById('jns_dinas').addEventListener('change', checkPerDiemEditable);
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.per-diem-input').forEach(input => {
+            input.addEventListener('input', onNominalChange); // realtime saat diketik
+            input.addEventListener('blur', function () {
+                this.value = formatNumber(cleanNumber(this.value));
+            });
+        });
+    });
 </script>

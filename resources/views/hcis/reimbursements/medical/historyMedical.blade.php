@@ -7,7 +7,7 @@
                   <th></th>
                   <th>No</th>
                   <th>Submit Date</th>
-                  <th>Claim Date</th>
+                  <th>Medical Date</th>
                   <th>Period</th>
                   <th data-priority="0">No. Medical</th>
                   <th>Hospital Name</th>
@@ -18,7 +18,8 @@
                       <th class="text-center">{{ $master_medicals->name }}</th>
                   @endforeach
                   <th data-priority="2">Status</th>
-                  <th data-priority="3">Action</th>
+                  <th data-priority="3">Paid Status</th>
+                  <th data-priority="4">Action</th>
               </tr>
 
           </thead>
@@ -33,7 +34,7 @@
                       <td class="text-center">{{ $item->no_medic }}</td>
                       <td>{{ $item->hospital_name }}</td>
                       <td>{{ $item->patient_name }}</td>
-                      <td>{{ 'Rp. ' . number_format($item->total_per_no_medic, 0, ',', '.') }}</td>
+                      <td>{{ 'Rp. ' . number_format($item->status === 'Done' ? $item->balance_verif : $item->total_per_no_medic, 0, ',', '.') }}</td>
                       <td>{{ $item->disease }}</td>
                       @foreach ($master_medical as $master_medicals)
                           <td class="text-center">
@@ -67,6 +68,7 @@
                                 {{ $item->status }}
                           </span>
                       </td>
+                      <td class="text-center">{{ $item->paid_date ?? '-' }}</td>
                       <td class="text-center">
                           @if ($item->status == 'Draft')
                               <form method="GET" action="/medical/form-update/{{ $item->usage_id }}"

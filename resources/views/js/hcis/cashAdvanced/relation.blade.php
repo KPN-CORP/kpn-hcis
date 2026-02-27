@@ -233,5 +233,4 @@ function clearFormRelation(index, event) {
         checkbox.checked = false;
     });
 }
-
 </script>

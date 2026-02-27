@@ -104,6 +104,7 @@
                                   </button>
                               </form>
                           @endif
+                          @if ($loop->first || $item->status == 'Pending')
                           <form id="deleteForm_{{ $item->no_medic }}" method="POST"
                               action="/medical/admin/delete/{{ $item->usage_id }}" style="display: inline-block;">
                               @csrf
@@ -114,6 +115,7 @@
                                   <i class="bi bi-trash-fill"></i>
                               </button>
                           </form>
+                           @endif
                       </td>
                   </tr>
               @endforeach

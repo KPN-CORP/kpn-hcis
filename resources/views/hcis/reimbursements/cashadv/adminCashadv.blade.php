@@ -174,9 +174,13 @@
                                     updateEndDate2();
                                 </script>
 
+                                <select class="form-select mx-2" aria-label="ca_status" id="ca_status" name="ca_status">
+                                    <option value="-" {{ request()->get('ca_status') == '-' ? 'selected' : '' }}>All CA Status</option>
+                                    <option value="ca" {{ request()->get('ca_status') == 'ca' ? 'selected' : '' }}>CA</option>
+                                    <option value="nonca" {{ request()->get('ca_status') == 'nonca' ? 'selected' : '' }}>Non CA</option>
+                                </select>
                                 <select class="form-select mx-2" aria-label="Status" id="stat" name="stat">
                                     <option value="-" {{ request()->get('stat') == '-' ? 'selected' : '' }}>All Status</option>
-                                    <option value="Refund" {{ request()->get('stat') == 'Refund' ? 'selected' : '' }}>Refund</option>
                                     <option value="Done" {{ request()->get('stat') == 'Done' ? 'selected' : '' }}>Done</option>
                                     <option value="On Progress" {{ request()->get('stat') == 'On Progress' ? 'selected' : '' }}>On Progress</option>
                                 </select>
@@ -520,6 +524,7 @@
             const fromDate = document.getElementById("from_date").value;
             const untilDate = document.getElementById("until_date").value;
             const stat = document.getElementById("stat").value;
+            const ca_status = document.getElementById("ca_status").value;
 
             // Create a form element
             const form = document.createElement("form");
@@ -550,12 +555,18 @@
             statInput.type = "hidden";
             statInput.name = "stat";
             statInput.value = stat;
+            
+            const ca_statusInput = document.createElement("input");
+            ca_statusInput.type = "hidden";
+            ca_statusInput.name = "ca_status";
+            ca_statusInput.value = ca_status;
 
             form.appendChild(startDateInput);
             form.appendChild(endDateInput);
             form.appendChild(fromDateInput);
             form.appendChild(untilDateInput);
             form.appendChild(statInput);
+            form.appendChild(ca_statusInput);
 
             // Append the form to the body and submit it
             document.body.appendChild(form);

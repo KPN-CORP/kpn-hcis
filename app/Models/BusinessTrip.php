@@ -64,7 +64,7 @@ class BusinessTrip extends Model
             ->latest('approved_at')
             ->with('manager2');
     }
-
+    
     // BusinessTrip.php
     public function latestApprovalDecL1()
     {
@@ -83,7 +83,7 @@ class BusinessTrip extends Model
             ->latest('approved_at')
             ->with('manager2');
     }
-
+    
     protected $keyType = 'string';
     public $incrementing = false;
 
@@ -118,6 +118,7 @@ class BusinessTrip extends Model
         'id_hotel',
         'id_taksi',
         'status',
+        'is_overseas',
         'doc_at',
         'return_at',
         'verified_at',

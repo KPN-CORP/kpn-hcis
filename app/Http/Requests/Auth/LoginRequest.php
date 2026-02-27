@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Auth;
 
 use App\Models\User;
+use Crypto\Hash;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -28,8 +29,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string'],
-            'password' => ['required', 'string'],
+            "email" => ["required", "string"],
+            "password" => ["required", "string"],
         ];
     }
 
@@ -42,29 +43,35 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        $credential = $this->only('email', 'password');
-        $remember = $this->boolean('remember');
-        $checkPassword = User::where('email', $credential['email'])->orWhere('employee_id', $credential['email'])->first();
-        
+        $credential = $this->only("email", "password");
+        $remember = $this->boolean("remember");
+        $checkPassword = User::where("email", $credential["email"])
+            ->orWhere("employee_id", $credential["email"])
+            ->first();
+
         // Validasi apakah password tidak boleh kosong
         if (empty($checkPassword)) {
             throw ValidationException::withMessages([
-                'email' => 'Employee ID / Email is not registered.',
+                "email" => "Employee ID / Email is not registered.",
             ]);
         }
         if (empty($checkPassword->password)) {
             throw ValidationException::withMessages([
-                'password' => 'Password incorrect. Please try again or click Forgot password to reset.',
+                "password" =>
+                    "Password incorrect. Please try again or click Forgot password to reset.",
             ]);
         }
-        $credentials = [ 'email' => $checkPassword->email, 'password' => $credential['password']];
+        $credentials = [
+            "email" => $checkPassword->email,
+            "password" => $credential["password"],
+        ];
 
         if (!Auth::attempt($credentials, $remember)) {
             // Jika autentikasi gagal, tambahkan hit pada RateLimiter
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => 'Email or password is incorrect.',
+                "email" => "Email or password is incorrect.",
             ]);
         }
 
@@ -79,7 +86,7 @@ class LoginRequest extends FormRequest
      */
     public function ensureIsNotRateLimited(): void
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        if (!RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
             return;
         }
 
@@ -88,9 +95,9 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'email' => trans('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
+            "email" => trans("auth.throttle", [
+                "seconds" => $seconds,
+                "minutes" => ceil($seconds / 60),
             ]),
         ]);
     }
@@ -100,6 +107,8 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(
+            Str::lower($this->string("email")) . "|" . $this->ip(),
+        );
     }
 }

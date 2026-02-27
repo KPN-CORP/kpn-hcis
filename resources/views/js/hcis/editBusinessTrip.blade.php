@@ -149,6 +149,12 @@
 
         // Initialize Dalam Kota sections
         const dalamKotaSections = [{
+                checkbox: "caCheckboxDalamKota",
+                nav: "nav-cashAdvanced-dalam-kota",
+                tab: "pills-cashAdvanced-dalam-kota-tab",
+                pane: "pills-cashAdvanced-dalam-kota",
+            },
+            {
                 checkbox: "ticketCheckboxDalamKota",
                 nav: "nav-ticket-dalam-kota",
                 tab: "pills-ticket-dalam-kota-tab",
@@ -361,14 +367,24 @@
 
     function updateCAValue() {
         // const perdiemChecked = document.getElementById("perdiemCheckbox").checked;
+        const caCheckboxDalamKota = document.getElementById(
+            "caCheckboxDalamKota"
+        ).checked;
         const cashAdvancedChecked = document.getElementById(
             "cashAdvancedCheckbox"
         ).checked;
         const cashEntertainChecked = document.getElementById(
             "caEntertainCheckbox"
         ).checked;
+        const caHiddenDalam = document.getElementById("caHiddenDalam");
         const caField = document.getElementById("caHidden");
         const entField = document.getElementById("entHidden");
+
+        if (caCheckboxDalamKota) {
+            caHiddenDalam.value = "Ya";
+        } else {
+            caHiddenDalam.value = "Tidak";
+        }
 
         if (cashAdvancedChecked) {
             caField.value = "Ya";
@@ -397,6 +413,10 @@
     function validateStartEndDates() {
         const startDateInput = document.getElementById("mulai");
         const endDateInput = document.getElementById("kembali");
+
+        //dalam kota
+        const divdalamkota = document.getElementById('div-ca-dalam-kota');
+        const navdalamkota = document.getElementById('nav-cashAdvanced-dalam-kota');
 
         // Tab elements
         const perdiemTab = document.getElementById('perdiem-tab-li');
@@ -451,6 +471,9 @@
                         pane.classList.remove('show', 'active');
                     });
 
+                    divdalamkota.style.display = 'none';
+                    navdalamkota.style.display = 'none';
+
                     // Hide perdiem and meals
                     perdiemTab.style.display = 'none';
                     perdiemContent.style.display = 'none';
@@ -465,6 +488,7 @@
                     transportTab.setAttribute('aria-selected', 'true');
                     transportContent.classList.add('show', 'active');
                 } else {
+                    divdalamkota.style.display = '';
                     // Show perdiem and meals
                     perdiemTab.style.display = '';
                     perdiemContent.style.display = '';
@@ -1041,6 +1065,8 @@
                 additionalFieldsDalamKota.style.display = "none";
 
                 resetSection(checkboxesDalamKota, [
+                    "nav-cashAdvanced-dalam-kota",
+                    "nav-mess-dalam-kota",
                     "nav-ticket-dalam-kota",
                     "nav-hotel-dalam-kota",
                     "nav-taksi-dalam-kota",
@@ -1068,8 +1094,10 @@
                     "nav-ticket",
                     "nav-hotel",
                     "nav-taksi",
+                    "nav-cashAdvanced-dalam-kota",
                     "nav-ticket-dalam-kota",
                     "nav-hotel-dalam-kota",
+                    "nav-mess-dalam-kota",
                     "nav-taksi-dalam-kota",
                 ]);
             }
@@ -1128,6 +1156,12 @@
         toggleSection("taksiCheckbox", "nav-taksi", "pills-taksi-tab");
 
         // Initialize toggleSection for Dalam Kota
+        toggleSection(
+            "caCheckboxDalamKota",
+            "nav-cashAdvanced-dalam-kota",
+            "pills-cashAdvanced-dalam-kota-tab",
+            "pills-cashAdvanced-dalam-kota"
+        );
         toggleSection(
             "ticketCheckboxDalamKota",
             "nav-ticket-dalam-kota",
@@ -3149,7 +3183,7 @@
         totalDaysBtPerdiemFields.forEach((field) => (field.value = 0));
         totalBtPerdiem.forEach((field) => (field.value = 0));
 
-        calculateTotalNominalBTTotal();
+        calculateTotalBTCA();
     }
 
     function resetFieldsEntertain() {
@@ -3214,8 +3248,8 @@
         nominalentFields.forEach((field) => (field.value = 0));
         feeEntFields.forEach((field) => (field.value = 0));
 
-        calculateTotalNominalBTTotal();
-        calculateTotalNominalBTENTTotal();
+        calculateTotalBTCA();
+        calculateTotalReq();
     }
 
     function resetFields() {
@@ -3324,8 +3358,8 @@
         });
 
         // Recalculate the total CA after reset
-        calculateTotalNominalBTTotal();
-        calculateTotalNominalBTENTTotal();
+        calculateTotalBTCA();
+        calculateTotalReq();
     }
 
     function cleanNumber(value) {
@@ -3356,60 +3390,59 @@
         } else {
             input.value = formatNumber(0);
         }
-        calculateTotalNominalBTPerdiem();
+        calculateTotalBTPerdiem();
         calculateTotalNominalBTMeals();
         calculateTotalNominalBTTransport();
         calculateTotalNominalBTPenginapan();
         calculateTotalNominalBTLainnya();
-        calculateTotalNominalBTTotal();
-        calculateTotalNominalBTENTTotal();
+        calculateTotalBTCA();
+        calculateTotalReq();
     }
 
-    function calculateTotalNominalBTTotal() {
-        let total = 0;
-        document
-            .querySelectorAll('input[name="total_bt_perdiem"]')
-            .forEach((input) => {
-                total += parseNumber(input.value);
-            });
-        document
-            .querySelectorAll('input[name="total_bt_meals"]')
-            .forEach((input) => {
-                total += parseNumber(input.value);
-            });
-        document
-            .querySelectorAll('input[name="total_bt_transport"]')
-            .forEach((input) => {
-                total += parseNumber(input.value);
-            });
-        document
-            .querySelectorAll('input[name="total_bt_penginapan"]')
-            .forEach((input) => {
-                total += parseNumber(input.value);
-            });
-        document
-            .querySelectorAll('input[name="total_bt_lainnya"]')
-            .forEach((input) => {
-                total += parseNumber(input.value);
-            });
-        document.querySelector('input[name="totalca"]').value = formatNumber(total);
-    }
+    // WE COMMENT THIS TO AVOID DUPLICATION
+    // function calculateTotalNominalBTTotal() {
+    //     let total = 0;
 
-    function calculateTotalNominalBTENTTotal() {
-        let total = 0;
-        document.querySelectorAll('input[name="totalca"]').forEach((input) => {
-            total += parseNumber(input.value);
-        });
-        document
-            .querySelectorAll('input[name="total_ent_detail"]')
-            .forEach((input) => {
-                total += parseNumber(input.value);
-            });
-        document.querySelector('input[name="totalreq2"]').value =
-            formatNumber(total);
-        document.querySelector('input[name="totalreq"]').value =
-            formatNumber(total);
-    }
+    //     document
+    //         .querySelectorAll('input[name="total_bt_meals"]')
+    //         .forEach((input) => {
+    //             total += parseNumber(input.value);
+    //         });
+    //     document
+    //         .querySelectorAll('input[name="total_bt_transport"]')
+    //         .forEach((input) => {
+    //             total += parseNumber(input.value);
+    //         });
+    //     document
+    //         .querySelectorAll('input[name="total_bt_penginapan"]')
+    //         .forEach((input) => {
+    //             total += parseNumber(input.value);
+    //         });
+    //     document
+    //         .querySelectorAll('input[name="total_bt_lainnya"]')
+    //         .forEach((input) => {
+    //             total += parseNumber(input.value);
+    //         });
+
+    //     document.querySelector('input[name="totalca"]').value = formatNumber(total);
+    // }
+
+    // WE COMMENT THIS TO AVOID DUPLICATION
+    // function calculateTotalNominalBTENTTotal() {
+    //     let total = 0;
+    //     document.querySelectorAll('input[name="totalca"]').forEach((input) => {
+    //         total += parseNumber(input.value);
+    //     });
+    //     document
+    //         .querySelectorAll('input[name="total_ent_detail"]')
+    //         .forEach((input) => {
+    //             total += parseNumber(input.value);
+    //         });
+    //     document.querySelector('input[name="totalreq2"]').value =
+    //         formatNumber(total);
+    //     document.querySelector('input[name="totalreq"]').value =
+    //         formatNumber(total);
+    // }
 
     function toggleDivs() {
         // ca_type ca_nbt ca_e

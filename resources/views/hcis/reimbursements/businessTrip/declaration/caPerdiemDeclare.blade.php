@@ -28,9 +28,9 @@
                         </select>
                     </div>
 
-                    <!-- Location Agency -->
+                    <!-- Location -->
                     <div class="col-md-6 mb-2">
-                        <label class="form-label" for="locationFilter">Location Agency</label>
+                        <label class="form-label" for="locationFilter">Location</label>
                         <select class="form-control select2" name="location_bt_perdiem[]" id="location_bt_perdiem_${formCountPerdiem}" onchange="toggleOtherLocation(this, ${formCountPerdiem})">
                             <option value="">Select location...</option>
                             @foreach ($locations as $location)
@@ -77,7 +77,7 @@
                     <div class="input-group-append">
                         <span class="input-group-text">Rp</span>
                     </div>
-                    <input class="form-control form-control-sm bg-light" name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_${formCountPerdiem}" type="text" value="0" onchange="onNominalChange()" readonly>
+                    <input class="form-control form-control-sm {{ $n->is_overseas === 'T' ? '' : 'bg-light' }}" name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_${formCountPerdiem}" type="text" value="0" onchange="onNominalChange()" oninput="formatInput(this)" {{ $n->is_overseas === 'T' ? '' : 'readonly' }}>
                 </div>
                 <!-- Action Buttons -->
                 <div class="row mt-3">
@@ -132,7 +132,7 @@
                                         {{ $perdiem['company_code'] }}</td>
                                 </tr>
                                 <tr>
-                                    <th class="label" style="border: none; padding: 2px 0;">Location Agency</th>
+                                    <th class="label" style="border: none; padding: 2px 0;">Location</th>
                                     <td class="colon" style="border: none; padding: 2px 0;">:</td>
                                     <td class="value" style="border: none; padding: 2px 0;">
                                         @if ($perdiem['location'] == 'Others')
@@ -200,9 +200,9 @@
                                 </select>
                             </div>
 
-                            <!-- Location Agency -->
+                            <!-- Location -->
                             <div class="col-md-6 mb-2">
-                                <label class="form-label" for="locationFilter">Location Agency</label>
+                                <label class="form-label" for="locationFilter">Location</label>
                                 <select class="form-control select2" name="location_bt_perdiem[]"
                                     id="location_bt_perdiem_{{ $loop->index + 1 }}"
                                     onchange="toggleOtherLocation(this, {{ $loop->index + 1 }})">
@@ -256,10 +256,10 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
-                                    <input class="form-control bg-light" name="nominal_bt_perdiem[]"
+                                    <input class="form-control {{ $n->is_overseas === 'T' ? '' : 'bg-light' }}" name="nominal_bt_perdiem[]"
                                         id="nominal_bt_perdiem_{{ $loop->index + 1 }}" type="text"
                                         value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
-                                        onchange="onNominalChange()" readonly>
+                                        onchange="onNominalChange()" oninput="formatInput(this)" {{ $n->is_overseas === 'T' ? '' : 'readonly' }}>
                                 </div>
                             </div>
                         </div>
@@ -299,9 +299,9 @@
                                 </select>
                             </div>
 
-                            <!-- Location Agency -->
+                            <!-- Location -->
                             <div class="col-md-6 mb-2">
-                                <label class="form-label" for="locationFilter">Location Agency</label>
+                                <label class="form-label" for="locationFilter">Location</label>
                                 <select class="form-control select2" name="location_bt_perdiem[]"
                                     id="location_bt_perdiem_{{ $loop->index + 1 }}"
                                     onchange="toggleOtherLocation(this, {{ $loop->index + 1 }})">
@@ -355,10 +355,10 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
-                                    <input class="form-control bg-light" name="nominal_bt_perdiem[]"
+                                    <input class="form-control {{ $n->is_overseas === 'T' ? '' : 'bg-light' }}" name="nominal_bt_perdiem[]"
                                         id="nominal_bt_perdiem_{{ $loop->index + 1 }}" type="text"
                                         value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
-                                        onchange="onNominalChange()" readonly>
+                                        onchange="onNominalChange()" oninput="formatInput(this)"  {{ $n->is_overseas === 'T' ? '' : 'readonly' }}>
                                 </div>
                             </div>
                         </div>
@@ -420,9 +420,9 @@
                                 </select>
                             </div>
 
-                            <!-- Location Agency -->
+                            <!-- Location -->
                             <div class="col-md-6 mb-2">
-                                <label class="form-label" for="locationFilter">Location Agency</label>
+                                <label class="form-label" for="locationFilter">Location</label>
                                 <select class="form-control select2" name="location_bt_perdiem[]"
                                     id="location_bt_perdiem_{{ $loop->index + 1 }}"
                                     onchange="toggleOtherLocation(this, {{ $loop->index + 1 }})">
@@ -476,10 +476,10 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
-                                    <input class="form-control bg-light" name="nominal_bt_perdiem[]"
+                                    <input class="form-control {{ $n->is_overseas === 'T' ? '' : 'bg-light' }}" name="nominal_bt_perdiem[]"
                                         id="nominal_bt_perdiem_{{ $loop->index + 1 }}" type="text"
                                         value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
-                                        onchange="onNominalChange()" readonly>
+                                        onchange="onNominalChange()" oninput="formatInput(this)" {{ $n->is_overseas === 'T' ? '' : 'readonly' }}>
                                 </div>
                             </div>
                         </div>
@@ -534,9 +534,9 @@
                         </select>
                     </div>
 
-                    <!-- Location Agency -->
+                    <!-- Location -->
                     <div class="col-md-6 mb-2">
-                        <label class="form-label" for="locationFilter">Location Agency</label>
+                        <label class="form-label" for="locationFilter">Location</label>
                         <select class="form-control select2" name="location_bt_perdiem[]" id="location_bt_perdiem_1"
                             onchange="toggleOtherLocation(this, 1)">
                             <option value="">Select location...</option>
@@ -591,9 +591,9 @@
                     <div class="input-group-append">
                         <span class="input-group-text">Rp</span>
                     </div>
-                    <input class="form-control form-control-sm bg-light" name="nominal_bt_perdiem[]"
-                        id="nominal_bt_perdiem_1" type="text" value="0" onchange="onNominalChange()"
-                        readonly>
+                    <input class="form-control form-control-sm {{ $n->is_overseas === 'T' ? '' : 'bg-light' }}" name="nominal_bt_perdiem[]"
+                        id="nominal_bt_perdiem_1" type="text" value="0" onchange="onNominalChange()" oninput="formatInput(this)"
+                        {{ $n->is_overseas === 'T' ? '' : 'readonly' }}>
                 </div>
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
