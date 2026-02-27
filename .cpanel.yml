@@ -46,7 +46,7 @@ deployment:
     - composer install --ignore-platform-reqs --no-dev --optimize-autoloader
 
     # Install Node packages
-    - npm install
+    # - npm install
     # - npm run build
 
     # Set correct permissions
@@ -54,10 +54,10 @@ deployment:
     - chmod -R 755 bootstrap/cache
 
     # Clear and optimize Laravel
-    # - php artisan optimize:clear
+    - php artisan optimize:clear
     # - php artisan config:cache
     # - php artisan route:cache
     # - php artisan view:cache
 
     # Copy public assets to the public_html directory
-    # - \cp -rf public/assets public/build public/css public/img public/images public/js public/scss public/vendor /home/hcispanel/public_html/travel-dev
+    - \cp -rf public/assets public/build public/css public/img public/images public/js public/scss public/vendor /home/hcispanel/public_html/travel-dev
