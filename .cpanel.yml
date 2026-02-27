@@ -46,8 +46,8 @@ deployment:
     - composer install --ignore-platform-reqs --no-dev --optimize-autoloader
 
     # Install Node packages
-    - npm install
-    - npm run build
+    # - npm install
+    # - npm run build
 
     # Set correct permissions
     - chmod -R 755 storage
