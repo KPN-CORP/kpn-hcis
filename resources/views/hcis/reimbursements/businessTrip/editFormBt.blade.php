@@ -1012,6 +1012,8 @@
                             input.name = button.name; // Use the button's name attribute
                             input.value = button.value; // Use the button's value attribute
 
+                            removeFormSubmitBTPerdiemDuplicateElement(form);
+
                             form.appendChild(
                                 input); // Append the hidden input to the form
                             form.submit(); // Submit the form only if confirmed
