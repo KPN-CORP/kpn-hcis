@@ -44,11 +44,11 @@ deployment:
     - cd $DEPLOYPATH
 
     # Install composer dependencies (production)
-    # - composer install --ignore-platform-reqs --no-dev --optimize-autoloader
+    - composer install --ignore-platform-reqs --no-dev --optimize-autoloader
 
     # Install Node packages
-    # - npm install --legacy-peer-deps --no-audit
-    # - npm run build
+    - npm install --legacy-peer-deps --no-audit
+    - npm run build
 
     # Set correct permissions
     - chmod -R 755 storage
