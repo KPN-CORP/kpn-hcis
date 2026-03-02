@@ -1364,7 +1364,7 @@ class ReimburseController extends Controller
     }
     function cashadvancedUpdate(Request $req, $key)
     {
-        dd($req);
+        // dd($req);
         $userId = Auth::id();
         $uuid = Str::uuid();
         $model = CATransaction::findByRouteKey($key);
