@@ -234,7 +234,8 @@
                         @endif
                     </td>
                     <td>{{ $perdiem['company_code'] }}</td>
-                    <td>{{ $perdiem['total_days']+1 }} Hari</td>
+                    {{-- OLD <td>{{ $perdiem['total_days']+1 }} Hari</td> --}}
+                    <td>{{ $perdiem['total_days'] }} Hari</td>
                 </tr>
                 @endforeach
                 <tr class="total-row">
@@ -266,9 +267,9 @@
                         {{ array_sum(array_column($detailCA['detail_perdiem'], 'total_days')) }} Days
                     @endif
                 </td>
-                <td>  
-                    <span style="float: left; margin-left:4px">Rp.</span>  
-                    <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_perdiem'], 'nominal')), 0, ',', '.') }}</span>  
+                <td>
+                    <span style="float: left; margin-left:4px">Rp.</span>
+                    <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_perdiem'], 'nominal')), 0, ',', '.') }}</span>
                 </td>
             </tr>
             <tr>
@@ -276,9 +277,9 @@
                 <td>
                     -
                 </td>
-                <td>  
-                    <span style="float: left; margin-left:4px">Rp.</span>  
-                    <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_transport'], 'nominal')), 0, ',', '.') }}</span>  
+                <td>
+                    <span style="float: left; margin-left:4px">Rp.</span>
+                    <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_transport'], 'nominal')), 0, ',', '.') }}</span>
                 </td>
             </tr>
             <tr>
@@ -290,9 +291,9 @@
                         {{ array_sum(array_column($detailCA['detail_penginapan'], 'total_days')) }} Night
                     @endif
                 </td>
-                <td>  
-                    <span style="float: left; margin-left:4px">Rp.</span>  
-                    <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_penginapan'], 'nominal')), 0, ',', '.') }}</span>  
+                <td>
+                    <span style="float: left; margin-left:4px">Rp.</span>
+                    <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_penginapan'], 'nominal')), 0, ',', '.') }}</span>
                 </td>
             </tr>
             <tr>
@@ -300,16 +301,16 @@
                 <td>
                     -
                 </td>
-                <td>  
-                    <span style="float: left; margin-left:4px">Rp.</span>  
-                    <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_lainnya'], 'nominal')), 0, ',', '.') }}</span>  
+                <td>
+                    <span style="float: left; margin-left:4px">Rp.</span>
+                    <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_lainnya'], 'nominal')), 0, ',', '.') }}</span>
                 </td>
             </tr>
             <tr>
                 <td colspan="2">Total</td>
-                <td>  
-                    <span style="float: left; margin-left:4px">Rp.</span>  
-                    <span style="float: right;">{{ number_format($transactions->total_ca, 0, ',', '.') }}</span>  
+                <td>
+                    <span style="float: left; margin-left:4px">Rp.</span>
+                    <span style="float: right;">{{ number_format($transactions->total_ca, 0, ',', '.') }}</span>
                 </td>
             </tr>
         </table>
@@ -331,16 +332,16 @@
                 <td>
                     {{ $transactions->total_days }} Days
                 </td>
-                <td>  
-                    <span style="float: left; margin-left:4px">Rp.</span>  
-                    <span style="float: right;">{{ number_format(array_sum(array_column($detailCA, 'nominal_nbt')), 0, ',', '.') }}</span>  
+                <td>
+                    <span style="float: left; margin-left:4px">Rp.</span>
+                    <span style="float: right;">{{ number_format(array_sum(array_column($detailCA, 'nominal_nbt')), 0, ',', '.') }}</span>
                 </td>
             </tr>
             <tr>
                 <td colspan="2">Total</td>
-                <td>  
-                    <span style="float: left; margin-left:4px">Rp.</span>  
-                    <span style="float: right;">{{ number_format($transactions->total_ca, 0, ',', '.') }}</span>  
+                <td>
+                    <span style="float: left; margin-left:4px">Rp.</span>
+                    <span style="float: right;">{{ number_format($transactions->total_ca, 0, ',', '.') }}</span>
                 </td>
             </tr>
         </table>
@@ -362,16 +363,16 @@
                 <td>
                     {{ $transactions->total_days }} Days
                 </td>
-                <td>  
-                    <span style="float: left; margin-left:4px">Rp.</span>  
-                    <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_e'], 'nominal')), 0, ',', '.') }}</span>  
+                <td>
+                    <span style="float: left; margin-left:4px">Rp.</span>
+                    <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_e'], 'nominal')), 0, ',', '.') }}</span>
                 </td>
             </tr>
             <tr>
                 <td colspan="2">Total</td>
-                <td>  
-                    <span style="float: left; margin-left:4px">Rp.</span>  
-                    <span style="float: right;">{{ number_format($transactions->total_ca, 0, ',', '.') }}</span>  
+                <td>
+                    <span style="float: left; margin-left:4px">Rp.</span>
+                    <span style="float: right;">{{ number_format($transactions->total_ca, 0, ',', '.') }}</span>
                 </td>
             </tr>
         </table>
@@ -484,9 +485,9 @@
                         </td>
                         <td>{{ $perdiem['company_code'] }}</td>
                         <td>{{ $perdiem['total_days'] }} Hari</td>
-                        <td>  
-                            <span style="float: left; margin-left:4px">Rp.</span>  
-                            <span style="float: right;">{{ number_format($perdiem['nominal'], 0, ',', '.') }}</span>  
+                        <td>
+                            <span style="float: left; margin-left:4px">Rp.</span>
+                            <span style="float: right;">{{ number_format($perdiem['nominal'], 0, ',', '.') }}</span>
                         </td>
                     </tr>
                     @endforeach
@@ -495,9 +496,9 @@
                         <td>
                             {{ array_sum(array_column($detailCA['detail_perdiem'], 'total_days')) }} Hari
                         </td>
-                        <td>  
-                            <span style="float: left; margin-left:4px">Rp.</span>  
-                            <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_perdiem'], 'nominal')), 0, ',', '.') }}</span>  
+                        <td>
+                            <span style="float: left; margin-left:4px">Rp.</span>
+                            <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_perdiem'], 'nominal')), 0, ',', '.') }}</span>
                         </td>
                     </tr>
                 </table>
@@ -521,18 +522,18 @@
                         <td>{{ \Carbon\Carbon::parse($transport['tanggal'])->format('d-M-y') }}</td>
                         <td style="text-align: left">{{ $transport['keterangan'] }}</td>
                         <td>{{ $transport['company_code'] }}</td>
-                        <td>  
-                            <span style="float: left; margin-left:4px">Rp.</span>  
-                            <span style="float: right;">{{ number_format($transport['nominal'], 0, ',', '.') }}</span>  
+                        <td>
+                            <span style="float: left; margin-left:4px">Rp.</span>
+                            <span style="float: right;">{{ number_format($transport['nominal'], 0, ',', '.') }}</span>
                         </td>
                     </tr>
                     @endif
                     @endforeach
                     <tr class="total-row">
                         <td colspan="3" class="head-row">Total</td>
-                        <td>  
-                            <span style="float: left; margin-left:4px">Rp.</span>  
-                            <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_transport'], 'nominal')), 0, ',', '.') }}</span>  
+                        <td>
+                            <span style="float: left; margin-left:4px">Rp.</span>
+                            <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_transport'], 'nominal')), 0, ',', '.') }}</span>
                         </td>
                     </tr>
                 </table>
@@ -558,10 +559,10 @@
                             <td>{{ \Carbon\Carbon::parse($perdiem['end_date'])->format('d-M-y') }}</td>
                             <td>{{ $perdiem['hotel_name'] }}</td>
                             <td>{{ $perdiem['company_code'] }}</td>
-                            <td>{{ $perdiem['total_days'] }} Hari</td>
-                            <td>  
-                                <span style="float: left; margin-left:4px">Rp.</span>  
-                                <span style="float: right;">{{ number_format($perdiem['nominal'], 0, ',', '.') }}</span>  
+                            <td>{{ $perdiem['total_days'] }} Night</td>
+                            <td>
+                                <span style="float: left; margin-left:4px">Rp.</span>
+                                <span style="float: right;">{{ number_format($perdiem['nominal'], 0, ',', '.') }}</span>
                             </td>
                         </tr>
                     @endforeach
@@ -570,9 +571,9 @@
                         <td>
                             {{ array_sum(array_column($detailCA['detail_penginapan'], 'total_days')) }} Night
                         </td>
-                        <td>  
-                            <span style="float: left; margin-left:4px">Rp.</span>  
-                            <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_penginapan'], 'nominal')), 0, ',', '.') }}</span>  
+                        <td>
+                            <span style="float: left; margin-left:4px">Rp.</span>
+                            <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_penginapan'], 'nominal')), 0, ',', '.') }}</span>
                         </td>
                     </tr>
                 </table>
@@ -593,17 +594,17 @@
                     <tr style="text-align: center">
                         <td>{{ \Carbon\Carbon::parse($perdiem['tanggal'])->format('d-M-y') }}</td>
                         <td style="text-align: left">{{ $perdiem['keterangan'] }}</td>
-                        <td>  
-                            <span style="float: left; margin-left:4px">Rp.</span>  
-                            <span style="float: right;">{{ number_format($perdiem['nominal'], 0, ',', '.') }}</span>  
+                        <td>
+                            <span style="float: left; margin-left:4px">Rp.</span>
+                            <span style="float: right;">{{ number_format($perdiem['nominal'], 0, ',', '.') }}</span>
                         </td>
                     </tr>
                     @endforeach
                     <tr class="total-row">
                         <td colspan="2" class="head-row">Total</td>
-                        <td>  
-                            <span style="float: left; margin-left:4px">Rp.</span>  
-                            <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_lainnya'], 'nominal')), 0, ',', '.') }}</span>  
+                        <td>
+                            <span style="float: left; margin-left:4px">Rp.</span>
+                            <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_lainnya'], 'nominal')), 0, ',', '.') }}</span>
                         </td>
                     </tr>
                 </table>
@@ -624,17 +625,17 @@
                 <tr style="text-align: center">
                     <td>{{ \Carbon\Carbon::parse($item['tanggal_nbt'])->format('d-M-y') }}</td>
                     <td style="text-align: left">{{ $item['keterangan_nbt'] }}</td>
-                    <td>  
-                        <span style="float: left; margin-left:4px">Rp.</span>  
-                        <span style="float: right;">{{ number_format($item['nominal_nbt'], 0, ',', '.') }}</span>  
+                    <td>
+                        <span style="float: left; margin-left:4px">Rp.</span>
+                        <span style="float: right;">{{ number_format($item['nominal_nbt'], 0, ',', '.') }}</span>
                     </td>
                 </tr>
                 @endforeach
                 <tr class="total-row">
                     <td colspan="2" class="head-row">Total</td>
-                    <td>  
-                        <span style="float: left; margin-left:4px">Rp.</span>  
-                        <span style="float: right;">{{ number_format(array_sum(array_column($detailCA, 'nominal_nbt')), 0, ',', '.') }}</span>  
+                    <td>
+                        <span style="float: left; margin-left:4px">Rp.</span>
+                        <span style="float: right;">{{ number_format(array_sum(array_column($detailCA, 'nominal_nbt')), 0, ',', '.') }}</span>
                     </td>
                 </tr>
             </table>
@@ -663,17 +664,17 @@
                         @endphp
                         <td>{{ $typeMap[$detail['type']] ?? $detail['type'] }}</td>
                         <td style="text-align: left">{{ $detail['fee_detail'] }}</td>
-                        <td>  
-                            <span style="float: left; margin-left:4px">Rp.</span>  
-                            <span style="float: right;">{{ number_format($detail['nominal'], 0, ',', '.') }}</span>  
+                        <td>
+                            <span style="float: left; margin-left:4px">Rp.</span>
+                            <span style="float: right;">{{ number_format($detail['nominal'], 0, ',', '.') }}</span>
                         </td>
                     </tr>
                     @endforeach
                     <tr class="total-row">
                         <td colspan="2" class="head-row">Total</td>
-                        <td>  
-                            <span style="float: left; margin-left:4px">Rp.</span>  
-                            <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_e'], 'nominal')), 0, ',', '.') }}</span>  
+                        <td>
+                            <span style="float: left; margin-left:4px">Rp.</span>
+                            <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_e'], 'nominal')), 0, ',', '.') }}</span>
                         </td>
                     </tr>
                 </table>
