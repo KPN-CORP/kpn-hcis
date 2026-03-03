@@ -67,7 +67,13 @@ function removeFormPerdiem(index, event) {
                 total -= nominalValuePerdiem;
                 document.querySelector('input[name="total_bt_perdiem"]').value =
                     formatNumber(total);
-                calculateTotalNominalBTTotal();
+
+                if (typeof calculateTotalBTCA === "function") {
+                    calculateTotalBTCA();
+                } else if (typeof calculateTotalReimCA === "function") {
+                    calculateTotalReimCA();
+                }
+
                 if (isCADecPerdiem) {
                     calculateTotalNominalBTBalance();
                 }
@@ -98,7 +104,13 @@ function clearFormPerdiem(index, event) {
             document.querySelector('input[name="total_bt_perdiem"]').value =
                 formatNumber(total);
             nominalInputPerdiem.value = 0;
-            calculateTotalNominalBTTotal();
+
+            if (typeof calculateTotalBTCA === "function") {
+                calculateTotalBTCA();
+            } else if (typeof calculateTotalReimCA === "function") {
+                calculateTotalReimCA();
+            }
+
             if (isCADecPerdiem) {
                 calculateTotalNominalBTBalance();
             }
@@ -150,7 +162,12 @@ function clearFormPerdiem(index, event) {
                     textarea.value = "";
                 });
 
-            calculateTotalNominalBTTotal();
+            if (typeof calculateTotalBTCA === "function") {
+                calculateTotalBTCA();
+            } else if (typeof calculateTotalReimCA === "function") {
+                calculateTotalReimCA();
+            }
+
             if (isCADecPerdiem) {
                 calculateTotalNominalBTBalance();
             }
