@@ -167,8 +167,9 @@
 window.addMoreFormPerdiemReq = function(event) {
     if(event) event.preventDefault();
 
+    formCountPerdiem++;
+
     let wrappers = document.querySelectorAll("#form-container-perdiem");
-    let newIndex = 0;
 
     wrappers.forEach(wrapper => {
         if (!wrapper) {
@@ -176,158 +177,105 @@ window.addMoreFormPerdiemReq = function(event) {
             return;
         }
 
-        var children = wrapper.querySelectorAll(".perdiem-item");
-        if(children.length === 0) {
-            alert("Form awal tidak ditemukan!");
-            return;
-        }
+        const newForm = document.createElement("div");
 
-        var lastForm = children[children.length - 1];
-        var parts = lastForm.id.split("-");
-        var lastIndex = parseInt(parts[parts.length - 1]);
+        newForm.id = `form-container-bt-perdiem-${formCountPerdiem}`;
+        newForm.className = "card-body p-2 mb-3";
+        newForm.style.backgroundColor = "#f8f8f8";
+        newForm.innerHTML = `
+                <p class="fs-4 text-primary" style="font-weight: bold;">Perdiem ${formCountPerdiem}</p>
+                <div id="form-container-bt-perdiem-req-${formCountPerdiem}" class="card-body bg-light p-2 mb-3">
+                    <p class="fs-5 text-primary" style="font-weight: bold;">Perdiem Request</p>
+                    <div class="row">
+                        <!-- Company Code -->
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label" for="company_bt_perdiem${formCountPerdiem}">Company Code</label>
+                            <select class="form-control" id="company_bt_perdiem_${formCountPerdiem}" name="company_bt_perdiem[]">
+                                <option value="">Select Company...</option>
+                                @foreach ($companies as $company)
+                                    <option value="{{ $company->contribution_level_code }}">
+                                        {{ $company->contribution_level . ' (' . $company->contribution_level_code . ')' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-        newIndex = lastIndex + 1;
+                        <!-- Location Agency -->
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label" for="locationFilter">Location Agency</label>
+                            <select class="form-control select2" name="location_bt_perdiem[]" id="location_bt_perdiem_${formCountPerdiem}" onchange="toggleOtherLocation(this, ${formCountPerdiem})">
+                                <option value="">Select location...</option>
+                                @foreach($locations as $location)
+                                    <option value="{{ $location->area }}" @if($location->area == $perdiem['location']) selected @endif>
+                                        {{ $location->area." (".$location->company_name.")" }}
+                                    </option>
+                                @endforeach
+                                <option value="Others" @if('Others' == $perdiem['location']) selected @endif>Others</option>
+                            </select>
+                            <div id="other-location-${formCountPerdiem}" class="mt-3" @if($perdiem['location'] != 'Others') style="display: none;" @endif>
+                                <input type="text" name="other_location_bt_perdiem[]" class="form-control" placeholder="Other Location" value="{{ $perdiem['other_location'] ?? '' }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <!-- Start Perdiem -->
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Start Perdiem</label>
+                            <input type="date" name="start_bt_perdiem[]" class="form-control form-control-sm start-perdiem" placeholder="mm/dd/yyyy" onchange="calculateTotalDaysPerdiem(this)">
+                        </div>
 
-        var newForm = lastForm.cloneNode(true);
+                        <!-- End Perdiem -->
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">End Perdiem</label>
+                            <input type="date" name="end_bt_perdiem[]" class="form-control form-control-sm end-perdiem" placeholder="mm/dd/yyyy" onchange="calculateTotalDaysPerdiem(this)">
+                        </div>
 
-        newForm.id = "form-container-bt-perdiem-" + newIndex;
-
-        var titleSpan = newForm.querySelector(".form-index");
-        if(titleSpan) titleSpan.innerText = newIndex;
-
-        var html = newForm.innerHTML;
-        var regexId = new RegExp("_" + lastIndex, "g");
-        var regexHyphen = new RegExp("-" + lastIndex, "g");
-        var regexFunc = new RegExp("\\(" + lastIndex + ",", "g");
-
-        html = html.replace(regexId, "_" + newIndex);
-        html = html.replace(regexHyphen, "-" + newIndex);
-        html = html.replace(regexFunc, "(" + newIndex + ",");
-
-        newForm.innerHTML = html;
-
-        var inputs = newForm.querySelectorAll("input");
-        inputs.forEach(input => {
-            if(input.name && input.name.includes("nominal")) {
-                input.value = 0;
-            } else {
-                input.value = "";
-            }
-        });
-
-        newForm.querySelectorAll(".select2-container").forEach(el => el.remove());
-
-        newForm.querySelectorAll("select").forEach(sel => {
-            sel.classList.remove("select2-hidden-accessible");
-            sel.removeAttribute("data-select2-id");
-            sel.removeAttribute("aria-hidden");
-            sel.removeAttribute("tabindex");
-            sel.style.display = "block";
-            sel.selectedIndex = 0;
-        });
+                        <!-- Total Days -->
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Total Days</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-sm bg-light total-days-perdiem" name="total_days_bt_perdiem[]" type="number" value="0" readonly>
+                                <div class="input-group-append">
+                                    <span class="input-group-text">days</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Amount -->
+                    <div class="mb-2">
+                        <label class="form-label">Amount</label>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-append">
+                            <span class="input-group-text">Rp</span>
+                        </div>
+                        <input class="form-control form-control-sm bg-light" name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_${formCountPerdiem}" type="text" value="0" onchange="onNominalChange()">
+                    </div>
+                    <!-- Action Buttons -->
+                    <div class="row mt-2">
+                        <div class="d-flex justify-start w-100">
+                            <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormPerdiem(${formCountPerdiem}, event)">Reset</button>
+                            <button class="btn btn-outline-primary mr-2 btn-sm" onclick="removeFormPerdiem(${formCountPerdiem}, event)">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `;
 
         wrapper.appendChild(newForm);
-
-        setTimeout(function() {
-            try {
-                $(`#company_bt_perdiem_${newIndex}`).select2({ theme: "bootstrap-5" });
-                $(`#location_bt_perdiem_${newIndex}`).select2({ theme: "bootstrap-5" });
-
-                var otherLoc = newForm.querySelector(`#other-location-${newIndex}`);
-                if(otherLoc) otherLoc.style.display = 'none';
-
-                var locSel = newForm.querySelector(`#location_bt_perdiem_${newIndex}`);
-                if(locSel) locSel.setAttribute('onchange', `toggleOtherLocation(this, ${newIndex})`);
-
-            } catch(e) {}
-        }, 100);
 
         newForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
 
-    if (typeof window.perdiemData === 'undefined') window.perdiemData = [];
+    $(`#company_bt_perdiem_${formCountPerdiem}, #location_bt_perdiem_${formCountPerdiem}`).select2({
+        theme: "bootstrap-5",
+    });
 
-    window.perdiemData.push({ index: newIndex.toString(), startDate: "", endDate: "" });
+    $(`#company_bt_perdiem_${formCountPerdiem}, #location_bt_perdiem_${formCountPerdiem}`).on("change", function () {
+        handleDateChange();
+    });
+
+    perdiemData.push({ index: formCountPerdiem.toString(), startDate: "", endDate: "" });
+
+    handleDateChange();
 };
-
-// window.addMoreFormPerdiemReq = function(event) {
-//     if(event) event.preventDefault();
-
-//     var wrapper = document.getElementById("form-container-perdiem");
-
-//     if (!wrapper) {
-//         alert("Wrapper tidak ditemukan!");
-//         return;
-//     }
-
-//     var children = wrapper.querySelectorAll(".perdiem-item");
-//     if(children.length === 0) {
-//         alert("Form awal tidak ditemukan!");
-//         return;
-//     }
-
-//     var lastForm = children[children.length - 1];
-//     var parts = lastForm.id.split("-");
-//     var lastIndex = parseInt(parts[parts.length - 1]);
-//     var newIndex = lastIndex + 1;
-
-//     var newForm = lastForm.cloneNode(true);
-
-//     newForm.id = "form-container-bt-perdiem-" + newIndex;
-
-//     var titleSpan = newForm.querySelector(".form-index");
-//     if(titleSpan) titleSpan.innerText = newIndex;
-
-//     var html = newForm.innerHTML;
-//     var regexId = new RegExp("_" + lastIndex, "g");
-//     var regexHyphen = new RegExp("-" + lastIndex, "g");
-//     var regexFunc = new RegExp("\\(" + lastIndex + ",", "g");
-
-//     html = html.replace(regexId, "_" + newIndex);
-//     html = html.replace(regexHyphen, "-" + newIndex);
-//     html = html.replace(regexFunc, "(" + newIndex + ",");
-
-//     newForm.innerHTML = html;
-
-//     var inputs = newForm.querySelectorAll("input");
-//     inputs.forEach(input => {
-//         if(input.name && input.name.includes("nominal")) {
-//             input.value = 0;
-//         } else {
-//             input.value = "";
-//         }
-//     });
-
-//     newForm.querySelectorAll(".select2-container").forEach(el => el.remove());
-
-//     newForm.querySelectorAll("select").forEach(sel => {
-//         sel.classList.remove("select2-hidden-accessible");
-//         sel.removeAttribute("data-select2-id");
-//         sel.removeAttribute("aria-hidden");
-//         sel.removeAttribute("tabindex");
-//         sel.style.display = "block";
-//         sel.selectedIndex = 0;
-//     });
-
-//     wrapper.appendChild(newForm);
-
-//     setTimeout(function() {
-//         try {
-//             $(`#company_bt_perdiem_${newIndex}`).select2({ theme: "bootstrap-5" });
-//             $(`#location_bt_perdiem_${newIndex}`).select2({ theme: "bootstrap-5" });
-
-//             var otherLoc = newForm.querySelector(`#other-location-${newIndex}`);
-//             if(otherLoc) otherLoc.style.display = 'none';
-
-//             var locSel = newForm.querySelector(`#location_bt_perdiem_${newIndex}`);
-//             if(locSel) locSel.setAttribute('onchange', `toggleOtherLocation(this, ${newIndex})`);
-
-//         } catch(e) {}
-//     }, 100);
-
-//     if (typeof window.perdiemData === 'undefined') window.perdiemData = [];
-//     window.perdiemData.push({ index: newIndex.toString(), startDate: "", endDate: "" });
-
-//     newForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
-// };
 </script>
