@@ -3,9 +3,8 @@
 @include('js.hcis.btCashAdvanced.perdiem')
 
 
-
+<input id="page-identifier-name" name="page-identifier-name" type="hidden" value="businessTripCAPerdiemForm" disabled>
 <div id="form-container-perdiem">
-    <input id="page-identifier-name" name="page-identifier-name" type="hidden" value="businessTripCAPerdiemForm" disabled>
     @if (!empty($caDetail['detail_perdiem']) && $caDetail['detail_perdiem'][0]['start_date'] !== null)
         @foreach ($caDetail['detail_perdiem'] as $perdiem)
             <div id="form-container-bt-perdiem-{{ $loop->index + 1 }}" class="bg-light rounded-3 card-body p-2 mb-2 perdiem-item">
@@ -168,81 +167,167 @@
 window.addMoreFormPerdiemReq = function(event) {
     if(event) event.preventDefault();
 
-    var wrapper = document.getElementById("form-container-perdiem");
+    let wrappers = document.querySelectorAll("#form-container-perdiem");
+    let newIndex = 0;
 
-    if (!wrapper) {
-        alert("Wrapper tidak ditemukan!");
-        return;
-    }
-
-    var children = wrapper.querySelectorAll(".perdiem-item");
-    if(children.length === 0) {
-        alert("Form awal tidak ditemukan!");
-        return;
-    }
-
-    var lastForm = children[children.length - 1];
-    var parts = lastForm.id.split("-");
-    var lastIndex = parseInt(parts[parts.length - 1]);
-    var newIndex = lastIndex + 1;
-
-    var newForm = lastForm.cloneNode(true);
-
-    newForm.id = "form-container-bt-perdiem-" + newIndex;
-
-    var titleSpan = newForm.querySelector(".form-index");
-    if(titleSpan) titleSpan.innerText = newIndex;
-
-    var html = newForm.innerHTML;
-    var regexId = new RegExp("_" + lastIndex, "g");
-    var regexHyphen = new RegExp("-" + lastIndex, "g");
-    var regexFunc = new RegExp("\\(" + lastIndex + ",", "g");
-
-    html = html.replace(regexId, "_" + newIndex);
-    html = html.replace(regexHyphen, "-" + newIndex);
-    html = html.replace(regexFunc, "(" + newIndex + ",");
-
-    newForm.innerHTML = html;
-
-    var inputs = newForm.querySelectorAll("input");
-    inputs.forEach(input => {
-        if(input.name && input.name.includes("nominal")) {
-            input.value = 0;
-        } else {
-            input.value = "";
+    wrappers.forEach(wrapper => {
+        if (!wrapper) {
+            alert("Wrapper tidak ditemukan!");
+            return;
         }
+
+        var children = wrapper.querySelectorAll(".perdiem-item");
+        if(children.length === 0) {
+            alert("Form awal tidak ditemukan!");
+            return;
+        }
+
+        var lastForm = children[children.length - 1];
+        var parts = lastForm.id.split("-");
+        var lastIndex = parseInt(parts[parts.length - 1]);
+
+        newIndex = lastIndex + 1;
+
+        var newForm = lastForm.cloneNode(true);
+
+        newForm.id = "form-container-bt-perdiem-" + newIndex;
+
+        var titleSpan = newForm.querySelector(".form-index");
+        if(titleSpan) titleSpan.innerText = newIndex;
+
+        var html = newForm.innerHTML;
+        var regexId = new RegExp("_" + lastIndex, "g");
+        var regexHyphen = new RegExp("-" + lastIndex, "g");
+        var regexFunc = new RegExp("\\(" + lastIndex + ",", "g");
+
+        html = html.replace(regexId, "_" + newIndex);
+        html = html.replace(regexHyphen, "-" + newIndex);
+        html = html.replace(regexFunc, "(" + newIndex + ",");
+
+        newForm.innerHTML = html;
+
+        var inputs = newForm.querySelectorAll("input");
+        inputs.forEach(input => {
+            if(input.name && input.name.includes("nominal")) {
+                input.value = 0;
+            } else {
+                input.value = "";
+            }
+        });
+
+        newForm.querySelectorAll(".select2-container").forEach(el => el.remove());
+
+        newForm.querySelectorAll("select").forEach(sel => {
+            sel.classList.remove("select2-hidden-accessible");
+            sel.removeAttribute("data-select2-id");
+            sel.removeAttribute("aria-hidden");
+            sel.removeAttribute("tabindex");
+            sel.style.display = "block";
+            sel.selectedIndex = 0;
+        });
+
+        wrapper.appendChild(newForm);
+
+        setTimeout(function() {
+            try {
+                $(`#company_bt_perdiem_${newIndex}`).select2({ theme: "bootstrap-5" });
+                $(`#location_bt_perdiem_${newIndex}`).select2({ theme: "bootstrap-5" });
+
+                var otherLoc = newForm.querySelector(`#other-location-${newIndex}`);
+                if(otherLoc) otherLoc.style.display = 'none';
+
+                var locSel = newForm.querySelector(`#location_bt_perdiem_${newIndex}`);
+                if(locSel) locSel.setAttribute('onchange', `toggleOtherLocation(this, ${newIndex})`);
+
+            } catch(e) {}
+        }, 100);
+
+        newForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
-
-    newForm.querySelectorAll(".select2-container").forEach(el => el.remove());
-
-    newForm.querySelectorAll("select").forEach(sel => {
-        sel.classList.remove("select2-hidden-accessible");
-        sel.removeAttribute("data-select2-id");
-        sel.removeAttribute("aria-hidden");
-        sel.removeAttribute("tabindex");
-        sel.style.display = "block";
-        sel.selectedIndex = 0;
-    });
-
-    wrapper.appendChild(newForm);
-
-    setTimeout(function() {
-        try {
-            $(`#company_bt_perdiem_${newIndex}`).select2({ theme: "bootstrap-5" });
-            $(`#location_bt_perdiem_${newIndex}`).select2({ theme: "bootstrap-5" });
-
-            var otherLoc = newForm.querySelector(`#other-location-${newIndex}`);
-            if(otherLoc) otherLoc.style.display = 'none';
-
-            var locSel = newForm.querySelector(`#location_bt_perdiem_${newIndex}`);
-            if(locSel) locSel.setAttribute('onchange', `toggleOtherLocation(this, ${newIndex})`);
-
-        } catch(e) {}
-    }, 100);
 
     if (typeof window.perdiemData === 'undefined') window.perdiemData = [];
-    window.perdiemData.push({ index: newIndex.toString(), startDate: "", endDate: "" });
 
-    newForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    window.perdiemData.push({ index: newIndex.toString(), startDate: "", endDate: "" });
 };
+
+// window.addMoreFormPerdiemReq = function(event) {
+//     if(event) event.preventDefault();
+
+//     var wrapper = document.getElementById("form-container-perdiem");
+
+//     if (!wrapper) {
+//         alert("Wrapper tidak ditemukan!");
+//         return;
+//     }
+
+//     var children = wrapper.querySelectorAll(".perdiem-item");
+//     if(children.length === 0) {
+//         alert("Form awal tidak ditemukan!");
+//         return;
+//     }
+
+//     var lastForm = children[children.length - 1];
+//     var parts = lastForm.id.split("-");
+//     var lastIndex = parseInt(parts[parts.length - 1]);
+//     var newIndex = lastIndex + 1;
+
+//     var newForm = lastForm.cloneNode(true);
+
+//     newForm.id = "form-container-bt-perdiem-" + newIndex;
+
+//     var titleSpan = newForm.querySelector(".form-index");
+//     if(titleSpan) titleSpan.innerText = newIndex;
+
+//     var html = newForm.innerHTML;
+//     var regexId = new RegExp("_" + lastIndex, "g");
+//     var regexHyphen = new RegExp("-" + lastIndex, "g");
+//     var regexFunc = new RegExp("\\(" + lastIndex + ",", "g");
+
+//     html = html.replace(regexId, "_" + newIndex);
+//     html = html.replace(regexHyphen, "-" + newIndex);
+//     html = html.replace(regexFunc, "(" + newIndex + ",");
+
+//     newForm.innerHTML = html;
+
+//     var inputs = newForm.querySelectorAll("input");
+//     inputs.forEach(input => {
+//         if(input.name && input.name.includes("nominal")) {
+//             input.value = 0;
+//         } else {
+//             input.value = "";
+//         }
+//     });
+
+//     newForm.querySelectorAll(".select2-container").forEach(el => el.remove());
+
+//     newForm.querySelectorAll("select").forEach(sel => {
+//         sel.classList.remove("select2-hidden-accessible");
+//         sel.removeAttribute("data-select2-id");
+//         sel.removeAttribute("aria-hidden");
+//         sel.removeAttribute("tabindex");
+//         sel.style.display = "block";
+//         sel.selectedIndex = 0;
+//     });
+
+//     wrapper.appendChild(newForm);
+
+//     setTimeout(function() {
+//         try {
+//             $(`#company_bt_perdiem_${newIndex}`).select2({ theme: "bootstrap-5" });
+//             $(`#location_bt_perdiem_${newIndex}`).select2({ theme: "bootstrap-5" });
+
+//             var otherLoc = newForm.querySelector(`#other-location-${newIndex}`);
+//             if(otherLoc) otherLoc.style.display = 'none';
+
+//             var locSel = newForm.querySelector(`#location_bt_perdiem_${newIndex}`);
+//             if(locSel) locSel.setAttribute('onchange', `toggleOtherLocation(this, ${newIndex})`);
+
+//         } catch(e) {}
+//     }, 100);
+
+//     if (typeof window.perdiemData === 'undefined') window.perdiemData = [];
+//     window.perdiemData.push({ index: newIndex.toString(), startDate: "", endDate: "" });
+
+//     newForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+// };
 </script>

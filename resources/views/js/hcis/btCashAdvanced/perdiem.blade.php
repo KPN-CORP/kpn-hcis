@@ -71,109 +71,200 @@ $(".btn-warning").click(function (event) {
     removeFormPerdiem(index, event);
 });
 
+// BACKUP
+// function removeFormPerdiem(index, event) {
+//     event.preventDefault();
+//     if (formCountPerdiem > 0) {
+//         const formContainer = document.getElementById(
+//             `form-container-bt-perdiem-${index}`
+//         );
+//         if (formContainer) {
+//             // const nominalInput = formContainer.querySelector(`#nominal_bt_perdiem_${index}`);
+//             const nominalInput = document.querySelector(
+//                 `#nominal_bt_perdiem_${index}`
+//             );
+//             if (nominalInput) {
+//                 let nominalValue = cleanNumber(nominalInput.value);
+//                 let total = cleanNumber(
+//                     document.querySelector('input[name="total_bt_perdiem"]')
+//                         .value
+//                 );
+//                 total -= nominalValue;
+//                 document.querySelector('input[name="total_bt_perdiem"]').value =
+//                     formatNumber(total);
+//                 calculateTotalBTCA();
+//                 calculateTotalReq();
+//             }
+//             formContainer.remove();
+
+//             perdiemData = perdiemData.filter(
+//                 (data) => data.index !== index.toString()
+//             );
+//             console.log("Data setelah dihapus:", perdiemData); // Cek di console
+
+//             calculateTotalBTPerdiem();
+//         }
+//     }
+// }
+
 function removeFormPerdiem(index, event) {
     event.preventDefault();
+
     if (formCountPerdiem > 0) {
-        const formContainer = document.getElementById(
-            `form-container-bt-perdiem-${index}`
+        let nominalValue = 0;
+        let totalBTPerdiem = cleanNumber(document.querySelector('input[name="total_bt_perdiem"]').value);
+
+        document.querySelectorAll(`#nominal_bt_perdiem_${index}`).forEach(input => {
+            nominalValue = cleanNumber(input.value);
+        });
+
+        totalBTPerdiem -= nominalValue;
+
+        document.querySelectorAll('input[name="total_bt_perdiem"]').forEach(input => {
+            input.value = formatNumber(totalBTPerdiem);
+        });
+
+        document.querySelectorAll(`#form-container-bt-perdiem-${index}`).forEach(input => {
+            input.remove();
+        });
+
+        perdiemData = perdiemData.filter(
+            (data) => data.index !== index.toString()
         );
-        if (formContainer) {
-            // const nominalInput = formContainer.querySelector(`#nominal_bt_perdiem_${index}`);
-            const nominalInput = document.querySelector(
-                `#nominal_bt_perdiem_${index}`
-            );
-            if (nominalInput) {
-                let nominalValue = cleanNumber(nominalInput.value);
-                let total = cleanNumber(
-                    document.querySelector('input[name="total_bt_perdiem"]')
-                        .value
-                );
-                total -= nominalValue;
-                document.querySelector('input[name="total_bt_perdiem"]').value =
-                    formatNumber(total);
-                calculateTotalBTCA();
-                calculateTotalReq();
-            }
-            formContainer.remove();
 
-            perdiemData = perdiemData.filter(
-                (data) => data.index !== index.toString()
-            );
-            console.log("Data setelah dihapus:", perdiemData); // Cek di console
-
-            calculateTotalBTPerdiem();
-        }
+        calculateTotalBTCA();
+        calculateTotalReq();
+        calculateTotalBTPerdiem();
     }
 }
 
+// BACKUP
+// function clearFormPerdiem(index, event) {
+//     event.preventDefault();
+//     if (formCountPerdiem > 0) {
+//         const nominalInput = document.querySelector(
+//             `#nominal_bt_perdiem_${index}`
+//         );
+//         if (nominalInput) {
+//             let nominalValue = cleanNumber(nominalInput.value);
+//             let total = cleanNumber(
+//                 document.querySelector('input[name="total_bt_perdiem"]').value
+//             );
+//             total -= nominalValue;
+//             document.querySelector('input[name="total_bt_perdiem"]').value =
+//                 formatNumber(total);
+//             nominalInput.value = 0;
+//             calculateTotalBTCA();
+//             calculateTotalReq();
+//         }
+
+//         const formContainer = document.getElementById(
+//             `form-container-bt-perdiem-${index}`
+//         );
+//         if (formContainer) {
+//             formContainer
+//                 .querySelectorAll('input[type="text"], input[type="date"]')
+//                 .forEach((input) => {
+//                     input.value = "";
+//                 });
+
+//             formContainer
+//                 .querySelectorAll('input[type="number"]')
+//                 .forEach((input) => {
+//                     input.value = 0;
+//                 });
+
+//             const companyCodeSelect = formContainer.querySelector(
+//                 `#company_bt_perdiem_${index}`
+//             );
+//             if (companyCodeSelect) {
+//                 companyCodeSelect.selectedIndex = 0; // Reset the select element to the default option
+//                 var event = new Event("change");
+//                 companyCodeSelect.dispatchEvent(event); // Trigger the change event to update the select2 component
+//             }
+
+//             const locationSelect = formContainer.querySelector(
+//                 `#location_bt_perdiem_${index}`
+//             );
+//             if (locationSelect) {
+//                 locationSelect.selectedIndex = 0; // Reset the select element to the default option
+//                 var event = new Event("change");
+//                 locationSelect.dispatchEvent(event); // Trigger the change event to update the select2 component
+//             }
+
+//             formContainer.querySelectorAll("select").forEach((select) => {
+//                 select.selectedIndex = 0;
+//             });
+
+//             formContainer.querySelectorAll("textarea").forEach((textarea) => {
+//                 textarea.value = "";
+//             });
+
+//             calculateTotalBTCA();
+//             calculateTotalReq();
+//         }
+
+//         perdiemData = perdiemData.filter(
+//             (data) => data.index !== index.toString()
+//         );
+//     }
+// }
+
 function clearFormPerdiem(index, event) {
     event.preventDefault();
+
     if (formCountPerdiem > 0) {
-        const nominalInput = document.querySelector(
-            `#nominal_bt_perdiem_${index}`
-        );
-        if (nominalInput) {
-            let nominalValue = cleanNumber(nominalInput.value);
-            let total = cleanNumber(
-                document.querySelector('input[name="total_bt_perdiem"]').value
-            );
-            total -= nominalValue;
-            document.querySelector('input[name="total_bt_perdiem"]').value =
-                formatNumber(total);
-            nominalInput.value = 0;
-            calculateTotalBTCA();
-            calculateTotalReq();
-        }
+        let nominalValue = 0;
+        let totalBTPerdiem = cleanNumber(document.querySelector('input[name="total_bt_perdiem"]').value);
 
-        const formContainer = document.getElementById(
-            `form-container-bt-perdiem-${index}`
-        );
-        if (formContainer) {
-            formContainer
-                .querySelectorAll('input[type="text"], input[type="date"]')
-                .forEach((input) => {
-                    input.value = "";
-                });
+        document.querySelectorAll(`#nominal_bt_perdiem_${index}`).forEach(input => {
+            nominalValue = cleanNumber(input.value);
+            input.value = 0;
+        });
 
-            formContainer
-                .querySelectorAll('input[type="number"]')
-                .forEach((input) => {
-                    input.value = 0;
-                });
+        totalBTPerdiem -= nominalValue;
 
-            const companyCodeSelect = formContainer.querySelector(
-                `#company_bt_perdiem_${index}`
-            );
+        document.querySelectorAll('input[name="total_bt_perdiem"]').forEach(input => {
+            input.value = formatNumber(totalBTPerdiem);
+        });
+
+        document.querySelectorAll(`#form-container-bt-perdiem-${index}`).forEach(input => {
+            input.querySelectorAll('input[type="text"], input[type="date"]').forEach((input2) => {
+                input2.value = "";
+            });
+            input.querySelectorAll('input[type="number"]').forEach((input2) => {
+                input2.value = 0;
+            });
+
+            const companyCodeSelect = input.querySelector(`#company_bt_perdiem_${index}`);
             if (companyCodeSelect) {
                 companyCodeSelect.selectedIndex = 0; // Reset the select element to the default option
                 var event = new Event("change");
                 companyCodeSelect.dispatchEvent(event); // Trigger the change event to update the select2 component
             }
 
-            const locationSelect = formContainer.querySelector(
-                `#location_bt_perdiem_${index}`
-            );
+            const locationSelect = input.querySelector(`#location_bt_perdiem_${index}`);
             if (locationSelect) {
                 locationSelect.selectedIndex = 0; // Reset the select element to the default option
                 var event = new Event("change");
                 locationSelect.dispatchEvent(event); // Trigger the change event to update the select2 component
             }
 
-            formContainer.querySelectorAll("select").forEach((select) => {
+            input.querySelectorAll("select").forEach((select) => {
                 select.selectedIndex = 0;
             });
 
-            formContainer.querySelectorAll("textarea").forEach((textarea) => {
+            input.querySelectorAll("textarea").forEach((textarea) => {
                 textarea.value = "";
             });
-
-            calculateTotalBTCA();
-            calculateTotalReq();
-        }
+        });
 
         perdiemData = perdiemData.filter(
             (data) => data.index !== index.toString()
         );
+
+        calculateTotalBTCA();
+        calculateTotalReq();
     }
 }
 
