@@ -38,7 +38,8 @@ deployment:
 
     # Copy all project files except .git
     # - rsync -av --exclude=".git" ./ $DEPLOYPATH
-    - cp -r app bootstrap config database routes resources artisan composer.json composer.lock package.json package-lock.json yarn.lock $DEPLOYPATH
+    # - cp -r app bootstrap config database routes resources artisan composer.json composer.lock package.json package-lock.json yarn.lock $DEPLOYPATH
+    - cp -r app bootstrap config database routes resources $DEPLOYPATH
 
     # Change to deployment directory
     - cd $DEPLOYPATH
