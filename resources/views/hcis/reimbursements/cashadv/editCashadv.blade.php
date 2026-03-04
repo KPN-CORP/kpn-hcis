@@ -30,266 +30,256 @@
                     <a href="{{ route('cashadvanced') }}" type="button" class="btn btn-close btn-close-white"></a>
                 </div>
                 <div class="card-body" @style('overflow-y: auto;')>
-                    <div class="container-fluid">
-                        <form id="cashadvancedForm" method="post"
-                            action="{{ route('cashadvanced.update', encrypt($transactions->id)) }}">@csrf
-                            <div class="row">
-                                <div class="col-md-6 mb-2">
-                                    <label class="form-label" for="start">Employee ID</label>
-                                    <input type="text" name="name" id="name"
-                                        value="{{ $employee_data->employee_id }}" class="form-control bg-light" readonly>
+                    <form id="cashadvancedForm" method="post" action="{{ route('cashadvanced.update', encrypt($transactions->id)) }}">@csrf
+                        <div class="container-fluid">
+                            <div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label" for="start">Employee ID</label>
+                                        <input type="text" name="name" id="name" value="{{ $employee_data->employee_id }}" class="form-control bg-light" readonly>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label" for="start">Employee Name</label>
+                                        <input type="text" name="name" id="name" value="{{ $employee_data->fullname }}" class="form-control bg-light" readonly>
+                                    </div>
+                                    <input class="form-control" id="group_company" name="group_company" type="hidden" value="{{ $employee_data->group_company }}" readonly>
                                 </div>
-                                <div class="col-md-6 mb-2">
-                                    <label class="form-label" for="start">Employee Name</label>
-                                    <input type="text" name="name" id="name"
-                                        value="{{ $employee_data->fullname }}" class="form-control bg-light" readonly>
+                                <div class="row">
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label" for="start">Unit</label>
+                                        <input type="text" name="unit" id="unit" value="{{ $employee_data->unit }}" class="form-control bg-light" readonly>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label" for="start">Job Level</label>
+                                        <input type="text" name="grade" id="grade" value="{{ $employee_data->job_level }}" class="form-control bg-light" readonly>
+                                    </div>
                                 </div>
-                                <input class="form-control" id="group_company" name="group_company" type="hidden"
-                                    value="{{ $employee_data->group_company }}" readonly>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-2">
-                                    <label class="form-label" for="start">Unit</label>
-                                    <input type="text" name="unit" id="unit" value="{{ $employee_data->unit }}"
-                                        class="form-control bg-light" readonly>
+                                <div class="row">
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label" for="type">CA Type</label>
+                                        <input type="text" name="ca_type_disabled" id="ca_type_disabled" class="form-control bg-light" value="@if($transactions->type_ca=='dns')Business Travel @elseif($transactions->type_ca=='ndns')Non Business Travel @elseif($transactions->type_ca=='entr')Entertainment @endif" readonly>
+                                        <input type="hidden" name="ca_type" id="ca_type" value="{{ $transactions->type_ca }}">
+                                    </div>
                                 </div>
-                                <div class="col-md-6 mb-2">
-                                    <label class="form-label" for="start">Job Level</label>
-                                    <input type="text" name="grade" id="grade"
-                                        value="{{ $employee_data->job_level }}" class="form-control bg-light" readonly>
+                                <div class="row">
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label" for="name">Costing Company</label>
+                                        <select class="form-control select2" id="companyFilter" name="companyFilter" required>
+                                            <option value="">Select Company...</option>
+                                            @foreach ($companies as $company)
+                                                <option value="{{ $company->contribution_level_code }}"
+                                                    {{ $company->contribution_level_code == $transactions->contribution_level_code ? 'selected' : '' }}>
+                                                    {{ $company->contribution_level . ' (' . $company->contribution_level_code . ')' }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label" for="name">Destination</label>
+                                        <select class="form-control select2" id="locationFilter" name="locationFilter" onchange="toggleOthers()" required>
+                                            <option value="">Select location...</option>
+                                            <p>{{ $transactions->destination }}</p>
+                                            @foreach ($locations as $location)
+                                                <option value="{{ $location->area }}"
+                                                    {{ $location->area == $transactions->destination ? 'selected' : '' }}>
+                                                    {{ $location->area . ' (' . $location->company_name . ')' }}
+                                                </option>
+                                            @endforeach
+                                            <option value="Others" {{ $transactions->destination == 'Others' ? 'selected' : '' }}>Others</option>
+                                        </select>
+                                        <br><br><input type="text" name="others_location" id="others_location"
+                                            class="form-control" placeholder="Other Location"
+                                            value="{{ $transactions->others_location }}"
+                                            style="{{ $transactions->destination == 'Others' ? 'display: block;' : 'display: none;' }}">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-2">
-                                    <label class="form-label" for="type">CA Type</label>
-
-                                    <input type="text" name="ca_type_disabled" id="ca_type_disabled" class="form-control bg-light"
-                                        value="@if($transactions->type_ca=='dns')Business Travel @elseif($transactions->type_ca=='ndns')Non Business Travel @elseif($transactions->type_ca=='entr')Entertainment @endif" readonly>
-                                    <input type="hidden" name="ca_type" id="ca_type" value="{{ $transactions->type_ca }}">
+                                <div class="row">
+                                    <div class="col-md-12 mb-2">
+                                        <label class="form-label" for="name">CA Purposes</label>
+                                        <textarea name="ca_needs" id="ca_needs" class="form-control">{{ $transactions->ca_needs }}</textarea>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-2">
-                                    <label class="form-label" for="name">Costing Company</label>
-                                    <select class="form-control select2" id="companyFilter" name="companyFilter" required>
-                                        <option value="">Select Company...</option>
-                                        @foreach ($companies as $company)
-                                            <option value="{{ $company->contribution_level_code }}"
-                                                {{ $company->contribution_level_code == $transactions->contribution_level_code ? 'selected' : '' }}>
-                                                {{ $company->contribution_level . ' (' . $company->contribution_level_code . ')' }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                <div class="row">
+                                    <div class="col-md-4 mb-2">
+                                        <label class="form-label" for="start">Start Date</label>
+                                        <input type="date" name="start_date" id="start_date" class="form-control" value="{{ $transactions->start_date }}" required>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <label class="form-label" for="start">End Date</label>
+                                        <input type="date" name="end_date" id="end_date" class="form-control" value="{{ $transactions->end_date }}" required>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <label class="form-label" for="start">Total Days</label>
+                                        <div class="input-group">
+                                            <input class="form-control bg-light" id="totaldays" name="totaldays"
+                                                type="text" min="0" value="{{ $transactions->total_days }}"
+                                                readonly>
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">days</span>
+                                            </div>
+                                        </div>
+                                        <input class="form-control" id="perdiem" name="perdiem" type="hidden"
+                                            value="{{ $perdiem->amount }}" readonly>
+                                    </div>
                                 </div>
-                                <div class="col-md-6 mb-2">
-                                    <label class="form-label" for="name">Destination</label>
-                                    <select class="form-control select2" id="locationFilter" name="locationFilter"
-                                        onchange="toggleOthers()" required>
-                                        <option value="">Select location...</option>
-                                        <p>{{ $transactions->destination }}</p>
-                                        @foreach ($locations as $location)
-                                            <option value="{{ $location->area }}"
-                                                {{ $location->area == $transactions->destination ? 'selected' : '' }}>
-                                                {{ $location->area . ' (' . $location->company_name . ')' }}
-                                            </option>
-                                        @endforeach
-                                        <option value="Others"
-                                            {{ $transactions->destination == 'Others' ? 'selected' : '' }}>Others</option>
-                                    </select>
-                                    <br><br><input type="text" name="others_location" id="others_location"
-                                        class="form-control" placeholder="Other Location"
-                                        value="{{ $transactions->others_location }}"
-                                        style="{{ $transactions->destination == 'Others' ? 'display: block;' : 'display: none;' }}">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12 mb-2">
-                                    <label class="form-label" for="name">CA Purposes</label>
-                                    <textarea name="ca_needs" id="ca_needs" class="form-control">{{ $transactions->ca_needs }}</textarea>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4 mb-2">
-                                    <label class="form-label" for="start">Start Date</label>
-                                    <input type="date" name="start_date" id="start_date" class="form-control"
-                                        value="{{ $transactions->start_date }}" required>
-                                </div>
-                                <div class="col-md-4 mb-2">
-                                    <label class="form-label" for="start">End Date</label>
-                                    <input type="date" name="end_date" id="end_date" class="form-control"
-                                        value="{{ $transactions->end_date }}" required>
-                                </div>
-                                <div class="col-md-4 mb-2">
-                                    <label class="form-label" for="start">Total Days</label>
-                                    <div class="input-group">
-                                        <input class="form-control bg-light" id="totaldays" name="totaldays"
-                                            type="text" min="0" value="{{ $transactions->total_days }}"
-                                            readonly>
-                                        <div class="input-group-append">
-                                            <span class="input-group-text">days</span>
+                                <div class="row">
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label" for="start">CA Date Required</label>
+                                        <input type="date" name="ca_required" id="ca_required" class="form-control"
+                                            value="{{ $transactions->date_required }}" required>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <div class="mb-2">
+                                            <label class="form-label" for="start">Declaration Estimate</label>
+                                            <input type="date" name="ca_decla" id="ca_decla" class="form-control bg-light" value="{{ $transactions->declare_estimate }}" readonly>
                                         </div>
                                     </div>
-                                    <input class="form-control" id="perdiem" name="perdiem" type="hidden"
-                                        value="{{ $perdiem->amount }}" readonly>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-2">
-                                    <label class="form-label" for="start">CA Date Required</label>
-                                    <input type="date" name="ca_required" id="ca_required" class="form-control"
-                                        value="{{ $transactions->date_required }}" required>
-                                </div>
-                                <div class="col-md-6 mb-2">
-                                    <div class="mb-2">
-                                        <label class="form-label" for="start">Declaration Estimate</label>
-                                        <input type="date" name="ca_decla" id="ca_decla" class="form-control bg-light" value="{{ $transactions->declare_estimate }}" readonly>
-                                    </div>
-                                </div>
 
-                                <div class="col-md-6 mb-2" style="display:{{ $transactions->type_ca == 'ndns' ? 'none' : 'block' }}">
-                                        <label class="form-label" for="bisnis_numb">Business Travel Number</label>
-                                        <input type="text" name="bisnis_numb" id="bisnis_numb" class="form-control bg-light" value="{{ $transactions->no_sppd ?? 'Tidak ada Bussiness Trip Number' }}" readonly>
+                                    <div class="col-md-6 mb-2" style="display:{{ $transactions->type_ca == 'ndns' ? 'none' : 'block' }}">
+                                            <label class="form-label" for="bisnis_numb">Business Travel Number</label>
+                                            <input type="text" name="bisnis_numb" id="bisnis_numb" class="form-control bg-light" value="{{ $transactions->no_sppd ?? 'Tidak ada Bussiness Trip Number' }}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                @php
+                                    $detailCA = json_decode($transactions->detail_ca, true) ?? [];
+                                @endphp
+                                <script>
+                                    // Pass the PHP array into a JavaScript variable
+                                    const initialDetailCA = @json($detailCA);
+                                </script>
+                                <br>
+                                <div class="row" id="ca_bt" style="display: none;">
+                                    @if ($transactions->type_ca == 'dns')
+                                        <div class="col-md-12">
+                                            <div class="table-responsive-sm">
+                                                <div class="d-flex flex-column gap-2">
+                                                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link {{ isset($detailCA['detail_perdiem'][0]['start_date']) && $detailCA['detail_perdiem'][0]['start_date'] ? 'active' : '' }}" id="pills-perdiem-tab"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-perdiem" type="button"
+                                                                role="tab" aria-controls="pills-perdiem"
+                                                                aria-selected="{{ isset($detailCA['detail_perdiem'][0]['start_date']) && $detailCA['detail_perdiem'][0]['start_date'] ? 'true' : 'false' }}">Perdiem Plan</button>
+                                                        </li>
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link {{ !isset($detailCA['detail_perdiem'][0]['start_date']) && isset($detailCA['detail_transport'][0]['tanggal']) && $detailCA['detail_transport'][0]['tanggal'] ? 'active' : '' }}" id="pills-transport-tab"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-transport" type="button" role="tab"
+                                                                aria-controls="pills-transport"
+                                                                aria-selected="{{ isset($detailCA['detail_transport'][0]['tanggal']) && $detailCA['detail_transport'][0]['tanggal'] ? 'true' : 'false' }}">Transport Plan</button>
+                                                        </li>
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link {{ !isset($detailCA['detail_perdiem'][0]['start_date']) && !isset($detailCA['detail_transport'][0]['tanggal']) && isset($detailCA['detail_penginapan'][0]['start_date']) && $detailCA['detail_penginapan'][0]['start_date'] ? 'active' : '' }}" id="pills-accomodation-tab"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-accomodation"
+                                                                type="button" role="tab" aria-controls="pills-accomodation"
+                                                                aria-selected="{{ isset($detailCA['detail_penginapan'][0]['start_date']) && $detailCA['detail_penginapan'][0]['start_date'] ? 'true' : 'false' }}">Accomodation Plan</button>
+                                                        </li>
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link {{ !isset($detailCA['detail_perdiem'][0]['start_date']) && !isset($detailCA['detail_transport'][0]['tanggal']) && !isset($detailCA['detail_penginapan'][0]['start_date']) && isset($detailCA['detail_lainnya'][0]['tanggal']) && $detailCA['detail_lainnya'][0]['tanggal'] ? 'active' : '' }}" id="pills-other-tab" data-bs-toggle="pill"
+                                                                data-bs-target="#pills-other" type="button" role="tab"
+                                                                aria-controls="pills-other" aria-selected="{{ isset($detailCA['detail_lainnya'][0]['tanggal']) && $detailCA['detail_lainnya'][0]['tanggal'] ? 'true' : 'false' }}">Other Plan</button>
+                                                        </li>
+                                                    </ul>
+                                                    <div class="tab-content" id="pills-tabContent">
+                                                        <div class="tab-pane fade {{ isset($detailCA['detail_perdiem'][0]['start_date']) && $detailCA['detail_perdiem'][0]['start_date'] ? 'show active' : '' }}"
+                                                            id="pills-perdiem" role="tabpanel"
+                                                            aria-labelledby="pills-perdiem-tab">
+                                                            @include('hcis.reimbursements.cashadv.form.perdiem')
+                                                        </div>
+                                                        <div class="tab-pane fade {{ !isset($detailCA['detail_perdiem'][0]['start_date']) && isset($detailCA['detail_transport'][0]['tanggal']) && $detailCA['detail_transport'][0]['tanggal'] ? 'show active' : '' }}"
+                                                            id="pills-transport" role="tabpanel"
+                                                            aria-labelledby="pills-transport-tab">
+                                                            @include('hcis.reimbursements.cashadv.form.transport')
+                                                        </div>
+                                                        <div class="tab-pane fade {{ !isset($detailCA['detail_perdiem'][0]['start_date']) && !isset($detailCA['detail_transport'][0]['tanggal']) && isset($detailCA['detail_penginapan'][0]['start_date']) && $detailCA['detail_penginapan'][0]['start_date'] ? 'show active' : '' }}"
+                                                            id="pills-accomodation" role="tabpanel"
+                                                            aria-labelledby="pills-accomodation-tab">
+                                                            @include('hcis.reimbursements.cashadv.form.penginapan')
+                                                        </div>
+                                                        <div class="tab-pane fade {{ !isset($detailCA['detail_perdiem'][0]['start_date']) && !isset($detailCA['detail_transport'][0]['tanggal']) && !isset($detailCA['detail_penginapan'][0]['start_date']) && isset($detailCA['detail_lainnya'][0]['tanggal']) && $detailCA['detail_lainnya'][0]['tanggal'] ? 'show active' : '' }}" id="pills-other" role="tabpanel"
+                                                            aria-labelledby="pills-other-tab">
+                                                            @include('hcis.reimbursements.cashadv.form.others')
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="row" id="ca_nbt" style="display: none;">
+                                    @if ($transactions->type_ca == 'ndns')
+                                        <div class="col-md-12">
+                                            <div class="table-responsive-sm">
+                                                <div class="d-flex flex-column gap-2">
+                                                    @include('hcis.reimbursements.cashadv.form.nbt')
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="row" id="ca_e" style="display: none;">
+                                    @if ($transactions->type_ca == 'entr')
+                                        <div class="col-md-12">
+                                            <div class="table-responsive-sm">
+                                                <div class="d-flex flex-column">
+                                                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link active" id="pills-detail-tab"
+                                                                data-bs-toggle="pill" data-bs-target="#pills-detail" type="button"
+                                                                role="tab" aria-controls="pills-detail"
+                                                                aria-selected="true">Detail Entertainment Plan</button>
+                                                        </li>
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link" id="pills-relation-tab" data-bs-toggle="pill"
+                                                                data-bs-target="#pills-relation" type="button" role="tab"
+                                                                aria-controls="pills-relation" aria-selected="false">Detail Receiver Plan</button>
+                                                        </li>
+                                                    </ul>
+                                                    <div class="tab-content" id="pills-tabContent">
+                                                        <div class="tab-pane fade show active" id="pills-detail" role="tabpanel"
+                                                            aria-labelledby="pills-detail-tab">
+                                                            @include('hcis.reimbursements.cashadv.form.detail')
+                                                        </div>
+                                                        <div class="tab-pane fade" id="pills-relation" role="tabpanel"
+                                                            aria-labelledby="pills-relation-tab">
+                                                            @include('hcis.reimbursements.cashadv.form.relation')
+                                                        </div>
+                                                    </div>
+                                                    <button type="button" id="add-more-e-detail" style="display: none"
+                                                        class="btn btn-primary mt-3">Add More</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 mb-2 mt-3">
+                                        <label class="form-label">Total Cash Advanced</label>
+                                        <div class="input-group">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">Rp</span>
+                                            </div>
+                                            <input class="form-control bg-light" name="totalca" id="totalca"
+                                                type="text" min="0" value="{{ number_format( $transactions->total_ca , 0, ',', '.') }}" readonly>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            @php
-                                $detailCA = json_decode($transactions->detail_ca, true) ?? [];
-                            @endphp
-                            <script>
-                                // Pass the PHP array into a JavaScript variable
-                                const initialDetailCA = @json($detailCA);
-                            </script>
+                            <input type="hidden" name="no_id" id="no_id" value="{{ $transactions->id }}"
+                                class="form-control bg-light" readonly>
+                            <input type="hidden" name="no_ca" id="no_ca" value="{{ $transactions->no_ca }}"
+                                class="form-control bg-light" readonly>
+                            <input type="hidden" name="bisnis_numb" id="bisnis_numb" value="{{ $transactions->no_sppd }}"
+                                class="form-control bg-light" readonly>
                             <br>
-                            <div class="row" id="ca_bt" style="display: none;">
-                                @if ($transactions->type_ca == 'dns')
-                                    <div class="col-md-12">
-                                        <div class="table-responsive-sm">
-                                            <div class="d-flex flex-column gap-2">
-                                                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                                                    <li class="nav-item" role="presentation">
-                                                        <button class="nav-link {{ isset($detailCA['detail_perdiem'][0]['start_date']) && $detailCA['detail_perdiem'][0]['start_date'] ? 'active' : '' }}" id="pills-perdiem-tab"
-                                                            data-bs-toggle="pill" data-bs-target="#pills-perdiem" type="button"
-                                                            role="tab" aria-controls="pills-perdiem"
-                                                            aria-selected="{{ isset($detailCA['detail_perdiem'][0]['start_date']) && $detailCA['detail_perdiem'][0]['start_date'] ? 'true' : 'false' }}">Perdiem Plan</button>
-                                                    </li>
-                                                    <li class="nav-item" role="presentation">
-                                                        <button class="nav-link {{ !isset($detailCA['detail_perdiem'][0]['start_date']) && isset($detailCA['detail_transport'][0]['tanggal']) && $detailCA['detail_transport'][0]['tanggal'] ? 'active' : '' }}" id="pills-transport-tab"
-                                                            data-bs-toggle="pill" data-bs-target="#pills-transport" type="button" role="tab"
-                                                            aria-controls="pills-transport"
-                                                            aria-selected="{{ isset($detailCA['detail_transport'][0]['tanggal']) && $detailCA['detail_transport'][0]['tanggal'] ? 'true' : 'false' }}">Transport Plan</button>
-                                                    </li>
-                                                    <li class="nav-item" role="presentation">
-                                                        <button class="nav-link {{ !isset($detailCA['detail_perdiem'][0]['start_date']) && !isset($detailCA['detail_transport'][0]['tanggal']) && isset($detailCA['detail_penginapan'][0]['start_date']) && $detailCA['detail_penginapan'][0]['start_date'] ? 'active' : '' }}" id="pills-accomodation-tab"
-                                                            data-bs-toggle="pill" data-bs-target="#pills-accomodation"
-                                                            type="button" role="tab" aria-controls="pills-accomodation"
-                                                            aria-selected="{{ isset($detailCA['detail_penginapan'][0]['start_date']) && $detailCA['detail_penginapan'][0]['start_date'] ? 'true' : 'false' }}">Accomodation Plan</button>
-                                                    </li>
-                                                    <li class="nav-item" role="presentation">
-                                                        <button class="nav-link {{ !isset($detailCA['detail_perdiem'][0]['start_date']) && !isset($detailCA['detail_transport'][0]['tanggal']) && !isset($detailCA['detail_penginapan'][0]['start_date']) && isset($detailCA['detail_lainnya'][0]['tanggal']) && $detailCA['detail_lainnya'][0]['tanggal'] ? 'active' : '' }}" id="pills-other-tab" data-bs-toggle="pill"
-                                                            data-bs-target="#pills-other" type="button" role="tab"
-                                                            aria-controls="pills-other" aria-selected="{{ isset($detailCA['detail_lainnya'][0]['tanggal']) && $detailCA['detail_lainnya'][0]['tanggal'] ? 'true' : 'false' }}">Other Plan</button>
-                                                    </li>
-                                                </ul>
-                                                <div class="tab-content" id="pills-tabContent">
-                                                    <div class="tab-pane fade {{ isset($detailCA['detail_perdiem'][0]['start_date']) && $detailCA['detail_perdiem'][0]['start_date'] ? 'show active' : '' }}"
-                                                        id="pills-perdiem" role="tabpanel"
-                                                        aria-labelledby="pills-perdiem-tab">
-                                                        @include('hcis.reimbursements.cashadv.form.perdiem')
-                                                    </div>
-                                                    <div class="tab-pane fade {{ !isset($detailCA['detail_perdiem'][0]['start_date']) && isset($detailCA['detail_transport'][0]['tanggal']) && $detailCA['detail_transport'][0]['tanggal'] ? 'show active' : '' }}"
-                                                        id="pills-transport" role="tabpanel"
-                                                        aria-labelledby="pills-transport-tab">
-                                                        @include('hcis.reimbursements.cashadv.form.transport')
-                                                    </div>
-                                                    <div class="tab-pane fade {{ !isset($detailCA['detail_perdiem'][0]['start_date']) && !isset($detailCA['detail_transport'][0]['tanggal']) && isset($detailCA['detail_penginapan'][0]['start_date']) && $detailCA['detail_penginapan'][0]['start_date'] ? 'show active' : '' }}"
-                                                        id="pills-accomodation" role="tabpanel"
-                                                        aria-labelledby="pills-accomodation-tab">
-                                                        @include('hcis.reimbursements.cashadv.form.penginapan')
-                                                    </div>
-                                                    <div class="tab-pane fade {{ !isset($detailCA['detail_perdiem'][0]['start_date']) && !isset($detailCA['detail_transport'][0]['tanggal']) && !isset($detailCA['detail_penginapan'][0]['start_date']) && isset($detailCA['detail_lainnya'][0]['tanggal']) && $detailCA['detail_lainnya'][0]['tanggal'] ? 'show active' : '' }}" id="pills-other" role="tabpanel"
-                                                        aria-labelledby="pills-other-tab">
-                                                        @include('hcis.reimbursements.cashadv.form.others')
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
-                            </div>
-                            <div class="row" id="ca_nbt" style="display: none;">
-                                @if ($transactions->type_ca == 'ndns')
-                                    <div class="col-md-12">
-                                        <div class="table-responsive-sm">
-                                            <div class="d-flex flex-column gap-2">
-                                                @include('hcis.reimbursements.cashadv.form.nbt')
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
-                            </div>
-                            <div class="row" id="ca_e" style="display: none;">
-                                @if ($transactions->type_ca == 'entr')
-                                    <div class="col-md-12">
-                                        <div class="table-responsive-sm">
-                                            <div class="d-flex flex-column">
-                                                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                                                    <li class="nav-item" role="presentation">
-                                                        <button class="nav-link active" id="pills-detail-tab"
-                                                            data-bs-toggle="pill" data-bs-target="#pills-detail" type="button"
-                                                            role="tab" aria-controls="pills-detail"
-                                                            aria-selected="true">Detail Entertainment Plan</button>
-                                                    </li>
-                                                    <li class="nav-item" role="presentation">
-                                                        <button class="nav-link" id="pills-relation-tab" data-bs-toggle="pill"
-                                                            data-bs-target="#pills-relation" type="button" role="tab"
-                                                            aria-controls="pills-relation" aria-selected="false">Detail Receiver Plan</button>
-                                                    </li>
-                                                </ul>
-                                                <div class="tab-content" id="pills-tabContent">
-                                                    <div class="tab-pane fade show active" id="pills-detail" role="tabpanel"
-                                                        aria-labelledby="pills-detail-tab">
-                                                        @include('hcis.reimbursements.cashadv.form.detail')
-                                                    </div>
-                                                    <div class="tab-pane fade" id="pills-relation" role="tabpanel"
-                                                        aria-labelledby="pills-relation-tab">
-                                                        @include('hcis.reimbursements.cashadv.form.relation')
-                                                    </div>
-                                                </div>
-                                                <button type="button" id="add-more-e-detail" style="display: none"
-                                                    class="btn btn-primary mt-3">Add More</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
-                            </div>
                             <div class="row">
-                                <div class="col-md-12 mb-2 mt-3">
-                                    <label class="form-label">Total Cash Advanced</label>
-                                    <div class="input-group">
-                                        <div class="input-group-append">
-                                            <span class="input-group-text">Rp</span>
-                                        </div>
-                                        <input class="form-control bg-light" name="totalca" id="totalca"
-                                            type="text" min="0" value="{{ number_format( $transactions->total_ca , 0, ',', '.') }}" readonly>
-                                    </div>
+                                <div class="p-4 col-md d-md-flex justify-content-end text-center">
+                                    <input type="hidden" name="repeat_days_selected" id="repeatDaysSelected">
+                                    <a href="{{ route('cashadvanced') }}" type="button" class="btn mb-2 btn-outline-secondary px-4 me-2">Cancel</a>
+                                    <button type="submit" name="action_ca_draft" value="Draft" class="btn mb-2 btn-secondary btn-pill px-4 me-2 submit-button">Draft</button>
+                                    <button type="submit" name="action_ca_submit" value="Pending" class="btn mb-2 btn-primary btn-pill px-4 me-2 submit-button">Submit</button>
                                 </div>
                             </div>
-                    </div>
-                    <input type="hidden" name="no_id" id="no_id" value="{{ $transactions->id }}"
-                        class="form-control bg-light" readonly>
-                    <input type="hidden" name="no_ca" id="no_ca" value="{{ $transactions->no_ca }}"
-                        class="form-control bg-light" readonly>
-                    <input type="hidden" name="bisnis_numb" id="bisnis_numb" value="{{ $transactions->no_sppd }}"
-                        class="form-control bg-light" readonly>
-                    <br>
-                    <div class="row">
-                        <div class="p-4 col-md d-md-flex justify-content-end text-center">
-                            <input type="hidden" name="repeat_days_selected" id="repeatDaysSelected">
-                            <a href="{{ route('cashadvanced') }}" type="button" class="btn mb-2 btn-outline-secondary px-4 me-2">Cancel</a>
-                            <button type="submit" name="action_ca_draft" value="Draft" class="btn mb-2 btn-secondary btn-pill px-4 me-2 submit-button">Draft</button>
-                            <button type="submit" name="action_ca_submit" value="Pending" class="btn mb-2 btn-primary btn-pill px-4 me-2 submit-button">Submit</button>
                         </div>
-                    </div>
                     </form>
                 </div>
             </div>
