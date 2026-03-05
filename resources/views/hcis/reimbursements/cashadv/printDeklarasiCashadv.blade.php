@@ -637,17 +637,19 @@
             @if (isset($detailCA['detail_meals']) && count($detailCA['detail_meals']) > 0 && !empty($detailCA['detail_meals'][0]['keterangan']))
                 <table class="table-approve">
                     <tr>
-                        <th colspan="3"><b>Meals Plan :</b></th>
+                        <th colspan="4"><b>Meals Plan :</b></th>
                     </tr>
                     <tr class="head-row">
-                        <td style="width:12%">Date</td>
+                        <td style="width:12%">Start Date</td>
+                        <td style="width:12%">End Date</td>
                         <td>Information</td>
                         <td style="width:20%">Amount</td>
                     </tr>
 
                     @foreach($detailCA['detail_meals'] as $meals)
                     <tr style="text-align: center">
-                        <td>{{ \Carbon\Carbon::parse($meals['tanggal'])->format('d-M-y') }}</td>
+                        <td>{{ isset($meals['start_date']) ? \Carbon\Carbon::parse($meals['start_date'])->format('d-M-y') : \Carbon\Carbon::parse($meals['tanggal'])->format('d-M-y') }}</td>
+                        <td>{{ isset($meals['end_date']) ? \Carbon\Carbon::parse($meals['end_date'])->format('d-M-y') : \Carbon\Carbon::parse($meals['tanggal'])->format('d-M-y') }}</td>
                         <td style="text-align: left">{{ $meals['keterangan'] }}</td>
                         <td>
                             <span style="float: left; margin-left:4px">Rp.</span>
@@ -656,7 +658,7 @@
                     </tr>
                     @endforeach
                     <tr class="total-row">
-                        <td colspan="2" class="head-row">Total</td>
+                        <td colspan="3" class="head-row">Total</td>
                         <td>
                             <span style="float: left; margin-left:4px">Rp.</span>
                             <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_meals'], 'nominal')), 0, ',', '.') }}</span>
@@ -667,17 +669,19 @@
             @if (isset($detailCA['detail_meals']) && count($declareCA['detail_meals']) > 0 && !empty($declareCA['detail_meals'][0]['keterangan']))
                 <table class="table-approve">
                     <tr>
-                        <th colspan="3"><b>Meals Plan Declaration :</b></th>
+                        <th colspan="4"><b>Meals Plan Declaration :</b></th>
                     </tr>
                     <tr class="head-row">
-                        <td style="width:12%">Date</td>
+                        <td style="width:12%">Start Date</td>
+                        <td style="width:12%">End Date</td>
                         <td>Information</td>
                         <td style="width:20%">Amount</td>
                     </tr>
 
                     @foreach($declareCA['detail_meals'] as $meals)
                     <tr style="text-align: center">
-                        <td>{{ \Carbon\Carbon::parse($meals['tanggal'])->format('d-M-y') }}</td>
+                        <td>{{ isset($meals['start_date']) ? \Carbon\Carbon::parse($meals['start_date'])->format('d-M-y') : \Carbon\Carbon::parse($meals['tanggal'])->format('d-M-y') }}</td>
+                        <td>{{ isset($meals['end_date']) ? \Carbon\Carbon::parse($meals['end_date'])->format('d-M-y') : \Carbon\Carbon::parse($meals['tanggal'])->format('d-M-y') }}</td>
                         <td style="text-align: left">{{ $meals['keterangan'] }}</td>
                         <td>
                             <span style="float: left; margin-left:4px">Rp.</span>
@@ -686,7 +690,7 @@
                     </tr>
                     @endforeach
                     <tr class="total-row">
-                        <td colspan="2" class="head-row">Total</td>
+                        <td colspan="3" class="head-row">Total</td>
                         <td>
                             <span style="float: left; margin-left:4px">Rp.</span>
                             <span style="float: right;">{{ number_format(array_sum(array_column($declareCA['detail_meals'], 'nominal')), 0, ',', '.') }}</span>

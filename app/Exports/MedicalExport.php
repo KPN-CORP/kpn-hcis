@@ -123,7 +123,7 @@ class MedicalExport implements FromCollection, WithHeadings, WithStyles, WithEve
                         'Amount' => $coverage->balance,
                         'AmountUncoverage' => $coverage->balance_uncoverage,
                         'AmountVerify' => $amountVerify,  
-                        'AmountBPJS' => $amountBPJS,  
+                        'AmountBPJS' => $amountBPJS, 
                         'AmountInovice' => $amountInvoice,
                         'AdminNotes' => $coverage->admin_notes,
                         'PT' => $employee->company_name,

@@ -132,11 +132,7 @@
         <tr>
             <td class="label">Name</td>
             <td class="colon">:</td>
-            <td class="value">{{ $transactions->employee->fullname }}
-                @if($transactions->employee->group_company === 'Plantations')
-                    ({{ $transactions->employee->job_level }})
-                @endif
-            </td>
+            <td class="value">{{ $transactions->employee->fullname }}</td>
         </tr>
         <tr>
             <td class="label">NIK</td>

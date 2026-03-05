@@ -88,6 +88,7 @@
                                         <th>Hospital Name</th>
                                         <th>Patient Name</th>
                                         <th>Total Medical</th>
+                                        <th>Employee Name</th>
                                         <th>Disease</th>
 
                                         @foreach ($master_medical as $master_medicals)
@@ -109,6 +110,7 @@
                                             <td>{{ $item->hospital_name }}</td>
                                             <td>{{ $item->patient_name }}</td>
                                             <td>{{ 'Rp. ' . number_format($item->total_per_no_medic, 0, ',', '.') }}</td>
+                                            <td>{{ $item->fullname }}</td>
                                             <td>{{ $item->disease }}</td>
                                             @foreach ($master_medical as $master_medicals)
                                                 <td class="text-center">

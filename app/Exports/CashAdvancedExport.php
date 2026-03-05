@@ -21,16 +21,19 @@ class CashAdvancedExport implements FromCollection, WithHeadings, WithStyles, Wi
     protected $fromDate;
     protected $untilDate;
     protected $stat;
+    protected $ca_status;
     protected $permissionCompanies;
+    protected $permissionGroupCompanies;
     protected $roles;
 
-    public function __construct($startDate, $endDate, $fromDate, $untilDate, $stat)
+    public function __construct($startDate, $endDate, $fromDate, $untilDate, $stat, $ca_status)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->fromDate = $fromDate;
         $this->untilDate = $untilDate;
         $this->stat = $stat;
+        $this->ca_status = $ca_status;
 
         $this->roles = Auth()->user()->roles;
 
@@ -39,6 +42,7 @@ class CashAdvancedExport implements FromCollection, WithHeadings, WithStyles, Wi
             $restrictionData = json_decode($this->roles->first()->restriction, true);
         }
 
+        $this->permissionGroupCompanies = $restrictionData['group_company'] ?? [];
         $this->permissionCompanies = $restrictionData['contribution_level_code'] ?? [];
     }
 
@@ -55,12 +59,16 @@ class CashAdvancedExport implements FromCollection, WithHeadings, WithStyles, Wi
         $endDate = $this->endDate;
         $fromDate = $this->fromDate;
         $untilDate = $this->untilDate;
+        $stat = $this->stat;
+        $ca_status = $this->ca_status;
 
         foreach ($categories as $key => [$categoryNumber, $categoryName]) {
             // Menggunakan eager loading untuk mengoptimalkan pengambilan data dari relasi
+            $permissionGroupCompanies = $this->permissionGroupCompanies;
             $permissionCompanies = $this->permissionCompanies;
 
             $categoryData = CATransaction::query()
+                ->leftJoin('bt_transaction as bt', 'bt.no_sppd', '=', 'ca_transactions.no_sppd')
                 ->leftJoin('employees as emp', 'emp.id', '=', 'ca_transactions.user_id')
                 ->leftJoin(
                     DB::raw("(SELECT ca_id, employee_id 
@@ -100,12 +108,14 @@ class CashAdvancedExport implements FromCollection, WithHeadings, WithStyles, Wi
                     'ca_transactions.*',
                     'emp.employee_id',
                     'emp.fullname',
+                    'emp.group_company',
+                    'bt.status as travel_status',
                     'dph.fullname as approval1',
                     'dvh.fullname as approval2',
                     'dph_st.fullname as approval_sett1',
                     'dvh_st.fullname as approval_sett2',
                     DB::raw("DATE_FORMAT(ca_transactions.created_at, '%d-%M-%Y') as formatted_created_at"),
-                    DB::raw("DATE_FORMAT(ca_transactions.date_required, '%d-%M-%Y') as formatted_date_required"),
+                    DB::raw("DATE_FORMAT(ca_transactions.ca_paid_date, '%d-%M-%Y') as formatted_date_required"),
                     DB::raw("DATE_FORMAT(ca_transactions.start_date, '%d-%M-%Y') as formatted_start_date"),
                     DB::raw("DATE_FORMAT(ca_transactions.end_date, '%d-%M-%Y') as formatted_end_date"),
                     DB::raw("DATE_FORMAT(ca_transactions.declare_estimate, '%d-%M-%Y') as formatted_declare_estimate"),
@@ -115,7 +125,7 @@ class CashAdvancedExport implements FromCollection, WithHeadings, WithStyles, Wi
                         ELSE 'Not Overdue'
                     END as overdue_status"),
                     DB::raw("CASE
-                        WHEN DATEDIFF(CURDATE(), ca_transactions.declare_estimate) > 0 THEN ca_transactions.total_ca
+                        WHEN DATEDIFF(CURDATE(), ca_transactions.declare_estimate) < 0 THEN ca_transactions.total_ca
                         ELSE 0
                     END as total_ca_adjusted"),
                     DB::raw("CASE
@@ -142,6 +152,9 @@ class CashAdvancedExport implements FromCollection, WithHeadings, WithStyles, Wi
             if (!empty($permissionCompanies)) {
                 $categoryData->whereIn('ca_transactions.contribution_level_code', $permissionCompanies);
             }
+            if (!empty($permissionGroupCompanies)) {
+                $categoryData->whereIn('emp.group_company', $permissionGroupCompanies);
+            }
 
             if (!empty($startDate) && !empty($endDate)) {
                 $categoryData->whereBetween('ca_transactions.start_date', [$startDate, $endDate]);
@@ -149,6 +162,22 @@ class CashAdvancedExport implements FromCollection, WithHeadings, WithStyles, Wi
 
             if (!empty($fromDate) && !empty($untilDate)) {
                 $categoryData->whereBetween('ca_transactions.created_at', [$fromDate, $untilDate]);
+            }
+
+            if (!empty($stat)) {
+                if ($stat === 'On Progress') {
+                    $categoryData->where('ca_transactions.ca_status', '!=', 'Done');
+                } elseif ($stat === 'Done') {
+                    $categoryData->where('ca_transactions.ca_status', 'Done');
+                }
+            }
+
+            if (!empty($ca_status)) {
+                if ($ca_status == 'nonca') {
+                    $categoryData->where('ca_transactions.total_ca', 0);
+                } else {
+                    $categoryData->where('ca_transactions.total_ca', '>', 0);
+                }
             }
 
             $categoryData = $categoryData->get();
@@ -177,22 +206,25 @@ class CashAdvancedExport implements FromCollection, WithHeadings, WithStyles, Wi
             $categoryData->each(function ($row) use ($data) {
                 $data->push([
                     'Type_CA' => '',  // Nomor urut
-                    'Unit' => $row->unit,
-                    'Created At' => $row->formatted_created_at,
-                    'Date Required' => $row->formatted_date_required,
-                    'Start Date' => $row->formatted_start_date,
-                    'End Date' => $row->formatted_end_date,
-                    'Declare Estimate' => $row->formatted_declare_estimate,
-                    'Level Code' => $row->contribution_level_code,
                     'Employee ID' => $row->employee_id,    
                     'Employee Name' => $row->fullname,
                     'Dept Head' => $row->approval1,
                     'Div Head' => $row->approval2,
+                    'Unit' => $row->unit,
+                    'Level Code' => $row->contribution_level_code,
                     'No CA' => $row->no_ca,
+                    'CA Status' => $row->ca_status,
                     'No SPPD' => $row->no_sppd,
+                    'Travel Status' => $row->travel_status,
                     'Total CA' => $row->total_ca,
+                    'Date Required' => $row->formatted_date_required,
+                    'Created At' => $row->formatted_created_at,
+                    'Start Date' => $row->formatted_start_date,
+                    'End Date' => $row->formatted_end_date,
+                    'Declare Estimate' => $row->formatted_declare_estimate,
                     'Total Settlement' => $row->total_real,
                     'Balance' => $row->balance,
+                    
                     'Approval Stat' => $row->approval_status,
                     'Approval Sett' => $row->approval_sett,
                     'Approval Ext' => $row->approval_extend,
@@ -209,20 +241,22 @@ class CashAdvancedExport implements FromCollection, WithHeadings, WithStyles, Wi
             // Tambahkan baris subtotal setelah data kategori
             $data->push([
                 'Type_CA' => "Total $categoryName",
-                'Unit' => '',
-                'Created At' => '',
-                'Date Required' => '',
-                'Start Date' => '',
-                'End Date' => '',
-                'Declare Estimate' => '',
-                'Level Code' => '',
                 'Employee ID' => '',
                 'Employee Name' => '',
                 'Dept Head' => '',
                 'Div Head' => '',
+                'Unit' => '',
+                'Level Code' => '',
                 'No CA' => '',
+                'CA Status' => '',
                 'No SPPD' => '',
+                'Travel Status' => '',
                 'Total CA' => $totalCA,
+                'Date Required' => '',
+                'Created At' => '',
+                'Start Date' => '',
+                'End Date' => '',
+                'Declare Estimate' => '',
                 'Total Settlement' => $totalReal,
                 'Balance' => $totalBalance
             ]);
@@ -231,20 +265,22 @@ class CashAdvancedExport implements FromCollection, WithHeadings, WithStyles, Wi
         // Tambahkan baris total keseluruhan setelah semua kategori
         $data->push([
             'Type_CA' => 'Total Employee Advanced',
-            'Unit' => '',
-            'Created At' => '',
-            'Date Required' => '',
-            'Start Date' => '',
-            'End Date' => '',
-            'Declare Estimate' => '',
-            'Level Code' => '',
             'Employee ID' => '',
             'Employee Name' => '',
             'Dept Head' => '',
             'Div Head' => '',
+            'Unit' => '',
+            'Level Code' => '',
             'No CA' => '',
+            'CA Status' => '',
             'No SPPD' => '',
+            'Travel Status' => '',
             'Total CA' => $grandTotalCA,
+            'Date Required' => '',
+            'Created At' => '',
+            'Start Date' => '',
+            'End Date' => '',
+            'Declare Estimate' => '',
             'Total Settlement' => $grandTotalReal,
             'Balance' => $grandTotalBalance
         ]);
@@ -257,20 +293,22 @@ class CashAdvancedExport implements FromCollection, WithHeadings, WithStyles, Wi
         // Base headings
         return [
             'No',
-            'Unit',
-            'Submitted Date',
-            'Paid Date',
-            'Start Date',
-            'End Date',
-            'Est. Settlement Date',
-            'Company',
             'Employee ID',
             'Employee Name',
             'Dept Head',
             'Div Head',
+            'Unit',
+            'Company',
             'Doc No',
+            'CA Status',
             'Assignment',
+            'Travel Status',
             'Total CA',
+            'CA Paid Date',
+            'Submitted Date',
+            'Start Date',
+            'End Date',
+            'Est. Settlement Date',
             'Total Settlement',
             'Balance',
             'Request Status',

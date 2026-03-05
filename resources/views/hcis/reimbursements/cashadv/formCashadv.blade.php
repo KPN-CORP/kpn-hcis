@@ -51,6 +51,8 @@
                                         value="{{ $employee_data->fullname }}" class="form-control bg-light"
                                         style="cursor: none;" readonly>
                                 </div>
+                                <input class="form-control" id="group_company" name="group_company" type="hidden"
+                                    value="{{ $employee_data->group_company }}" readonly>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-2">
@@ -309,6 +311,9 @@
     </div>
     </div>
 
+    @include('js.hcis.common.reimbursements')
+    @include('js.hcis.common.perdiem')
+    @include('js.hcis.common.req')
     @include('hcis.reimbursements.cashadv.navigation.modalCashadv')
 @endsection
 <!-- Tambahkan script JavaScript untuk mengumpulkan nilai repeat_days[] -->
@@ -366,29 +371,30 @@
             } else {
                 input.value = formatNumber(0);
             }
-            calculateTotalNominalBTPerdiem();
+            calculateTotalBTPerdiem();
             calculateTotalNominalBTTransport();
             calculateTotalNominalBTPenginapan();
             calculateTotalNominalBTLainnya();
-            calculateTotalNominalBTTotal();
+            calculateTotalReimCA();
         }
 
-        function calculateTotalNominalBTTotal() {
-            let total = 0;
-            document.querySelectorAll('input[name="total_bt_perdiem"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelectorAll('input[name="total_bt_transport"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelectorAll('input[name="total_bt_penginapan"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelectorAll('input[name="total_bt_lainnya"]').forEach(input => {
-                total += parseNumber(input.value);
-            });
-            document.querySelector('input[name="totalca"]').value = formatNumber(total);
-        }
+        // WE COMMENT THIS TO AVOID DUPLICATION
+        // function calculateTotalNominalBTTotal() {
+        //     let total = 0;
+        //     document.querySelectorAll('input[name="total_bt_perdiem"]').forEach(input => {
+        //         total += parseNumber(input.value);
+        //     });
+        //     document.querySelectorAll('input[name="total_bt_transport"]').forEach(input => {
+        //         total += parseNumber(input.value);
+        //     });
+        //     document.querySelectorAll('input[name="total_bt_penginapan"]').forEach(input => {
+        //         total += parseNumber(input.value);
+        //     });
+        //     document.querySelectorAll('input[name="total_bt_lainnya"]').forEach(input => {
+        //         total += parseNumber(input.value);
+        //     });
+        //     document.querySelector('input[name="totalca"]').value = formatNumber(total);
+        // }
 
     </script>
     <script>

@@ -18,17 +18,42 @@ class TicketExport implements FromCollection, WithHeadings, WithStyles, WithEven
     protected $startDate;
     protected $endDate;
     protected $tktType;
+    protected $permissionCompanies;
+    protected $permissionGroupCompanies;
+    protected $roles;
 
     public function __construct($startDate, $endDate, $tktType)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->tktType = $tktType;
+        
+        $this->roles = Auth()->user()->roles;
+
+        $restrictionData = [];
+        if (!is_null($this->roles) && $this->roles->isNotEmpty()) {
+            $restrictionData = json_decode($this->roles->first()->restriction, true);
+        }
+
+        $this->permissionGroupCompanies = $restrictionData['group_company'] ?? [];
+        $this->permissionCompanies = $restrictionData['contribution_level_code'] ?? [];
     }
 
     public function collection()
     {
+        $permissionGroupCompanies = $this->permissionGroupCompanies;
+        $permissionCompanies = $this->permissionCompanies;
+        
         $query = Tiket::where('approval_status', '!=', 'Draft');  
+        
+        if (!empty($permissionCompanies)) {
+            $query->whereIn('contribution_level_code', $permissionCompanies);
+        }
+        if (!empty($permissionGroupCompanies)) {
+            $query->whereHas('employee', function ($q) use ($permissionGroupCompanies) {
+                $q->whereIn('group_company', $permissionGroupCompanies);
+            });
+        }
 
         // Add date filters if they are provided (not null)  
         if ($this->startDate && $this->endDate) {  
@@ -65,7 +90,7 @@ class TicketExport implements FromCollection, WithHeadings, WithStyles, WithEven
                     'Atasan' => $manager ? $manager->fullname : 'Unknown',
                     'Status' => $items->approval_status ?? 'Unknown',
                     'Dinas' => $items->jns_dinas_tkt,
-                    'NoSPPD' => $items->no_sppd === "-" ? $items->no_tkt : $items->no_sppd,
+                    'NoSPPD' => $items->no_tkt,
                     'PT' => $employee->company_name . ', ' . $employee->contribution_level_code,
                     'KodeBook' => $items->booking_code,
                     'HargaTiket' => $items->tkt_price,
@@ -186,27 +211,27 @@ class TicketExport implements FromCollection, WithHeadings, WithStyles, WithEven
                 }
 
                 // Merge cells for rows with the same no_tkt value
-                $prevNoTkt = null;
-                $startRow = 3; // Start from row 3 (after the header rows)
-                for ($row = 3; $row <= $highestRow; $row++) {
-                    $noTkt = $sheet->getCell('F' . $row)->getValue();
-                    if ($noTkt === $prevNoTkt) {
-                        $sheet->mergeCells('A' . $startRow . ':A' . $row);
-                        $sheet->mergeCells('B' . $startRow . ':B' . $row);
-                        $sheet->mergeCells('C' . $startRow . ':C' . $row);
-                        $sheet->mergeCells('D' . $startRow . ':D' . $row);
-                        $sheet->mergeCells('E' . $startRow . ':E' . $row);
-                        $sheet->mergeCells('F' . $startRow . ':F' . $row);
-                        $sheet->mergeCells('G' . $startRow . ':G' . $row);
-                        $sheet->mergeCells('H' . $startRow . ':H' . $row);
-                        $sheet->mergeCells('I' . $startRow . ':I' . $row);
+                // $prevNoTkt = null;
+                // $startRow = 3; // Start from row 3 (after the header rows)
+                // for ($row = 3; $row <= $highestRow; $row++) {
+                //     $noTkt = $sheet->getCell('F' . $row)->getValue();
+                //     if ($noTkt === $prevNoTkt) {
+                //         $sheet->mergeCells('A' . $startRow . ':A' . $row);
+                //         $sheet->mergeCells('B' . $startRow . ':B' . $row);
+                //         $sheet->mergeCells('C' . $startRow . ':C' . $row);
+                //         $sheet->mergeCells('D' . $startRow . ':D' . $row);
+                //         $sheet->mergeCells('E' . $startRow . ':E' . $row);
+                //         $sheet->mergeCells('F' . $startRow . ':F' . $row);
+                //         $sheet->mergeCells('G' . $startRow . ':G' . $row);
+                //         $sheet->mergeCells('H' . $startRow . ':H' . $row);
+                //         $sheet->mergeCells('I' . $startRow . ':I' . $row);
 
-                        $sheet->getStyle('A' . $startRow . ':I' . $row)->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
-                    } else {
-                        $startRow = $row;
-                    }
-                    $prevNoTkt = $noTkt;
-                }
+                //         $sheet->getStyle('A' . $startRow . ':I' . $row)->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+                //     } else {
+                //         $startRow = $row;
+                //     }
+                //     $prevNoTkt = $noTkt;
+                // }
             },
         ];
     }

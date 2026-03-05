@@ -29,5 +29,8 @@ class ScheduleServiceProvider extends ServiceProvider
         // $schedule->command('app:update-designations')->dailyAt('01:00');
         $schedule->command('update:bt-to-db')->dailyAt('00:15')->withoutOverlapping();
         $schedule->command('attendance:update-bt')->dailyAt('02:00');
+        $schedule->command('app:sync-certifications')->monthlyOn(1, '01:10');
+        $schedule->command('app:sync-movements')->monthlyOn(1, '01:20');
+        $schedule->command('app:sync-promotions')->monthlyOn(1, '01:30');
     }
 }

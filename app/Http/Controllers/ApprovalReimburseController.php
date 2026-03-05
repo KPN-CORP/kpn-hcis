@@ -175,14 +175,14 @@ class ApprovalReimburseController extends Controller
 
         // Check if the user has approval rights
         $hasApprovalRights = DB::table('master_bisnisunits')
-            ->where('approval_medical', $employee->employee_id)
-            ->where('nama_bisnis', $employee->group_company)
-            ->exists();
+        	->whereRaw("FIND_IN_SET(?, approval_medical)", [$employee->employee_id])
+        	->where('nama_bisnis', $employee->group_company)
+        	->exists();
         
         $accessBisnis = DB::table('master_bisnisunits')
-            ->where('approval_medical', $employee->employee_id)
-            ->pluck('nama_bisnis') // Ambil hanya kolom nama_bisnis
-            ->toArray();
+        	->whereRaw("FIND_IN_SET(?, approval_medical)", [$employee->employee_id])
+        	->pluck('nama_bisnis') // Ambil hanya kolom nama_bisnis 
+        	->toArray();
 
         if ($hasApprovalRights) {
             $medicalGroup = HealthCoverage::from('mdc_transactions as mdc_transactions')
@@ -304,6 +304,7 @@ class ApprovalReimburseController extends Controller
                 foreach ($caApprovals as $caApproval) {
                     $caApproval->approval_status = 'Rejected';
                     $caApproval->approved_at = Carbon::now();
+                    $caApproval->deleted_at = Carbon::now();
                     $caApproval->reject_info = $req->reject_info;
                     $caApproval->save();
                 }
@@ -911,6 +912,7 @@ class ApprovalReimburseController extends Controller
                 foreach ($caApprovalsSett as $caApprovalSett) {
                     $caApprovalSett->approval_status = 'Rejected';
                     $caApprovalSett->approved_at = Carbon::now();
+                    $caApprovalSett->deleted_at = Carbon::now();
                     $caApprovalSett->reject_info = $req->reject_info;
                     $caApprovalSett->save();
                 }

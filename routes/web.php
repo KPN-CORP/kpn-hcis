@@ -387,6 +387,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/medical/detail/form-add-detail/post/{employee_id}', [MedicalController::class, 'medicalAdminDetailCreate'])->name('medical-form.post-admin');
         Route::post('/medical/import-excel/', [MedicalController::class, 'importAdminExcel'])->name('import.medical');
         Route::get('/exportmed/excel', [MedicalController::class, 'exportAdminExcel'])->name('exportmed.excel');
+        Route::get('/exportplf/excel', [MedicalController::class, 'exportAdminPlafondExcel'])->name('exportplf.excel');
         Route::get('/exportmed/detail/excel/{employee_id}', [MedicalController::class, 'exportDetailExcel'])->name('exportmed-detail.excel');
         Route::get('/medical/admin/table', [MedicalController::class, 'medicalAdminTable'])->name('medical-table.admin');
         Route::get('/medical/admin/form-update/{id}', [MedicalController::class, 'medicalAdminForm'])->name('medical-admin-form.edit');

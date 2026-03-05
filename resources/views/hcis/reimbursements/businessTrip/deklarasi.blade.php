@@ -162,6 +162,12 @@
                                         style="cursor:not-allowed;" value="{{ $n->tujuan }}" readonly>
                                     <input type="hidden" class="form-control" id="keperluan" name="keperluan"
                                         value="{{ $n->keperluan }}"></input>
+                                    <input type="hidden" class="form-control" id="tujuan" name="tujuan"
+                                        value="{{ $n->tujuan }}"></input>
+                                    <input type="hidden" class="form-control" id="is_overseas" name="is_overseas"
+                                        value="{{ $n->is_overseas }}"></input>
+                                    <input type="hidden" class="form-control" id="jns_dinas" name="jns_dinas"
+                                        value="{{ $n->jns_dinas }}"></input>
                                 </div>
                                 @php
                                     // $detailCA = isset($ca) && $ca->detail_ca ? json_decode($ca->detail_ca, true) : [];
@@ -245,7 +251,7 @@
         </div>
 
         <div class="col-md-6 mb-2">
-            <label class="form-label">Entertainment Declaration Costs</label>
+            <label class="form-label">Entertainment Costs Declaration</label>
             <div class="input-group">
                 <div class="input-group-append">
                     <span class="input-group-text">Rp</span>
@@ -272,7 +278,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6 mb-2">
-                                                    <label class="form-label">Travel Declaration Costs</label>
+                                                    <label class="form-label">Total Costs Declaration</label>
                                                     <div class="input-group">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">Rp</span>
@@ -411,8 +417,6 @@
                                         <input type="hidden" name="ca_id" value="{{ $date->no_ca ?? 0 }}">
                                         <input class="form-control" id="group_company" name="group_company"
                                             type="hidden" value="{{ $employee_data->group_company }}" readonly>
-                                        <input class="form-control" id="jns_dinas" name="jns_dinas"
-                                            type="hidden" value="{{ $n->jns_dinas }}" readonly>
                                         <input class="form-control" id="perdiem" name="perdiem" type="hidden"
                                             value="{{ $perdiem->amount ?? 0 }}" readonly>
 
@@ -853,10 +857,6 @@
                         allowance *= 0.5;
                     }
 
-                    if (totalDays >= 30) {
-                        allowance *= 0.75;
-                    }
-
                     allowanceInput.value = formatNumber(Math.floor(allowance));
                 } else {
                     totalDaysInput.value = 0;
@@ -1060,7 +1060,6 @@
                     }
 
                     // Retrieve the values from the input fields
-                    const jns_dinas = document.getElementById('jns_dinas').value;
                     const totalBtPerdiem = document.getElementById('total_bt_perdiem').value;
                     const totalBtMeals = document.getElementById('total_bt_meals').value;
                     const totalBtPenginapan = document.getElementById('total_bt_penginapan').value;
@@ -1069,7 +1068,6 @@
                     const totalBtCa = document.getElementById('totalca_ca_deklarasi').value;
                     const totalEntCa = document.getElementById('totalca').value;
                     const group_company = document.getElementById('group_company').value;
-                    
 
                     function parseCurrency(value) {
                         // Hapus tanda titik dan ubah ke angka
@@ -1096,7 +1094,6 @@
 
                     // Tambahkan total allowance jika totalBtCa tidak kosong
                     if (parseFloat(totalBtCa) > 0) {
-                        if (parseFloat(totalBtPerdiem) > 0 || jns_dinas != 'dalam kota') {
                         inputSummary += `
                             <tr>
                                 <th style="width: 40%; text-align: left; padding: 8px;">Total {{ $allowance }}</th>
@@ -1104,10 +1101,9 @@
                                 <td style="width: 50%; text-align: left; padding: 8px;">Rp. <strong>${totalBtPerdiem}</strong></td>
                             </tr>
                             `;
-                        }
 
                         // Conditionally add the "Total Meals" row
-                        if (group_company != 'Plantations' && jns_dinas != 'dalam kota') {
+                        if (group_company != 'KPN Plantations' && group_company != 'Plantations') {
                             inputSummary += `
                             <tr>
                                 <th style="width: 40%; text-align: left; padding: 8px;">Total Meals</th>

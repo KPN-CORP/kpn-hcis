@@ -198,7 +198,7 @@
         <tr>
             <td class="label">Manager Name 1</td>
             <td class="colon">:</td>
-            <td class="value"> {{ $ticket->manager1_fullname ?? '-' }}</td>
+            <td class="value"> {{ $ticket->latestApprovalL1Name->fullname ?? '-' }}</td>
         </tr>
         <tr>
             <td class="label">Date</td>
@@ -208,7 +208,7 @@
         <tr>
             <td class="label">Manager Name 2</td>
             <td class="colon">:</td>
-            <td class="value">{{ $ticket->manager2_fullname ?? '-' }}</td>
+            <td class="value">{{ $ticket->latestApprovalL2Name->fullname ?? '-' }}</td>
         </tr>
         <tr>
             <td class="label">Date</td>

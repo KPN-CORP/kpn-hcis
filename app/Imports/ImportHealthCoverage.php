@@ -101,10 +101,13 @@ class ImportHealthCoverage implements ToModel
             $errorMessage = "Medical Type '{$row[11]}' tidak valid. Harus salah satu dari: " . implode(", ", $expectedTypes);
         }
 
-        // Validasi format angka
+        // Validasi format angka dan jumlah digit NIK
         if (!is_numeric($row[2])) {
             $errorMessage = "Employee ID harus berupa angka.";
+        } elseif (strlen($row[2]) !== 11) {
+            $errorMessage = "Jumlah digit NIK harus 11.";
         }
+        
         if (!is_numeric($row[12])) {
             $errorMessage = "Amount harus berupa angka.";
         }
@@ -120,6 +123,11 @@ class ImportHealthCoverage implements ToModel
             } else {
                 $formattedDate = $date->format('Y-m-d');
             }
+        }
+        
+        // Validasi tanggal tidak melebihi hari ini
+        if (isset($formattedDate) && $formattedDate > date('Y-m-d')) {
+            $errorMessage = "Tanggal tidak boleh melebihi hari ini.";
         }
 
         // Jika ada error, simpan ke array gagal

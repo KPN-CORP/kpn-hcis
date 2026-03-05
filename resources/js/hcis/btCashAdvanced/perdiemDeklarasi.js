@@ -3,7 +3,7 @@ let perdiemData = [];
 
 window.addEventListener("DOMContentLoaded", function () {
     formCountPerdiem = document.querySelectorAll(
-        "#form-container-perdiem > div"
+        "#form-container-perdiem > div",
     ).length;
 });
 
@@ -36,7 +36,6 @@ function calculateTotalNominalBTTotal() {
 document.addEventListener("DOMContentLoaded", function () {
     calculateTotalNominalBTTotal(); // Calculate the total immediately when the page loads
 });
-
 
 function isDateInRange(date, startDate, endDate) {
     const targetDate = new Date(date).setHours(0, 0, 0, 0);
@@ -72,18 +71,18 @@ function removeFormPerdiem(index, event) {
     event.preventDefault();
     if (formCountPerdiem > 0) {
         const formContainer = document.getElementById(
-            `form-container-bt-perdiem-${index}`
+            `form-container-bt-perdiem-${index}`,
         );
         if (formContainer) {
             // const nominalInput = formContainer.querySelector(`#nominal_bt_perdiem_${index}`);
             const nominalInput = document.querySelector(
-                `#nominal_bt_perdiem_${index}`
+                `#nominal_bt_perdiem_${index}`,
             );
             if (nominalInput) {
                 let nominalValue = cleanNumber(nominalInput.value);
                 let total = cleanNumber(
                     document.querySelector('input[name="total_bt_perdiem"]')
-                        .value
+                        .value,
                 );
                 total -= nominalValue;
                 document.querySelector('input[name="total_bt_perdiem"]').value =
@@ -93,7 +92,7 @@ function removeFormPerdiem(index, event) {
             formContainer.remove();
 
             perdiemData = perdiemData.filter(
-                (data) => data.index !== index.toString()
+                (data) => data.index !== index.toString(),
             );
             console.log("Data setelah dihapus:", perdiemData); // Cek di console
 
@@ -106,12 +105,12 @@ function clearFormPerdiem(index, event) {
     event.preventDefault();
     if (formCountPerdiem > 0) {
         const nominalInput = document.querySelector(
-            `#nominal_bt_perdiem_${index}`
+            `#nominal_bt_perdiem_${index}`,
         );
         if (nominalInput) {
             let nominalValue = cleanNumber(nominalInput.value);
             let total = cleanNumber(
-                document.querySelector('input[name="total_bt_perdiem"]').value
+                document.querySelector('input[name="total_bt_perdiem"]').value,
             );
             total -= nominalValue;
             document.querySelector('input[name="total_bt_perdiem"]').value =
@@ -121,7 +120,7 @@ function clearFormPerdiem(index, event) {
         }
 
         const formContainer = document.getElementById(
-            `form-container-bt-perdiem-${index}`
+            `form-container-bt-perdiem-${index}`,
         );
         if (formContainer) {
             formContainer
@@ -137,7 +136,7 @@ function clearFormPerdiem(index, event) {
                 });
 
             const companyCodeSelect = formContainer.querySelector(
-                `#company_bt_perdiem_${index}`
+                `#company_bt_perdiem_${index}`,
             );
             if (companyCodeSelect) {
                 companyCodeSelect.selectedIndex = 0; // Reset the select element to the default option
@@ -146,7 +145,7 @@ function clearFormPerdiem(index, event) {
             }
 
             const locationSelect = formContainer.querySelector(
-                `#location_bt_perdiem_${index}`
+                `#location_bt_perdiem_${index}`,
             );
             if (locationSelect) {
                 locationSelect.selectedIndex = 0; // Reset the select element to the default option
@@ -166,7 +165,7 @@ function clearFormPerdiem(index, event) {
         }
 
         perdiemData = perdiemData.filter(
-            (data) => data.index !== index.toString()
+            (data) => data.index !== index.toString(),
         );
     }
 }
@@ -179,7 +178,7 @@ function calculateTotalDaysPerdiem(input) {
     const perdiemInput = document.getElementById("perdiem");
     const groupCompany = document.getElementById("group_company");
     const allowanceInput = formGroup.querySelector(
-        'input[name="nominal_bt_perdiem[]"]'
+        'input[name="nominal_bt_perdiem[]"]',
     );
 
     const formIndex = formGroup.getAttribute("id").match(/\d+/)[0];
@@ -211,22 +210,21 @@ function calculateTotalDaysPerdiem(input) {
             let allowance = totalDays * perdiem;
 
             const locationSelect = formGroup.querySelector(
-                'select[name="location_bt_perdiem[]"]'
+                'select[name="location_bt_perdiem[]"]',
             );
             const otherLocationInput = formGroup.querySelector(
-                'input[name="other_location_bt_perdiem[]"]'
+                'input[name="other_location_bt_perdiem[]"]',
             );
 
-            if (groupCompany.value !== "Plantations"){
+            if (groupCompany.value !== "Plantations") {
                 allowance *= 1;
-            }else if (locationSelect.value === "Others" || otherLocationInput.value.trim() !== "") {
+            } else if (
+                locationSelect.value === "Others" ||
+                otherLocationInput.value.trim() !== ""
+            ) {
                 allowance *= 1;
             } else {
                 allowance *= 0.5;
-            }
-
-            if (totalDays >= 30) {
-                allowance *= 0.75;
             }
 
             allowanceInput.value = formatNumberPerdiem(allowance);
@@ -242,7 +240,7 @@ function calculateTotalDaysPerdiem(input) {
 
     // Cek apakah data Perdiem untuk index ini sudah ada, jika ada update, jika belum tambahkan
     const existingPerdiemIndex = perdiemData.findIndex(
-        (data) => data.index === formIndex
+        (data) => data.index === formIndex,
     );
 
     if (existingPerdiemIndex !== -1) {

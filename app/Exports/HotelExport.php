@@ -17,19 +17,43 @@ class HotelExport implements FromCollection, WithHeadings, WithStyles, WithEvent
 {
     protected $startDate;
     protected $endDate;
+    protected $permissionCompanies;
+    protected $permissionGroupCompanies;
 
     public function __construct($startDate, $endDate)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+
+        $this->roles = Auth()->user()->roles;
+
+        $restrictionData = [];
+        if (!is_null($this->roles) && $this->roles->isNotEmpty()) {
+            $restrictionData = json_decode($this->roles->first()->restriction, true);
+        }
+
+        $this->permissionGroupCompanies = $restrictionData['group_company'] ?? [];
+        $this->permissionCompanies = $restrictionData['contribution_level_code'] ?? [];
     }
 
     public function collection()
     {
+        $permissionGroupCompanies = $this->permissionGroupCompanies;
+        $permissionCompanies = $this->permissionCompanies;
+        
         $hotelData = Hotel::where('approval_status', '!=', 'Draft')
-            ->whereBetween('tgl_masuk_htl', [$this->startDate, $this->endDate])
-            ->get()
-            ->groupBy('no_tkt');
+            ->whereBetween('tgl_masuk_htl', [$this->startDate, $this->endDate]);
+
+        if (!empty($permissionCompanies)) {
+            $hotelData->whereIn('contribution_level_code', $permissionCompanies);
+        }
+        if (!empty($permissionGroupCompanies)) {
+            $hotelData->whereHas('employee', function ($query) use ($permissionGroupCompanies) {
+                $query->whereIn('group_company', $permissionGroupCompanies);
+            });
+        }
+
+        $hotelData = $hotelData->get()->groupBy('no_htl')->sortKeys();
 
         $combinedData = [];
         $index = 1;
@@ -52,7 +76,7 @@ class HotelExport implements FromCollection, WithHeadings, WithStyles, WithEvent
                     'User' => $employee->fullname,
                     'Atasan' => $manager ? $manager->fullname : 'Unknown',
                     'Status' => $items->approval_status ?? 'Unknown',
-                    'NoSPPD' => $items->no_sppd === "-" ? $items->no_htl : $items->no_sppd,
+                    'NoSPPD' => $items->no_htl,
                     'PT' => $employee->company_name . ', ' . $employee->contribution_level_code,
                     'KodeBook' => $items->booking_code,
                     'HargaTiket' => $items->booking_price,
@@ -157,26 +181,26 @@ class HotelExport implements FromCollection, WithHeadings, WithStyles, WithEvent
                     $sheet->getColumnDimension($columnLetter)->setAutoSize(true);
                 }
 
-                $prevNoHtl = null;
-                $startRow = 3; // Starting from row 3 (after the headers)
-                for ($row = 3; $row <= $highestRow; $row++) {
-                    $noHtl = $sheet->getCell('E' . $row)->getValue();
-                    if ($noHtl === $prevNoHtl) {
-                        $sheet->mergeCells('A' . $startRow . ':A' . $row);
-                        $sheet->mergeCells('B' . $startRow . ':B' . $row);
-                        $sheet->mergeCells('C' . $startRow . ':C' . $row);
-                        $sheet->mergeCells('D' . $startRow . ':D' . $row);
-                        $sheet->mergeCells('E' . $startRow . ':E' . $row);
-                        $sheet->mergeCells('F' . $startRow . ':F' . $row);
-                        $sheet->mergeCells('G' . $startRow . ':G' . $row);
-                        $sheet->mergeCells('H' . $startRow . ':H' . $row);
+                // $prevNoHtl = null;
+                // $startRow = 3; // Starting from row 3 (after the headers)
+                // for ($row = 3; $row <= $highestRow; $row++) {
+                //     $noHtl = $sheet->getCell('E' . $row)->getValue();
+                //     if ($noHtl === $prevNoHtl) {
+                //         $sheet->mergeCells('A' . $startRow . ':A' . $row);
+                //         $sheet->mergeCells('B' . $startRow . ':B' . $row);
+                //         $sheet->mergeCells('C' . $startRow . ':C' . $row);
+                //         $sheet->mergeCells('D' . $startRow . ':D' . $row);
+                //         $sheet->mergeCells('E' . $startRow . ':E' . $row);
+                //         $sheet->mergeCells('F' . $startRow . ':F' . $row);
+                //         $sheet->mergeCells('G' . $startRow . ':G' . $row);
+                //         $sheet->mergeCells('H' . $startRow . ':H' . $row);
 
-                        $sheet->getStyle('A' . $startRow . ':H' . $row)->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
-                    } else {
-                        $startRow = $row;
-                    }
-                    $prevNoHtl = $noHtl;
-                }
+                //         $sheet->getStyle('A' . $startRow . ':H' . $row)->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+                //     } else {
+                //         $startRow = $row;
+                //     }
+                //     $prevNoHtl = $noHtl;
+                // }
             },
         ];
     }

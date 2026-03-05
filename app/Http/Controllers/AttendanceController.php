@@ -25,12 +25,12 @@ class AttendanceController extends Controller
 
     public function UpdateBTtoDBnextstep()
     {
-        \Log::info('📌 [Controller] UpdateBTtoDBnextstep() triggered at ' . now());
-
-        $today = Carbon::today()->toDateString();
+        Log::info('📌 [Controller] UpdateBTtoDBnextstep() triggered at ' . now());
         // $attdUpdates = bt_attendance_backup::where('update_db', 'N')
         //     ->whereDate('date', '<', Carbon::today()) // Tambahkan filter tanggal
         //     ->get();
+        
+        $today = Carbon::today()->toDateString();
         $attdUpdates = DB::table('bt_attendance_backups as ba')
         ->leftJoin('bt_transaction as bt', 'bt.no_sppd', '=', 'ba.no_sppd')
         ->select(
@@ -53,6 +53,7 @@ class AttendanceController extends Controller
         ])
         ->orderBy('ba.date', 'asc')
         ->get();
+        
 
         $no=0;
         $processedData = [];

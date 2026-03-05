@@ -88,23 +88,23 @@
                     <span> Travel </span>
                 </a>
             </li>
-            @if (auth()->user()->hasRole('superadmin'))
+            {{-- @if (auth()->user()->hasRole('superadmin'))
             <li class="side-nav-item">
                 <a href="{{ route('docGenerator') }}" class="side-nav-link">
                     <i class="ri-file-text-line"></i>
                     <span> Document </span>
                 </a>
             </li>
-            @endif
+            
             <li class="side-nav-item">
                 <a href="{{ url('/guides') }}" class="side-nav-link">
                     <i class="ri-file-text-line"></i>
                     <span> User Guide </span>
                 </a>
             </li>
-
+            @endif --}}
             @if(auth()->check())
-            @can('adminmenu')
+            @can('viewdesignation')
             <li class="side-nav-title">Admin</li>
 
             <li class="side-nav-item">
@@ -123,7 +123,7 @@
                             </a>
                             <div class="collapse" id="sidebarApexCharts">
                                 <ul class="side-nav-third-level">
-                                    @can('viewschedule')
+                                    {{-- @can('viewschedule')
                                     <li>
                                         <a href="{{ route('schedules') }}">Schedule</a>
                                     </li>
@@ -132,7 +132,7 @@
                                     <li>
                                         <a href="{{ route('layer') }}">Layer</a>
                                     </li>
-                                    @endcan
+                                    @endcan --}}
                                     @can('viewrole')
                                     <li>
                                         <a href="{{ route('roles') }}">Role</a>
@@ -147,7 +147,7 @@
                             </div>
                         </li>
                         @endcan
-                        @can('viewonbehalf')
+                        {{-- @can('viewonbehalf')
                         <li class="side-nav-item">
                             <a  href="{{ route('onbehalf') }}">On Behalfs</a>
                         </li>
@@ -156,7 +156,7 @@
                         <li class="side-nav-item">
                             <a href="{{ route('admin.reports') }}">Reports</a>
                         </li>
-                        @endcan
+                        @endcan --}}
                     </ul>
                 </div>
             </li>

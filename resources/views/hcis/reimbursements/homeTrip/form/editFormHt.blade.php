@@ -96,13 +96,14 @@
                                                                 {{ $employeeInHomeTrip->name }} (Me)
                                                             </option>
                                                         @endif
-
-                                                        @foreach ($familyMembers as $family)
+                                                        @if ($familyMembers?->dependents)
+                                                        @foreach ($familyMembers->dependents as $family)
                                                             <option value="{{ $family->name }}"
                                                                 {{ $ticket['np_tkt'] == $family->name ? 'selected' : '' }}>
                                                                 {{ $family->name }} ({{ $family->relation_type }})
                                                             </option>
                                                         @endforeach
+                                                        @endif
                                                     </select>
                                                 </div>
 

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Mail\HomeTripNotification;
@@ -46,7 +45,6 @@ class HomeTripController extends Controller
 
     public function homeTrip(Request $request)
     {
-        // Get the filtered tickets
         $parentLink = 'Reimbursement';
         $link = 'Home Trip';
         $userId = Auth::user()->id;
@@ -56,17 +54,15 @@ class HomeTripController extends Controller
         $user_id = Auth::user()->id;
         $family = Dependents::orderBy('date_of_birth', 'asc')->where('employee_id', $employee_id)->get();
 
-        $yearNow = Carbon::now()->year; // Current year (e.g., 2024)
-        $yearStart = $yearNow - 2; // Start year (e.g., 2022)
+        $yearNow = Carbon::now()->year;
+        $yearStart = $yearNow - 2;
 
-        // Fetch data filtered by the last 3 years
         $plafonds = HomeTrip::where('employee_id', $employee_id)
-            ->whereBetween('period', [$yearStart, $yearNow]) // Filter for 2022 to 2024
-            ->orderBy('name') // Order by name
-            ->orderBy('period') // Then by period
+            ->whereBetween('period', [$yearStart, $yearNow])
+            ->orderBy('name')
+            ->orderBy('period')
             ->get();
 
-        // Group data by period
         $plafonds = $plafonds->groupBy('period');
 
         $latestTicketIds = Tiket::selectRaw('MAX(id) as id')
@@ -76,12 +72,10 @@ class HomeTripController extends Controller
 
         $transactions = Tiket::whereIn('id', $latestTicketIds)
             ->where('jns_dinas_tkt', '=', 'Cuti')
-            // ->where('approval_status', $statusFilter)
             ->orderBy('created_at', 'desc')
             ->select('id', 'no_tkt', 'np_tkt', 'type_tkt', 'jenis_tkt', 'dari_tkt', 'ke_tkt', 'approval_status', 'jns_dinas_tkt', 'user_id', 'no_sppd')
             ->get();
 
-        // Get all tickets for user
         $tickets = Tiket::where('user_id', $user_id)
             ->orderBy('created_at', 'desc')
             ->get();
@@ -102,10 +96,7 @@ class HomeTripController extends Controller
         $managerL2Names = 'Unknown';
 
         foreach ($transactions as $transaction) {
-            // Fetch the employee for the current transaction
             $employee = Employee::find($transaction->user_id);
-            // dd($employee);
-            // If the employee exists, fetch their manager names
             if ($employee) {
                 $managerL1Id = $employee->manager_l1_id;
                 $managerL2Id = $employee->manager_l2_id;
@@ -196,6 +187,7 @@ class HomeTripController extends Controller
             'plafonds',
         ));
     }
+
     public function homeTripForm()
     {
         $employee_id = Auth::user()->employee_id;
@@ -220,12 +212,10 @@ class HomeTripController extends Controller
             ->get();
 
         $employeeInHomeTrip = HomeTrip::where('employee_id', $employee_id)
-            ->where('period', $currentYear)
             ->where('quota', '>', 0)
             ->where('relation_type', '=', 'employee')
             ->first();
 
-        // dd($familyMembers);
         return view('hcis.reimbursements.homeTrip.form.formHt', [
             'link' => $link,
             'parentLink' => $parentLink,
@@ -239,19 +229,16 @@ class HomeTripController extends Controller
             'employee_name' => $employee_name,
         ]);
     }
+
     public function homeTripCreate(Request $request)
     {
         $userId = Auth::id();
-        $currentYear = now()->year;
         $employee_id = Auth::user()->employee_id;
         $employee = Employee::where('employee_id', $employee_id)->first();
-
         $employeeName = $employee->fullname;
-        $employee_data = Employee::where('id', $userId)->first();
-        $contribution_level_code = Employee::where('id', $userId)->pluck('contribution_level_code')->first();
+        $contribution_level_code = $employee->contribution_level_code;
 
-        $deptHeadManager = $this->findDepartmentHead($employee_data);
-
+        $deptHeadManager = $this->findDepartmentHead($employee);
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
 
@@ -260,185 +247,97 @@ class HomeTripController extends Controller
             ->where('job_level', 'like', '%' . $employee->job_level . '%')
             ->get();
 
-        $npTkt = array_values($request->np_tkt);
-        $selectedName = $npTkt[0] ?? null;
-        // dd($request->np_tkt, $selectedName);
+        $statusValue = $request->has('action_draft') ? 'Draft' : 'Pending L1';
 
-        $passengerRequests = [];
-        foreach ($request->np_tkt as $key => $selectedName) {
-            if (!isset($passengerRequests[$selectedName])) {
-                $passengerRequests[$selectedName] = [
-                    'tickets' => [],
-                    'quota' => HomeTrip::where('employee_id', $employee_id)
-                        ->orderByDesc('period')     // sortir dari tahun terbaru
-                        ->limit(1)                  // ambil hanya 1 baris
-                        ->pluck('quota')            // ambil kolom quota
-                        ->first() ?? 0
-                ];
-            }
-            $passengerRequests[$selectedName]['tickets'][] = $request->type_tkt[$key];
+        $totalQuotaAvailable = HomeTrip::where('employee_id', $employee_id)
+            ->orderBy('period', 'desc')
+            ->sum('quota');
+
+        $quotaNeeded = 0;
+        foreach ($request->type_tkt as $type) {
+            $quotaNeeded += ($type == 'Round Trip') ? 2 : 1;
         }
 
-        // Validasi total kuota berdasarkan employee_id
-        $totalQuotaUsed = 0;
-        foreach ($passengerRequests as $passengerName => $data) {
-            $quota = $data['quota'];
-            $tickets = $data['tickets'];
-            $quotaNeeded = 0;
-
-            // Hitung total kuota yang dibutuhkan
-            foreach ($tickets as $ticketType) {
-                $quotaNeeded += ($ticketType == 'Round Trip') ? 2 : 1;
-            }
-            $totalQuotaUsed += $quotaNeeded;
-
-            // Validasi apakah kuota cukup
-            if ($totalQuotaUsed > $quota) {
-                return redirect()->back()
-                    ->with('error', "The trip requested for {$passengerName} exceeds the allocated quota")
-                    ->withInput();
-            }
-
-            // If multiple tickets, prevent round trips
-            // if (count($tickets) > 1) {
-            //     foreach ($tickets as $ticketType) {
-            //         if ($ticketType == 'Round Trip') {
-            //             return redirect()->back()
-            //                 ->with('error', "Round trip not allowed for {$passengerName} when requesting multiple tickets")
-            //                 ->withInput();
-            //         }
-            //     }
-            // }
+        if ($quotaNeeded > $totalQuotaAvailable) {
+            return redirect()->back()
+                ->with('error', "Total quota not enough. Needed: {$quotaNeeded}, Available: {$totalQuotaAvailable}")
+                ->withInput();
         }
 
-        if ($request->has('action_draft')) {
-            $statusValue = 'Draft';  // When "Save as Draft" is clicked
-        } elseif ($request->has('action_submit')) {
-            $statusValue = 'Pending L1';  // When "Submit" is clicked
-        }
-
-        // Prepare the ticket data arrays
-        $ticketData = [
-            'noktp_tkt' => $request->noktp_tkt,
-            'tlp_tkt' => $request->tlp_tkt,
-            'jk_tkt' => $request->jk_tkt,
-            'np_tkt' => $request->np_tkt,
-            'dari_tkt' => $request->dari_tkt,
-            'ke_tkt' => $request->ke_tkt,
-            'tgl_brkt_tkt' => $request->tgl_brkt_tkt,
-            'tgl_plg_tkt' => $request->tgl_plg_tkt,
-            'jam_brkt_tkt' => $request->jam_brkt_tkt,
-            'jam_plg_tkt' => $request->jam_plg_tkt,
-            'jenis_tkt' => $request->jenis_tkt,
-            'type_tkt' => $request->type_tkt,
-            'ket_tkt' => $request->ket_tkt,
-            'approval_status' => $statusValue,
-            'tkt_only' => 'Y',
-        ];
-        // dd($ticketData);
-
-        $noKtp = [];
+        $generatedNoTkt = $this->generateTicketNumber();
+        $noTktList = [];
         $npTkt = [];
         $dariTkt = [];
         $keTkt = [];
         $tglBrktTkt = [];
         $jamBrktTkt = [];
-        $noTktList = [];
         $tglPlgTkt = [];
         $jamPlgTkt = [];
         $tipeTkt = [];
 
-        $generatedNoTkt = $this->generateTicketNumber();
+        foreach ($request->np_tkt as $key => $selectedName) {
+            if (empty($selectedName)) continue;
 
-        foreach ($ticketData['np_tkt'] as $key => $selectedName) {
-            // Check if the selected name is the employee
-            if ($selectedName === $employeeName) {
-                $gender = $employee->gender;
-                $noTelp = $employee->personal_mobile_number;
-            } else {
-                // Handle dependents
-                $dependent = Dependents::where('name', $selectedName)->first();
-                if ($dependent) {
-                    $gender = $dependent->gender;
-                    $noTelp = $dependent->phone;
-                } else {
-                    // Handle the case where the name doesn't match employee or dependents
-                    $gender = null;
-                    $noTelp = null;
-                }
+            $cleanName = trim($selectedName);
+
+            $person = Employee::whereRaw('LOWER(fullname) = ?', [strtolower($cleanName)])->first();
+            if (!$person) {
+                $person = Dependents::where('employee_id', $employee_id)
+                    ->whereRaw('LOWER(name) = ?', [strtolower($cleanName)])
+                    ->first();
             }
-            if (!empty($selectedName)) {
-                $tiket = new Tiket();
-                $tiket->id = (string) Str::uuid();
-                // Use the pre-generated ticket number
-                $tiket->no_tkt = $generatedNoTkt;
 
-                $userId = Auth::id();
-                $tiket->no_sppd = $request->bisnis_numb;
-                $tiket->user_id = $userId;
-                $tiket->manager_l1_id = $managerL1;
-                $tiket->manager_l2_id = ($isJobLevel->count() == 1) ? '-' : $managerL2;
-                $tiket->contribution_level_code = $contribution_level_code;
-                $tiket->unit = $request->unit;
-                $tiket->jk_tkt = $gender;
-                $tiket->np_tkt = $ticketData['np_tkt'][$key];
-                $tiket->noktp_tkt = $ticketData['noktp_tkt'][$key];
-                $tiket->tlp_tkt = $noTelp;
-                $tiket->dari_tkt = $ticketData['dari_tkt'][$key] ?? null;
-                $tiket->ke_tkt = $ticketData['ke_tkt'][$key] ?? null;
-                $tiket->tgl_brkt_tkt = $ticketData['tgl_brkt_tkt'][$key] ?? null;
-                $tiket->tgl_plg_tkt = $ticketData['tgl_plg_tkt'][$key] ?? null;
-                $tiket->jam_brkt_tkt = $ticketData['jam_brkt_tkt'][$key] ?? null;
-                $tiket->jam_plg_tkt = $ticketData['jam_plg_tkt'][$key] ?? null;
-                $tiket->jenis_tkt = $ticketData['jenis_tkt'][$key] ?? null;
-                $tiket->type_tkt = $ticketData['type_tkt'][$key] ?? null;
-                $tiket->ket_tkt = $ticketData['ket_tkt'][$key] ?? null;
-                $tiket->approval_status = $statusValue;
-                $tiket->jns_dinas_tkt = 'Cuti';
-                $tiket->tkt_only = 'Y';
-                $tiket->no_sppd = '-';
-                // dd($request->all());
-                $tiket->save();
+            $gender = $person ? $person->gender : 'L';
+            $phone = $person ? ($person->personal_mobile_number ?? $person->phone) : null;
 
-                $noKtp[] = $ticketData['noktp_tkt'][$key];
-                $npTkt[] = $ticketData['np_tkt'][$key];
-                $dariTkt[] = $ticketData['dari_tkt'][$key];
-                $keTkt[] = $ticketData['ke_tkt'][$key];
-                $tipeTkt[] = $ticketData['type_tkt'][$key];
-                $tglBrktTkt[] = $ticketData['tgl_brkt_tkt'][$key];
-                $jamBrktTkt[] = $ticketData['jam_brkt_tkt'][$key];
-                $noTktList[] = $tiket->no_tkt;
-                $tglPlgTkt[] = $ticketData['tgl_plg_tkt'][$key];
-                $jamPlgTkt[] = $ticketData['jam_plg_tkt'][$key];
-            }
+            $tiket = new Tiket();
+            $tiket->id = (string) Str::uuid();
+            $tiket->no_tkt = $generatedNoTkt;
+            $tiket->user_id = $userId;
+            $tiket->manager_l1_id = $managerL1;
+            $tiket->manager_l2_id = ($isJobLevel->count() == 1) ? '-' : $managerL2;
+            $tiket->contribution_level_code = $contribution_level_code;
+            $tiket->unit = $request->unit;
+            $tiket->jk_tkt = $gender;
+            $tiket->np_tkt = $selectedName;
+            $tiket->noktp_tkt = $request->noktp_tkt[$key] ?? null;
+            $tiket->tlp_tkt = $phone;
+            $tiket->dari_tkt = $request->dari_tkt[$key] ?? null;
+            $tiket->ke_tkt = $request->ke_tkt[$key] ?? null;
+            $tiket->tgl_brkt_tkt = $request->tgl_brkt_tkt[$key] ?? null;
+            $tiket->tgl_plg_tkt = $request->tgl_plg_tkt[$key] ?? null;
+            $tiket->jam_brkt_tkt = $request->jam_brkt_tkt[$key] ?? null;
+            $tiket->jam_plg_tkt = $request->jam_plg_tkt[$key] ?? null;
+            $tiket->jenis_tkt = $request->jenis_tkt[$key] ?? null;
+            $tiket->type_tkt = $request->type_tkt[$key] ?? null;
+            $tiket->ket_tkt = $request->ket_tkt[$key] ?? null;
+            $tiket->approval_status = $statusValue;
+            $tiket->jns_dinas_tkt = 'Cuti';
+            $tiket->tkt_only = 'Y';
+            $tiket->no_sppd = '-';
+            $tiket->save();
+
+            $noTktList[] = $tiket->no_tkt;
+            $npTkt[] = $selectedName;
+            $dariTkt[] = $tiket->dari_tkt;
+            $keTkt[] = $tiket->ke_tkt;
+            $tipeTkt[] = $tiket->type_tkt;
+            $tglBrktTkt[] = $tiket->tgl_brkt_tkt;
+            $jamBrktTkt[] = $tiket->jam_brkt_tkt;
+            $tglPlgTkt[] = $tiket->tgl_plg_tkt;
+            $jamPlgTkt[] = $tiket->jam_plg_tkt;
         }
 
         if ($statusValue !== 'Draft') {
-            $managerId = Employee::where('id', $userId)->pluck('manager_l1_id')->first();
-            $employeeName = Employee::where('id', $userId)->pluck('fullname')->first();
-            $managerEmail = Employee::where('employee_id', $managerId)->pluck('email')->first();
-            // $managerEmail = "eriton.dewa@kpn-corp.com";
-            $imagePath = public_path('images/kop.jpg');
-            $imageContent = file_get_contents($imagePath);
-            $base64Image = "data:image/png;base64," . base64_encode($imageContent);
-            $managerName = Employee::where('employee_id', $managerId)->pluck('fullname')->first();
-            $textNotification = "requesting a Home Trip and waiting for your Approval with the following details :";
-            $approvalLink = route('approve.ticket', [
-                'id' => urlencode($tiket->id),
-                'manager_id' => $managerId,
-                'status' => 'Pending L2'
-            ]);
+            $managerEmail = Employee::where('employee_id', $managerL1)->pluck('email')->first();
+            $managerName = Employee::where('employee_id', $managerL1)->pluck('fullname')->first();
 
-            $rejectionLink = route('reject.ticket.link', [
-                'id' => urlencode($tiket->id),
-                'manager_id' => $managerId,
-                'status' => 'Rejected'
-            ]);
-            // // dd($managerEmail);
             if ($managerEmail) {
-                // Send email to the manager
                 try {
-                    Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new HomeTripNotification([
+                    $imagePath = public_path('images/kop.jpg');
+                    $base64Image = file_exists($imagePath) ? "data:image/png;base64," . base64_encode(file_get_contents($imagePath)) : null;
+
+                    $details = [
                         'noTkt' => $noTktList,
                         'namaPenumpang' => $npTkt,
                         'dariTkt' => $dariTkt,
@@ -450,17 +349,20 @@ class HomeTripController extends Controller
                         'tglPlgTkt' => $tglPlgTkt,
                         'jamPlgTkt' => $jamPlgTkt,
                         'managerName' => $managerName,
-                        'approvalLink' => $approvalLink,
-                        'rejectionLink' => $rejectionLink,
-                        'textNotification' => $textNotification,
                         'employeeName' => $employeeName,
                         'base64Image' => $base64Image,
-                    ]));
+                        'textNotification' => "requesting a Home Trip and waiting for your Approval with the following details :",
+                        'approvalLink' => route('approve.ticket', ['id' => urlencode($tiket->id), 'manager_id' => $managerL1, 'status' => 'Pending L2']),
+                        'rejectionLink' => route('reject.ticket.link', ['id' => urlencode($tiket->id), 'manager_id' => $managerL1, 'status' => 'Rejected']),
+                    ];
+
+                    Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new HomeTripNotification($details));
                 } catch (\Exception $e) {
-                    Log::error('Email Create Home Trip tidak terkirim: ' . $e->getMessage());
+                    Log::error('Email Create Home Trip error: ' . $e->getMessage());
                 }
             }
         }
+
         return redirect()->route('home-trip')->with('success', 'The ticket request has been input successfully.');
     }
 
@@ -484,24 +386,22 @@ class HomeTripController extends Controller
         $locations = Location::orderBy('area')->get();
         $employees = Employee::orderBy('ktp')->get();
 
-        $familyMembers = HomeTrip::where('employee_id', $employee_id)
-            ->where('period', $currentYear)
-            ->where('relation_type', '!=', 'employee')
-            ->where('quota', '>', 0) // Only include family members with a quota > 0
-            ->get();
-
+        $familyMembers = HomeTrip::with('dependents')->where('employee_id', $employee_id)
+            // ->where('period', $currentYear)
+            // ->where('relation_type', '!=', 'employee')
+            ->where('quota', '>', 0)
+            ->first();
+        // dd($familyMembers);
         $employeeInHomeTrip = HomeTrip::where('employee_id', $employee_id)
-            ->where('period', $currentYear)
+            // ->where('period', $currentYear)
             ->where('quota', '>', 0)
             ->where('relation_type', '=', 'employee')
             ->first();
-
 
         if (!$ticket) {
             return redirect()->route('ticket')->with('error', 'Ticket not found');
         }
 
-        // Fetch all tickets associated with the same no_sppd for reference
         $tickets = Tiket::where('no_tkt', $ticket->no_tkt)->get();
 
         $transactions = $tickets;
@@ -527,8 +427,7 @@ class HomeTripController extends Controller
                 'more_tkt' => ($index < $ticketCount - 1) ? 'Ya' : 'Tidak'
             ];
         }
-
-        // dd($familyMembers);
+        // dd($AllMembers);
         return view('hcis.reimbursements.homeTrip.form.editFormHt', [
             'link' => $link,
             'parentLink' => $parentLink,
@@ -543,6 +442,7 @@ class HomeTripController extends Controller
             'transactions' => $transactions,
             'ticketData' => $ticketData,
             'ticket' => $ticket,
+            
         ]);
     }
 
@@ -569,7 +469,6 @@ class HomeTripController extends Controller
 
         $npTkt = array_values($request->np_tkt);
         $selectedName = $npTkt[0] ?? null;
-        // dd($request->np_tkt, $selectedName);
 
         $existingTickets = Tiket::where('id', $id)->get()->keyBy('id');
         $passengerRequests = [];
@@ -578,34 +477,30 @@ class HomeTripController extends Controller
                 $passengerRequests[$selectedName] = [
                     'tickets' => [],
                     'quota' => HomeTrip::where('employee_id', $employee_id)
-                        ->orderByDesc('period')     // sortir dari tahun terbaru
-                        ->limit(1)                  // ambil hanya 1 baris
-                        ->pluck('quota')            // ambil kolom quota
+                        ->orderByDesc('period')
+                        ->limit(1)
+                        ->pluck('quota')
                         ->first() ?? 0
                 ];
             }
             $passengerRequests[$selectedName]['tickets'][] = $request->type_tkt[$key];
         }
 
-        // Validate each passenger's total ticket requests against their quota
         foreach ($passengerRequests as $passengerName => $data) {
             $quota = $data['quota'];
             $tickets = $data['tickets'];
             $quotaNeeded = 0;
 
-            // Calculate total quota needed
             foreach ($tickets as $ticketType) {
                 $quotaNeeded += ($ticketType == 'Round Trip') ? 2 : 1;
             }
 
-            // Validation checks
             if ($quotaNeeded > $quota) {
                 return redirect()->back()
                     ->with('error', "TThe trip requested for {$passengerName} exceeds the allocated quota")
                     ->withInput();
             }
 
-            // If multiple tickets, prevent round trips
             if (count($tickets) > 1) {
                 foreach ($tickets as $ticketType) {
                     if ($ticketType == 'Round Trip') {
@@ -618,9 +513,9 @@ class HomeTripController extends Controller
         }
 
         if ($request->has('action_draft')) {
-            $statusValue = 'Draft';  // When "Save as Draft" is clicked
+            $statusValue = 'Draft';
         } elseif ($request->has('action_submit')) {
-            $statusValue = 'Pending L1';  // When "Submit" is clicked
+            $statusValue = 'Pending L1';
         }
 
         $existingNoTkt = $existingTickets->first()->no_tkt ?? null;
@@ -637,18 +532,15 @@ class HomeTripController extends Controller
 
         foreach ($request->np_tkt as $key => $selectedName) {
             if (!empty($selectedName)) {
-                // Check if the selected name is the employee
                 if ($selectedName === $employeeName) {
                     $gender = $employee->gender;
                     $noTelp = $employee->personal_mobile_number;
                 } else {
-                    // Handle dependents
                     $dependent = Dependents::where('name', $selectedName)->first();
                     if ($dependent) {
                         $gender = $dependent->gender;
                         $noTelp = $dependent->phone;
                     } else {
-                        // Handle the case where the name doesn't match employee or dependents
                         $gender = null;
                         $noTelp = null;
                     }
@@ -679,26 +571,21 @@ class HomeTripController extends Controller
                     'no_sppd' => '-',
                 ];
 
-
                 if (isset($existingTickets[$selectedName])) {
                     $existingTicket = $existingTickets[$selectedName];
-                    $ticketData['no_tkt'] = $existingTicket->no_tkt; // Use the same no_tkt
+                    $ticketData['no_tkt'] = $existingTicket->no_tkt;
                     $existingTicket->update($ticketData);
                     $processedTicketIds[] = $existingTicket->id;
                 } else {
-                    // If no existing ticket, use the existing no_tkt from the first ticket
                     $existingTicket = $existingTickets->first();
                     $ticketData['no_tkt'] = $existingTicket->no_tkt;
-                    // dd($ticketData['no_tkt']);
                     $newTiket = Tiket::create(array_merge($ticketData, [
                         'id' => (string) Str::uuid(),
-                        // 'noktp_tkt' => $request->noktp_tkt[$key] ?? null,
                         'tkt_only' => 'Y',
                     ]));
                     $processedTicketIds[] = $newTiket->id;
                 }
 
-                // Collect ticket data for email
                 $noTktList[] = $ticketData['no_tkt'];
                 $npTkt[] = $ticketData['np_tkt'];
                 $dariTkt[] = $ticketData['dari_tkt'];
@@ -711,24 +598,20 @@ class HomeTripController extends Controller
             }
         }
 
-        // Soft delete tickets that are no longer in the request
         Tiket::where('no_tkt', $existingNoTkt)
             ->whereNotIn('id', $processedTicketIds)
             ->delete();
 
         $ticketIdToUse = null;
 
-        // Always use the first valid ID from the processed tickets, ensuring it's a ticket that exists in the final state.
         if (!empty($processedTicketIds)) {
-            $ticketIdToUse = $processedTicketIds[0];  // Use the first updated/created ticket ID
+            $ticketIdToUse = $processedTicketIds[0];
         } elseif (!empty($existingTickets)) {
-            // As a fallback, use the first existing ticket ID if no processed IDs were created
             $ticketIdToUse = $existingTickets->first()->id;
         }
 
         if ($statusValue !== 'Draft') {
             $managerId = Employee::where('id', Auth::id())->pluck('manager_l1_id')->first();
-            // $managerEmail = Employee::where('employee_id', $managerId)->pluck('email')->first();
             $managerEmail = "eriton.dewa@kpn-corp.com";
             $managerName = Employee::where('employee_id', $managerId)->pluck('fullname')->first();
             $approvalLink = route('approve.ticket', [
@@ -744,12 +627,11 @@ class HomeTripController extends Controller
             ]);
 
             if ($managerEmail) {
-                // Send email to the manager with all ticket details
                 try {
                     Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new HomeTripNotification([
-                        'noTkt' => $noTktList,  // all ticket numbers
-                        'namaPenumpang' => $npTkt,  // all passengers
-                        'dariTkt' => $dariTkt,  // all departure locations
+                        'noTkt' => $noTktList,
+                        'namaPenumpang' => $npTkt,
+                        'dariTkt' => $dariTkt,
                         'keTkt' => $keTkt,
                         'tipeTkt' => $tipeTkt,
                         'tglBrktTkt' => $tglBrktTkt,
@@ -768,16 +650,13 @@ class HomeTripController extends Controller
         }
 
         return redirect()->route('home-trip')->with('success', 'The ticket request has been updated successfully.');
-
     }
 
     public function homeTripDelete($id)
     {
         $ticket = Tiket::findByRouteKey($id);
-        // dd($ticket);
         Tiket::where('no_tkt', $ticket->no_tkt)->delete();
 
-        // Redirect to the ticket page with a success message
         return redirect()->route('home-trip')->with('success', 'Home Trip has been deleted');
     }
 
@@ -787,13 +666,11 @@ class HomeTripController extends Controller
         $currentMonth = date('n');
         $romanMonth = $this->getRomanMonth($currentMonth);
 
-        // Get all transactions for the current year with TKTC-HRD, including deleted ones
         $transactions = Tiket::whereYear('created_at', $currentYear)
             ->where('no_tkt', 'like', '%TKTC-HRD%')
             ->withTrashed()
             ->get();
 
-        // Find the highest number by extracting and comparing the numeric part
         $lastNumber = 0;
         foreach ($transactions as $transaction) {
             if (preg_match('/(\d+)\/TKTC-HRD\/([IVX]+)\/\d{4}/', $transaction->no_tkt, $matches)) {
@@ -806,7 +683,6 @@ class HomeTripController extends Controller
 
         $newNumber = $lastNumber + 1;
 
-        // Only pad with zeros if less than 1000
         if ($newNumber < 1000) {
             $formattedNumber = str_pad($newNumber, 3, '0', STR_PAD_LEFT);
         } else {
@@ -888,10 +764,8 @@ class HomeTripController extends Controller
         if ($hasFilter) {
             $ht_employee = $query->orderBy('created_at', 'desc')->where('homebase', '!=', '')->get();
             foreach ($ht_employee as $ht_employees) {
-                // Get family count
                 $ht_employees->family_count = Dependents::where('employee_id', $ht_employees->employee_id)->count() + 1;
 
-                // Get total quota from HomeTrip table for this employee
                 $ht_employees->ticket_count = HomeTrip::where('employee_id', $ht_employees->employee_id)
                     ->where('period', $currentYear)
                     ->sum('quota');
@@ -903,73 +777,11 @@ class HomeTripController extends Controller
             }
         }
 
-        // // Uncomment This for Generate all ht_plan from admin Auto Input ht_plan Start
-        // $currentYear = date('Y');
-        // $employees_cast = Employee::where('homebase', '!=', '')->get();
-
-        // foreach ($employees_cast as $employee) {
-        //     // Get joining date
-        //     $joiningDate = date_create($employee->date_of_joining);
-
-        //     // Calculate the first January after 1 year of employment
-        //     $oneYearAfterJoining = date_create($employee->date_of_joining);
-        //     $oneYearAfterJoining->modify('+1 year');
-        //     $eligibleYear = (int)$oneYearAfterJoining->format('Y') + 1;
-
-        //     // If eligible year is current year or past year and no record exists, create records
-        //     if ($eligibleYear <= $currentYear) {
-        //         // Get all dependents for this employee
-        //         $dependents = Dependents::where('employee_id', $employee->employee_id)->get();
-
-        //         // First create record for the employee
-        //         $existingHomeTrip = HomeTrip::where('employee_id', $employee->employee_id)
-        //             ->where('period', $currentYear)
-        //             ->where('relation_type', 'Employee')
-        //             ->first();
-
-        //         if (!$existingHomeTrip) {
-        //             $homeTrip = new HomeTrip();
-        //             $homeTrip->id = Str::uuid();
-        //             $homeTrip->employee_id = $employee->employee_id;
-        //             $homeTrip->name = $employee->fullname;
-        //             $homeTrip->relation_type = 'Employee';
-        //             $homeTrip->quota = '2';
-        //             $homeTrip->period = $currentYear;
-        //             $homeTrip->created_by = $userId;
-        //             $homeTrip->save();
-        //         }
-
-        //         // Then create records for each dependent
-        //         foreach ($dependents as $dependent) {
-        //             $existingDependentTrip = HomeTrip::where('employee_id', $employee->employee_id)
-        //                 ->where('period', $currentYear)
-        //                 ->where('name', $dependent->name)
-        //                 ->where('relation_type', $dependent->relation_type)
-        //                 ->first();
-
-        //             if (!$existingDependentTrip) {
-        //                 $dependentTrip = new HomeTrip();
-        //                 $dependentTrip->id = Str::uuid();
-        //                 $dependentTrip->employee_id = $employee->employee_id;
-        //                 $dependentTrip->name = $dependent->name;
-        //                 $dependentTrip->relation_type = $dependent->relation_type;
-        //                 $dependentTrip->quota = '2';
-        //                 $dependentTrip->period = $currentYear;
-        //                 $dependentTrip->created_by = $userId;
-        //                 $dependentTrip->save();
-        //             }
-        //         }
-        //     }
-        // }
-        // // Auto Input ht_plan End
-
         return view('hcis.reimbursements.homeTrip.admin.homeTripAdmin', compact(
             'link',
             'parentLink',
             'ht_employee',
             'locations',
-            // 'family',
-            // 'familyCount',
         ));
     }
 
@@ -986,17 +798,15 @@ class HomeTripController extends Controller
 
         $query = Tiket::where('user_id', $user_id)->orderBy('created_at', 'desc');
 
-        $yearNow = Carbon::now()->year; // Current year (e.g., 2024)
-        $yearStart = $yearNow - 2; // Start year (e.g., 2022)
+        $yearNow = Carbon::now()->year;
+        $yearStart = $yearNow - 2;
 
-        // Fetch data filtered by the last 3 years
         $plafonds = HomeTrip::where('employee_id', $employee_id)
-            ->whereBetween('period', [$yearStart, $yearNow]) // Filter for 2022 to 2024
-            ->orderBy('name') // Order by name
-            ->orderBy('period') // Then by period
+            ->whereBetween('period', [$yearStart, $yearNow])
+            ->orderBy('name')
+            ->orderBy('period')
             ->get();
 
-        // Group data by period
         $plafonds = $plafonds->groupBy('period');
 
         $latestTicketIds = Tiket::selectRaw('MAX(id) as id')
@@ -1006,12 +816,10 @@ class HomeTripController extends Controller
 
         $transactions = Tiket::whereIn('id', $latestTicketIds)
             ->where('jns_dinas_tkt', '=', 'Cuti')
-            // ->where('approval_status', $statusFilter)
             ->orderBy('created_at', 'desc')
             ->select('id', 'no_tkt', 'np_tkt', 'type_tkt', 'jenis_tkt', 'dari_tkt', 'ke_tkt', 'approval_status', 'jns_dinas_tkt', 'user_id', 'no_sppd')
             ->get();
 
-        // Get all tickets for user
         $tickets = Tiket::where('user_id', $user_id)
             ->orderBy('created_at', 'desc')
             ->get();
@@ -1031,10 +839,7 @@ class HomeTripController extends Controller
 
         $employeeIds = $tickets->pluck('user_id')->unique();
         foreach ($transactions as $transaction) {
-            // Fetch the employee for the current transaction
             $employee = Employee::find($transaction->user_id);
-            // dd($employee);
-            // If the employee exists, fetch their manager names
             if ($employee) {
                 $managerL1Id = $employee->manager_l1_id;
                 $managerL2Id = $employee->manager_l2_id;

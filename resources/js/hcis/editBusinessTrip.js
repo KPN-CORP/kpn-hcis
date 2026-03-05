@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var jnsDinasSelect = document.getElementById("jns_dinas");
     var additionalFields = document.getElementById("additional-fields");
     const additionalFieldsDalamKota = document.getElementById(
-        "additional-fields-dalam"
+        "additional-fields-dalam",
     );
 
     function showAdditionalFields() {
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
 function setupCheckboxListeners() {
     // Handle Dalam Kota checkboxes
     const dalamKotaCheckboxes = document.querySelectorAll(
-        'input[id$="CheckboxDalamKota"]'
+        'input[id$="CheckboxDalamKota"]',
     );
     dalamKotaCheckboxes.forEach((checkbox) => {
         checkbox.addEventListener("change", function () {
@@ -56,13 +56,13 @@ function setupCheckboxListeners() {
                 .toLowerCase();
 
             const navItem = document.getElementById(
-                `nav-${section}-dalam-kota`
+                `nav-${section}-dalam-kota`,
             );
             const tabContent = document.getElementById(
-                `pills-${section}-dalam-kota`
+                `pills-${section}-dalam-kota`,
             );
             const tabButton = document.getElementById(
-                `pills-${section}-dalam-kota-tab`
+                `pills-${section}-dalam-kota-tab`,
             );
 
             handleTabVisibility(
@@ -70,14 +70,14 @@ function setupCheckboxListeners() {
                 navItem,
                 tabContent,
                 tabButton,
-                true
+                true,
             );
         });
     });
 
     // Handle Luar Kota checkboxes
     const luarKotaCheckboxes = document.querySelectorAll(
-        '#additional-fields input[type="checkbox"]:not([id$="DalamKota"])'
+        '#additional-fields input[type="checkbox"]:not([id$="DalamKota"])',
     );
     luarKotaCheckboxes.forEach((checkbox) => {
         checkbox.addEventListener("change", function () {
@@ -92,7 +92,7 @@ function setupCheckboxListeners() {
                 navItem,
                 tabContent,
                 tabButton,
-                false
+                false,
             );
         });
     });
@@ -166,7 +166,7 @@ function handleTabVisibility(
     navItem,
     tabContent,
     tabButton,
-    isDalamKota
+    isDalamKota,
 ) {
     if (isChecked && navItem && tabButton && tabContent) {
         navItem.style.display = "block";
@@ -331,10 +331,10 @@ function syncDateRequired(changedInput) {
 function updateCAValue() {
     // const perdiemChecked = document.getElementById("perdiemCheckbox").checked;
     const cashAdvancedChecked = document.getElementById(
-        "cashAdvancedCheckbox"
+        "cashAdvancedCheckbox",
     ).checked;
     const cashEntertainChecked = document.getElementById(
-        "caEntertainCheckbox"
+        "caEntertainCheckbox",
     ).checked;
     const caField = document.getElementById("caHidden");
     const entField = document.getElementById("entHidden");
@@ -439,16 +439,16 @@ function validateDates(index) {
 //Ticket Dalam Kota Validation Date
 function validateDatesDalamKota(index) {
     const departureDateInput = document.getElementById(
-        `tgl_brkt_tkt_dalam_kota_${index}`
+        `tgl_brkt_tkt_dalam_kota_${index}`,
     );
     const returnDateInput = document.getElementById(
-        `tgl_plg_tkt_dalam_kota_${index}`
+        `tgl_plg_tkt_dalam_kota_${index}`,
     );
     const departureTimeInput = document.getElementById(
-        `jam_brkt_tkt_dalam_kota_${index}`
+        `jam_brkt_tkt_dalam_kota_${index}`,
     );
     const returnTimeInput = document.getElementById(
-        `jam_plg_tkt_dalam_kota_${index}`
+        `jam_plg_tkt_dalam_kota_${index}`,
     );
 
     if (
@@ -579,24 +579,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
         form.querySelector('input[name="tgl_masuk_htl[]"]').addEventListener(
             "change",
-            () => calculateTotalDays(i)
+            () => calculateTotalDays(i),
         );
         form.querySelector('input[name="tgl_keluar_htl[]"]').addEventListener(
             "change",
-            () => calculateTotalDays(i)
+            () => calculateTotalDays(i),
         );
     });
 });
 
 function calculateTotalDaysDalamKota(index) {
     const checkInInput = document.getElementById(
-        `check-in-dalam-kota-${index}`
+        `check-in-dalam-kota-${index}`,
     );
     const checkOutInput = document.getElementById(
-        `check-out-dalam-kota-${index}`
+        `check-out-dalam-kota-${index}`,
     );
     const totalDaysInput = document.getElementById(
-        `total-days-dalam-kota-${index}`
+        `total-days-dalam-kota-${index}`,
     );
 
     // Get Start Date and End Date from the main form
@@ -681,10 +681,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const i = index + 1; // Adjust for 1-based index
 
             form.querySelector(
-                'input[name="tgl_masuk_htl_dalam_kota[]"]'
+                'input[name="tgl_masuk_htl_dalam_kota[]"]',
             ).addEventListener("change", () => calculateTotalDaysDalamKota(i));
             form.querySelector(
-                'input[name="tgl_keluar_htl_dalam_kota[]"]'
+                'input[name="tgl_keluar_htl_dalam_kota[]"]',
             ).addEventListener("change", () => calculateTotalDaysDalamKota(i));
         });
 });
@@ -694,7 +694,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const jnsDinasSelect = document.getElementById("jns_dinas");
     const additionalFields = document.getElementById("additional-fields");
     const additionalFieldsDalamKota = document.getElementById(
-        "additional-fields-dalam"
+        "additional-fields-dalam",
     );
 
     // Define checkboxes for Luar Kota and Dalam Kota
@@ -811,12 +811,12 @@ document.addEventListener("DOMContentLoaded", function () {
     toggleSection(
         "cashAdvancedCheckbox",
         "nav-cashAdvanced",
-        "pills-cashAdvanced-tab"
+        "pills-cashAdvanced-tab",
     );
     toggleSection(
         "caEntertainCheckbox",
         "nav-cashAdvancedEntertain",
-        "pills-cashAdvancedEntertain-tab"
+        "pills-cashAdvancedEntertain-tab",
     );
     toggleSection("ticketCheckbox", "nav-ticket", "pills-ticket-tab");
     toggleSection("hotelCheckbox", "nav-hotel", "pills-hotel-tab");
@@ -827,19 +827,19 @@ document.addEventListener("DOMContentLoaded", function () {
         "ticketCheckboxDalamKota",
         "nav-ticket-dalam-kota",
         "pills-ticket-dalam-kota-tab",
-        "pills-ticket-dalam-kota"
+        "pills-ticket-dalam-kota",
     );
     toggleSection(
         "hotelCheckboxDalamKota",
         "nav-hotel-dalam-kota",
         "pills-hotel-dalam-kota-tab",
-        "pills-hotel-dalam-kota"
+        "pills-hotel-dalam-kota",
     );
     toggleSection(
         "taksiCheckboxDalamKota",
         "nav-taksi-dalam-kota",
         "pills-taksi-dalam-kota-tab",
-        "pills-taksi-dalam-kota"
+        "pills-taksi-dalam-kota",
     );
 });
 
@@ -860,7 +860,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Function to reset fields in the target div
     function resetFields(container) {
         const inputs = container.querySelectorAll(
-            'input[type="text"], input[type="number"], textarea'
+            'input[type="text"], input[type="number"], textarea',
         );
         inputs.forEach((input) => {
             input.value = "";
@@ -905,7 +905,7 @@ function LuarKotaTicketInit() {
         document.querySelectorAll('[id^="ticket-form-"]').length || 1;
     const maxTicketForms = 5;
     const ticketFormsContainer = document.getElementById(
-        "ticket_forms_container"
+        "ticket_forms_container",
     );
     const ticketCheckbox = document.getElementById("ticketCheckbox");
     const addTicketButton = document.getElementById("add-ticket-btn");
@@ -934,10 +934,10 @@ function LuarKotaTicketInit() {
 
         const typeSelect = form.querySelector('select[name="type_tkt[]"]');
         const returnDateField = form.querySelector(
-            'input[name="tgl_plg_tkt[]"]'
+            'input[name="tgl_plg_tkt[]"]',
         );
         const returnTimeField = form.querySelector(
-            'input[name="jam_plg_tkt[]"]'
+            'input[name="jam_plg_tkt[]"]',
         );
 
         // Update required fields for round trip option
@@ -987,13 +987,12 @@ function LuarKotaTicketInit() {
 
     function updateFormNumbers() {
         const forms = ticketFormsContainer.querySelectorAll(
-            '[id^="ticket-form-"]'
+            '[id^="ticket-form-"]',
         );
         forms.forEach((form, index) => {
             const formNumber = index + 1;
-            form.querySelector(
-                ".h5.text-uppercase b"
-            ).textContent = `TICKET ${formNumber}`;
+            form.querySelector(".h5.text-uppercase b").textContent =
+                `TICKET ${formNumber}`;
             form.id = `ticket-form-${formNumber}`;
             form.querySelector(".remove-ticket-btn").dataset.formId =
                 formNumber;
@@ -1021,7 +1020,7 @@ function LuarKotaTicketInit() {
             if (element.name) {
                 element.name = element.name.replace(
                     /\[\d*\]/,
-                    `[${formNumber}]`
+                    `[${formNumber}]`,
                 );
             }
             // Update onchange attributes
@@ -1029,7 +1028,7 @@ function LuarKotaTicketInit() {
                 const onchangeValue = element.getAttribute("onchange");
                 const updatedOnchangeValue = onchangeValue.replace(
                     /\d+/,
-                    formNumber
+                    formNumber,
                 );
                 element.setAttribute("onchange", updatedOnchangeValue);
             }
@@ -1046,7 +1045,7 @@ function LuarKotaTicketInit() {
 
     function resetTicketFields(container) {
         const inputs = container.querySelectorAll(
-            'input[type="text"], input[type="number"], input[type="date"], input[type="time"], textarea'
+            'input[type="text"], input[type="number"], input[type="date"], input[type="time"], textarea',
         );
         inputs.forEach((input) => {
             input.value = "";
@@ -1073,7 +1072,7 @@ function LuarKotaTicketInit() {
 
     function resetAllTicketForms() {
         const forms = ticketFormsContainer.querySelectorAll(
-            '[id^="ticket-form-"]'
+            '[id^="ticket-form-"]',
         );
         forms.forEach((form, index) => {
             resetTicketFields(form);
@@ -1133,7 +1132,7 @@ function LuarKotaTicketInit() {
 
                     // Reset values within roundTripOptions
                     const inputs = roundTripOptions.querySelectorAll(
-                        "input, select, textarea"
+                        "input, select, textarea",
                     );
                     inputs.forEach((input) => {
                         if (
@@ -1300,13 +1299,13 @@ function DalamKotaTicketInit() {
     let formTicketCountDalamKota = 1;
     const maxTicketFormsDalamKota = 5;
     const ticketFormsContainerDalamKota = document.getElementById(
-        "ticket_forms_container_dalam_kota"
+        "ticket_forms_container_dalam_kota",
     );
     const ticketCheckboxDalamKota = document.getElementById(
-        "ticketCheckboxDalamKota"
+        "ticketCheckboxDalamKota",
     );
     const addTicketButtonDalamKota = document.getElementById(
-        "add-ticket-btn-dalam-kota"
+        "add-ticket-btn-dalam-kota",
     );
     function toggleRequiredAttributesDalamKota(form, isRequired) {
         const fields = [
@@ -1331,13 +1330,13 @@ function DalamKotaTicketInit() {
         });
 
         const typeSelect = form.querySelector(
-            'select[name="type_tkt_dalam_kota[]"]'
+            'select[name="type_tkt_dalam_kota[]"]',
         );
         const returnDateField = form.querySelector(
-            'input[name="tgl_plg_tkt_dalam_kota[]"]'
+            'input[name="tgl_plg_tkt_dalam_kota[]"]',
         );
         const returnTimeField = form.querySelector(
-            'input[name="jam_plg_tkt_dalam_kota[]"]'
+            'input[name="jam_plg_tkt_dalam_kota[]"]',
         );
 
         function updateReturnFieldsDalamKota() {
@@ -1392,13 +1391,12 @@ function DalamKotaTicketInit() {
 
     function updateFormNumbersDalamKota() {
         const forms = ticketFormsContainerDalamKota.querySelectorAll(
-            '[id^="ticket-form-dalam-kota-"]'
+            '[id^="ticket-form-dalam-kota-"]',
         );
         forms.forEach((form, index) => {
             const formNumber = index + 1;
-            form.querySelector(
-                ".h5.text-uppercase b"
-            ).textContent = `TICKET ${formNumber}`;
+            form.querySelector(".h5.text-uppercase b").textContent =
+                `TICKET ${formNumber}`;
             form.id = `ticket-form-dalam-kota-${formNumber}`;
             form.querySelector(".remove-ticket-btn-dalam-kota").dataset.formId =
                 formNumber;
@@ -1426,14 +1424,14 @@ function DalamKotaTicketInit() {
             if (element.name) {
                 element.name = element.name.replace(
                     /\[\d*\]/,
-                    `[${formNumber}]`
+                    `[${formNumber}]`,
                 );
             }
             if (element.hasAttribute("onchange")) {
                 const onchangeValue = element.getAttribute("onchange");
                 const updatedOnchangeValue = onchangeValue.replace(
                     /\d+/,
-                    formNumber
+                    formNumber,
                 );
                 element.setAttribute("onchange", updatedOnchangeValue);
             }
@@ -1442,7 +1440,7 @@ function DalamKotaTicketInit() {
 
     function updateRemoveButtonsDalamKota() {
         const removeButtons = document.querySelectorAll(
-            ".remove-ticket-btn-dalam-kota"
+            ".remove-ticket-btn-dalam-kota",
         );
         removeButtons.forEach((button) => {
             button.style.display =
@@ -1452,7 +1450,7 @@ function DalamKotaTicketInit() {
 
     function resetTicketFieldsDalamKota(container) {
         const inputs = container.querySelectorAll(
-            'input[type="text"], input[type="number"], input[type="date"], input[type="time"], textarea'
+            'input[type="text"], input[type="number"], input[type="date"], input[type="time"], textarea',
         );
         inputs.forEach((input) => {
             input.value = "";
@@ -1478,7 +1476,7 @@ function DalamKotaTicketInit() {
 
     function resetAllTicketFormsDalamKota() {
         const forms = ticketFormsContainerDalamKota.querySelectorAll(
-            '[id^="ticket-form-dalam-kota-"]'
+            '[id^="ticket-form-dalam-kota-"]',
         );
         forms.forEach((form, index) => {
             resetTicketFieldsDalamKota(form);
@@ -1497,16 +1495,16 @@ function DalamKotaTicketInit() {
         if (formTicketCountDalamKota < maxTicketFormsDalamKota) {
             formTicketCountDalamKota++;
             const newTicketForm = createNewTicketFormDalamKota(
-                formTicketCountDalamKota
+                formTicketCountDalamKota,
             );
             ticketFormsContainerDalamKota.insertAdjacentHTML(
                 "beforeend",
-                newTicketForm
+                newTicketForm,
             );
             const addedForm = ticketFormsContainerDalamKota.lastElementChild;
             toggleRequiredAttributesDalamKota(
                 addedForm,
-                ticketCheckboxDalamKota.checked
+                ticketCheckboxDalamKota.checked,
             );
             updateFormNumbersDalamKota();
             initializeAllSelect2DalamKota();
@@ -1547,7 +1545,7 @@ function DalamKotaTicketInit() {
                     roundTripOptions.style.display = "none";
 
                     const inputs = roundTripOptions.querySelectorAll(
-                        "input, select, textarea"
+                        "input, select, textarea",
                     );
                     inputs.forEach((input) => {
                         if (
@@ -1733,26 +1731,25 @@ function LuarKotaHotelInit() {
     let formHotelCount = 0; // Initialize with 0 to count existing forms
     const maxHotelForms = 5;
     const hotelFormsContainer = document.getElementById(
-        "hotel_forms_container"
+        "hotel_forms_container",
     );
     const hotelCheckbox = document.getElementById("hotelCheckbox");
     const addHotelButton = document.querySelector(".add-hotel-btn");
 
     // Initialize formHotelCount based on existing forms
     const existingForms = hotelFormsContainer.querySelectorAll(
-        '[id^="hotel-form-"]'
+        '[id^="hotel-form-"]',
     );
     formHotelCount = existingForms.length;
 
     function updateFormNumbers() {
         const forms = hotelFormsContainer.querySelectorAll(
-            '[id^="hotel-form-"]'
+            '[id^="hotel-form-"]',
         );
         forms.forEach((form, index) => {
             const formNumber = index + 1;
-            form.querySelector(
-                ".h5.text-uppercase b"
-            ).textContent = `Hotel ${formNumber}`;
+            form.querySelector(".h5.text-uppercase b").textContent =
+                `Hotel ${formNumber}`;
             form.id = `hotel-form-${formNumber}`;
             form.querySelector(".remove-hotel-btn").dataset.formId = formNumber;
 
@@ -1773,7 +1770,7 @@ function LuarKotaHotelInit() {
             if (element.name) {
                 element.name = element.name.replace(
                     /\[\d*\]/,
-                    `[${formNumber}]`
+                    `[${formNumber}]`,
                 );
             }
             // Update onchange attributes
@@ -1781,7 +1778,7 @@ function LuarKotaHotelInit() {
                 const onchangeValue = element.getAttribute("onchange");
                 const updatedOnchangeValue = onchangeValue.replace(
                     /\d+/,
-                    formNumber
+                    formNumber,
                 );
                 element.setAttribute("onchange", updatedOnchangeValue);
             }
@@ -1801,7 +1798,7 @@ function LuarKotaHotelInit() {
 
     function resetHotelFields(container) {
         const inputs = container.querySelectorAll(
-            'input[type="text"], input[type="number"], input[type="date"], input[type="time"], textarea'
+            'input[type="text"], input[type="number"], input[type="date"], input[type="time"], textarea',
         );
         inputs.forEach((input) => {
             input.value = ""; // Reset input value
@@ -1818,7 +1815,7 @@ function LuarKotaHotelInit() {
 
     function resetAllHotelForms() {
         const forms = hotelFormsContainer.querySelectorAll(
-            '[id^="hotel-form-"]'
+            '[id^="hotel-form-"]',
         );
         forms.forEach((form, index) => {
             resetHotelFields(form);
@@ -2019,20 +2016,19 @@ function DalamKotaHotelInit() {
     let formHotelCountDalamKota = 1;
     const maxHotelForms = 5;
     const hotelFormsContainer = document.getElementById(
-        "hotel_forms_container_dalam_kota"
+        "hotel_forms_container_dalam_kota",
     );
     const hotelCheckbox = document.getElementById("hotelCheckboxDalamKota");
     const addHotelButton = document.querySelector(".add-hotel-btn-dalam-kota");
 
     function updateFormNumbers() {
         const forms = hotelFormsContainer.querySelectorAll(
-            '[id^="hotel-form-dalam-kota-"]'
+            '[id^="hotel-form-dalam-kota-"]',
         );
         forms.forEach((form, index) => {
             const formNumber = index + 1;
-            form.querySelector(
-                ".h5.text-uppercase b"
-            ).textContent = `Hotel ${formNumber}`;
+            form.querySelector(".h5.text-uppercase b").textContent =
+                `Hotel ${formNumber}`;
             form.id = `hotel-form-dalam-kota-${formNumber}`;
             form.querySelector(".remove-hotel-btn-dalam-kota").dataset.formId =
                 formNumber;
@@ -2052,14 +2048,14 @@ function DalamKotaHotelInit() {
             if (element.name) {
                 element.name = element.name.replace(
                     /\[\d*\]/,
-                    `[${formNumber}]`
+                    `[${formNumber}]`,
                 );
             }
             if (element.hasAttribute("onchange")) {
                 const onchangeValue = element.getAttribute("onchange");
                 const updatedOnchangeValue = onchangeValue.replace(
                     /\d+/,
-                    formNumber
+                    formNumber,
                 );
                 element.setAttribute("onchange", updatedOnchangeValue);
             }
@@ -2070,7 +2066,7 @@ function DalamKotaHotelInit() {
         addHotelButton.style.display =
             formHotelCountDalamKota < maxHotelForms ? "inline-block" : "none";
         const removeButtons = hotelFormsContainer.querySelectorAll(
-            ".remove-hotel-btn-dalam-kota"
+            ".remove-hotel-btn-dalam-kota",
         );
         removeButtons.forEach((button) => {
             button.style.display =
@@ -2080,7 +2076,7 @@ function DalamKotaHotelInit() {
 
     function resetHotelFields(container) {
         const inputs = container.querySelectorAll(
-            'input[type="text"], input[type="number"], input[type="date"], input[type="time"], textarea'
+            'input[type="text"], input[type="number"], input[type="date"], input[type="time"], textarea',
         );
         inputs.forEach((input) => {
             input.value = "";
@@ -2097,7 +2093,7 @@ function DalamKotaHotelInit() {
 
     function resetAllHotelForms() {
         const forms = hotelFormsContainer.querySelectorAll(
-            '[id^="hotel-form-dalam-kota-"]'
+            '[id^="hotel-form-dalam-kota-"]',
         );
         forms.forEach((form, index) => {
             resetHotelFields(form);
@@ -2298,7 +2294,7 @@ function DalamKotaHotelInit() {
 function handleTaksiForms() {
     const taksiCheckbox = document.getElementById("taksiCheckbox");
     const taksiCheckboxDalamKota = document.getElementById(
-        "taksiCheckboxDalamKota"
+        "taksiCheckboxDalamKota",
     );
     const taksiDiv = document.getElementById("taksi_div");
     const taksiDivDalamKota = document.getElementById("taksi_div_dalam_kota");
@@ -2405,22 +2401,22 @@ document.addEventListener("DOMContentLoaded", handleCaForms);
 function resetFieldsPerdiem() {
     // Per Diem-related fields
     const companyBtPerdiemFields = document.getElementsByName(
-        "company_bt_perdiem[]"
+        "company_bt_perdiem[]",
     );
     const locationBtPerdiemFields = document.getElementsByName(
-        "location_bt_perdiem[]"
+        "location_bt_perdiem[]",
     );
     const nominalBtPerdiemFields = document.getElementsByName(
-        "nominal_bt_perdiem[]"
+        "nominal_bt_perdiem[]",
     );
     const otherLocationBtPerdiemFields = document.getElementsByName(
-        "other_location_bt_perdiem[]"
+        "other_location_bt_perdiem[]",
     );
     const startBtPerdiemFields =
         document.getElementsByName("start_bt_perdiem[]");
     const endBtPerdiemFields = document.getElementsByName("end_bt_perdiem[]");
     const totalDaysBtPerdiemFields = document.getElementsByName(
-        "total_days_bt_perdiem[]"
+        "total_days_bt_perdiem[]",
     );
     const totalBtPerdiem = document.getElementsByName("total_bt_perdiem");
 
@@ -2447,13 +2443,13 @@ function resetFieldsEntertain() {
     const feeEntFields = document.getElementsByName("enter_fee_e_detail[]");
     const nameEntFields = document.getElementsByName("rname_e_relation[]");
     const positionEntFields = document.getElementsByName(
-        "rposition_e_relation[]"
+        "rposition_e_relation[]",
     );
     const companyEntFields = document.getElementsByName(
-        "rcompany_e_relation[]"
+        "rcompany_e_relation[]",
     );
     const purposeEntFields = document.getElementsByName(
-        "rpurpose_e_relation[]"
+        "rpurpose_e_relation[]",
     );
     const totalEntField = document.getElementsByName("total_ent_detail")[0];
     const checkboxEntGroups = [
@@ -2512,18 +2508,18 @@ function resetFields() {
     const tanggalBtMeals = document.getElementsByName("tanggal_bt_meals[]");
     const nominalBtMeals = document.getElementsByName("nominal_bt_meals[]");
     const keteranganBtMeals = document.getElementsByName(
-        "keterangan_bt_meals[]"
+        "keterangan_bt_meals[]",
     );
     const totalBtMeals = document.getElementsByName("total_bt_meals");
     const transportDateFields = document.getElementsByName(
-        "tanggal_bt_transport[]"
+        "tanggal_bt_transport[]",
     );
     const companyCodeFields = document.getElementsByName(
-        "company_bt_transport[]"
+        "company_bt_transport[]",
     );
     const nominalFields = document.getElementsByName("nominal_bt_transport[]");
     const informationFields = document.getElementsByName(
-        "keterangan_bt_transport[]"
+        "keterangan_bt_transport[]",
     );
     const totalBtTrans = document.getElementsByName("total_bt_transport");
 
@@ -2531,16 +2527,16 @@ function resetFields() {
     const startDateFields = document.getElementsByName("start_bt_penginapan[]");
     const endDateFields = document.getElementsByName("end_bt_penginapan[]");
     const totalDaysFields = document.getElementsByName(
-        "total_days_bt_penginapan[]"
+        "total_days_bt_penginapan[]",
     );
     const hotelNameFields = document.getElementsByName(
-        "hotel_name_bt_penginapan[]"
+        "hotel_name_bt_penginapan[]",
     );
     const companyPenginapanFields = document.getElementsByName(
-        "company_bt_penginapan[]"
+        "company_bt_penginapan[]",
     );
     const nominalPenginapanFields = document.getElementsByName(
-        "nominal_bt_penginapan[]"
+        "nominal_bt_penginapan[]",
     );
     const totalPenginapan = document.getElementsByName("total_bt_penginapan");
 
@@ -2548,7 +2544,7 @@ function resetFields() {
     const tanggalBtLainnya = document.getElementsByName("tanggal_bt_lainnya[]");
     const nominalBtLainnya = document.getElementsByName("nominal_bt_lainnya[]");
     const keteranganBtLainnya = document.getElementsByName(
-        "keterangan_bt_lainnya[]"
+        "keterangan_bt_lainnya[]",
     );
     const totalBtLainnya = document.getElementsByName("total_bt_lainnya");
 
@@ -2880,7 +2876,7 @@ document.getElementById("end_date").addEventListener("change", function () {
     const year = declarationEstimateDate.getFullYear();
     const month = String(declarationEstimateDate.getMonth() + 1).padStart(
         2,
-        "0"
+        "0",
     );
     const day = String(declarationEstimateDate.getDate()).padStart(2, "0");
 

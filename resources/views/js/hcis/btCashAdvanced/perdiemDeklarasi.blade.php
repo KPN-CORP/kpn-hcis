@@ -193,6 +193,7 @@
         const totalDaysInput = formGroup.querySelector("input.total-days-perdiem");
         const perdiemInput = document.getElementById("perdiem");
         const groupCompany = document.getElementById("group_company");
+        const is_overseas = document.getElementById("is_overseas");
         const allowanceInput = formGroup.querySelector(
             'input[name="nominal_bt_perdiem[]"]'
         );
@@ -240,7 +241,14 @@
                     allowance *= 0.5;
                 }
 
-                allowanceInput.value = formatNumberPerdiem(allowance);
+                if (totalDays >= 30) {
+                    allowance *= 0.75;
+                }
+
+                if(is_overseas.value==='F'){
+                    allowanceInput.value = formatNumberPerdiem(allowance);
+                }
+                
                 calculateTotalNominalBTPerdiem();
             } else {
                 totalDaysInput.value = 0;
