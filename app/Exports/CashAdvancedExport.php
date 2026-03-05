@@ -293,38 +293,73 @@ class CashAdvancedExport implements
 
             // Tambahkan data kategori dengan nomor urut
             $categoryData->each(function ($row) use ($data) {
-                $data->push([
-                    "Type_CA" => "", // Nomor urut
-                    "Employee ID" => $row->employee_id,
-                    "Employee Name" => $row->fullname,
-                    "Dept Head" => $row->approval1,
-                    "Div Head" => $row->approval2,
-                    "Unit" => $row->unit,
-                    "Level Code" => $row->contribution_level_code,
-                    "No CA" => $row->no_ca,
-                    "CA Status" => $row->ca_status,
-                    "No SPPD" => $row->no_sppd,
-                    "Travel Status" => $row->travel_status,
-                    "Total CA" => (string) ($row->total_ca ?? 0),
-                    "Date Required" => $row->formatted_date_required,
-                    "Created At" => $row->formatted_created_at,
-                    "Start Date" => $row->formatted_start_date,
-                    "End Date" => $row->formatted_end_date,
-                    "Declare Estimate" => $row->formatted_declare_estimate,
-                    "Total Settlement" => (string) ($row->total_real ?? 0),
-                    "Balance" =>
-                        (string) ($row->ca_transactions_total_cost ?? 0),
-                    "Approval Stat" => $row->approval_status,
-                    "Approval Sett" => $row->approval_sett,
-                    "Approval Ext" => $row->approval_extend,
-                    "Days" => $row->days_difference,
-                    "Overdue" => $row->overdue_status,
-                    "CA Adjust" => $row->total_ca_adjusted,
-                    "CA 6Days" => $row->total_ca_within_6_days,
-                    "CA 14Days" => $row->total_ca_within_14_days,
-                    "CA 30Days" => $row->total_ca_within_30_days,
-                    "CA 99Days" => $row->total_ca_within_99_days,
-                ]);
+                if (strtoupper($row->ca_status) == "DONE") {
+                    $data->push([
+                        "Type_CA" => "", // Nomor urut
+                        "Employee ID" => $row->employee_id,
+                        "Employee Name" => $row->fullname,
+                        "Dept Head" => $row->approval1,
+                        "Div Head" => $row->approval2,
+                        "Unit" => $row->unit,
+                        "Level Code" => $row->contribution_level_code,
+                        "No CA" => $row->no_ca,
+                        "CA Status" => $row->ca_status,
+                        "No SPPD" => $row->no_sppd,
+                        "Travel Status" => $row->travel_status,
+                        "Total CA" => (string) ($row->total_ca ?? 0),
+                        "Date Required" => $row->formatted_date_required,
+                        "Created At" => $row->formatted_created_at,
+                        "Start Date" => $row->formatted_start_date,
+                        "End Date" => $row->formatted_end_date,
+                        "Declare Estimate" => $row->formatted_declare_estimate,
+                        "Total Settlement" => (string) ($row->total_real ?? 0),
+                        "Balance" =>
+                            (string) ($row->ca_transactions_total_cost ?? 0),
+                        "Approval Stat" => $row->approval_status,
+                        "Approval Sett" => $row->approval_sett,
+                        "Approval Ext" => $row->approval_extend,
+                        "Days" => "",
+                        "Overdue" => "",
+                        "CA Adjust" => "",
+                        "CA 6Days" => "",
+                        "CA 14Days" => "",
+                        "CA 30Days" => "",
+                        "CA 99Days" => "",
+                    ]);
+                } else {
+                    $data->push([
+                        "Type_CA" => "", // Nomor urut
+                        "Employee ID" => $row->employee_id,
+                        "Employee Name" => $row->fullname,
+                        "Dept Head" => $row->approval1,
+                        "Div Head" => $row->approval2,
+                        "Unit" => $row->unit,
+                        "Level Code" => $row->contribution_level_code,
+                        "No CA" => $row->no_ca,
+                        "CA Status" => $row->ca_status,
+                        "No SPPD" => $row->no_sppd,
+                        "Travel Status" => $row->travel_status,
+                        "Total CA" => (string) ($row->total_ca ?? 0),
+                        "Date Required" => $row->formatted_date_required,
+                        "Created At" => $row->formatted_created_at,
+                        "Start Date" => $row->formatted_start_date,
+                        "End Date" => $row->formatted_end_date,
+                        "Declare Estimate" => $row->formatted_declare_estimate,
+                        "Total Settlement" => (string) ($row->total_real ?? 0),
+                        "Balance" =>
+                            (string) ($row->ca_transactions_total_cost ?? 0),
+                        "Approval Stat" => $row->approval_status,
+                        "Approval Sett" => $row->approval_sett,
+                        "Approval Ext" => $row->approval_extend,
+                        "Days" => $row->days_difference,
+                        "Overdue" => $row->overdue_status,
+                        "CA Adjust" => $row->total_ca_adjusted,
+                        "CA 6Days" => $row->total_ca_within_6_days,
+                        "CA 14Days" => $row->total_ca_within_14_days,
+                        "CA 30Days" => $row->total_ca_within_30_days,
+                        "CA 99Days" => $row->total_ca_within_99_days,
+                    ]);
+                }
             });
 
             // Tambahkan baris subtotal setelah data kategori
