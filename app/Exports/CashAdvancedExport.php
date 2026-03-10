@@ -5,6 +5,8 @@ namespace App\Exports;
 use App\Models\CATransaction;
 use App\Models\Employee;
 use App\Models\ca_approval;
+use App\Helpers\CalculateDays as CalculateDaysHelper;
+use App\Helpers\GetCAEstimate as GetCAEstimateHelper;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -190,6 +192,8 @@ class CashAdvancedExport implements
                     DB::raw(
                         "DATE_FORMAT(ca_transactions.declare_estimate, '%d-%M-%Y') as formatted_declare_estimate",
                     ),
+
+                    // OLD LOGIC
                     DB::raw(
                         "DATEDIFF(CURDATE(), ca_transactions.declare_estimate) as days_difference",
                     ),
@@ -217,9 +221,45 @@ class CashAdvancedExport implements
                         WHEN DATEDIFF(CURDATE(), ca_transactions.declare_estimate) BETWEEN 30 AND 999 THEN ca_transactions.total_ca
                         ELSE 0
                     END as total_ca_within_99_days"),
+
+                    // // NEW LOGIC
+                    // // WE COMMEND THIS BECAUSE WE NEED TO CALCULATE THE DIFFERENT DAYS MANUALLY (HOLIDAY EXCLUDED)
+                    // DB::raw(
+                    //     "DATEDIFF(CURDATE(), ca_transactions.declare_estimate) as days_difference",
+                    // ),
+                    // DB::raw("CASE
+                    //     WHEN DATEDIFF(CURDATE(), ca_transactions.declare_estimate) > 0 THEN 'Overdue'
+                    //     ELSE 'Not Overdue'
+                    // END as overdue_status"),
+                    // DB::raw("CASE
+                    //     WHEN DATEDIFF(CURDATE(), ca_transactions.declare_estimate) < 0 THEN ca_transactions.total_ca
+                    //     ELSE 0
+                    // END as total_ca_adjusted"),
+                    // DB::raw("CASE
+                    //     WHEN DATEDIFF(CURDATE(), ca_transactions.declare_estimate) BETWEEN 0 AND 6 THEN ca_transactions.total_ca
+                    //     ELSE 0
+                    // END as total_ca_within_6_days"),
+                    // DB::raw("CASE
+                    //     WHEN DATEDIFF(CURDATE(), ca_transactions.declare_estimate) BETWEEN 7 AND 14 THEN ca_transactions.total_ca
+                    //     ELSE 0
+                    // END as total_ca_within_14_days"),
+                    // DB::raw("CASE
+                    //     WHEN DATEDIFF(CURDATE(), ca_transactions.declare_estimate) BETWEEN 15 AND 30 THEN ca_transactions.total_ca
+                    //     ELSE 0
+                    // END as total_ca_within_30_days"),
+                    // DB::raw("CASE
+                    //     WHEN DATEDIFF(CURDATE(), ca_transactions.declare_estimate) BETWEEN 30 AND 999 THEN ca_transactions.total_ca
+                    //     ELSE 0
+                    // END as total_ca_within_99_days"),
                 )
                 ->whereNull("ca_transactions.deleted_at")
                 ->where("ca_transactions.type_ca", $key);
+
+            // // FOR TRACING
+            // // Trace & Log Raw Query
+            // $sql = $categoryData->toRawSql();
+            // header("Content-Type: text/plain");
+            // die($sql);
 
             // Tambahkan kondisi permission jika ada data di $permissionCompanies
             if (!empty($permissionCompanies)) {
@@ -291,6 +331,7 @@ class CashAdvancedExport implements
                 "Balance" => "",
             ]);
 
+            // OLD LOGIC
             // Tambahkan data kategori dengan nomor urut
             $categoryData->each(function ($row) use ($data) {
                 if (strtoupper($row->ca_status) == "DONE") {
@@ -361,6 +402,126 @@ class CashAdvancedExport implements
                     ]);
                 }
             });
+
+            // // NEW LOGIC
+            // // Tambahkan data kategori dengan nomor urut
+            // $categoryData->each(function ($row) use ($data) {
+            //     $declare_estimate_days_overdue = CalculateDaysHelper::different_days_exclude_holiday(
+            //         $row->declare_estimate,
+            //         now(),
+            //     );
+
+            //     $total_ca = $row->total_ca ?? 0;
+
+            //     $total_ca_adjusted = 0;
+            //     $overdue_status = "Overdue";
+
+            //     if ($declare_estimate_days_overdue < 1) {
+            //         $total_ca_adjusted = $total_ca;
+            //         $overdue_status = "Not Overdue";
+            //     }
+
+            //     $total_ca_within_6_days = 0;
+            //     $total_ca_within_14_days = 0;
+            //     $total_ca_within_30_days = 0;
+            //     $total_ca_within_99_days = 0;
+
+            //     if (
+            //         $declare_estimate_days_overdue >= 0 &&
+            //         $declare_estimate_days_overdue <= 6
+            //     ) {
+            //         $total_ca_within_6_days = $total_ca;
+            //     }
+
+            //     if (
+            //         $declare_estimate_days_overdue >= 7 &&
+            //         $declare_estimate_days_overdue <= 14
+            //     ) {
+            //         $total_ca_within_14_days = $total_ca;
+            //     }
+
+            //     if (
+            //         $declare_estimate_days_overdue >= 15 &&
+            //         $declare_estimate_days_overdue <= 30
+            //     ) {
+            //         $total_ca_within_30_days = $total_ca;
+            //     }
+
+            //     if (
+            //         $declare_estimate_days_overdue >= 30 &&
+            //         $declare_estimate_days_overdue <= 999
+            //     ) {
+            //         $total_ca_within_99_days = $total_ca;
+            //     }
+
+            //     if (strtoupper($row->ca_status) == "DONE") {
+            //         $data->push([
+            //             "Type_CA" => "", // Nomor urut
+            //             "Employee ID" => $row->employee_id,
+            //             "Employee Name" => $row->fullname,
+            //             "Dept Head" => $row->approval1,
+            //             "Div Head" => $row->approval2,
+            //             "Unit" => $row->unit,
+            //             "Level Code" => $row->contribution_level_code,
+            //             "No CA" => $row->no_ca,
+            //             "CA Status" => $row->ca_status,
+            //             "No SPPD" => $row->no_sppd,
+            //             "Travel Status" => $row->travel_status,
+            //             "Total CA" => (string) $total_ca,
+            //             "Date Required" => $row->formatted_date_required,
+            //             "Created At" => $row->formatted_created_at,
+            //             "Start Date" => $row->formatted_start_date,
+            //             "End Date" => $row->formatted_end_date,
+            //             "Declare Estimate" => $row->formatted_declare_estimate,
+            //             "Total Settlement" => (string) ($row->total_real ?? 0),
+            //             "Balance" =>
+            //                 (string) ($row->ca_transactions_total_cost ?? 0),
+            //             "Approval Stat" => $row->approval_status,
+            //             "Approval Sett" => $row->approval_sett,
+            //             "Approval Ext" => $row->approval_extend,
+            //             "Days" => "",
+            //             "Overdue" => "",
+            //             "CA Adjust" => "",
+            //             "CA 6Days" => "",
+            //             "CA 14Days" => "",
+            //             "CA 30Days" => "",
+            //             "CA 99Days" => "",
+            //         ]);
+            //     } else {
+            //         $data->push([
+            //             "Type_CA" => "", // Nomor urut
+            //             "Employee ID" => $row->employee_id,
+            //             "Employee Name" => $row->fullname,
+            //             "Dept Head" => $row->approval1,
+            //             "Div Head" => $row->approval2,
+            //             "Unit" => $row->unit,
+            //             "Level Code" => $row->contribution_level_code,
+            //             "No CA" => $row->no_ca,
+            //             "CA Status" => $row->ca_status,
+            //             "No SPPD" => $row->no_sppd,
+            //             "Travel Status" => $row->travel_status,
+            //             "Total CA" => (string) $total_ca,
+            //             "Date Required" => $row->formatted_date_required,
+            //             "Created At" => $row->formatted_created_at,
+            //             "Start Date" => $row->formatted_start_date,
+            //             "End Date" => $row->formatted_end_date,
+            //             "Declare Estimate" => $row->formatted_declare_estimate,
+            //             "Total Settlement" => (string) ($row->total_real ?? 0),
+            //             "Balance" =>
+            //                 (string) ($row->ca_transactions_total_cost ?? 0),
+            //             "Approval Stat" => $row->approval_status,
+            //             "Approval Sett" => $row->approval_sett,
+            //             "Approval Ext" => $row->approval_extend,
+            //             "Days" => $declare_estimate_days_overdue,
+            //             "Overdue" => $overdue_status,
+            //             "CA Adjust" => $total_ca_adjusted,
+            //             "CA 6Days" => $total_ca_within_6_days,
+            //             "CA 14Days" => $total_ca_within_14_days,
+            //             "CA 30Days" => $total_ca_within_30_days,
+            //             "CA 99Days" => $total_ca_within_99_days,
+            //         ]);
+            //     }
+            // });
 
             // Tambahkan baris subtotal setelah data kategori
             $data->push([
