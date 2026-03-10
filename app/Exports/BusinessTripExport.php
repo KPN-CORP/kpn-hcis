@@ -170,7 +170,9 @@ class BusinessTripExport implements
         // NEW LOGIC
 
         // Find related CA data for this BusinessTrip
-        $relatedCAs = $this->caData->where("no_sppd", $businessTrip->no_sppd);
+        $relatedCAs = $this->caData
+            ->where("no_sppd", $businessTrip->no_sppd)
+            ->whereNull("deleted_at");
         $relatedCAFirst =
             $relatedCAs && $relatedCAs->count() > 0
                 ? $relatedCAs->first()
