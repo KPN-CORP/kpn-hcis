@@ -1364,7 +1364,6 @@ class ReimburseController extends Controller
     }
     function cashadvancedUpdate(Request $req, $key)
     {
-        // dd($req);
         $userId = Auth::id();
         $uuid = Str::uuid();
         $model = CATransaction::findByRouteKey($key);
@@ -1765,9 +1764,13 @@ class ReimburseController extends Controller
                 }
             }
 
+            // dd($req, $model->id, $managerL1);
+
             $nextApproval = ca_approval::where("ca_id", $model->id)
                 ->where("employee_id", $managerL1)
                 ->firstOrFail();
+
+            // dd($req);
 
             // $CANotificationLayer = Employee::where('employee_id', $managerL1)->pluck('email')->first();
             $CANotificationLayer = "eriton.dewa@kpn-corp.com";
