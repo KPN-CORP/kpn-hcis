@@ -192,6 +192,9 @@ class CashAdvancedExport implements
                     DB::raw(
                         "DATE_FORMAT(ca_transactions.declare_estimate, '%d-%M-%Y') as formatted_declare_estimate",
                     ),
+                    DB::raw(
+                        "DATE_FORMAT(ca_transactions.paid_date, '%d-%M-%Y') as formatted_paid_date",
+                    ),
 
                     // // OLD LOGIC
                     // DB::raw(
@@ -475,6 +478,7 @@ class CashAdvancedExport implements
                         "Travel Status" => $row->travel_status,
                         "Total CA" => (string) $total_ca,
                         "Date Required" => $row->formatted_date_required,
+                        "Declaration Paid Date" => $row->formatted_paid_date,
                         "Created At" => $row->formatted_created_at,
                         "Start Date" => $row->formatted_start_date,
                         "End Date" => $row->formatted_end_date,
@@ -508,6 +512,7 @@ class CashAdvancedExport implements
                         "Travel Status" => $row->travel_status,
                         "Total CA" => (string) $total_ca,
                         "Date Required" => $row->formatted_date_required,
+                        "Declaration Paid Date" => $row->formatted_paid_date,
                         "Created At" => $row->formatted_created_at,
                         "Start Date" => $row->formatted_start_date,
                         "End Date" => $row->formatted_end_date,
@@ -544,6 +549,7 @@ class CashAdvancedExport implements
                 "Travel Status" => "",
                 "Total CA" => (string) ($totalCA ?? 0),
                 "Date Required" => "",
+                "Declaration Paid Date" => "",
                 "Created At" => "",
                 "Start Date" => "",
                 "End Date" => "",
@@ -568,6 +574,7 @@ class CashAdvancedExport implements
             "Travel Status" => "",
             "Total CA" => (string) ($grandTotalCA ?? 0),
             "Date Required" => "",
+            "Declaration Paid Date" => "",
             "Created At" => "",
             "Start Date" => "",
             "End Date" => "",
@@ -596,6 +603,7 @@ class CashAdvancedExport implements
             "Travel Status",
             "Total CA",
             "CA Paid Date",
+            "Declaration Paid Date",
             "Submitted Date",
             "Start Date",
             "End Date",
