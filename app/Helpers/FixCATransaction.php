@@ -10,8 +10,12 @@ class FixCATransaction
     public static function declare_estimate_include_holiday(
         $id,
         $end_date,
-        $total_day_policy,
+        $total_day_policy = null,
     ) {
+        if (is_null($total_day_policy)) {
+            $total_day_policy = self::TOTAL_DAY_POLICY;
+        }
+
         $ca_transaction = CATransactionModel::where("id", $id)->first();
 
         if (!$ca_transaction) {
@@ -23,7 +27,7 @@ class FixCATransaction
             $total_day_policy,
         );
 
-        $ca_transaction->declare_estimate = $declare_estimate_date;
+        $ca_transaction->declare_estimate = $declare_estimate_date->toDateString();
 
         $ca_transaction->save();
     }
@@ -31,7 +35,7 @@ class FixCATransaction
     public static function declare_estimate_exclude_holiday(
         $id,
         $end_date,
-        $total_day_policy,
+        $total_day_policy = null,
     ) {
         $ca_transaction = CATransactionModel::where("id", $id)->first();
 
@@ -44,7 +48,7 @@ class FixCATransaction
             $total_day_policy,
         );
 
-        $ca_transaction->declare_estimate = $declare_estimate_date;
+        $ca_transaction->declare_estimate = $declare_estimate_date->toDateString();
 
         $ca_transaction->save();
     }

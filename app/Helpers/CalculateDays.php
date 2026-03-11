@@ -29,7 +29,7 @@ class CalculateDays
         $start = Carbon::parse($start_date);
         $end = Carbon::parse($end_date);
 
-        if ($start->gt($end)) {
+        if ($start->gte($end)) {
             return 0;
         }
 
@@ -37,15 +37,18 @@ class CalculateDays
 
         $days = 0;
 
-        while ($start->lte($end)) {
-            if (
-                !$start->isWeekend() &&
-                !in_array($start->toDateString(), $holidays)
-            ) {
-                $days++;
+        while ($start->lt($end)) {
+            $start->addDay();
+
+            if (in_array($start->format("Y-m-d"), $holidays)) {
+                continue;
             }
 
-            $start->addDay();
+            $days++;
+        }
+
+        if ($days > 0) {
+            $days--;
         }
 
         return $days;
