@@ -1,9 +1,15 @@
 <script>
     function calculateTotalBTPerdiem() {
+        // We do dynamic logical process here by doing conditional checking based on the page identifier name.
+        // Because previously, this process is defined on every pages with the same function name, so it's very
+        // redundant and so many duplication.
+
         let total = 0;
         let pageIdentifierName = document.getElementById("page-identifier-name");
         let nominalBTPerdiemInputs = document.querySelectorAll('input[name="nominal_bt_perdiem[]"]');
 
+        // The value `businessTripCAPerdiemForm` SHOULD COME from the business trip add/edit form page,
+        // which is the place where the duplication issue occured.
         if (pageIdentifierName && pageIdentifierName.value == "businessTripCAPerdiemForm") {
             // TODO: THIS IS ONLY FOR CURRENT DUPLICATE ELEMENT ISSUE.
             // IF THE DUPLICATE ISSUE FIXED, CHANGE THIS BEHAVIOUR
@@ -25,6 +31,9 @@
             input.value = formatNumber(total);
         });
 
+        // This is based on what is the common function to be imported, we detect it automatically by using the conditional checking.
+        // For example: `calculateTotalReimCA` is from `js/hcis/common/reimbursements.blade.php`, which is usually imported on the
+        // Reimbursement page only.
         if (typeof calculateTotalReimCA === "function") {
             calculateTotalReimCA();
         } else if (typeof calculateTotalBTCA === "function") {
@@ -39,104 +48,136 @@
     }
 
     function calculateTotalDaysPerdiem(input) {
-        const formGroup = input.closest(".row").parentElement;
-        const startDateInput = formGroup.querySelector("input.start-perdiem");
-        const endDateInput = formGroup.querySelector("input.end-perdiem");
-        const totalDaysInput = formGroup.querySelector("input.total-days-perdiem");
-        const perdiemInput = document.getElementById("perdiem");
-        const groupCompany = document.getElementById("group_company");
-        const isOverseas = document.getElementById('is_overseas');
-        const allowanceInput = formGroup.querySelector(
-            'input[name="nominal_bt_perdiem[]"]'
-        );
+        // We do dynamic logical process here by doing conditional checking based on the page identifier name.
+        // Because previously, this process is defined on every pages with the same function name, so it's very
+        // redundant and so many duplication.
 
-        const formIndex = formGroup.getAttribute("id").match(/\d+/)[0];
-        // Cek apakah tanggal sudah digunakan di form lain
-        if (isDateUsed(startDateInput.value, endDateInput.value, formIndex)) {
-            Swal.fire({
-                icon: "error",
-                title: "Date has been used",
-                text: "Please choose another date!",
-                timer: 2000,
-                confirmButtonColor: "#AB2F2B",
-                confirmButtonText: "OK",
-            });
-            startDateInput.value = "";
-            endDateInput.value = "";
-            return;
-        }
+        let pageIdentifierName = document.getElementById("page-identifier-name");
 
-        if (startDateInput.value && endDateInput.value) {
+        // The value `businessTripApprovalDetailForm` SHOULD COME from the business trip approval detail form page,
+        // which is triggered by the `Àct` button on the `pending` BT status (not approval).
+        if (pageIdentifierName && pageIdentifierName.value == "businessTripApprovalDetailForm") {
+            const formGroup = input.closest('.mb-2').parentElement;
+            const startDateInput = formGroup.querySelector('input[name="start_bt_perdiem[]"]');
+            const endDateInput = formGroup.querySelector('input[name="end_bt_perdiem[]"]');
+
             const startDate = new Date(startDateInput.value);
             const endDate = new Date(endDateInput.value);
 
-            // console.log("Group Company:", groupCompany.value);
+            if (!isNaN(startDate) && !isNaN(endDate)) {
+                if (startDate > endDate) {
+                    alert('End date cannot be earlier than start date.');
+                    endDateInput.value = ''; // Clear the end date field
+                    formGroup.querySelector('input[name="total_days_bt_perdiem[]"]').value = 0;
+                    return; // Exit the function to prevent further calculation
+                }
 
-            if (!isNaN(startDate) && !isNaN(endDate) && startDate <= endDate) {
                 const diffTime = Math.abs(endDate - startDate);
-                const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                totalDaysInput.value = totalDays;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                formGroup.querySelector('input[name="total_days_bt_perdiem[]"]').value = diffDays;
+            } else {
+                formGroup.querySelector('input[name="total_days_bt_perdiem[]"]').value = 0;
+            }
+        } else {
+            const formGroup = input.closest(".row").parentElement;
+            const startDateInput = formGroup.querySelector("input.start-perdiem");
+            const endDateInput = formGroup.querySelector("input.end-perdiem");
+            const totalDaysInput = formGroup.querySelector("input.total-days-perdiem");
+            const perdiemInput = document.getElementById("perdiem");
+            const groupCompany = document.getElementById("group_company");
+            const isOverseas = document.getElementById('is_overseas');
+            const allowanceInput = formGroup.querySelector(
+                'input[name="nominal_bt_perdiem[]"]'
+            );
 
-                const perdiem = parseFloat(perdiemInput.value) || 0;
-                let allowance = totalDays * perdiem;
+            const formIndex = formGroup.getAttribute("id").match(/\d+/)[0];
+            // Cek apakah tanggal sudah digunakan di form lain
+            if (isDateUsed(startDateInput.value, endDateInput.value, formIndex)) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Date has been used",
+                    text: "Please choose another date!",
+                    timer: 2000,
+                    confirmButtonColor: "#AB2F2B",
+                    confirmButtonText: "OK",
+                });
+                startDateInput.value = "";
+                endDateInput.value = "";
+                return;
+            }
 
-                const locationSelect = formGroup.querySelector(
-                    'select[name="location_bt_perdiem[]"]'
-                );
-                const otherLocationInput = formGroup.querySelector(
-                    'input[name="other_location_bt_perdiem[]"]'
-                );
+            if (startDateInput.value && endDateInput.value) {
+                const startDate = new Date(startDateInput.value);
+                const endDate = new Date(endDateInput.value);
 
-                if (groupCompany && groupCompany.value !== "Plantations") {
-                    allowance *= 1;
-                } else if (
-                    locationSelect.value === "Others" ||
-                    otherLocationInput.value.trim() !== ""
-                ) {
-                    allowance *= 1;
+                // console.log("Group Company:", groupCompany.value);
+
+                if (!isNaN(startDate) && !isNaN(endDate) && startDate <= endDate) {
+                    const diffTime = Math.abs(endDate - startDate);
+                    const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                    totalDaysInput.value = totalDays;
+
+                    const perdiem = parseFloat(perdiemInput.value) || 0;
+                    let allowance = totalDays * perdiem;
+
+                    const locationSelect = formGroup.querySelector(
+                        'select[name="location_bt_perdiem[]"]'
+                    );
+                    const otherLocationInput = formGroup.querySelector(
+                        'input[name="other_location_bt_perdiem[]"]'
+                    );
+
+                    if (groupCompany && groupCompany.value !== "Plantations") {
+                        allowance *= 1;
+                    } else if (
+                        locationSelect.value === "Others" ||
+                        otherLocationInput.value.trim() !== ""
+                    ) {
+                        allowance *= 1;
+                    } else {
+                        allowance *= 0.5;
+                    }
+
+                    if (totalDays >= 30) {
+                        allowance *= 0.75;
+                    }
+
+                    if(isOverseas && isOverseas.checked){
+
+                    }else{
+                        allowanceInput.value = formatNumberPerdiem(allowance);
+                    }
+
+                    calculateTotalBTPerdiem();
+
+                    if (typeof isCADecPerdiem !== "undefined" && isCADecPerdiem) {
+                        calculateTotalNominalBTBalance();
+                    }
                 } else {
-                    allowance *= 0.5;
-                }
-
-                if (totalDays >= 30) {
-                    allowance *= 0.75;
-                }
-
-                if(isOverseas && isOverseas.checked){
-
-                }else{
-                    allowanceInput.value = formatNumberPerdiem(allowance);
-                }
-
-                calculateTotalBTPerdiem();
-
-                if (typeof isCADecPerdiem !== "undefined" && isCADecPerdiem) {
-                    calculateTotalNominalBTBalance();
+                    totalDaysInput.value = 0;
+                    allowanceInput.value = 0;
                 }
             } else {
                 totalDaysInput.value = 0;
                 allowanceInput.value = 0;
             }
-        } else {
-            totalDaysInput.value = 0;
-            allowanceInput.value = 0;
-        }
 
-        // Cek apakah data Perdiem untuk index ini sudah ada, jika ada update, jika belum tambahkan
-        const existingPerdiemIndex = perdiemData.findIndex(
-            (data) => data.index === formIndex
-        );
+            // Cek apakah data Perdiem untuk index ini sudah ada, jika ada update, jika belum tambahkan
+            const existingPerdiemIndex = perdiemData.findIndex(
+                (data) => data.index === formIndex
+            );
 
-        if (existingPerdiemIndex !== -1) {
-            // Jika ada, perbarui data di array
-            perdiemData[existingPerdiemIndex].startDate = startDateInput.value;
-            perdiemData[existingPerdiemIndex].endDate = endDateInput.value;
-        } else {
-            perdiemData.push({
-                index: formIndex,
-                startDate: startDateInput.value,
-                endDate: endDateInput.value,
-            });
+            if (existingPerdiemIndex !== -1) {
+                // Jika ada, perbarui data di array
+                perdiemData[existingPerdiemIndex].startDate = startDateInput.value;
+                perdiemData[existingPerdiemIndex].endDate = endDateInput.value;
+            } else {
+                perdiemData.push({
+                    index: formIndex,
+                    startDate: startDateInput.value,
+                    endDate: endDateInput.value,
+                });
+            }
         }
     }
 
