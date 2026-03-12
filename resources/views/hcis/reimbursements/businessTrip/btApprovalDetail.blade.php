@@ -28,6 +28,7 @@
 @endsection
 
 @section('content')
+    <input id="page-identifier-name" value="businessTripApprovalDetailForm" type="hidden" disabled>
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
@@ -648,6 +649,9 @@
 
     <!-- JavaScript Part -->
     {{-- <script src="{{ asset('/js/editBusinessTrip.js') }}"></script> --}}
+    @include('js.hcis.common.perdiem')
+    @include('js.hcis.common.businessTrip')
+    @include('js.hcis.common.req')
     @include('js.hcis.editBusinessTrip')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
@@ -1550,20 +1554,21 @@
                 } else {
                     input.value = formatNumber(0);
                 }
-                calculateTotalNominalBTPerdiem();
+                calculateTotalBTPerdiem();
                 calculateTotalNominalBTTransport();
                 calculateTotalNominalBTPenginapan();
                 calculateTotalNominalBTLainnya();
-                calculateTotalNominalBTTotal();
+                calculateTotalBTCA();
             }
 
-            function calculateTotalNominalBTPerdiem() {
-                let total = 0;
-                document.querySelectorAll('input[name="nominal_bt_perdiem[]"]').forEach(input => {
-                    total += parseNumber(input.value);
-                });
-                document.querySelector('input[name="total_bt_perdiem[]"]').value = formatNumber(total);
-            }
+            // WE COMMEND THIS TO AVOID DUPLICATION
+            // function calculateTotalNominalBTPerdiem() {
+            //     let total = 0;
+            //     document.querySelectorAll('input[name="nominal_bt_perdiem[]"]').forEach(input => {
+            //         total += parseNumber(input.value);
+            //     });
+            //     document.querySelector('input[name="total_bt_perdiem[]"]').value = formatNumber(total);
+            // }
 
             function calculateTotalNominalBTTransport() {
                 let total = 0;
@@ -1589,46 +1594,48 @@
                 document.querySelector('input[name="total_bt_lainnya[]"]').value = formatNumber(total);
             }
 
-            function calculateTotalNominalBTTotal() {
-                let total = 0;
-                document.querySelectorAll('input[name="total_bt_perdiem[]"]').forEach(input => {
-                    total += parseNumber(input.value);
-                });
-                document.querySelectorAll('input[name="total_bt_transport[]"]').forEach(input => {
-                    total += parseNumber(input.value);
-                });
-                document.querySelectorAll('input[name="total_bt_penginapan[]"]').forEach(input => {
-                    total += parseNumber(input.value);
-                });
-                document.querySelectorAll('input[name="total_bt_lainnya[]"]').forEach(input => {
-                    total += parseNumber(input.value);
-                });
-                document.querySelector('input[name="totalca"]').value = formatNumber(total);
-            }
+            // WE COMMEND THIS TO AVOID DUPLICATION
+            // function calculateTotalNominalBTTotal() {
+            //     let total = 0;
+            //     document.querySelectorAll('input[name="total_bt_perdiem[]"]').forEach(input => {
+            //         total += parseNumber(input.value);
+            //     });
+            //     document.querySelectorAll('input[name="total_bt_transport[]"]').forEach(input => {
+            //         total += parseNumber(input.value);
+            //     });
+            //     document.querySelectorAll('input[name="total_bt_penginapan[]"]').forEach(input => {
+            //         total += parseNumber(input.value);
+            //     });
+            //     document.querySelectorAll('input[name="total_bt_lainnya[]"]').forEach(input => {
+            //         total += parseNumber(input.value);
+            //     });
+            //     document.querySelector('input[name="totalca"]').value = formatNumber(total);
+            // }
 
-            function calculateTotalDaysPerdiem(input) {
-                const formGroup = input.closest('.mb-2').parentElement;
-                const startDateInput = formGroup.querySelector('input[name="start_bt_perdiem[]"]');
-                const endDateInput = formGroup.querySelector('input[name="end_bt_perdiem[]"]');
+            // WE COMMEND THIS TO AVOID DUPLICATION
+            // function calculateTotalDaysPerdiem(input) {
+            //     const formGroup = input.closest('.mb-2').parentElement;
+            //     const startDateInput = formGroup.querySelector('input[name="start_bt_perdiem[]"]');
+            //     const endDateInput = formGroup.querySelector('input[name="end_bt_perdiem[]"]');
 
-                const startDate = new Date(startDateInput.value);
-                const endDate = new Date(endDateInput.value);
+            //     const startDate = new Date(startDateInput.value);
+            //     const endDate = new Date(endDateInput.value);
 
-                if (!isNaN(startDate) && !isNaN(endDate)) {
-                    if (startDate > endDate) {
-                        alert('End date cannot be earlier than start date.');
-                        endDateInput.value = ''; // Clear the end date field
-                        formGroup.querySelector('input[name="total_days_bt_perdiem[]"]').value = 0;
-                        return; // Exit the function to prevent further calculation
-                    }
+            //     if (!isNaN(startDate) && !isNaN(endDate)) {
+            //         if (startDate > endDate) {
+            //             alert('End date cannot be earlier than start date.');
+            //             endDateInput.value = ''; // Clear the end date field
+            //             formGroup.querySelector('input[name="total_days_bt_perdiem[]"]').value = 0;
+            //             return; // Exit the function to prevent further calculation
+            //         }
 
-                    const diffTime = Math.abs(endDate - startDate);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                    formGroup.querySelector('input[name="total_days_bt_perdiem[]"]').value = diffDays;
-                } else {
-                    formGroup.querySelector('input[name="total_days_bt_perdiem[]"]').value = 0;
-                }
-            }
+            //         const diffTime = Math.abs(endDate - startDate);
+            //         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            //         formGroup.querySelector('input[name="total_days_bt_perdiem[]"]').value = diffDays;
+            //     } else {
+            //         formGroup.querySelector('input[name="total_days_bt_perdiem[]"]').value = 0;
+            //     }
+            // }
 
 
             function calculateTotalDaysPenginapan(input) {
@@ -1740,8 +1747,8 @@
                 // Attach click event to the remove button
                 newFormBTPerdiem.querySelector('.remove-form').addEventListener('click', function() {
                     newFormBTPerdiem.remove();
-                    calculateTotalNominalBTPerdiem();
-                    calculateTotalNominalBTTotal();
+                    calculateTotalBTPerdiem();
+                    calculateTotalBTCA();
                 });
 
                 // Update the date constraints for the new 'start_bt_perdiem[]' and 'end_bt_perdiem[]' input fields
@@ -1806,7 +1813,7 @@
                 newFormBTTransport.querySelector('.remove-form').addEventListener('click', function() {
                     newFormBTTransport.remove();
                     calculateTotalNominalBTTransport();
-                    calculateTotalNominalBTTotal();
+                    calculateTotalBTCA();
                 });
             }
 
@@ -1881,7 +1888,7 @@
                 newFormBTPenginapan.querySelector('.remove-form').addEventListener('click', function() {
                     newFormBTPenginapan.remove();
                     calculateTotalNominalBTPenginapan();
-                    calculateTotalNominalBTTotal();
+                    calculateTotalBTCA();
                 });
             }
 
@@ -1923,7 +1930,7 @@
                 newFormBTLainnya.querySelector('.remove-form').addEventListener('click', function() {
                     newFormBTLainnya.remove();
                     calculateTotalNominalBTLainnya();
-                    calculateTotalNominalBTTotal();
+                    calculateTotalBTCA();
                 });
             }
 
@@ -1973,11 +1980,11 @@
             });
 
             // Initial calculation for the total nominal
-            calculateTotalNominalBTPerdiem();
+            calculateTotalBTPerdiem();
             calculateTotalNominalBTTransport();
             calculateTotalNominalBTPenginapan();
             calculateTotalNominalBTLainnya();
-            calculateTotalNominalBTTotal();
+            calculateTotalBTCA();
 
             document.getElementById('start_date').addEventListener('change', handleDateChange);
             document.getElementById('end_date').addEventListener('change', handleDateChange);
@@ -2020,11 +2027,11 @@
             document.querySelectorAll('.remove-form').forEach(button => {
                 button.addEventListener('click', function() {
                     this.closest('.mb-2').remove();
-                    calculateTotalNominalBTPerdiem();
+                    calculateTotalBTPerdiem();
                     calculateTotalNominalBTTransport();
                     calculateTotalNominalBTPenginapan();
                     calculateTotalNominalBTLainnya();
-                    calculateTotalNominalBTTotal();
+                    calculateTotalBTCA();
                 });
             });
         });
