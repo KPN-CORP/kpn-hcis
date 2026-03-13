@@ -7031,21 +7031,29 @@ class BusinessTripController extends Controller
     {
         $user = Auth::user();
 
-        $query = BusinessTrip::whereNotIn("status", [
-            "Draft",
-            "Declaration Draft",
-        ])->orderBy("created_at", "desc");
+        // $query = BusinessTrip::whereNotIn("status", [
+        //     "Draft",
+        //     "Declaration Draft",
+        // ])->orderBy("created_at", "desc");
+
+        $query = BusinessTrip::orderBy("created_at", "desc");
 
         $filter = $request->input("filter", "all");
 
         if ($filter === "request") {
-            $query->whereIn("status", ["Pending L1", "Pending L2", "Approved"]);
+            $query->whereIn("status", [
+                "Draft",
+                "Pending L1",
+                "Pending L2",
+                "Approved",
+            ]);
         } elseif ($filter === "declaration") {
             $query->whereIn("status", [
                 "Declaration Approved",
                 "Declaration L1",
                 "Declaration L2",
                 "Approved",
+                "Declaration Draft",
             ]);
         } elseif ($filter === "done") {
             $query->whereIn("status", ["Doc Accepted", "Verified"]);
@@ -7160,22 +7168,30 @@ class BusinessTripController extends Controller
     {
         session(["previous_url" => request()->fullUrl()]);
 
-        $query = BusinessTrip::whereNotIn("status", [
-            "Draft",
-            "Declaration Draft",
-        ])->orderBy("created_at", "desc");
+        // $query = BusinessTrip::whereNotIn("status", [
+        //     "Draft",
+        //     "Declaration Draft",
+        // ])->orderBy("created_at", "desc");
+
+        $query = BusinessTrip::orderBy("created_at", "desc");
 
         $filter = $request->input("filter", "all");
         $startDate = $request->query("start-date");
         $endDate = $request->query("end-date");
 
         if ($filter === "request") {
-            $query->whereIn("status", ["Pending L1", "Pending L2", "Approved"]);
+            $query->whereIn("status", [
+                "Draft",
+                "Pending L1",
+                "Pending L2",
+                "Approved",
+            ]);
         } elseif ($filter === "declaration") {
             $query->whereIn("status", [
                 "Declaration Approved",
                 "Declaration L1",
                 "Declaration L2",
+                "Declaration Draft",
             ]);
         } elseif ($filter === "done") {
             $query->whereIn("status", ["Doc Accepted", "Verified"]);
