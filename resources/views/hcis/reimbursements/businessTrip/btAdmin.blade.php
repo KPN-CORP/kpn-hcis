@@ -360,50 +360,53 @@
                                 </td>
 
                                 <td style="text-align: center; align-content: center">
-                                    <button type="button" class="btn btn-outline-success rounded-pill"
-                                        data-bs-toggle="modal" data-bs-target="#approvalDecModal"
-                                        data-id="{{ $n->id }}" data-sppd="{{ $n->no_sppd }}"
-                                        data-status="{{ $n->status }}"
-                                        data-manager-l1="{{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}"
-                                        data-manager-l2="{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}"
-                                        title="Approval Update">
-                                        <i class="bi bi-list-check"></i>
-                                    </button>
-
+                                    @if ($n->status != 'Draft' && $n->status != 'Declaration Draft')
+                                        <button type="button" class="btn btn-outline-success rounded-pill"
+                                            data-bs-toggle="modal" data-bs-target="#approvalDecModal"
+                                            data-id="{{ $n->id }}" data-sppd="{{ $n->no_sppd }}"
+                                            data-status="{{ $n->status }}"
+                                            data-manager-l1="{{ $managerL1Names[$n->manager_l1_id] ?? 'Unknown' }}"
+                                            data-manager-l2="{{ $managerL2Names[$n->manager_l2_id] ?? 'Unknown' }}"
+                                            title="Approval Update">
+                                            <i class="bi bi-list-check"></i>
+                                        </button>
+                                    @endif
                                 </td>
                                 <td style="text-align: center; align-content: center">
-                                    <form id="deleteForm_{{ $n->id }}" method="POST"
-                                        action="/businessTrip/admin/delete/{{ $n->id }}"
-                                        style="display: inline-block;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <input type="hidden" id="no_sppd_{{ $n->id }}"
-                                            value="{{ $n->no_sppd }}">
-                                        <button type="button"
-                                            class="btn btn-outline-danger rounded-pill mb-1 delete-button"
-                                            data-id="{{ $n->id }}"
-                                            {{ $n->status === 'Diterima' ? 'disabled' : '' }}>
-                                            <i class="bi bi-trash-fill"></i>
-                                        </button>
-                                    </form>
-
-                                    <a href="{{ route('export.admin', ['id' => $n->id, 'types' => 'sppd,ca,tiket,hotel,taksi,mess']) }}"
-                                        class="btn btn-outline-info rounded-pill mb-1">
-                                        <i class="bi bi-download"></i>
-                                    </a>
-
-                                    @php
-                                        $today = \Carbon\Carbon::today()->format('Y-m-d');
-                                    @endphp
-                                    @if ($n->status == 'Doc Accepted' || $n->status == 'Declaration Approved' || $n->status == 'Approved' || $n->status == 'Return/Refund')
-                                        <form method="GET"
-                                            action="{{ route('businessTrip.deklarasi.admin', ['id' => $n->id, 'previous_url' => request()->fullUrl()]) }}"
+                                    @if ($n->status != 'Draft' && $n->status != 'Declaration Draft')
+                                        <form id="deleteForm_{{ $n->id }}" method="POST"
+                                            action="/businessTrip/admin/delete/{{ $n->id }}"
                                             style="display: inline-block;">
-                                            <button type="submit" class="btn btn-outline-success rounded-pill mb-1"
-                                                data-toggle="tooltip" title="Deklarasi">
-                                                <i class="bi bi-card-checklist"></i>
+                                            @csrf
+                                            @method('DELETE')
+                                            <input type="hidden" id="no_sppd_{{ $n->id }}"
+                                                value="{{ $n->no_sppd }}">
+                                            <button type="button"
+                                                class="btn btn-outline-danger rounded-pill mb-1 delete-button"
+                                                data-id="{{ $n->id }}"
+                                                {{ $n->status === 'Diterima' ? 'disabled' : '' }}>
+                                                <i class="bi bi-trash-fill"></i>
                                             </button>
                                         </form>
+
+                                        <a href="{{ route('export.admin', ['id' => $n->id, 'types' => 'sppd,ca,tiket,hotel,taksi,mess']) }}"
+                                            class="btn btn-outline-info rounded-pill mb-1">
+                                            <i class="bi bi-download"></i>
+                                        </a>
+
+                                        @php
+                                            $today = \Carbon\Carbon::today()->format('Y-m-d');
+                                        @endphp
+                                        @if ($n->status == 'Doc Accepted' || $n->status == 'Declaration Approved' || $n->status == 'Approved' || $n->status == 'Return/Refund')
+                                            <form method="GET"
+                                                action="{{ route('businessTrip.deklarasi.admin', ['id' => $n->id, 'previous_url' => request()->fullUrl()]) }}"
+                                                style="display: inline-block;">
+                                                <button type="submit" class="btn btn-outline-success rounded-pill mb-1"
+                                                    data-toggle="tooltip" title="Deklarasi">
+                                                    <i class="bi bi-card-checklist"></i>
+                                                </button>
+                                            </form>
+                                        @endif
                                     @endif
                                 </td>
                             </tr>

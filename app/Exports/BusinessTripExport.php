@@ -361,7 +361,7 @@ class BusinessTripExport implements
             ->applyFromArray($currencyStyle); // For total_cost
 
         // Apply styles to headers at A1:P1
-        $sheet->getStyle("A1:X1")->applyFromArray([
+        $sheet->getStyle("A1:Y1")->applyFromArray([
             "font" => [
                 "bold" => true,
                 "size" => 12,
