@@ -94,6 +94,20 @@ class ApprovalSettingController extends Controller
 
     function approval_deklarasi_update_submit(Request $request)
     {
+        $approvalDeklarasiID = $request->approvalDeklarasiID;
+
+        $groupCompany = $request->input("group_company", []);
+        $company = $request->input("contribution_level_code", []);
+        $location = $request->input("work_area_code", []);
+
+        $data = [
+            "work_area_code" => empty($location) ? null : $location,
+            "group_company" => empty($groupCompany) ? null : $groupCompany,
+            "contribution_level_code" => empty($company) ? null : $company,
+        ];
+
+        $restriction = json_encode($data);
+
         return redirect()
             ->route("approval_setting.deklarasi.view")
             ->with(
@@ -104,6 +118,14 @@ class ApprovalSettingController extends Controller
 
     function approval_deklarasi_delete_submit(Request $request)
     {
+        $approvalDeklarasiID = $request->approvalDeklarasiID;
+
+        $approvalDeklarasi = ApprovalDeklarasi::find($approvalDeklarasiID);
+
+        if ($approvalDeklarasi) {
+            $approvalDeklarasi->delete();
+        }
+
         return redirect()
             ->route("approval_setting.deklarasi.view")
             ->with(
