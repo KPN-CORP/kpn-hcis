@@ -513,7 +513,7 @@
                 "pageLength": 10 // Set default page length
             });
 
-            $('#customsearch').on('keyup', function () {
+            $('#customsearch').on('input', function () {
                 table.search(this.value).draw();
             });
 
