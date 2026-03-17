@@ -117,6 +117,11 @@
                                         <td class="colon" style="border: none;">:</td>
                                         <td class="value" style="border: none;">{{ $transactions->ca_needs }}</td>
                                     </tr>
+                                    <tr>
+                                        <th class="label" style="border: none;">No SPPD</th>
+                                        <td class="colon" style="border: none;">:</td>
+                                        <td class="value" style="border: none;">{{ $transactions->no_sppd }}</td>
+                                    </tr>
                                 </table>
                             </div>
                         </div>
