@@ -410,7 +410,7 @@
                 function createTableHtml(data, title) {
                     var tableHtml = '<h5>' + title + '</h5>';
                     tableHtml += `<div class="table-responsive">
-                                    <table class="table table-sm scheduleTable">
+                                    <table class="table table-sm">
                                         <thead>
                                             <tr>`;
                     var isArray = Array.isArray(data) && data.length > 0;
