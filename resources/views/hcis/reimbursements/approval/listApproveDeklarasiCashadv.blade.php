@@ -118,6 +118,11 @@
                                         <td class="colon" style="border: none;">:</td>
                                         <td class="value" style="border: none;">{{ $transactions->ca_needs }}</td>
                                     </tr>
+                                    <tr>
+                                        <th class="label" style="border: none;">No SPPD</th>
+                                        <td class="colon" style="border: none;">:</td>
+                                        <td class="value" style="border: none;">{{ $transactions->no_sppd != '' ? $transactions->no_sppd : '-' }}</td>
+                                    </tr>
                                 </table>
                             </div>
                         </div>
@@ -1052,9 +1057,9 @@
                                                 @endphp
 
                                                 @foreach ($existingFiles as $file)
-                                                    @php 
+                                                    @php
                                                         // Pastikan path menggunakan format yang benar
-                                                        $file = str_replace('\\', '/', $file); 
+                                                        $file = str_replace('\\', '/', $file);
 
                                                         // Pastikan path sesuai dengan akses storage
                                                         if (str_contains($file, 'uploads/proofs/')) {
@@ -1063,7 +1068,7 @@
                                                             $fileUrl = asset('storage/proofs/' . basename($file));
                                                         }
 
-                                                        $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION)); 
+                                                        $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
                                                     @endphp
 
                                                     <div class="file-preview" data-file="{{ $fileUrl }}" style="position: relative; display: inline-block; margin: 10px;">
