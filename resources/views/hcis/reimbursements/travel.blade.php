@@ -1,194 +1,169 @@
 @extends('layouts_.vertical', ['page_title' => 'Travel'])
 
 @section('css')
-    <style>
-        .menu-card {
-            text-decoration: none;
-            /* Menghapus underline dari link */
-        }
-
-        .card {
-            border: none;
-            /* Menghapus border default card */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            /* Menambahkan shadow */
-            transition: transform 0.3s;
-            /* Menambahkan animasi transisi */
-        }
-
-        .card:hover {
-            transform: translateY(-10px);
-            /* Efek saat di-hover */
-        }
-
-        .card-body {
-            padding: 5px;
-            /* Menambahkan padding pada card body */
-        }
-
-        .card-img {
-            max-width: 100px;
-            /* Mengatur ukuran maksimal gambar */
-            margin: 0 auto;
-            /* Memusatkan gambar */
-            display: block;
-            /* Memastikan gambar menjadi blok */
-        }
-
-        h5 {
-            margin-top: 5px;
-            /* Menambahkan jarak atas pada heading */
-            margin-bottom: 0;
-            /* Menghapus jarak bawah pada heading */
-            color: #333;
-            /* Mengatur warna teks */
-        }
-    </style>
+<style>
+    .menu-card, .admin-inner-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0,0,0,0.03);
+        height: 100%;
+        min-height: 190px;
+    }
+    .menu-card:hover, .admin-inner-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+    }
+    .admin-inner-card:hover {
+        border-color: #AB2F2B;
+    }
+    .menu-icon {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+    }
+    .menu-text {
+        font-size: 14px;
+        font-weight: 600;
+        color: #313a46;
+        line-height: 1.3;
+    }
+    .admin-panel {
+        background: #f8f9fa;
+        border-radius: 16px;
+        border: 1px solid #eef2f7;
+        padding: 24px;
+        margin-top: 30px;
+    }
+    .admin-panel-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #AB2F2B;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+</style>
 @endsection
 
 @section('content')
-    <!-- Begin Page Content -->
-    {{-- {{ "Hallo ".$userId." berasal dari system ".session('system') }} --}}
-    <br>
+<div class="container-fluid py-4">
 
-    <div class="container-fluid">
-        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 row-cols-xxl-8 text-center">
-            <div class="col">
-                <a href="{{ route('businessTrip.approval') }}">
-                    <div class="card" style="height: 200px">
-                        <div class="card-body">
-                            <img src="{{ asset('images/menu/approval.png') }}" alt="logo">
-                            <h5 class="my-3">Approval</h5>
-                        </div> <!-- end card-body-->
-                    </div> <!-- end card-->
-                </a>
-            </div> <!-- end col-->
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-xl-5 g-3">
 
-            <div class="col">
-                <a href="{{ route('businessTrip') }}">
-                    <div class="card" style="height: 200px">
-                        <div class="card-body">
-                            <img src="{{ asset('images/menu/bt.png') }}" alt="logo"
-                                style="width: 100px; height: 100px;">
-                            <h5 class="my-3">Business Travel</h5>
-                        </div> <!-- end card-body-->
-                    </div> <!-- end card-->
-                </a>
-            </div> <!-- end col-->
-
-            <div class="col">
-                <a href="{{ route('ticket') }}">
-                    <div class="card" style="height: 200px">
-                        <div class="card-body">
-                            <img src="{{ asset('images/menu/tkt.png') }}" alt="logo"
-                                style="width: 100px; height: 100px;">
-                            <h5 class="my-3">Ticket</h5>
-                        </div> <!-- end card-body-->
-                    </div> <!-- end card-->
-                </a>
-            </div>
-
-            <div class="col">
-                <a href="{{ route('hotel') }}">
-                    <div class="card" style="height: 200px">
-                        <div class="card-body">
-                            <img src="{{ asset('images/menu/ht.png') }}" alt="logo"
-                                style="width: 100px; height: 100px;">
-                            <h5 class="my-3">Hotel</h5>
-                        </div> <!-- end card-body-->
-                    </div> <!-- end card-->
-                </a>
-            </div>
-
-            @if(!empty(trim(Auth::user()->employee->homebase ?? '')) && (preg_match('/^[4-9]/', $jobLevel)))
-                <div class="col-md-3">
-                    <a href="{{ route('home-trip') }}">
-                        <div class="card" style="height: 200px">
-                            <div class="card-body">
-                                <img src="{{ asset('images/menu/home-trip.png') }}" alt="logo"
-                                    style="width: 100px; height: 100px; border-radius: 100px;">
-                                <h5 class="my-3">Home Trip</h5>
-                            </div> <!-- end card-body-->
-                        </div> <!-- end card-->
-                    </a>
-                </div><!-- end col-->
-            @endif
-        </div> <!-- end row -->
-
-        {{-- HR ADMIN --}}
-        @if (auth()->check() &&
-                (auth()->user()->can('report_hcis_bt') ||
-                    auth()->user()->can('report_hcis_ht') ||
-                    auth()->user()->can('report_hcis_tkt') ||
-                    auth()->user()->can('report_hcis_htl')))
-            <div style="display: flex; align-items: center; margin: 20px 0;">
-                <hr style="flex-grow: 1; border: none; border-top: 1px solid #ddd; margin: 0;">
-                <span style="padding: 0 20px; font-weight: bold;">Admin</span>
-                <hr style="flex-grow: 1; border: none; border-top: 1px solid #ddd; margin: 0;">
-            </div>
-        @endif
-        {{-- END HR ADMIN --}}
-
-        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 row-cols-xxl-8 text-center">
-            @if (auth()->check())
-                @can('report_hcis_bt')
-                    <div class="col-md-3">
-                        <a href="{{ route('businessTrip.admin') }}">
-                            <div class="card" style="height: 200px">
-                                <div class="card-body">
-                                    <img src="/images/menu/report.png" alt="logo">
-                                    <h5 class="my-3">Business Travel (Admin)</h5>
-                                </div> <!-- end card-body-->
-                            </div> <!-- end card-->
-                        </a>
-                    </div>
-                @endcan
-            @endif
-            @if (auth()->check())
-                @can('report_hcis_ht')
-                    <div class="col-md-3">
-                        <a href="{{ route('home-trip.admin') }}">
-                            <div class="card" style="height: 200px">
-                                <div class="card-body">
-                                    <img src="{{ asset('images/menu/report.png') }}" alt="logo"
-                                        style="width: 100px; height: 100px; border-radius: 100px;">
-                                    <h5 class="my-3">Home Trip (Admin)</h5>
-                                </div> <!-- end card-body-->
-                            </div> <!-- end card-->
-                        </a>
-                    </div> <!-- end col-->
-                @endcan
-            @endif
-            @if (auth()->check())
-                @can('report_hcis_tkt')
-                    <div class="col-md-3">
-                        <a href="{{ route('ticket.admin') }}">
-                            <div class="card" style="height: 200px">
-                                <div class="card-body">
-                                    <img src="{{ asset('images/menu/report.png') }}" alt="logo">
-                                    <h5 class="my-3">Ticket (Admin)</h5>
-                                </div> <!-- end card-body-->
-                            </div> <!-- end card-->
-                        </a>
-                    </div> <!-- end col-->
-                @endcan
-            @endif
-            @if (auth()->check())
-                @can('report_hcis_htl')
-                    <div class="col-md-3">
-                        <a href="{{ route('hotel.admin') }}">
-                            <div class="card" style="height: 200px">
-                                <div class="card-body">
-                                    <img src="{{ asset('images/menu/report.png') }}" alt="logo">
-                                    <h5 class="my-3">Hotel (Admin)</h5>
-                                </div> <!-- end card-body-->
-                            </div> <!-- end card-->
-                        </a>
-                    </div> <!-- end col-->
-                @endcan
-            @endif
+        <div class="col">
+            <a href="{{ route('businessTrip.approval') }}" class="text-decoration-none">
+                <div class="menu-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                    <img src="{{ asset('images/menu/approval.png') }}" alt="Approval" class="menu-icon mb-3">
+                    <span class="menu-text">Approval</span>
+                </div>
+            </a>
         </div>
-    @endsection
 
-    @push('scripts')
-    @endpush
+        <div class="col">
+            <a href="{{ route('businessTrip') }}" class="text-decoration-none">
+                <div class="menu-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                    <img src="{{ asset('images/menu/bt.png') }}" alt="Business Travel" class="menu-icon mb-3">
+                    <span class="menu-text">Business Travel</span>
+                </div>
+            </a>
+        </div>
+
+        <div class="col">
+            <a href="{{ route('ticket') }}" class="text-decoration-none">
+                <div class="menu-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                    <img src="{{ asset('images/menu/tkt.png') }}" alt="Ticket" class="menu-icon mb-3">
+                    <span class="menu-text">Ticket</span>
+                </div>
+            </a>
+        </div>
+
+        <div class="col">
+            <a href="{{ route('hotel') }}" class="text-decoration-none">
+                <div class="menu-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                    <img src="{{ asset('images/menu/ht.png') }}" alt="Hotel" class="menu-icon mb-3">
+                    <span class="menu-text">Hotel</span>
+                </div>
+            </a>
+        </div>
+
+        @if(!empty(trim(Auth::user()->employee->homebase ?? '')) && (preg_match('/^[4-9]/', $jobLevel)))
+        <div class="col">
+            <a href="{{ route('home-trip') }}" class="text-decoration-none">
+                <div class="menu-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                    <img src="{{ asset('images/menu/home-trip.png') }}" alt="Home Trip" class="menu-icon mb-3 rounded-circle">
+                    <span class="menu-text">Home Trip</span>
+                </div>
+            </a>
+        </div>
+        @endif
+
+    </div>
+
+    @if (auth()->check() && (auth()->user()->can('report_hcis_bt') || auth()->user()->can('report_hcis_ht') || auth()->user()->can('report_hcis_tkt') || auth()->user()->can('report_hcis_htl')))
+    <div class="admin-panel w-100">
+
+        <div class="admin-panel-title">
+            <i class="ri-shield-user-line fs-4"></i>
+            Menu Admin
+        </div>
+
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-xl-5 g-3">
+
+            @can('report_hcis_bt')
+            <div class="col">
+                <a href="{{ route('businessTrip.admin') }}" class="text-decoration-none">
+                    <div class="admin-inner-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                        <img src="/images/menu/report.png" alt="Report" class="menu-icon mb-3">
+                        <span class="menu-text">Business Travel<br>(Admin)</span>
+                    </div>
+                </a>
+            </div>
+            @endcan
+
+            @can('report_hcis_ht')
+            <div class="col">
+                <a href="{{ route('home-trip.admin') }}" class="text-decoration-none">
+                    <div class="admin-inner-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                        <img src="{{ asset('images/menu/report.png') }}" alt="Report" class="menu-icon mb-3 rounded-circle">
+                        <span class="menu-text">Home Trip<br>(Admin)</span>
+                    </div>
+                </a>
+            </div>
+            @endcan
+
+            @can('report_hcis_tkt')
+            <div class="col">
+                <a href="{{ route('ticket.admin') }}" class="text-decoration-none">
+                    <div class="admin-inner-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                        <img src="{{ asset('images/menu/report.png') }}" alt="Report" class="menu-icon mb-3">
+                        <span class="menu-text">Ticket<br>(Admin)</span>
+                    </div>
+                </a>
+            </div>
+            @endcan
+
+            @can('report_hcis_htl')
+            <div class="col">
+                <a href="{{ route('hotel.admin') }}" class="text-decoration-none">
+                    <div class="admin-inner-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                        <img src="{{ asset('images/menu/report.png') }}" alt="Report" class="menu-icon mb-3">
+                        <span class="menu-text">Hotel<br>(Admin)</span>
+                    </div>
+                </a>
+            </div>
+            @endcan
+
+        </div>
+    </div>
+    @endif
+
+</div>
+@endsection
+
+@push('scripts')
+@endpush

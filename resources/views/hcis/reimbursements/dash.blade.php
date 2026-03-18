@@ -1,166 +1,133 @@
 @extends('layouts_.vertical', ['page_title' => 'Reimbursements'])
 
 @section('css')
+<style>
+    .menu-card, .admin-inner-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0,0,0,0.03);
+        height: 100%;
+        min-height: 190px;
+    }
+    .menu-card:hover, .admin-inner-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+    }
+    .admin-inner-card:hover {
+        border-color: #AB2F2B;
+    }
+    .menu-icon {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+    }
+    .menu-text {
+        font-size: 14px;
+        font-weight: 600;
+        color: #313a46;
+        line-height: 1.3;
+    }
+    .admin-panel {
+        background: #f8f9fa;
+        border-radius: 16px;
+        border: 1px solid #eef2f7;
+        padding: 24px;
+        margin-top: 30px;
+    }
+    .admin-panel-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #AB2F2B;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
 </style>
-    <style>
-        .menu-card {
-            text-decoration: none;
-            /* Menghapus underline dari link */
-        }
-
-        .card {
-            border: none;
-            /* Menghapus border default card */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            /* Menambahkan shadow */
-            transition: transform 0.3s;
-            /* Menambahkan animasi transisi */
-        }
-
-        .card:hover {
-            transform: translateY(-10px);
-            /* Efek saat di-hover */
-        }
-
-        .card-body {
-            padding: 5px;
-            /* Menambahkan padding pada card body */
-        }
-
-        .card-img {
-            max-width: 100px;
-            /* Mengatur ukuran maksimal gambar */
-            margin: 0 auto;
-            /* Memusatkan gambar */
-            display: block;
-            /* Memastikan gambar menjadi blok */
-        }
-
-        h5 {
-            margin-top: 5px;
-            /* Menambahkan jarak atas pada heading */
-            margin-bottom: 0;
-            /* Menghapus jarak bawah pada heading */
-            color: #333;
-            /* Mengatur warna teks */
-        }
-    </style>
 @endsection
 
 @section('content')
-    <!-- Begin Page Content -->
-    {{-- {{ "Hallo ".$userId." berasal dari system ".session('system') }} --}}
-    <br>
+<div class="container-fluid py-4">
 
-    <div class="container-fluid">
-        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 row-cols-xxl-8 text-center">
-            <div class="col">
-                <a href="{{ route('businessTrip.approval') }}">
-                    <div class="card" style="height: 200px">
-                        <div class="card-body">
-                            <img src="{{ asset('images/menu/approval.png') }}" alt="logo">
-                            <h5 class="my-3">Approval</h5>
-                        </div> <!-- end card-body-->
-                    </div> <!-- end card-->
-                </a>
-            </div> <!-- end col-->
-            @if($access_ca=='Y')
-            <div class="col">
-                <a href="{{ route('cashadvanced') }}">
-                    <div class="card" style="height: 200px">
-                        <div class="card-body">
-                            <img src="{{ asset('images/menu/cashadv.png') }}" alt="logo">
-                            <h5 class="my-3">Cash Advanced</h5>
-                        </div> <!-- end card-body-->
-                    </div> <!-- end card-->
-                </a>
-            </div> <!-- end col-->
-            @endif
-            <div class="col">
-                <a href="{{ route('medical') }}">
-                    <div class="card" style="height: 200px">
-                        <div class="card-body">
-                            <img src="{{ asset('images/menu/md.png') }}" alt="logo">
-                            <h5 class="my-3">Medical</h5>
-                        </div> <!-- end card-body-->
-                    </div> <!-- end card-->
-                </a>
-            </div> <!-- end col-->
-        </div> <!-- end row -->
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-xl-5 g-3">
 
-        {{-- HR ADMIN --}}
-        @if (auth()->check() &&
-                (auth()->user()->can('reportca_hcis') ||
-                    auth()->user()->can('report_hcis_md')))
-            <div style="display: flex; align-items: center; margin: 20px 0;">
-                <hr style="flex-grow: 1; border: none; border-top: 1px solid #ddd; margin: 0;">
-                <span style="padding: 0 20px; font-weight: bold;">Admin</span>
-                <hr style="flex-grow: 1; border: none; border-top: 1px solid #ddd; margin: 0;">
-            </div>
+        <div class="col">
+            <a href="{{ route('businessTrip.approval') }}" class="text-decoration-none">
+                <div class="menu-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                    <img src="{{ asset('images/menu/approval.png') }}" alt="Approval" class="menu-icon mb-3">
+                    <span class="menu-text">Approval</span>
+                </div>
+            </a>
+        </div>
+
+        @if($access_ca=='Y')
+        <div class="col">
+            <a href="{{ route('cashadvanced') }}" class="text-decoration-none">
+                <div class="menu-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                    <img src="{{ asset('images/menu/cashadv.png') }}" alt="Cash Advanced" class="menu-icon mb-3">
+                    <span class="menu-text">Cash Advanced</span>
+                </div>
+            </a>
+        </div>
         @endif
-        {{-- END HR ADMIN --}}
 
-        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 row-cols-xxl-8 text-center">
+        <div class="col">
+            <a href="{{ route('medical') }}" class="text-decoration-none">
+                <div class="menu-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                    <img src="{{ asset('images/menu/md.png') }}" alt="Medical" class="menu-icon mb-3">
+                    <span class="menu-text">Medical</span>
+                </div>
+            </a>
+        </div>
+
+    </div>
+
+    @if (auth()->check() && (auth()->user()->can('reportca_hcis') || auth()->user()->can('report_hcis_md')))
+    <div class="admin-panel w-100">
+
+        <div class="admin-panel-title">
+            <i class="ri-shield-user-line fs-4"></i>
+            Menu Admin
+        </div>
+
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-xl-5 g-3">
+
             @if (auth()->check() && $access_ca=='Y')
                 @can('reportca_hcis')
-                    <div class="col-md-3">
-                        <a href="{{ route('cashadvanced.admin') }}">
-                            <div class="card" style="height: 200px">
-                                <div class="card-body">
-                                    <img src="{{ asset('images/menu/report.png') }}" alt="logo">
-                                    <h5 class="my-3">Cash Advanced (Admin)</h5>
-                                </div> <!-- end card-body-->
-                            </div> <!-- end card-->
-                        </a>
-                    </div> <!-- end col-->
+                <div class="col">
+                    <a href="{{ route('cashadvanced.admin') }}" class="text-decoration-none">
+                        <div class="admin-inner-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                            <img src="{{ asset('images/menu/report.png') }}" alt="Report" class="menu-icon mb-3">
+                            <span class="menu-text">Cash Advanced<br>(Admin)</span>
+                        </div>
+                    </a>
+                </div>
                 @endcan
             @endif
 
             @if (auth()->check())
                 @can('report_hcis_md')
-                    <div class="col-md-3">
-                        <a href="{{ route('medical.admin') }}">
-                            <div class="card" style="height: 200px">
-                                <div class="card-body">
-                                    <img src="{{ asset('images/menu/report.png') }}" alt="logo">
-                                    <h5 class="my-3">Medical (Admin)</h5>
-                                </div> <!-- end card-body-->
-                            </div> <!-- end card-->
-                        </a>
-                    </div> <!-- end col-->
+                <div class="col">
+                    <a href="{{ route('medical.admin') }}" class="text-decoration-none">
+                        <div class="admin-inner-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                            <img src="{{ asset('images/menu/report.png') }}" alt="Report" class="menu-icon mb-3">
+                            <span class="menu-text">Medical<br>(Admin)</span>
+                        </div>
+                    </a>
+                </div>
                 @endcan
             @endif
-            {{-- @if (auth()->check())
-                @can('report_hcis_ht')
-                    <div class="col-md-3">
-                        <a href="{{ route('home-trip.admin') }}">
-                            <div class="card" style="height: 200px">
-                                <div class="card-body">
-                                    <img src="{{ asset('images/menu/home-trip.png') }}" alt="logo"
-                                        style="width: 100px; height: 100px; border-radius: 100px;">
-                                    <h5 class="my-3">Home Trip (Admin)</h5>
-                                </div> <!-- end card-body-->
-                            </div> <!-- end card-->
-                        </a>
-                    </div> <!-- end col-->
-                @endcan
-            @endif
-            @if (auth()->check())
-                @can('report_hcis_tkt')
-                    <div class="col-md-3">
-                        <a href="{{ route('ticket.admin') }}">
-                            <div class="card" style="height: 200px">
-                                <div class="card-body">
-                                    <img src="{{ asset('images/menu/tkt.png') }}" alt="logo">
-                                    <h5 class="my-3">Ticket (Admin)</h5>
-                                </div> <!-- end card-body-->
-                            </div> <!-- end card-->
-                        </a>
-                    </div> <!-- end col-->
-                @endcan
-            @endif --}}
-        </div>
-    @endsection
 
-    @push('scripts')
-    @endpush
+        </div>
+    </div>
+    @endif
+
+</div>
+@endsection
+
+@push('scripts')
+@endpush
