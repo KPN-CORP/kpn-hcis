@@ -14,6 +14,12 @@ class ApprovalSetting extends Model
         'company_name',
         'contribution_level_code',
         'work_area',
+        'created_at',
+        'created_by',
+        'updated_at',
+        'updated_by',
+        'deleted_at',
+        'deleted_by'
     ];
 
     protected $table = 'approval_setting';
