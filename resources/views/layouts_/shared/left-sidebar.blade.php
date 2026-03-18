@@ -1,35 +1,53 @@
 <style>
+    html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .leftside-menu .logo {
+        z-index: 1;
+        background-color: #ffffff !important;
+    }
+
+    html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .leftside-menu .side-nav-link:hover,
+    html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .leftside-menu .side-nav-item.active .side-nav-link,
+    html[data-sidenav-size=condensed]:not([data-layout=topnav]) .wrapper .leftside-menu .side-nav-link.active {
+      box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.1);
+    }
+
     .leftside-menu {
         background-color: #ffffff !important;
         border-right: 1px solid #eef2f7;
     }
     .side-nav-link {
         color: #6c757d !important;
+        background-color: rgba(255, 255, 255, 1) !important;
     }
     .side-nav-link i {
         color: #6c757d !important;
+        background-color: rgba(255, 255, 255, 1) !important;
     }
     .side-nav-title {
         color: #98a6ad !important;
+        background-color: rgba(255, 255, 255, 1) !important;
     }
     .side-nav-link:hover,
     .side-nav-item.active .side-nav-link,
     .side-nav-link.active {
         color: #AB2F2B !important;
-        background-color: rgba(171, 47, 43, 0.05) !important;
+        /*background-color: rgba(171, 47, 43, 0.05) !important;*/
+        background-color: rgba(255, 255, 255, 1) !important;
         font-weight: 600;
     }
     .side-nav-link:hover i,
     .side-nav-item.active .side-nav-link i,
     .side-nav-link.active i {
         color: #AB2F2B !important;
+        background-color: rgba(255, 255, 255, 1) !important;
     }
     .side-nav-second-level li a {
         color: #6c757d !important;
+        background-color: rgba(255, 255, 255, 1) !important;
     }
     .side-nav-second-level li a:hover,
     .side-nav-second-level li a.active {
         color: #AB2F2B !important;
+        background-color: rgba(255, 255, 255, 1) !important;
     }
 </style>
 
@@ -46,7 +64,7 @@
     @else
     <a href="{{ Url('/') }}" class="logo text-center">
         <span class="logo-lg">
-            <img src="{{ asset('images/logo-dark_hcis_ori.png')}}" alt="logo">
+            <img src="{{ asset('images/logo-light_hcis_ori.png')}}" alt="logo">
         </span>
         <span class="logo-sm">
             <img src="{{ asset('images/logo-sm_ori.png')}}" alt="small logo">
@@ -92,17 +110,17 @@
                 </a>
                 <div class="collapse" id="sidebarAdminSettings">
                     <ul class="side-nav-second-level">
-                        <li>
-                            <a href="/admin/approval/setting">Approval Setting</a>
+                        <li class="side-nav-item">
+                            <a class="side-nav-link" href="/admin/approval/setting">Approval Setting</a>
                         </li>
                         @can('viewrole')
-                        <li>
-                            <a href="{{ route('roles') }}">Role Setting</a>
+                        <li class="side-nav-item">
+                            <a class="side-nav-link" href="{{ route('roles') }}">Role Setting</a>
                         </li>
                         @endcan
                         @can('viewdesignation')
-                        <li>
-                            <a href="{{ route('designations') }}">Designation</a>
+                        <li class="side-nav-item">
+                            <a class="side-nav-link" href="{{ route('designations') }}">Designation</a>
                         </li>
                         @endcan
                     </ul>
