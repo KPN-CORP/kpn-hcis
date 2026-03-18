@@ -25,7 +25,7 @@ class EmployeeController extends Controller
             'link' => $link,
             'employees' => $employees,
             'locations' => $locations,
-        ]);        
+        ]);
     }
     public function EmployeeInactive()
     {
@@ -68,13 +68,13 @@ class EmployeeController extends Controller
             // Simpan data ke database
             foreach ($employees as $employee) {
                 $existingEmployee = Employee::where('employee_id', $employee['employee_id'])->first();
-    
+
                 if ($existingEmployee) {
                     // Convert the `deleted_at` to date format
                     $deletedAtDate = $existingEmployee->deleted_at ? date('Y-m-d', strtotime($existingEmployee->deleted_at)) : null;
-                    
+
                     if ($deletedAtDate !== $employee['date_of_exit']) {
-                        
+
                         DB::table('employees')
                         ->where('employee_id', $employee['employee_id'])
                         ->update([
@@ -113,16 +113,17 @@ class EmployeeController extends Controller
         ];
 
         // Loop untuk handle multiple requests 0, 1801 , 3601, 5401
-        $startOffsets = [0, 1801];
+        // $startOffsets = [0, 1801];
         $totalSaved = 0;
+        // $start = 0;
 
-        foreach ($startOffsets as $start) {
+        // foreach ($startOffsets as $start) {
             // Data untuk request dengan limit dan start "employee_ids" => ['04125050235']
             $data = [
                 "api_key" => "46313f36ab8a8bc5aad64ff1c80c769a07716d9af8f07850f6ad2465a0c991b4d42e84414b5775ba151e7f2833223bfb1e0ecf49b89c7d6d0f6a6d39231666f8",
                 "datasetKey" => "11f8ded39d3f22e7c71900d90605c7bf8ef211ac94956b07cc2f8c340d61a4528342feb5afc4b9a9db0b980427007db0dd61db52ae857699d80d9c79a28078cc",
-                "limit" => 1800,
-                "start" => $start,
+                // "limit" => 8000,
+                // "start" => $start,
             ];
 
             try {
@@ -134,14 +135,14 @@ class EmployeeController extends Controller
                 // Check response status
                 if ($response->failed()) {
                     Log::error('API request failed', ['status' => $response->status(), 'response' => $response->body()]);
-                    continue; // Lanjutkan iterasi berikutnya
+                    // continue; // Lanjutkan iterasi berikutnya
                 }
 
                 // Parse response
                 $employees = $response->json('employee_data');
                 if (empty($employees)) {
-                    Log::info('No employees data returned from API', ['start' => $start]);
-                    continue;
+                    Log::info('No employees data returned from API', ['start' => 0]);
+                    // continue;
                 }
 
                 Log::info('API response received', ['employee_count' => count($employees)]);
@@ -227,14 +228,14 @@ class EmployeeController extends Controller
                     $totalSaved++;
                 }
             } catch (\Exception $e) {
-                Log::error('Exception occurred during API fetch', ['start' => $start, 'error' => $e->getMessage()]);
+                Log::error('Exception occurred during API fetch', ['start' => 0, 'error' => $e->getMessage()]);
                 // dd('Exception occurred during API fetch', [
                 //     'start' => $start,
                 //     'error' => $e->getMessage(),
                 // ]);
-                continue;
+                // continue;
             }
-        }
+        // }
 
         Log::info('fetchAndStoreEmployees method completed.', ['total_saved' => $totalSaved]);
         return response()->json(['message' => $totalSaved . ' Employees data successfully saved']);
@@ -394,7 +395,7 @@ class EmployeeController extends Controller
                     // Update employees' access_menu to {"goals":1}
                     $this->updateEmployees($schedule, '1');
                 }
-                
+
                 //if ($schedule->end_date == $today) {
                 if (Carbon::parse($schedule->end_date)->addDay()->format('Y-m-d') == $today) {
                     // Update employees' access_menu to {"goals":0}
