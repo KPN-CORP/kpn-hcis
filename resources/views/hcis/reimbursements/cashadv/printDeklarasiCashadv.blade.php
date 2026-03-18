@@ -666,7 +666,7 @@
                     </tr>
                 </table>
             @endif
-            @if (isset($detailCA['detail_meals'] ?? []) && count($declareCA['detail_meals'] ?? []) > 0 && !empty($declareCA['detail_meals'][0]['keterangan']))
+            @if (isset($detailCA['detail_meals']) && count($declareCA['detail_meals'] ?? []) > 0 && !empty($declareCA['detail_meals'][0]['keterangan']))
                 <table class="table-approve">
                     <tr>
                         <th colspan="4"><b>Meals Plan Declaration :</b></th>
