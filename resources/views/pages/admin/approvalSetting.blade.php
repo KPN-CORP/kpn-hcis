@@ -35,30 +35,27 @@
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">Restrict Group Company</label>
                         <select class="form-select form-select-sm select2-multiple" multiple data-placeholder="No Restrictions">
-                            <option value="KPN Corp">KPN Corp</option>
-                            <option value="KPN Plantation">KPN Plantation</option>
-                            <option value="KPN Agribusiness">KPN Agribusiness</option>
-                            <option value="KPN Property">KPN Property</option>
+                            @foreach ($groupCompanies as $groupCompany)
+                              <option value="{{ $groupCompany }}">{{ $groupCompany }}</option>
+                            @endforeach
                         </select>
                     </div>
 
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">Restrict Company</label>
                         <select class="form-select form-select-sm select2-multiple" multiple data-placeholder="No Restrictions">
-                            <option value="PT Agrindo">PT Agrindo</option>
-                            <option value="PT Bintang">PT Bintang</option>
-                            <option value="PT Citra">PT Citra</option>
-                            <option value="PT Damai">PT Damai</option>
+                            @foreach ($companies as $company)
+                              <option value="{{ $company->contribution_level_code }}">{{ $company->contribution_level.' ('.$company->contribution_level_code.')' }}</option>
+                            @endforeach
                         </select>
                     </div>
 
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">Restrict Location</label>
                         <select class="form-select form-select-sm select2-multiple" multiple data-placeholder="No Restrictions">
-                            <option value="Jakarta">Jakarta (HO)</option>
-                            <option value="Sumatra">Sumatra (Site)</option>
-                            <option value="Kalimantan">Kalimantan (Site)</option>
-                            <option value="Sulawesi">Sulawesi (Site)</option>
+                            @foreach ($locations as $location)
+                              <option value="{{ $location->work_area }}">{{ $location->area.' ('.$location->company_name.')' }}</option>
+                            @endforeach
                         </select>
                     </div>
 
