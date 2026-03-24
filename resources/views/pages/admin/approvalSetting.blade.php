@@ -34,7 +34,7 @@
 
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">Restrict Group Company</label>
-                        <select class="form-select form-select-sm select2-multiple" multiple data-placeholder="No Restrictions">
+                        <select class="form-select form-select-sm select2-multiple" name="group_companies" multiple data-placeholder="No Restrictions">
                             @foreach ($group_companies as $group_company)
                               <option value="{{ $group_company }}">{{ $group_company }}</option>
                             @endforeach
@@ -43,7 +43,7 @@
 
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">Restrict Company</label>
-                        <select class="form-select form-select-sm select2-multiple" multiple data-placeholder="No Restrictions">
+                        <select class="form-select form-select-sm select2-multiple" name="contribution_level_codes" multiple data-placeholder="No Restrictions">
                             @foreach ($companies as $company)
                               <option value="{{ $company->contribution_level_code }}">{{ $company->contribution_level.' ('.$company->contribution_level_code.')' }}</option>
                             @endforeach
@@ -52,7 +52,7 @@
 
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">Restrict Location</label>
-                        <select class="form-select form-select-sm select2-multiple" multiple data-placeholder="No Restrictions">
+                        <select class="form-select form-select-sm select2-multiple" name="work_areas" multiple data-placeholder="No Restrictions">
                             @foreach ($locations as $location)
                               <option value="{{ $location->work_area }}">{{ $location->area.' ('.$location->company_name.')' }}</option>
                             @endforeach
@@ -61,7 +61,7 @@
 
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">HCGA</label>
-                        <select class="form-select form-select-sm select2-single" data-placeholder="Select HCGA">
+                        <select class="form-select form-select-sm select2-single" name="hcga_emplyee_id" data-placeholder="Select HCGA">
                             <option value=""></option>
                             @foreach ($hcga_employees as $hcga_employee)
                               <option value="{{ $hcga_employee->employee_id }}">{{ $hcga_employee->fullname.' ('.$hcga_employee->group_company.' - '.$hcga_employee->company_name.')' }}</option>
@@ -71,7 +71,7 @@
 
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">KTU</label>
-                        <select class="form-select form-select-sm select2-single" data-placeholder="Select KTU">
+                        <select class="form-select form-select-sm select2-single" name="ktu_employee_id" data-placeholder="Select KTU">
                             <option value=""></option>
                             @foreach ($ktu_employees as $ktu_employee)
                               <option value="{{ $ktu_employee->employee_id }}">{{ $ktu_employee->fullname.' ('.$ktu_employee->group_company.' - '.$ktu_employee->company_name.')' }}</option>
