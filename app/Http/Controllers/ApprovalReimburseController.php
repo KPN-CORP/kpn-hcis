@@ -75,9 +75,9 @@ class ApprovalReimburseController extends Controller
             });
 
         $fullnames_dec = ca_sett_approval::whereIn('ca_id', collect($ca_transactions_dec)->pluck('id'))
-            ->whereNotIn('approval_status', ['Verified', 'Rejected'])    
-            ->orderBy('created_at', 'desc') 
-            ->orderBy('layer', 'asc') 
+            ->whereNotIn('approval_status', ['Verified', 'Rejected'])
+            ->orderBy('created_at', 'desc')
+            ->orderBy('layer', 'asc')
             ->get()
             ->groupBy('ca_id')
             ->map(function ($approvals) {
@@ -90,9 +90,9 @@ class ApprovalReimburseController extends Controller
                     ];
                 })->values()->toArray();
             });
-        
-        $fullnames_ext = ca_extend::whereIn('ca_id', $ca_transactions_ext->pluck('id'))  
-            ->whereNotIn('approval_status', ['Verified', 'Rejected']) // Menggunakan whereNotIn()    
+
+        $fullnames_ext = ca_extend::whereIn('ca_id', $ca_transactions_ext->pluck('id'))
+            ->whereNotIn('approval_status', ['Verified', 'Rejected']) // Menggunakan whereNotIn()
             ->orderBy('created_at', 'desc') // Urutkan dari tanggal terbaru ke lama
             ->orderBy('layer', 'asc') // Urutkan layer dari kecil ke besar dalam tanggal yang sama
             ->get()
@@ -106,7 +106,7 @@ class ApprovalReimburseController extends Controller
                     ];
                 })->values()->toArray();
             });
-        
+
         $extendData = ca_extend::whereIn('ca_id', $ca_transactions_ext->pluck('id'))
             ->get(['ca_id', 'ext_end_date', 'ext_total_days', 'reason_extend']);
 
@@ -178,10 +178,10 @@ class ApprovalReimburseController extends Controller
         	->whereRaw("FIND_IN_SET(?, approval_medical)", [$employee->employee_id])
         	->where('nama_bisnis', $employee->group_company)
         	->exists();
-        
+
         $accessBisnis = DB::table('master_bisnisunits')
         	->whereRaw("FIND_IN_SET(?, approval_medical)", [$employee->employee_id])
-        	->pluck('nama_bisnis') // Ambil hanya kolom nama_bisnis 
+        	->pluck('nama_bisnis') // Ambil hanya kolom nama_bisnis
         	->toArray();
 
         if ($hasApprovalRights) {
@@ -335,7 +335,7 @@ class ApprovalReimburseController extends Controller
                 $textNotification = "Your Cash Advanced request has been rejected please discuss further with your supervisor :";
                 try {
                     try {
-                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                             null,
                             $caTransaction,
                             $textNotification,
@@ -393,7 +393,7 @@ class ApprovalReimburseController extends Controller
                     if ($CANotificationLayer) {
                         $textNotification = "Your Cash Advanced request has been Approved, please check your request again or can download your submission in the email attachment :";
                         try {
-                            Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                            Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
                                 $textNotification,
@@ -445,7 +445,7 @@ class ApprovalReimburseController extends Controller
 
                     // $pdfContent = $this->cashadvancedDownload (encrypt($caTransaction->id));
                     try {
-                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
                             $textNotification,
@@ -520,7 +520,7 @@ class ApprovalReimburseController extends Controller
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor: ";
                 try {
-                    Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
                         $textNotification,
@@ -573,7 +573,7 @@ class ApprovalReimburseController extends Controller
                     if ($CANotificationLayer) {
                         $textNotification = "Your Cash Advanced request has been Approved, please check your request again or can download your submission in the email attachment: ";
                         try {
-                            Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                            Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
                                 $textNotification,
@@ -625,7 +625,7 @@ class ApprovalReimburseController extends Controller
                         'autoOpen' => 'reject'
                     ]);
                     try {
-                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
                             $textNotification,
@@ -698,7 +698,7 @@ class ApprovalReimburseController extends Controller
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor.: ";
                 try {
-                    Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
                         $textNotification,
@@ -754,7 +754,7 @@ class ApprovalReimburseController extends Controller
                     if ($CANotificationLayer) {
                         $textNotification = "Your Cash Advanced request has been Approved, please check your request again or can download your submission in the email attachment :";
                         try {
-                            Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                            Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
                                 $textNotification,
@@ -788,7 +788,7 @@ class ApprovalReimburseController extends Controller
 
                 // Mengambil email employee di layer berikutnya dan mengirimkan notifikasi
                 $CANotificationLayer = Employee::where('employee_id', $nextApproval->employee_id)->pluck('email')->first();
-                // $CANotificationLayer = "eriton.dewa@kpn-corp.com";
+                // $CANotificationLayer = "dali.kewara@kpn-corp.com";
                 // $CANotificationLayer = "erzie.aldrian02@outlook.com";
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
@@ -807,7 +807,7 @@ class ApprovalReimburseController extends Controller
                         'autoOpen' => 'reject'
                     ]);
                     try {
-                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
                             $textNotification,
@@ -931,7 +931,7 @@ class ApprovalReimburseController extends Controller
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor :";
                 try {
-                    Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
                         $textNotification,
@@ -985,7 +985,7 @@ class ApprovalReimburseController extends Controller
                         $textNotification = "Your Declaration Cash Advanced request has been approved, please check your request again or can download your submission in the email attachment :";
                         $declaration = "Declaration";
                         try {
-                            Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                            Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
                                 $textNotification,
@@ -1036,7 +1036,7 @@ class ApprovalReimburseController extends Controller
                         'autoOpen' => 'reject'
                     ]);
                     try {
-                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
                             $textNotification,
@@ -1103,7 +1103,7 @@ class ApprovalReimburseController extends Controller
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor :";
                 try {
-                    Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
                         $textNotification,
@@ -1156,7 +1156,7 @@ class ApprovalReimburseController extends Controller
                         $textNotification = "Your Declaration Cash Advanced request has been approved, please check your request again or can download your submission in the email attachment :";
                         $declaration = "Declaration";
                         try {
-                            Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                            Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
                                 $textNotification,
@@ -1210,7 +1210,7 @@ class ApprovalReimburseController extends Controller
                         'autoOpen' => 'reject'
                     ]);
                     try {
-                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
                             $textNotification,
@@ -1274,7 +1274,7 @@ class ApprovalReimburseController extends Controller
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor :";
                 try {
-                    Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
                         $textNotification,
@@ -1330,7 +1330,7 @@ class ApprovalReimburseController extends Controller
                         $textNotification = "Your Declaration Cash Advanced request has been approved, please check your request again or can download your submission in the email attachment :";
                         $declaration = "Declaration";
                         try {
-                            Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                            Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
                                 $textNotification,
@@ -1383,7 +1383,7 @@ class ApprovalReimburseController extends Controller
                         'autoOpen' => 'reject'
                     ]);
                     try {
-                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
                             $textNotification,
@@ -1477,7 +1477,7 @@ class ApprovalReimburseController extends Controller
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor :";
                 try {
-                    Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
                         $textNotification,
@@ -1534,7 +1534,7 @@ class ApprovalReimburseController extends Controller
                 if ($CANotificationLayer) {
                     $textNotification = "Your Declaration Cash Advanced request has been approved, please check your request again or can download your submission in the email attachment :";
                     try {
-                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                             null,
                             $caTransaction,
                             $textNotification,
@@ -1582,7 +1582,7 @@ class ApprovalReimburseController extends Controller
                         'autoOpen' => 'reject'
                     ]);
                     try {
-                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
                             $textNotification,
@@ -1646,7 +1646,7 @@ class ApprovalReimburseController extends Controller
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor :";
                 try {
-                    Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
                         $textNotification,
@@ -1704,7 +1704,7 @@ class ApprovalReimburseController extends Controller
                     if ($CANotificationLayer) {
                         $textNotification = "Your Extend Cash Advanced request has been approved, please check your request again or can download your submission in the email attachment :";
                         try {
-                            Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                            Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
                                 $textNotification,
@@ -1756,7 +1756,7 @@ class ApprovalReimburseController extends Controller
                         'autoOpen' => 'reject'
                     ]);
                     try {
-                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
                             $textNotification,
@@ -1823,7 +1823,7 @@ class ApprovalReimburseController extends Controller
             if ($CANotificationLayer) {
                 $textNotification = "Your Cash Advanced request has been rejected, please discuss further with your supervisor :";
                 try {
-                    Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                    Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                         null,
                         $caTransaction,
                         $textNotification,
@@ -1886,7 +1886,7 @@ class ApprovalReimburseController extends Controller
                         $textNotification = "Your Extend Cash Advanced request has been approved, please check your request again or can download your submission in the email attachment:";
                         $declaration = "Extend";
                         try {
-                            Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                            Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                                 null,
                                 $caTransaction,
                                 $textNotification,
@@ -1940,7 +1940,7 @@ class ApprovalReimburseController extends Controller
                         'autoOpen' => 'reject'
                     ]);
                     try {
-                        Mail::to($CANotificationLayer)->bcc('eriton.dewa@kpn-corp.com')->send(new CashAdvancedNotification(
+                        Mail::to($CANotificationLayer)->bcc('dali.kewara@kpn-corp.com')->send(new CashAdvancedNotification(
                             $nextApproval,
                             $caTransaction,
                             $textNotification,
@@ -2059,7 +2059,7 @@ class ApprovalReimburseController extends Controller
 
                 // Send email with all hotel details
                 try {
-                    Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new HotelNotification([
+                    Mail::to($managerEmail)->bcc('dali.kewara@kpn-corp.com')->send(new HotelNotification([
                         'noSppd' => $hotel->no_sppd,
                         'noHtl' => $noHtlList,
                         'namaHtl' => $namaHtl,
@@ -2299,7 +2299,7 @@ class ApprovalReimburseController extends Controller
                 if ($ticket->jns_dinas_tkt == 'Dinas') {
                     // Send email with all hotel details
                     try {
-                        Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new TicketNotification([
+                        Mail::to($managerEmail)->bcc('dali.kewara@kpn-corp.com')->send(new TicketNotification([
                             'noSppd' => $ticket->no_sppd,
                             'noTkt' => $noTktList,
                             'namaPenumpang' => $npTkt,
@@ -2323,7 +2323,7 @@ class ApprovalReimburseController extends Controller
                     }
                 } else {
                     try {
-                        Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new HomeTripNotification([
+                        Mail::to($managerEmail)->bcc('dali.kewara@kpn-corp.com')->send(new HomeTripNotification([
                             'noTkt' => $noTktList,
                             'namaPenumpang' => $npTkt,
                             'dariTkt' => $dariTkt,

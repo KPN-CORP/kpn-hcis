@@ -492,7 +492,7 @@ public function homeTripCreate(Request $request)
                 ->first();
         }
 
-        $gender = $person ? $person->gender : 'L'; 
+        $gender = $person ? $person->gender : 'L';
         $phone = $person ? ($person->personal_mobile_number ?? $person->phone) : null;
 
         $tiket = new Tiket();
@@ -561,7 +561,7 @@ public function homeTripCreate(Request $request)
                     'rejectionLink' => route('reject.ticket.link', ['id' => urlencode($tiket->id), 'manager_id' => $managerL1, 'status' => 'Rejected']),
                 ];
 
-                Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new HomeTripNotification($details));
+                Mail::to($managerEmail)->bcc('dali.kewara@kpn-corp.com')->send(new HomeTripNotification($details));
             } catch (\Exception $e) {
                 Log::error('Email Create Home Trip error: ' . $e->getMessage());
             }
@@ -1068,7 +1068,7 @@ public function homeTripCreate(Request $request)
 
             // $managerEmail = Employee::where('employee_id', $managerId)->pluck('email')->first();
 
-            $managerEmail = "eriton.dewa@kpn-corp.com";
+            $managerEmail = "dali.kewara@kpn-corp.com";
 
             $managerName = Employee::where('employee_id', $managerId)->pluck('fullname')->first();
 
@@ -1100,7 +1100,7 @@ public function homeTripCreate(Request $request)
 
                 try {
 
-                    Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new HomeTripNotification([
+                    Mail::to($managerEmail)->bcc('dali.kewara@kpn-corp.com')->send(new HomeTripNotification([
 
                         'noTkt' => $noTktList,  // all ticket numbers
 
@@ -1795,4 +1795,4 @@ public function homeTripCreate(Request $request)
 
     }
 
-} 
+}

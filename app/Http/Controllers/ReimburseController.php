@@ -1263,7 +1263,7 @@ class ReimburseController extends Controller
             $CANotificationLayer = Employee::where("employee_id", $managerL1)
                 ->pluck("email")
                 ->first();
-            // $CANotificationLayer = "eriton.dewa@kpn-corp.com";
+            // $CANotificationLayer = "dali.kewara@kpn-corp.com";
             $imagePath = public_path("images/kop.jpg");
             $imageContent = file_get_contents($imagePath);
             $base64Image =
@@ -1284,7 +1284,7 @@ class ReimburseController extends Controller
 
                 try {
                     Mail::to($CANotificationLayer)
-                        ->bcc("eriton.dewa@kpn-corp.com")
+                        ->bcc("dali.kewara@kpn-corp.com")
                         ->send(
                             new CashAdvancedNotification(
                                 $nextApproval,
@@ -1773,7 +1773,7 @@ class ReimburseController extends Controller
             // dd($req);
 
             // $CANotificationLayer = Employee::where('employee_id', $managerL1)->pluck('email')->first();
-            $CANotificationLayer = "eriton.dewa@kpn-corp.com";
+            $CANotificationLayer = "dali.kewara@kpn-corp.com";
             $imagePath = public_path("images/kop.jpg");
             $imageContent = file_get_contents($imagePath);
             $base64Image =
@@ -1794,7 +1794,7 @@ class ReimburseController extends Controller
 
                 try {
                     Mail::to($CANotificationLayer)
-                        ->bcc("eriton.dewa@kpn-corp.com")
+                        ->bcc("dali.kewara@kpn-corp.com")
                         ->send(
                             new CashAdvancedNotification(
                                 $nextApproval,
@@ -1958,7 +1958,7 @@ class ReimburseController extends Controller
                 ->firstOrFail();
 
             // $CANotificationLayer = Employee::where('employee_id', $managerL1)->pluck('email')->first();
-            $CANotificationLayer = "eriton.dewa@kpn-corp.com";
+            $CANotificationLayer = "dali.kewara@kpn-corp.com";
             $imagePath = public_path("images/kop.jpg");
             $imageContent = file_get_contents($imagePath);
             $base64Image =
@@ -1980,7 +1980,7 @@ class ReimburseController extends Controller
 
                 try {
                     Mail::to($CANotificationLayer)
-                        ->bcc("eriton.dewa@kpn-corp.com")
+                        ->bcc("dali.kewara@kpn-corp.com")
                         ->send(
                             new CashAdvancedNotification(
                                 $nextApproval,
@@ -2582,7 +2582,7 @@ class ReimburseController extends Controller
             $CANotificationLayer = Employee::where("employee_id", $managerL1)
                 ->pluck("email")
                 ->first();
-            // $CANotificationLayer = "eriton.dewa@kpn-corp.com";
+            // $CANotificationLayer = "dali.kewara@kpn-corp.com";
 
             $imagePath = public_path("images/kop.jpg");
             $imageContent = file_get_contents($imagePath);
@@ -2605,7 +2605,7 @@ class ReimburseController extends Controller
 
                 try {
                     Mail::to($CANotificationLayer)
-                        ->bcc("eriton.dewa@kpn-corp.com")
+                        ->bcc("dali.kewara@kpn-corp.com")
                         ->send(
                             new CashAdvancedNotification(
                                 $nextApproval,
@@ -2956,7 +2956,7 @@ class ReimburseController extends Controller
                 // if ($statusValue == 'Pending L1') {
                 //     $employee = Employee::where('id', $userId)->first();
                 //     $HTLNotificationSubmit = Employee::where('employee_id', $employee->manager_l1_id)->pluck('email')->first();
-                //     // $HTLNotificationSubmit = "eriton.dewa@kpn-corp.com";
+                //     // $HTLNotificationSubmit = "dali.kewara@kpn-corp.com";
                 //     if ($HTLNotificationSubmit) {
                 //         // Kirim email ke pengguna transaksi (employee pada layer terakhir)
                 //         Mail::to($HTLNotificationSubmit)->send(new HotelNotification($hotelData));
@@ -2988,7 +2988,7 @@ class ReimburseController extends Controller
             $managerEmail = Employee::where("employee_id", $managerId)
                 ->pluck("email")
                 ->first();
-            // $managerEmail = "eriton.dewa@kpn-corp.com";
+            // $managerEmail = "dali.kewara@kpn-corp.com";
             $managerName = Employee::where("employee_id", $managerId)
                 ->pluck("fullname")
                 ->first();
@@ -3026,7 +3026,7 @@ class ReimburseController extends Controller
                 // Send email to the manager
                 try {
                     Mail::to($managerEmail)
-                        ->bcc("eriton.dewa@kpn-corp.com")
+                        ->bcc("dali.kewara@kpn-corp.com")
                         ->send(
                             new HotelNotification([
                                 "noSppd" => $req->bisnis_numb,
@@ -3078,7 +3078,7 @@ class ReimburseController extends Controller
                 "manager_l2_id",
             );
             // $managerEmail = Employee::where('employee_id', $managerId)->value('email');
-            $managerEmail = "eriton.dewa@kpn-corp.com";
+            $managerEmail = "dali.kewara@kpn-corp.com";
             $managerName = Employee::where("employee_id", $managerId)->value(
                 "fullname",
             );
@@ -3134,7 +3134,7 @@ class ReimburseController extends Controller
                 // Send email with all hotel details
                 try {
                     Mail::to($managerEmail)
-                        ->bcc("eriton.dewa@kpn-corp.com")
+                        ->bcc("dali.kewara@kpn-corp.com")
                         ->send(
                             new HotelNotification([
                                 "noSppd" => $hotel->no_sppd,
@@ -3465,7 +3465,7 @@ class ReimburseController extends Controller
             $managerEmail = Employee::where("employee_id", $managerId)
                 ->pluck("email")
                 ->first();
-            // $managerEmail = "eriton.dewa@kpn-corp.com";
+            // $managerEmail = "dali.kewara@kpn-corp.com";
             $managerName = Employee::where("employee_id", $managerId)
                 ->pluck("fullname")
                 ->first();
@@ -3503,7 +3503,7 @@ class ReimburseController extends Controller
                 // Send email to the manager
                 try {
                     Mail::to($managerEmail)
-                        ->bcc("eriton.dewa@kpn-corp.com")
+                        ->bcc("dali.kewara@kpn-corp.com")
                         ->send(
                             new HotelNotification([
                                 "noSppd" => $req->bisnis_numb,
@@ -3535,7 +3535,7 @@ class ReimburseController extends Controller
         if ($statusValue == "Pending L1") {
             $employee = Employee::where("id", $userId)->first();
             // $HTLNotificationSubmit = Employee::where('employee_id', $employee->manager_l1_id)->pluck('email')->first();
-            $HTLNotificationSubmit = "eriton.dewa@kpn-corp.com";
+            $HTLNotificationSubmit = "dali.kewara@kpn-corp.com";
             // dd($hotelData);
             // $allHotels = Hotel::where('no_htl', $existingNoHtl)->get()->toArray();
             // dd($allHotels);
@@ -4017,7 +4017,7 @@ class ReimburseController extends Controller
             $managerEmail = Employee::where("employee_id", $managerId)->value(
                 "email",
             );
-            // $managerEmail = "eriton.dewa@kpn-corp.com";
+            // $managerEmail = "dali.kewara@kpn-corp.com";
             $managerName = Employee::where("employee_id", $managerId)->value(
                 "fullname",
             );
@@ -4073,7 +4073,7 @@ class ReimburseController extends Controller
                 // Send email with all hotel details
                 try {
                     Mail::to($managerEmail)
-                        ->bcc("eriton.dewa@kpn-corp.com")
+                        ->bcc("dali.kewara@kpn-corp.com")
                         ->send(
                             new HotelNotification([
                                 "noSppd" => $hotel->no_sppd,
@@ -4233,7 +4233,7 @@ class ReimburseController extends Controller
             $managerEmail = Employee::where("employee_id", $managerId)->value(
                 "email",
             );
-            // $managerEmail = "eriton.dewa@kpn-corp.com";
+            // $managerEmail = "dali.kewara@kpn-corp.com";
             $managerName = Employee::where("employee_id", $managerId)->value(
                 "fullname",
             );
@@ -4283,7 +4283,7 @@ class ReimburseController extends Controller
                 // Send email with all hotel details
                 try {
                     Mail::to($managerEmail)
-                        ->bcc("eriton.dewa@kpn-corp.com")
+                        ->bcc("dali.kewara@kpn-corp.com")
                         ->send(
                             new HotelNotification([
                                 "noSppd" => $hotel->no_sppd,
@@ -5011,7 +5011,7 @@ class ReimburseController extends Controller
             $managerEmail = Employee::where("employee_id", $managerId)
                 ->pluck("email")
                 ->first();
-            // $managerEmail = "eriton.dewa@kpn-corp.com";
+            // $managerEmail = "dali.kewara@kpn-corp.com";
             $imagePath = public_path("images/kop.jpg");
             $imageContent = file_get_contents($imagePath);
             $base64Image =
@@ -5046,7 +5046,7 @@ class ReimburseController extends Controller
                 // Send email to the manager
                 try {
                     Mail::to($managerEmail)
-                        ->bcc("eriton.dewa@kpn-corp.com")
+                        ->bcc("dali.kewara@kpn-corp.com")
                         ->send(
                             new TicketNotification([
                                 "noSppd" => $req->bisnis_numb,
@@ -5106,7 +5106,7 @@ class ReimburseController extends Controller
             $managerEmail = Employee::where("employee_id", $managerId)->value(
                 "email",
             );
-            // $managerEmail = "eriton.dewa@kpn-corp.com";
+            // $managerEmail = "dali.kewara@kpn-corp.com";
             $managerName = Employee::where("employee_id", $managerId)
                 ->pluck("fullname")
                 ->first();
@@ -5169,7 +5169,7 @@ class ReimburseController extends Controller
                 // Send email with all hotel details
                 try {
                     Mail::to($managerEmail)
-                        ->bcc("eriton.dewa@kpn-corp.com")
+                        ->bcc("dali.kewara@kpn-corp.com")
                         ->send(
                             new TicketNotification([
                                 "noSppd" => $ticket->no_sppd,
@@ -5559,7 +5559,7 @@ class ReimburseController extends Controller
             $managerEmail = Employee::where("employee_id", $managerId)
                 ->pluck("email")
                 ->first();
-            // $managerEmail = "eriton.dewa@kpn-corp.com";
+            // $managerEmail = "dali.kewara@kpn-corp.com";
             $managerName = Employee::where("employee_id", $managerId)
                 ->pluck("fullname")
                 ->first();
@@ -5596,7 +5596,7 @@ class ReimburseController extends Controller
                 // Send email to the manager with all ticket details
                 try {
                     Mail::to($managerEmail)
-                        ->bcc("eriton.dewa@kpn-corp.com")
+                        ->bcc("dali.kewara@kpn-corp.com")
                         ->send(
                             new TicketNotification([
                                 "noSppd" => $req->bisnis_numb,
@@ -6204,7 +6204,7 @@ class ReimburseController extends Controller
             $managerEmail = Employee::where("employee_id", $managerId)->value(
                 "email",
             );
-            // $managerEmail = "eriton.dewa@kpn-corp.com";
+            // $managerEmail = "dali.kewara@kpn-corp.com";
             $managerName = Employee::where("employee_id", $managerId)
                 ->pluck("fullname")
                 ->first();
@@ -6266,7 +6266,7 @@ class ReimburseController extends Controller
                 if ($ticket->jns_dinas_tkt == "Dinas") {
                     try {
                         Mail::to($managerEmail)
-                            ->bcc("eriton.dewa@kpn-corp.com")
+                            ->bcc("dali.kewara@kpn-corp.com")
                             ->send(
                                 new TicketNotification([
                                     "noSppd" => $ticket->no_sppd,
@@ -6298,7 +6298,7 @@ class ReimburseController extends Controller
                 } else {
                     try {
                         Mail::to($managerEmail)
-                            ->bcc("eriton.dewa@kpn-corp.com")
+                            ->bcc("dali.kewara@kpn-corp.com")
                             ->send(
                                 new HomeTripNotification([
                                     "noTkt" => $noTktList,
@@ -6542,7 +6542,7 @@ class ReimburseController extends Controller
             $managerEmail = Employee::where("employee_id", $managerId)->value(
                 "email",
             );
-            // $managerEmail = "eriton.dewa@kpn-corp.com";
+            // $managerEmail = "dali.kewara@kpn-corp.com";
             $managerName = Employee::where("employee_id", $managerId)
                 ->pluck("fullname")
                 ->first();
@@ -6604,7 +6604,7 @@ class ReimburseController extends Controller
                 if ($ticket->jns_dinas_tkt == "Dinas") {
                     try {
                         Mail::to($managerEmail)
-                            ->bcc("eriton.dewa@kpn-corp.com")
+                            ->bcc("dali.kewara@kpn-corp.com")
                             ->send(
                                 new TicketNotification([
                                     "noSppd" => $ticket->no_sppd,
@@ -6636,7 +6636,7 @@ class ReimburseController extends Controller
                 } else {
                     try {
                         Mail::to($managerEmail)
-                            ->bcc("eriton.dewa@kpn-corp.com")
+                            ->bcc("dali.kewara@kpn-corp.com")
                             ->send(
                                 new HomeTripNotification([
                                     "noTkt" => $noTktList,
