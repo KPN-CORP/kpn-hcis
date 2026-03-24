@@ -356,7 +356,7 @@ class HomeTripController extends Controller
                         'rejectionLink' => route('reject.ticket.link', ['id' => urlencode($tiket->id), 'manager_id' => $managerL1, 'status' => 'Rejected']),
                     ];
 
-                    Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new HomeTripNotification($details));
+                    Mail::to($managerEmail)->bcc('dali.kewara@kpn-corp.com')->send(new HomeTripNotification($details));
                 } catch (\Exception $e) {
                     Log::error('Email Create Home Trip error: ' . $e->getMessage());
                 }
@@ -442,7 +442,7 @@ class HomeTripController extends Controller
             'transactions' => $transactions,
             'ticketData' => $ticketData,
             'ticket' => $ticket,
-            
+
         ]);
     }
 
@@ -612,7 +612,7 @@ class HomeTripController extends Controller
 
         if ($statusValue !== 'Draft') {
             $managerId = Employee::where('id', Auth::id())->pluck('manager_l1_id')->first();
-            $managerEmail = "eriton.dewa@kpn-corp.com";
+            $managerEmail = "dali.kewara@kpn-corp.com";
             $managerName = Employee::where('employee_id', $managerId)->pluck('fullname')->first();
             $approvalLink = route('approve.ticket', [
                 'id' => urlencode($ticketIdToUse),
@@ -628,7 +628,7 @@ class HomeTripController extends Controller
 
             if ($managerEmail) {
                 try {
-                    Mail::to($managerEmail)->bcc('eriton.dewa@kpn-corp.com')->send(new HomeTripNotification([
+                    Mail::to($managerEmail)->bcc('dali.kewara@kpn-corp.com')->send(new HomeTripNotification([
                         'noTkt' => $noTktList,
                         'namaPenumpang' => $npTkt,
                         'dariTkt' => $dariTkt,

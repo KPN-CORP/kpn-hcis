@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\ca_approval;
 use App\Models\CATransaction;
 use App\Models\Employee;
-use Carbon\Carbon;  
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Mail;
@@ -14,10 +14,10 @@ use App\Mail\CashAdvancedReminder;
 
 class ReminderController extends Controller
 {
-    function emailReminder()  
-    {  
+    function emailReminder()
+    {
         $today = Carbon::now()->startOfDay(); // Hari ini
-        $yesterday = Carbon::now()->subDay()->startOfDay(); // Kemarin  
+        $yesterday = Carbon::now()->subDay()->startOfDay(); // Kemarin
         $tomorrow = Carbon::now()->addDay()->startOfDay(); // Besok
 
         if ($today->isSaturday() || $today->isSunday()) {
@@ -34,11 +34,11 @@ class ReminderController extends Controller
             ->where('declare_estimate', '2025-02-19')
             ->get();
 
-        if ($ca_transaction->isNotEmpty()) {   
-            foreach ($ca_transaction as $transaction) {  
+        if ($ca_transaction->isNotEmpty()) {
+            foreach ($ca_transaction as $transaction) {
                 // $CANotificationLayer = Employee::where('id', $transaction->user_id)->pluck('email')->first();
-                $CANotificationLayer = "eriton.dewa@kpn-corp.com";
-                // Jika $transaction tidak null, coba akses employee_id  
+                $CANotificationLayer = "dali.kewara@kpn-corp.com";
+                // Jika $transaction tidak null, coba akses employee_id
                 $imagePath = public_path('images/kop.jpg');
                 $imageContent = file_get_contents($imagePath);
                 $base64Image = "data:image/png;base64," . base64_encode($imageContent);
@@ -46,7 +46,7 @@ class ReminderController extends Controller
                 if ($CANotificationLayer) {
                     //$textNotification = "{$transaction->employee->fullname} Submit an Extend Service with the following details :";
                     $textNotification = "Here are the details of the undeclared cash advance application :";
-                    
+
                     $reminder = "Extend";
                     $declaration = "Declaration";
 
@@ -57,16 +57,16 @@ class ReminderController extends Controller
                             $reminder,
                             $base64Image,
                             $declaration,
-                        ));       
+                        ));
                     } catch (\Exception $e) {
                         Log::error('Email Reminder tidak terkirim: ' . $e->getMessage());
                     }
                 }
-            }  
+            }
 
             return redirect()->route('reimbursements');
-        } else {  
+        } else {
             return redirect()->route('reimbursements');
-        }  
-    }  
+        }
+    }
 }

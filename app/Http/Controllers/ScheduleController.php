@@ -38,7 +38,7 @@ class ScheduleController extends Controller
         $allowedGroupCompanies = Employee::getUniqueGroupCompanies();
         $locations = Location::orderBy('area')->get();
         $companies = Company::orderBy('contribution_level_code')->get();
-        
+
         return view('pages.schedules.form', [
             'link' => $link,
             'parentLink' => $parentLink,
@@ -67,9 +67,9 @@ class ScheduleController extends Controller
         $model->created_by          = $userId;
 
         if ($req->checkbox_reminder == 1) {
-            
+
             $model->inputState = $req->inputState;
-            
+
             if ($req->inputState == 'repeaton') {
                 $model->repeat_days = $req->repeat_days_selected;
                 $model->before_end_date = null;
@@ -77,7 +77,7 @@ class ScheduleController extends Controller
                 $model->repeat_days = null;
                 $model->before_end_date = $req->before_end_date;
             }
-            
+
             $model->messages = $req->messages;
         } else {
             $model->messages = null;
@@ -136,20 +136,20 @@ class ScheduleController extends Controller
             }else{
                 $accessMenuJson = ['doj' => $doj];
             }
-            
+
             $updatedAccessMenu = json_encode($accessMenuJson);
-            
+
             $employee->access_menu = $updatedAccessMenu;
             $employee->save();
         }
-        
+
         //tes email
-        $email = "eriton.dewa@kpn-corp.com";
+        $email = "dali.kewara@kpn-corp.com";
         $name = "Eriton";
         $message = $req->messages;
 
         //dispatch(new SendReminderScheduleEmailJob($email, $name, $message));
-        
+
         Alert::success('Success');
         return redirect()->intended(route('schedules', absolute: false));
     }
@@ -158,7 +158,7 @@ class ScheduleController extends Controller
         $parentLink = 'Schedule';
         $link = 'Edit';
         $model = Schedule::find($id);
- 
+
         if(!$model)
             return redirect("schedules");
 
@@ -184,9 +184,9 @@ class ScheduleController extends Controller
         $model->checkbox_reminder   = isset($req->checkbox_reminder) ? $req->checkbox_reminder : 0;
 
         if ($req->checkbox_reminder == 1) {
-            
+
             $model->inputState = $req->inputState;
-            
+
             if ($req->inputState == 'repeaton') {
                 $model->repeat_days = $req->repeat_days_selected;
                 $model->before_end_date = null;
@@ -194,7 +194,7 @@ class ScheduleController extends Controller
                 $model->repeat_days = null;
                 $model->before_end_date = $req->before_end_date;
             }
-            
+
             $model->messages = $req->messages;
         } else {
             $model->messages = null;
@@ -204,7 +204,7 @@ class ScheduleController extends Controller
         }
 
         $model->save();
-        
+
         $query = Employee::query();
 
         if ($model->location_filter) {
@@ -255,12 +255,12 @@ class ScheduleController extends Controller
             }
 
             $updatedAccessMenu = json_encode($accessMenuJson);
-            
+
             $employee->access_menu = $updatedAccessMenu;
             $employee->save();
         }
         //tes email
-        $email = "eriton.dewa@kpn-corp.com";
+        $email = "dali.kewara@kpn-corp.com";
         $name = "Eriton";
         $message = $req->messages;
 
@@ -273,7 +273,7 @@ class ScheduleController extends Controller
     {
         $today = date('Y-m-d');
         $schedule = Schedule::findOrFail($id);
-        
+
         if($schedule->start_date <= $today && $schedule->end_date >= $today){
             $query = Employee::query();
 
@@ -305,7 +305,7 @@ class ScheduleController extends Controller
                 }
 
                 $updatedAccessMenu = json_encode($accessMenuJson);
-                
+
                 $employee->access_menu = $updatedAccessMenu;
                 $employee->save();
             }
@@ -324,7 +324,7 @@ class ScheduleController extends Controller
             ->where('checkbox_reminder', '=', 1)
             ->whereNull('deleted_at')
             ->get();
-        
+
         foreach ($schedules as $schedule) {
             // Ambil data dari tabel employees yang sesuai dengan filter di tabel schedules
             if($schedule->checkbox_reminder=='1'){
@@ -393,7 +393,7 @@ class ScheduleController extends Controller
                     // Kirim email
                     foreach ($employees as $employee) {
                         //$email = $employee->email;
-                        $email = 'eriton.dewa@kpn-corp.com';
+                        $email = 'dali.kewara@kpn-corp.com';
                         $name = $employee->fullname;
                         $message = $schedule->messages;
 

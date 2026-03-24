@@ -24,12 +24,12 @@
                 <div class="row g-2">
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Approval Name</label>
-                        <input type="text" class="form-control form-control-sm" placeholder="e.g., Declaration Approval HO">
+                        <input type="text" class="form-control form-control-sm" name="approval_name" placeholder="e.g., Declaration Approval HO">
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Approval Type</label>
-                        <input type="text" class="form-control form-control-sm bg-light" value="Declaration" readonly>
+                        <input type="text" class="form-control form-control-sm bg-light" name="approval_type" value="Declaration" readonly>
                     </div>
 
                     <div class="col-md-4">

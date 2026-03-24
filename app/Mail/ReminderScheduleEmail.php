@@ -36,10 +36,10 @@ class ReminderScheduleEmail extends Mailable
         return new Envelope(
             subject: 'Reminder Goals Setting',
             replyTo:[
-                new Address('eriton.dewa@kpn-corp.com', 'Eriton')
+                new Address('dali.kewara@kpn-corp.com', 'Eriton')
             ]
         );
-        
+
     }
 
     /**
