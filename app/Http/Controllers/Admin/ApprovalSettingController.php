@@ -79,7 +79,7 @@ class ApprovalSettingController extends Controller
     }
 
     public function create(Request $request): RedirectResponse; {
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'approval_name' => 'required|string|max:100',
             'approval_type' => 'required|string|max:100',
             'group_companies' => 'string',
@@ -102,6 +102,20 @@ class ApprovalSettingController extends Controller
             'ktu_employee_id.required' => 'KTU wajib dipilih.',
             'ktu_employee_id.exists' => 'KTU yang dipilih tidak valid atau tidak ditemukan.',
         ]);
+        if ($validator->fails()) {
+            return redirect()
+                ->route("admin_approval_setting")
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $exists = ApprovalSetting::where('name', $request->approval_name)->exists();
+        if ($exists) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Data approval setting sudah ada!');
+        }
 
         ApprovalSetting::create([
             'approval_name' => $request->approval_name,
