@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Location;
+use App\Models\Employee;
 
 class ApprovalSettingController extends Controller
 {
@@ -22,7 +23,7 @@ class ApprovalSettingController extends Controller
             ->orderBy("area")
             ->get();
 
-        $groupCompanies = Location::select("company_name")
+        $group_companies = Location::select("company_name")
             ->orderBy("company_name")
             ->distinct()
             ->pluck("company_name");
@@ -34,6 +35,22 @@ class ApprovalSettingController extends Controller
             ->orderBy("contribution_level_code")
             ->get();
 
+        $hcga_employees = Employee::select("employee_id", "fullname", "group_company", "company_name", "contribution_level_code")
+            ->whereIn('designation_name', [
+                'HCO Wilayah',
+                'HCO Manager',
+            ])
+            ->orderBy("company_name")
+            ->get();
+
+        $ktu_employees = Employee::select("employee_id", "fullname", "group_company", "company_name", "contribution_level_code")
+            ->whereIn('designation_name', [
+                'Kepala Tata Usaha',
+                'Koordinator KTU'
+            ])
+            ->orderBy("company_name")
+            ->get();
+
         return view(
             "pages.admin.approvalSetting",
             compact(
@@ -41,8 +58,10 @@ class ApprovalSettingController extends Controller
                 "parentLink",
                 "active",
                 "locations",
-                "groupCompanies",
+                "group_companies",
                 "companies",
+                "hcga_employees",
+                "ktu_employees",
             ),
         );
     }

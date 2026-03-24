@@ -11,9 +11,9 @@ class ApprovalSetting extends Model
     protected $fillable = [
         'name',
         'approval_type',
-        'company_name',
-        'contribution_level_code',
-        'work_area',
+        'company_names',
+        'contribution_level_codes',
+        'work_areas',
         'hcga_employee_id',
         'ktu_employee_id',
         'created_at',
@@ -25,4 +25,14 @@ class ApprovalSetting extends Model
     ];
 
     protected $table = 'approval_setting';
+
+    public function hcga_employee()
+    {
+        return $this->belongsTo(Employee::class, 'hcga_employee_id', 'employee_id');
+    }
+
+    public function ktu_employee()
+    {
+        return $this->belongsTo(Employee::class, 'ktu_employee_id', 'employee_id');
+    }
 }
