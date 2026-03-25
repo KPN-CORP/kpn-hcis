@@ -3,7 +3,66 @@
 @section('css')
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 <style>
+    th {
+        color: white !important;
+        text-align: center;
+    }
+
+    #dt-length-0 {
+        margin-bottom: 10px;
+    }
+
+    .table {
+        border-collapse: separate;
+        width: 100%;
+        /* position: relative; */
+        overflow: auto;
+    }
+
+    .table thead th {
+        position: -webkit-sticky !important;
+        /* For Safari */
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 2 !important;
+        background-color: #AB2F2B !important;
+        border-bottom: 2px solid #ddd !important;
+        padding-right: 6px;
+        /* box-shadow: inset 2px 0 0 #fff; */
+    }
+
+    .table tbody td {
+        background-color: #fff !important;
+        padding-right: 10px;
+        position: relative;
+    }
+
+    .table th.sticky-col-header {
+        position: -webkit-sticky !important;
+        /* For Safari */
+        position: sticky !important;
+        left: 0 !important;
+        z-index: 3 !important;
+        background-color: #AB2F2B !important;
+        border-right: 2px solid #ddd !important;
+        padding-right: 10px;
+        /* box-shadow: inset 2px 0 0 #fff; */
+    }
+
+    .table td.sticky-col {
+        position: -webkit-sticky !important;
+        /* For Safari */
+        position: sticky !important;
+        left: 0 !important;
+        z-index: 1 !important;
+        background-color: #fff !important;
+        border-right: 2px solid #ddd !important;
+        padding-right: 10px;
+        box-shadow: inset 6px 0 0 #fff;
+    }
+
     .text-kpn { color: #AB2F2B !important; }
     .btn-kpn { background-color: #AB2F2B; color: #ffffff; border: none; }
     .btn-kpn:hover { background-color: #8a2522; color: #ffffff; }
@@ -94,7 +153,7 @@
     </div>
     <div class="card-body pt-0">
         <div class="table-responsive">
-            <table id="approvalTable" class="table table-sm table-hover align-middle mb-0 w-100">
+            <table id="approval-setting-table" class="table table-sm table-hover align-middle mb-0 w-100">
                 <thead class="table-light">
                     <tr>
                         <th class="ps-3">No</th>
@@ -175,7 +234,9 @@
 @endsection
 
 @push('scripts')
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(document).ready(function () {
@@ -188,6 +249,17 @@
             theme: 'bootstrap-5',
             width: '100%',
             allowClear: true
+        });
+
+        $('#approval-setting-table').DataTable({
+            responsive: true,
+            autoWidth: false,
+            pageLength: 10,
+            lengthMenu: [5, 10, 25, 50],
+            searching: true,
+            columnDefs: [
+                { orderable: false, targets: -1 }
+            ]
         });
 
         $('#approval-setting-reset').on('click', async function (event) {
