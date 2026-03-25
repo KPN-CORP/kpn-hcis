@@ -190,6 +190,12 @@
             allowClear: true
         });
 
+        $('#approval-setting-reset').on('click', async function (event) {
+            event.preventDefault();
+            $('.select2-single, .select2-multiple').val(null).trigger('change');
+            document.getElementById('approval-setting-form').reset();
+        });
+
         $('#approval-setting-submit').on('click', async function (event) {
             event.preventDefault();
 
