@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use App\Models\ApprovalSetting;
@@ -93,7 +94,7 @@ class ApprovalSettingController extends Controller
         );
     }
 
-    public function create(Request $request): \Illuminate\Http\JsonResponse {
+    public function create(Request $request): JsonResponse {
         $validator = Validator::make($request->all(), [
             'approval_name' => 'required|string|max:100',
             'approval_type' => 'required|string|max:100',
@@ -143,7 +144,7 @@ class ApprovalSettingController extends Controller
         ]);
     }
 
-    public function update(Request $request): \Illuminate\Http\JsonResponse {
+    public function update(Request $request): JsonResponse {
         $validator = Validator::make($request->all(), [
             'id' => 'required|exists:approval_setting,id',
             'approval_name' => 'required|string|max:100',
@@ -196,7 +197,7 @@ class ApprovalSettingController extends Controller
         ]);
     }
 
-    public function delete(Request $request): \Illuminate\Http\JsonResponse {
+    public function delete(Request $request): JsonResponse {
         $validator = Validator::make($request->all(), [
             'id' => 'required|exists:approval_setting,id',
         ]);
