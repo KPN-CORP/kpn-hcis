@@ -20,7 +20,7 @@
             <h5 class="mb-0 text-kpn fw-bold">Create Approval Flow</h5>
         </div>
         <div class="card-body pt-0">
-            <form action="#" method="POST">
+            <form id="approval-setting-form" action="#" method="POST">
                 <div class="row g-2">
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Approval Name</label>
@@ -34,7 +34,7 @@
 
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">Restrict Group Company</label>
-                        <select class="form-select form-select-sm select2-multiple" name="group_companies" multiple data-placeholder="No Restrictions">
+                        <select class="form-select form-select-sm select2-multiple" name="group_companies[]" multiple data-placeholder="No Restrictions">
                             @foreach ($groupCompanies as $groupCompany)
                               <option value="{{ $groupCompany }}">{{ $groupCompany }}</option>
                             @endforeach
@@ -43,7 +43,7 @@
 
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">Restrict Company</label>
-                        <select class="form-select form-select-sm select2-multiple" name="contribution_level_codes" multiple data-placeholder="No Restrictions">
+                        <select class="form-select form-select-sm select2-multiple" name="contribution_level_codes[]" multiple data-placeholder="No Restrictions">
                             @foreach ($companies as $company)
                               <option value="{{ $company->contribution_level_code }}">{{ $company->contribution_level.' ('.$company->contribution_level_code.')' }}</option>
                             @endforeach
@@ -52,7 +52,7 @@
 
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">Restrict Location</label>
-                        <select class="form-select form-select-sm select2-multiple" name="work_areas" multiple data-placeholder="No Restrictions">
+                        <select class="form-select form-select-sm select2-multiple" name="work_areas[]" multiple data-placeholder="No Restrictions">
                             @foreach ($locations as $location)
                               <option value="{{ $location->work_area }}">{{ $location->area.' ('.$location->company_name.')' }}</option>
                             @endforeach
@@ -61,7 +61,7 @@
 
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">HCGA</label>
-                        <select class="form-select form-select-sm select2-single" name="hcga_emplyee_id" data-placeholder="Select HCGA">
+                        <select class="form-select form-select-sm select2-single" name="hcga_employee_id" data-placeholder="Select HCGA">
                             <option value=""></option>
                             @foreach ($hcgaEmployees as $hcgaEmployee)
                               <option value="{{ $hcgaEmployee->employee_id }}">{{ $hcgaEmployee->fullname.' ('.$hcgaEmployee->group_company.' - '.$hcgaEmployee->company_name.')' }}</option>
@@ -80,8 +80,8 @@
                     </div>
 
                     <div class="col-12 mt-3 text-end">
-                        <button type="reset" class="btn btn-light">Reset</button>
-                        <button type="submit" class="btn btn-primary">Save Setting</button>
+                        <button id="approval-setting-reset" type="reset" class="btn btn-light">Reset</button>
+                        <button id="approval-setting-submit" type="submit" class="btn btn-primary">Save Setting</button>
                     </div>
                 </div>
             </form>
@@ -178,7 +178,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         $('.select2-multiple').select2({
             theme: 'bootstrap-5',
             width: '100%',
@@ -188,6 +188,67 @@
             theme: 'bootstrap-5',
             width: '100%',
             allowClear: true
+        });
+
+        $('#approval-setting-submit').on('click', async function (event) {
+            event.preventDefault();
+
+            const form = document.getElementById('approval-setting-form');
+
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const formData = new FormData(form);
+
+            const groupCompanies = formData.getAll('group_companies[]');
+            const contributionLevelCodes = formData.getAll('contribution_level_codes[]');
+            const workAreas = formData.getAll('work_areas[]');
+
+            const groupCompaniesString = groupCompanies.join(',');
+            const contributionLevelCodesString = contributionLevelCodes.join(',');
+            const workAreasString = workAreas.join(',');
+
+            formData.set('group_companies', groupCompaniesString);
+            formData.set('contribution_level_codes', contributionLevelCodesString);
+            formData.set('work_areas', workAreasString);
+
+            formData.delete('group_companies[]');
+            formData.delete('contribution_level_codes[]');
+            formData.delete('work_areas[]');
+
+            try {
+                const response = await fetch('/admin/approval/setting/create', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    if (result.message && result.errors) {
+                        alert(result.message + ': ' + Object.values(result.errors).flat().join(', ') || 'Terjadi error');
+                    } else {
+                        alert(result.message || 'Terjadi error');
+                    }
+                    return;
+                }
+
+                alert(result.message || 'Berhasil');
+
+                form.reset();
+
+                $('.select2-single, .select2-multiple').val(null).trigger('change');
+
+            } catch (error) {
+                console.error(error);
+                alert('Request gagal');
+            }
         });
     });
 </script>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use App\Models\ApprovalSetting;
 use App\Models\Company;
@@ -92,7 +93,7 @@ class ApprovalSettingController extends Controller
         );
     }
 
-    public function create(Request $request): RedirectResponse {
+    public function create(Request $request): \Illuminate\Http\JsonResponse {
         $validator = Validator::make($request->all(), [
             'approval_name' => 'required|string|max:100',
             'approval_type' => 'required|string|max:100',
@@ -103,38 +104,31 @@ class ApprovalSettingController extends Controller
             'ktu_employee_id' => 'required|exists:employees,employee_id',
         ], [
             'approval_name.required' => 'Nama approval wajib diisi.',
-            'approval_name.string' => 'Nama approval harus berupa teks.',
-            'approval_name.max' => 'Nama approval maksimal 100 karakter.',
             'approval_type.required' => 'Approval type wajib diisi.',
-            'approval_type.string' => 'Approval type harus berupa teks.',
-            'approval_type.max' => 'Approval type maksimal 100 karakter.',
-            'group_companies.string' => 'Group company harus berupa teks.',
-            'contribution_level_codes.string' => 'Company harus berupa teks.',
-            'work_areas.string' => 'Location harus berupa teks.',
             'hcga_employee_id.required' => 'HCGA wajib dipilih.',
-            'hcga_employee_id.exists' => 'HCGA yang dipilih tidak valid atau tidak ditemukan.',
             'ktu_employee_id.required' => 'KTU wajib dipilih.',
-            'ktu_employee_id.exists' => 'KTU yang dipilih tidak valid atau tidak ditemukan.',
         ]);
+
         if ($validator->fails()) {
-            return redirect()
-                ->route("admin_approval_setting")
-                ->withErrors($validator)
-                ->withInput();
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
         $exists = ApprovalSetting::where('name', $request->approval_name)->exists();
         if ($exists) {
-            return redirect()
-                ->back()
-                ->withInput()
-                ->with('error', 'Data approval setting sudah ada!');
+            return response()->json([
+                'success' => false,
+                'message' => 'Data approval setting sudah ada!'
+            ], 409);
         }
 
         ApprovalSetting::create([
-            'approval_name' => $request->approval_name,
+            'name' => $request->approval_name,
             'approval_type' => $request->approval_type,
-            'group_companies' => $request->group_companies,
+            'company_names' => $request->group_companies,
             'contribution_level_codes' => $request->contribution_level_codes,
             'work_areas' => $request->work_areas,
             'hcga_employee_id' => $request->hcga_employee_id,
@@ -143,65 +137,52 @@ class ApprovalSettingController extends Controller
             'updated_by' => auth()->id(),
         ]);
 
-        return redirect()
-            ->route("admin_approval_setting")
-            ->with("success", "Approval setting creates successfully!");
+        return response()->json([
+            'success' => true,
+            'message' => 'Approval setting creates successfully!'
+        ]);
     }
 
-    public function update(Request $request): RedirectResponse {
+    public function update(Request $request): \Illuminate\Http\JsonResponse {
         $validator = Validator::make($request->all(), [
             'id' => 'required|exists:approval_setting,id',
             'approval_name' => 'required|string|max:100',
             'approval_type' => 'required|string|max:100',
-            'group_companies' => 'string',
-            'contribution_level_codes' => 'string',
-            'work_areas' => 'string',
             'hcga_employee_id' => 'required|exists:employees,employee_id',
             'ktu_employee_id' => 'required|exists:employees,employee_id',
-        ], [
-            'id.required' => 'Approval setting tidak ditemukan.',
-            'id.exists' => 'Approval setting tidak valid.',
-            'approval_name.required' => 'Nama approval wajib diisi.',
-            'approval_name.string' => 'Nama approval harus berupa teks.',
-            'approval_name.max' => 'Nama approval maksimal 100 karakter.',
-            'approval_type.required' => 'Approval type wajib diisi.',
-            'approval_type.string' => 'Approval type harus berupa teks.',
-            'approval_type.max' => 'Approval type maksimal 100 karakter.',
-            'group_companies.string' => 'Group company harus berupa teks.',
-            'contribution_level_codes.string' => 'Company harus berupa teks.',
-            'work_areas.string' => 'Location harus berupa teks.',
-            'hcga_employee_id.required' => 'HCGA wajib dipilih.',
-            'hcga_employee_id.exists' => 'HCGA yang dipilih tidak valid atau tidak ditemukan.',
-            'ktu_employee_id.required' => 'KTU wajib dipilih.',
-            'ktu_employee_id.exists' => 'KTU yang dipilih tidak valid atau tidak ditemukan.',
         ]);
+
         if ($validator->fails()) {
-            return redirect()
-                ->route("admin_approval_setting")
-                ->withErrors($validator)
-                ->withInput();
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
         $approvalSetting = ApprovalSetting::find($request->id);
         if (!$approvalSetting) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Approval setting tidak ditemukan.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Approval setting tidak ditemukan.'
+            ], 404);
         }
 
         $exists = ApprovalSetting::where('name', $request->approval_name)
             ->where('id', '!=', $request->id)
             ->exists();
+
         if ($exists) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Data approval setting sudah ada.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Data approval setting sudah ada.'
+            ], 409);
         }
 
         $approvalSetting->update([
-            'approval_name' => $request->approval_name,
+            'name' => $request->approval_name,
             'approval_type' => $request->approval_type,
-            'group_companies' => $request->group_companies,
+            'company_names' => $request->group_companies,
             'contribution_level_codes' => $request->contribution_level_codes,
             'work_areas' => $request->work_areas,
             'hcga_employee_id' => $request->hcga_employee_id,
@@ -209,34 +190,38 @@ class ApprovalSettingController extends Controller
             'updated_by' => auth()->id(),
         ]);
 
-        return redirect()
-            ->route("admin_approval_setting")
-            ->with("success", "Approval setting updated successfully!");
+        return response()->json([
+            'success' => true,
+            'message' => 'Approval setting updated successfully!'
+        ]);
     }
 
-    public function delete(Request $request): RedirectResponse {
+    public function delete(Request $request): \Illuminate\Http\JsonResponse {
         $validator = Validator::make($request->all(), [
             'id' => 'required|exists:approval_setting,id',
-        ], [
-            'id.required' => 'Approval setting tidak ditemukan.',
-            'id.exists' => 'Approval setting tidak valid atau sudah dihapus.',
         ]);
+
         if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
         $approvalSetting = ApprovalSetting::find($request->id);
         if (!$approvalSetting) {
-            return redirect()->back()
-                ->with('error', 'Approval setting tidak ditemukan.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Approval setting tidak ditemukan.'
+            ], 404);
         }
 
-        $data->delete();
+        $approvalSetting->delete();
 
-        return redirect()
-            ->route("admin_approval_setting")
-            ->with("success", "Approval setting deleted successfully!");
+        return response()->json([
+            'success' => true,
+            'message' => 'Approval setting deleted successfully!'
+        ]);
     }
 }
