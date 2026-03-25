@@ -35,8 +35,8 @@
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">Restrict Group Company</label>
                         <select class="form-select form-select-sm select2-multiple" name="group_companies" multiple data-placeholder="No Restrictions">
-                            @foreach ($group_companies as $group_company)
-                              <option value="{{ $group_company }}">{{ $group_company }}</option>
+                            @foreach ($groupCompanies as $groupCompany)
+                              <option value="{{ $groupCompany }}">{{ $groupCompany }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -63,8 +63,8 @@
                         <label class="form-label fw-semibold">HCGA</label>
                         <select class="form-select form-select-sm select2-single" name="hcga_emplyee_id" data-placeholder="Select HCGA">
                             <option value=""></option>
-                            @foreach ($hcga_employees as $hcga_employee)
-                              <option value="{{ $hcga_employee->employee_id }}">{{ $hcga_employee->fullname.' ('.$hcga_employee->group_company.' - '.$hcga_employee->company_name.')' }}</option>
+                            @foreach ($hcgaEmployees as $hcgaEmployee)
+                              <option value="{{ $hcgaEmployee->employee_id }}">{{ $hcgaEmployee->fullname.' ('.$hcgaEmployee->group_company.' - '.$hcgaEmployee->company_name.')' }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -73,8 +73,8 @@
                         <label class="form-label fw-semibold">KTU</label>
                         <select class="form-select form-select-sm select2-single" name="ktu_employee_id" data-placeholder="Select KTU">
                             <option value=""></option>
-                            @foreach ($ktu_employees as $ktu_employee)
-                              <option value="{{ $ktu_employee->employee_id }}">{{ $ktu_employee->fullname.' ('.$ktu_employee->group_company.' - '.$ktu_employee->company_name.')' }}</option>
+                            @foreach ($ktuEmployees as $ktuEmployee)
+                              <option value="{{ $ktuEmployee->employee_id }}">{{ $ktuEmployee->fullname.' ('.$ktuEmployee->group_company.' - '.$ktuEmployee->company_name.')' }}</option>
                             @endforeach
                         </select>
                     </div>
