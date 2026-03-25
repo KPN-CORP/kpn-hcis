@@ -58,7 +58,18 @@ class ApprovalSettingController extends Controller
         //         return $item;
         //     });
 
-        $approvalSettings = ApprovalSetting::with(["hcga_employee", "ktu_employee"])->orderBy("created_at")->get();
+        $approvalSettings = ApprovalSetting::with(["hcga_employee", "ktu_employee"])
+        ->orderBy("created_at")
+        ->get()
+        ->map(function ($item) use ($items) {
+            $companyNames = explode(',', $item->company_names);
+            $contributionLevelCodes = explode(',', $item->contribution_level_codes);
+            $workAreas = explode(',', $item->work_area);
+
+            $item->companyNamesLabel = collect($companyNames)->implode(', ');
+
+            return $item;
+        });
 
         // $employees = Employee::select(
         //         "employee_id",
