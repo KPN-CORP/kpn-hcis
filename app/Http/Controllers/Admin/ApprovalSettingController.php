@@ -112,7 +112,7 @@ class ApprovalSettingController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation error',
+                'message' => 'Data belum diisi dengan benar',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -155,7 +155,7 @@ class ApprovalSettingController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation error',
+                'message' => 'Data belum diisi dengan benar',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -204,7 +204,7 @@ class ApprovalSettingController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validation error',
+                'message' => 'Data belum diisi dengan benar',
                 'errors' => $validator->errors()
             ], 422);
         }

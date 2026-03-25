@@ -231,23 +231,47 @@
                 const result = await response.json();
 
                 if (!response.ok) {
-                    if (result.message && result.errors) {
-                        alert(result.message + ': ' + Object.values(result.errors).flat().join(', ') || 'Terjadi error');
-                    } else {
-                        alert(result.message || 'Terjadi error');
+                    if (result.errors) {
+                        Swal.fire({
+                            title: 'Error!',
+                            icon: 'error',
+                            html: `
+                                <div style="text-align:left;">
+                                    <p>${result.message || 'Terjadi kesalahan'}:</p>
+                                    <ul style="margin:0; padding-left:20px;">
+                                        ${Object.values(result.errors).flat().filter(msg => !msg.toLowerCase().includes('field must be')).map(msg => `<li>${msg}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            `
+                        });
+
+                        return
                     }
+
+                    Swal.fire({
+                        title: 'Error!',
+                        icon: 'error',
+                        text: result.message || 'Terjadi kesalahan'
+                    });
+
                     return;
                 }
 
-                alert(result.message || 'Berhasil');
-
-                form.reset();
-
-                $('.select2-single, .select2-multiple').val(null).trigger('change');
-
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Data berhasil disimpan',
+                    icon: 'success'
+                }).then(() => {
+                    form.reset();
+                    $('.select2-single, .select2-multiple').val(null).trigger('change');
+                    location.reload();
+                });
             } catch (error) {
-                console.error(error);
-                alert('Request gagal');
+                Swal.fire({
+                    title: 'Error!',
+                    icon: 'error',
+                    text: 'Terjadi kesalahan'
+                });
             }
         });
     });
