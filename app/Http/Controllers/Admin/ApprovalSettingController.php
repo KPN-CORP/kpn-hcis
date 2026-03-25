@@ -37,8 +37,10 @@ class ApprovalSettingController extends Controller
             "contribution_level",
             "contribution_level_code",
         )
-            ->orderBy("contribution_level_code")
-            ->get();
+        ->orderBy("contribution_level_code")
+        ->get();
+
+        $approvalSettings = ApprovalSetting::with(["hcga_employee", "ktu_employee"])->orderBy("created_at")->get();
 
         // $employees = Employee::select(
         //         "employee_id",
@@ -90,6 +92,7 @@ class ApprovalSettingController extends Controller
                 "companies",
                 "hcgaEmployees",
                 "ktuEmployees",
+                "approvalSettings",
             ),
         );
     }

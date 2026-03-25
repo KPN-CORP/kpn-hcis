@@ -168,20 +168,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td class="ps-3">1</td>
-                        <td class="fw-semibold">Declaration HO</td>
-                        <td>Declaration</td>
-                        <td>KPN Corp</td>
-                        <td>-</td>
-                        <td>Jakarta</td>
-                        <td>Andi Saputra</td>
-                        <td>Dewi Anggraini</td>
-                        <td class="text-center pe-3">
-                            <button class="btn btn-sm btn-outline-kpn me-1"><i class="ri-pencil-line"></i></button>
-                            <button class="btn btn-sm btn-outline-danger"><i class="ri-delete-bin-line"></i></button>
-                        </td>
-                    </tr>
+                    @foreach ($approvalSettings as $approvalSetting)
+                        <tr>
+                            <td class="ps-3">1</td>
+                            <td class="fw-semibold">{{ $approvalSetting->name ?? "-" }}</td>
+                            <td>{{ $approvalSetting->approval_type ?? "-" }}</td>
+                            <td>{{ $approvalSetting->company_names ?? "-" }}</td>
+                            <td>{{ $approvalSetting->contribution_level_codes ?? "-" }}</td>
+                            <td>{{ $approvalSetting->work_areas ?? "-" }}</td>
+                            <td>{{ $approvalSetting->hcga_employee->fullname ?? "-" }}</td>
+                            <td>{{ $approvalSetting->ktu_employee->fullname ?? "-" }}</td>
+                            <td class="text-center pe-3">
+                                <button class="btn btn-sm btn-outline-kpn me-1"><i class="ri-pencil-line"></i></button>
+                                <button class="btn btn-sm btn-outline-danger"><i class="ri-delete-bin-line"></i></button>
+                            </td>
+                        </tr>
+                    @endforeach
                     {{-- <tr>
                         <td class="ps-3">1</td>
                         <td class="fw-semibold">Declaration HO</td>
