@@ -182,6 +182,20 @@
                             <button class="btn btn-sm btn-outline-danger"><i class="ri-delete-bin-line"></i></button>
                         </td>
                     </tr>
+                    {{-- <tr>
+                        <td class="ps-3">1</td>
+                        <td class="fw-semibold">Declaration HO</td>
+                        <td>Declaration</td>
+                        <td>KPN Corp</td>
+                        <td>-</td>
+                        <td>Jakarta</td>
+                        <td>Andi Saputra</td>
+                        <td>Dewi Anggraini</td>
+                        <td class="text-center pe-3">
+                            <button class="btn btn-sm btn-outline-kpn me-1"><i class="ri-pencil-line"></i></button>
+                            <button class="btn btn-sm btn-outline-danger"><i class="ri-delete-bin-line"></i></button>
+                        </td>
+                    </tr>
                     <tr>
                         <td class="ps-3">2</td>
                         <td class="fw-semibold">Declaration Site A</td>
@@ -223,7 +237,7 @@
                             <button class="btn btn-sm btn-outline-kpn me-1"><i class="ri-pencil-line"></i></button>
                             <button class="btn btn-sm btn-outline-danger"><i class="ri-delete-bin-line"></i></button>
                         </td>
-                    </tr>
+                    </tr> --}}
                 </tbody>
             </table>
         </div>
