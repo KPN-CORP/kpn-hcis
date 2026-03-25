@@ -40,6 +40,24 @@ class ApprovalSettingController extends Controller
         ->orderBy("contribution_level_code")
         ->get();
 
+        // $masterCodes = \App\Models\MasterKode::pluck('fullname', 'code');
+
+        // $approvalSettings = ApprovalSetting::with(['hcga_employee', 'ktu_employee'])
+        //     ->orderBy('created_at')
+        //     ->get()
+        //     ->map(function ($item) use ($masterCodes) {
+
+        //         $codes = explode(',', $item->group_companies);
+
+        //         $names = collect($codes)
+        //             ->map(fn($code) => $masterCodes[$code] ?? $code)
+        //             ->implode(', ');
+
+        //         $item->group_companies_label = $names;
+
+        //         return $item;
+        //     });
+
         $approvalSettings = ApprovalSetting::with(["hcga_employee", "ktu_employee"])->orderBy("created_at")->get();
 
         // $employees = Employee::select(
