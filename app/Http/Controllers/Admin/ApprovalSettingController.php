@@ -68,31 +68,6 @@ class ApprovalSettingController extends Controller
                 return $item;
             });
 
-        // $employees = Employee::select(
-        //         "employee_id",
-        //         "fullname",
-        //         "group_company",
-        //         "company_name",
-        //         "contribution_level_code",
-        //         "designation_name"
-        //     )
-        //     ->whereIn('designation_name', [
-        //         'HCO Wilayah',
-        //         'HCO Manager',
-        //         'Kepala Tata Usaha',
-        //         'Koordinator KTU'
-        //     ])
-        //     ->orderBy("company_name")
-        //     ->get()
-        //     ->groupBy(function ($item) {
-        //         return in_array($item->designation_name, ['HCO Wilayah', 'HCO Manager'])
-        //             ? 'hcga'
-        //             : 'ktu';
-        //     });
-
-        // $hcgaEmployees = $employees['hcga'] ?? collect();
-        // $ktuEmployees = $employees['ktu'] ?? collect();
-
         $employees = Employee::select(
             "employee_id",
             "fullname",
@@ -127,16 +102,23 @@ class ApprovalSettingController extends Controller
         $validator = Validator::make($request->all(), [
             'approval_name' => 'required|string|max:100',
             'approval_type' => 'required|string|max:100',
-            'group_companies' => 'string',
-            'contribution_level_codes' => 'string',
-            'work_areas' => 'string',
+            'group_companies' => 'nullable|string',
+            'contribution_level_codes' => 'nullable|string',
+            'work_areas' => 'nullable|string',
             'hcga_employee_id' => 'required|exists:employees,employee_id',
             'ktu_employee_id' => 'required|exists:employees,employee_id',
         ], [
-            'approval_name.required' => 'Nama approval wajib diisi.',
+            'approval_name.required' => 'Nama approval wajib diisi',
+            'approval_name.string' => 'Nama approval harus berupa text',
+            'approval_name.max' => 'Nama approval maksimal 100 karakter',
             'approval_type.required' => 'Approval type wajib diisi.',
-            'hcga_employee_id.required' => 'HCGA wajib dipilih.',
-            'ktu_employee_id.required' => 'KTU wajib dipilih.',
+            'approval_type.string' => 'Approval type harus berupa text',
+            'approval_type.max' => 'Approval type maksimal 100 karakter',
+            'group_companies.string' => 'Group company harus berupa text',
+            'contribution_level_codes.string' => 'Company harus berupa text',
+            'work_areas.string' => 'Location harus berupa text',
+            'hcga_employee_id.required' => 'HCGA wajib dipilih',
+            'ktu_employee_id.required' => 'KTU wajib dipilih',
         ]);
 
         if ($validator->fails()) {
@@ -169,7 +151,7 @@ class ApprovalSettingController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Approval setting creates successfully!'
+            'message' => 'Approval setting berhasil dibuat!'
         ]);
     }
 
@@ -178,8 +160,24 @@ class ApprovalSettingController extends Controller
             'id' => 'required|exists:approval_setting,id',
             'approval_name' => 'required|string|max:100',
             'approval_type' => 'required|string|max:100',
+            'group_companies' => 'nullable|string',
+            'contribution_level_codes' => 'nullable|string',
+            'work_areas' => 'nullable|string',
             'hcga_employee_id' => 'required|exists:employees,employee_id',
             'ktu_employee_id' => 'required|exists:employees,employee_id',
+        ], [
+            'id.required' => 'ID wajib dikirim',
+            'approval_name.required' => 'Nama approval wajib diisi',
+            'approval_name.string' => 'Nama approval harus berupa text',
+            'approval_name.max' => 'Nama approval maksimal 100 karakter',
+            'approval_type.required' => 'Approval type wajib diisi.',
+            'approval_type.string' => 'Approval type harus berupa text',
+            'approval_type.max' => 'Approval type maksimal 100 karakter',
+            'group_companies.string' => 'Group company harus berupa text',
+            'contribution_level_codes.string' => 'Company harus berupa text',
+            'work_areas.string' => 'Location harus berupa text',
+            'hcga_employee_id.required' => 'HCGA wajib dipilih',
+            'ktu_employee_id.required' => 'KTU wajib dipilih',
         ]);
 
         if ($validator->fails()) {
@@ -222,13 +220,15 @@ class ApprovalSettingController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Approval setting updated successfully!'
+            'message' => 'Data berhasil diupdate!'
         ]);
     }
 
     public function delete(Request $request): JsonResponse {
         $validator = Validator::make($request->all(), [
             'id' => 'required|exists:approval_setting,id',
+        ], [
+            'id.required' => 'ID wajib dikirim',
         ]);
 
         if ($validator->fails()) {
@@ -251,7 +251,7 @@ class ApprovalSettingController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Approval setting deleted successfully!'
+            'message' => 'Data berhasil dihapus!'
         ]);
     }
 }

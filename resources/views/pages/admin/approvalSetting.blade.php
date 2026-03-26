@@ -196,7 +196,7 @@
 
                     <div class="col-12 mt-3 text-end">
                         <button id="approval-setting-reset" type="reset" class="btn btn-light">Reset</button>
-                        <button id="approval-setting-submit" type="submit" class="btn btn-primary">Save Setting</button>
+                        <button id="approval-setting-submit" type="submit" class="btn btn-primary" data-id="">Save Setting</button>
                     </div>
                 </div>
             </form>
@@ -250,21 +250,21 @@
                             <td>
                                 <div class="cell-content">
                                     <span class="cell-text">
-                                        {{ $approvalSetting->company_names_label ?: "-" }}
+                                        {{ $approvalSetting->company_names_label ?: "ALL" }}
                                     </span>
                                 </div>
                             </td>
                             <td>
                                 <div class="cell-content">
                                     <span class="cell-text">
-                                        {{ $approvalSetting->contribution_levels_label ?: "-" }}
+                                        {{ $approvalSetting->contribution_levels_label ?: "ALL" }}
                                     </span>
                                 </div>
                             </td>
                             <td>
                                 <div class="cell-content">
                                     <span class="cell-text">
-                                        {{ $approvalSetting->work_areas_label ?: "-" }}
+                                        {{ $approvalSetting->work_areas_label ?: "ALL" }}
                                     </span>
                                 </div>
                             </td>
@@ -285,8 +285,8 @@
                             <td class="text-center pe-3">
                                 <div class="cell-content">
                                     <span class="cell-text">
-                                        <button class="btn btn-sm btn-outline-kpn me-1"><i class="ri-pencil-line"></i></button>
-                                        <button class="btn btn-sm btn-outline-danger"><i class="ri-delete-bin-line"></i></button>
+                                        <button class="approval-setting-edit btn btn-sm btn-outline-kpn me-1" data-id="{{ $approvalSetting->id }}"><i class="ri-pencil-line"></i></button>
+                                        <button class="approval-setting-delete btn btn-sm btn-outline-danger" data-id="{{ $approvalSetting->id }}"><i class="ri-delete-bin-line"></i></button>
                                     </span>
                                 </div>
                             </td>
@@ -424,6 +424,52 @@
                     title: 'Error!',
                     icon: 'error',
                     text: 'Terjadi kesalahan'
+                });
+            }
+        });
+
+        $('.approval-setting-delete').on('click', async function () {
+            let id = $(this).data('id');
+
+            const confirmDelete = await Swal.fire({
+                title: 'Delete',
+                text: 'Apakah Anda yakin ingin menghapus data ini?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, hapus!'
+            });
+
+            if (!confirmDelete.isConfirmed) return;
+
+            try {
+                const response = await fetch('/admin/approval/setting/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ id })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw result;
+                }
+
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: result.message
+                });
+
+                location.reload();
+            } catch (err) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: err.message || 'Gagal menghapus data'
                 });
             }
         });
