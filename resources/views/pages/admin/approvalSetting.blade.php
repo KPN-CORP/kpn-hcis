@@ -285,8 +285,22 @@
                             <td class="text-center pe-3">
                                 <div class="cell-content">
                                     <span class="cell-text">
-                                        <button class="approval-setting-edit btn btn-sm btn-outline-kpn me-1" data-id="{{ $approvalSetting->id }}"><i class="ri-pencil-line"></i></button>
-                                        <button class="approval-setting-delete btn btn-sm btn-outline-danger" data-id="{{ $approvalSetting->id }}"><i class="ri-delete-bin-line"></i></button>
+                                        <button
+                                            class="approval-setting-edit btn btn-sm btn-outline-kpn me-1"
+                                            data-id="{{ $approvalSetting->id }}"
+                                            data-approval_name="{{ $approvalSetting->name }}"
+                                            data-approval_type="{{ $approvalSetting->approval_type }}"
+                                            data-group_companies="{{ $approvalSetting->company_names }}"
+                                            data-contribution_level_codes="{{ $approvalSetting->contribution_level_codes }}"
+                                            data-work_areas="{{ $approvalSetting->work_areas }}"
+                                            data-hcga_employee_id="{{ $approvalSetting->hcga_employee_id }}"
+                                            data-ktu_employee_id="{{ $approvalSetting->ktu_employee_id }}"
+                                        >
+                                                <i class="ri-pencil-line"></i>
+                                        </button>
+                                        <button class="approval-setting-delete btn btn-sm btn-outline-danger" data-id="{{ $approvalSetting->id }}">
+                                            <i class="ri-delete-bin-line"></i>
+                                        </button>
                                     </span>
                                 </div>
                             </td>
@@ -426,6 +440,37 @@
                     text: 'Terjadi kesalahan'
                 });
             }
+        });
+
+        $('.approval-setting-edit').on('click', async function (event) {
+            event.preventDefault();
+
+            let btn = $(this);
+            let id = btn.data('id');
+
+            $('#approval-setting-submit').data('id', id);
+
+            const form = document.getElementById('approval-setting-form');
+
+            form.reset();
+
+            $('.select2-single, .select2-multiple').val(null).trigger('change');
+
+            $('input[name="approval_name"]').val(btn.data('approval_name'));
+            $('select[name="approval_type"]').val(btn.data('approval_type')).trigger('change');
+
+            let groupCompanies = btn.data('group_companies');
+            let contributionLevels = btn.data('contribution_level_codes');
+            let workAreas = btn.data('work_areas');
+
+            $('select[name="group_companies[]"]').val(groupCompanies ? groupCompanies.split(',') : []).trigger('change');
+            $('select[name="contribution_level_codes[]"]').val(contributionLevels ? contributionLevels.split(',') : []).trigger('change');
+            $('select[name="work_areas[]"]').val(workAreas ? workAreas.split(',') : []).trigger('change');
+
+            $('select[name="hcga_employee_id"]').val(btn.data('hcga_employee_id')).trigger('change');
+            $('select[name="ktu_employee_id"]').val(btn.data('ktu_employee_id')).trigger('change');
+
+            $('html, body').animate({ scrollTop: 0 }, 400);
         });
 
         $('.approval-setting-delete').on('click', async function () {
