@@ -224,11 +224,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($approvalSettings as $approvalSetting)
+                    @foreach ($approvalSettings as $index => $approvalSetting)
                         <tr>
                             <td class="ps-3">
                                 <div class="cell-content">
                                     <span class="cell-text">
+                                        {{ $index + 1 }}
                                     </span>
                                 </div>
                             </td>
