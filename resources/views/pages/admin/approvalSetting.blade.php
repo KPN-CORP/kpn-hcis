@@ -130,6 +130,10 @@
 @section('content')
 <div class="container-fluid py-4">
 
+    <div id="approval-setting-form-alert" class="alert alert-warning d-none" role="alert">
+        Edit Data
+    </div>
+
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-header bg-white ">
             <h5 class="mb-0 text-kpn fw-bold">Create Approval Flow</h5>
@@ -355,10 +359,17 @@
             event.preventDefault();
             $('.select2-single, .select2-multiple').val(null).trigger('change');
             document.getElementById('approval-setting-form').reset();
+            $('#approval-setting-form-alert')
+                .addClass('d-none')
+                .hide()
+                .fadeIn(200);
         });
 
         $('#approval-setting-submit').on('click', async function (event) {
             event.preventDefault();
+
+            let btn = $(this);
+            let id = btn.data('id');
 
             const form = document.getElementById('approval-setting-form');
 
@@ -386,14 +397,29 @@
             formData.delete('work_areas[]');
 
             try {
-                const response = await fetch('/admin/approval/setting/create', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                        'Accept': 'application/json'
-                    },
-                    body: formData
-                });
+                let response;
+
+                if (id) {
+                    formData.set('id', id);
+
+                    response = await fetch('/admin/approval/setting/update', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                            'Accept': 'application/json'
+                        },
+                        body: formData
+                    });
+                } else {
+                    response = await fetch('/admin/approval/setting/create', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                            'Accept': 'application/json'
+                        },
+                        body: formData
+                    });
+                }
 
                 const result = await response.json();
 
@@ -470,7 +496,15 @@
             $('select[name="hcga_employee_id"]').val(btn.data('hcga_employee_id')).trigger('change');
             $('select[name="ktu_employee_id"]').val(btn.data('ktu_employee_id')).trigger('change');
 
-            $('html, body').animate({ scrollTop: 0 }, 400);
+            $('html, body')
+                .animate({ scrollTop: 0 }, 200)
+                .promise()
+                .done(function () {
+                    $('#approval-setting-form-alert')
+                        .removeClass('d-none')
+                        .hide()
+                        .fadeIn(200);
+                });
         });
 
         $('.approval-setting-delete').on('click', async function () {
