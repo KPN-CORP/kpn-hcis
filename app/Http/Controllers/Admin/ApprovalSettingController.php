@@ -37,39 +37,36 @@ class ApprovalSettingController extends Controller
             "contribution_level",
             "contribution_level_code",
         )
-        ->orderBy("contribution_level_code")
-        ->get();
+            ->orderBy("contribution_level_code")
+            ->get();
 
-        // $masterCodes = \App\Models\MasterKode::pluck('fullname', 'code');
-
-        // $approvalSettings = ApprovalSetting::with(['hcga_employee', 'ktu_employee'])
-        //     ->orderBy('created_at')
-        //     ->get()
-        //     ->map(function ($item) use ($masterCodes) {
-
-        //         $codes = explode(',', $item->group_companies);
-
-        //         $names = collect($codes)
-        //             ->map(fn($code) => $masterCodes[$code] ?? $code)
-        //             ->implode(', ');
-
-        //         $item->group_companies_label = $names;
-
-        //         return $item;
-        //     });
+        $masterLocations = Location::pluck("area", "work_area");
+        $masterCompanies = Company::pluck("contribution_level", "contribution_level_code");
 
         $approvalSettings = ApprovalSetting::with(["hcga_employee", "ktu_employee"])
-        ->orderBy("created_at")
-        ->get()
-        ->map(function ($item) use ($items) {
-            $companyNames = explode(',', $item->company_names);
-            $contributionLevelCodes = explode(',', $item->contribution_level_codes);
-            $workAreas = explode(',', $item->work_area);
+            ->orderBy("created_at")
+            ->get()
+            ->map(function ($item) use ($masterLocations, $masterCompanies) {
+                $companyNames = explode(',', $item->company_names ?: '');
+                $contributionLevelCodes = explode(',', $item->contribution_level_codes ?: '');
+                $workAreas = explode(',', $item->work_areas ?: '');
 
-            $item->companyNamesLabel = collect($companyNames)->implode(', ');
+                $item->company_names_label = collect($companyNames)
+                    ->filter()
+                    ->implode(', ');
 
-            return $item;
-        });
+                $item->contribution_levels_label = collect($contributionLevelCodes)
+                    ->filter()
+                    ->map(fn($val) => $masterCompanies[$val] ? $masterCompanies[$val] . " (".$val.")" : $val)
+                    ->implode(', ');
+
+                $item->work_areas_label = collect($workAreas)
+                    ->filter()
+                    ->map(fn($val) => $masterLocations[$val] ?: $val)
+                    ->implode(', ');
+
+                return $item;
+            });
 
         // $employees = Employee::select(
         //         "employee_id",
@@ -104,8 +101,8 @@ class ApprovalSettingController extends Controller
             "contribution_level_code",
             "designation_name"
         )
-        ->orderBy("company_name")
-        ->get();
+            ->orderBy("company_name")
+            ->get();
 
         $hcgaEmployees = $employees;
         $ktuEmployees = $employees;

@@ -19,6 +19,7 @@
         width: 100%;
         /* position: relative; */
         overflow: auto;
+        table-layout: fixed;
     }
 
     .table thead th {
@@ -61,6 +62,61 @@
         border-right: 2px solid #ddd !important;
         padding-right: 10px;
         box-shadow: inset 6px 0 0 #fff;
+    }
+
+    .table th,
+    .table td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 200px;
+    }
+
+    .table tr.expanded td {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: unset;
+    }
+
+    .table td {
+        max-height: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .table tr.expanded td {
+        max-height: 500px;
+    }
+
+    .table tbody tr {
+        cursor: pointer;
+    }
+
+    .cell-content {
+        transform-origin: top;
+        transition: transform 0.25s ease, opacity 0.25s ease;
+        display: flex;
+        align-items: center;
+    }
+
+    .cell-text {
+        display: block;
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    tr:not(.expanded) .cell-content {
+        transform: scaleY(1);
+        opacity: 1;
+    }
+
+    tr.expanded .cell-content {
+        transform: scaleY(1.05);
+    }
+
+    tr.expanded .cell-text {
+        white-space: normal;
     }
 
     .text-kpn { color: #AB2F2B !important; }
@@ -156,90 +212,85 @@
             <table id="approval-setting-table" class="table table-sm table-hover align-middle mb-0 w-100">
                 <thead class="table-light">
                     <tr>
-                        <th class="ps-3">No</th>
-                        <th>Approval Name</th>
-                        <th>Type</th>
-                        <th>Group Company</th>
-                        <th>Company</th>
-                        <th>Location</th>
-                        <th>HCGA</th>
-                        <th>KTU</th>
+                        <th class="ps-3 text-center">No</th>
+                        <th class="text-center">Approval Name</th>
+                        <th class="text-center">Type</th>
+                        <th class="text-center">Group Company</th>
+                        <th class="text-center">Company</th>
+                        <th class="text-center">Location</th>
+                        <th class="text-center">HCGA</th>
+                        <th class="text-center">KTU</th>
                         <th class="text-center pe-3">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($approvalSettings as $approvalSetting)
                         <tr>
-                            <td class="ps-3">1</td>
-                            <td class="fw-semibold">{{ $approvalSetting->name ?? "-" }}</td>
-                            <td>{{ $approvalSetting->approval_type ?? "-" }}</td>
-                            <td>{{ $approvalSetting->company_names ?? "-" }}</td>
-                            <td>{{ $approvalSetting->contribution_level_codes ?? "-" }}</td>
-                            <td>{{ $approvalSetting->work_areas ?? "-" }}</td>
-                            <td>{{ $approvalSetting->hcga_employee->fullname ?? "-" }}</td>
-                            <td>{{ $approvalSetting->ktu_employee->fullname ?? "-" }}</td>
+                            <td class="ps-3">
+                                <div class="cell-content">
+                                    <span class="cell-text">
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="fw-semibold">
+                                <div class="cell-content">
+                                    <span class="cell-text">
+                                        {{ $approvalSetting->name ?: "-" }}
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-content">
+                                    <span class="cell-text">
+                                        {{ $approvalSetting->approval_type ?: "-" }}
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-content">
+                                    <span class="cell-text">
+                                        {{ $approvalSetting->company_names_label ?: "-" }}
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-content">
+                                    <span class="cell-text">
+                                        {{ $approvalSetting->contribution_levels_label ?: "-" }}
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-content">
+                                    <span class="cell-text">
+                                        {{ $approvalSetting->work_areas_label ?: "-" }}
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-content">
+                                    <span class="cell-text">
+                                        {{ $approvalSetting->hcga_employee->fullname ?: "-" }}
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-content">
+                                    <span class="cell-text">
+                                        {{ $approvalSetting->ktu_employee->fullname ?: "-" }}
+                                    </span>
+                                </div>
+                            </td>
                             <td class="text-center pe-3">
-                                <button class="btn btn-sm btn-outline-kpn me-1"><i class="ri-pencil-line"></i></button>
-                                <button class="btn btn-sm btn-outline-danger"><i class="ri-delete-bin-line"></i></button>
+                                <div class="cell-content">
+                                    <span class="cell-text">
+                                        <button class="btn btn-sm btn-outline-kpn me-1"><i class="ri-pencil-line"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger"><i class="ri-delete-bin-line"></i></button>
+                                    </span>
+                                </div>
                             </td>
                         </tr>
                     @endforeach
-                    {{-- <tr>
-                        <td class="ps-3">1</td>
-                        <td class="fw-semibold">Declaration HO</td>
-                        <td>Declaration</td>
-                        <td>KPN Corp</td>
-                        <td>-</td>
-                        <td>Jakarta</td>
-                        <td>Andi Saputra</td>
-                        <td>Dewi Anggraini</td>
-                        <td class="text-center pe-3">
-                            <button class="btn btn-sm btn-outline-kpn me-1"><i class="ri-pencil-line"></i></button>
-                            <button class="btn btn-sm btn-outline-danger"><i class="ri-delete-bin-line"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="ps-3">2</td>
-                        <td class="fw-semibold">Declaration Site A</td>
-                        <td>Declaration</td>
-                        <td>KPN Plantation</td>
-                        <td>PT Agrindo, PT Bintang</td>
-                        <td>Sumatra</td>
-                        <td>Budi Santoso</td>
-                        <td>Eko Prasetyo</td>
-                        <td class="text-center pe-3">
-                            <button class="btn btn-sm btn-outline-kpn me-1"><i class="ri-pencil-line"></i></button>
-                            <button class="btn btn-sm btn-outline-danger"><i class="ri-delete-bin-line"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="ps-3">3</td>
-                        <td class="fw-semibold">Declaration All Sites</td>
-                       <td>Declaration</td>
-                        <td>KPN Plantation, KPN Agribusiness</td>
-                        <td>-</td>
-                        <td>Sumatra, Kalimantan</td>
-                        <td>Citra Lestari</td>
-                        <td>Fajar Setiawan</td>
-                        <td class="text-center pe-3">
-                            <button class="btn btn-sm btn-outline-kpn me-1"><i class="ri-pencil-line"></i></button>
-                            <button class="btn btn-sm btn-outline-danger"><i class="ri-delete-bin-line"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="ps-3">4</td>
-                        <td class="fw-semibold">Declaration Bintang</td>
-                        <td>Declaration</td>
-                        <td>-</td>
-                        <td>PT Bintang</td>
-                        <td>-</td>
-                        <td>Andi Saputra</td>
-                        <td>Fajar Setiawan</td>
-                        <td class="text-center pe-3">
-                            <button class="btn btn-sm btn-outline-kpn me-1"><i class="ri-pencil-line"></i></button>
-                            <button class="btn btn-sm btn-outline-danger"><i class="ri-delete-bin-line"></i></button>
-                        </td>
-                    </tr> --}}
                 </tbody>
             </table>
         </div>
@@ -274,8 +325,15 @@
             lengthMenu: [5, 10, 25, 50],
             searching: true,
             columnDefs: [
-                { orderable: false, targets: -1 }
+                { orderable: false, targets: -1 },
+                { className: "text-center", width: "80px", targets: 0 },
             ]
+        });
+
+        $('#approval-setting-table tbody').on('click', 'tr', function (e) {
+            if ($(e.target).closest('button').length) return;
+
+            $(this).toggleClass('expanded');
         });
 
         $('#approval-setting-reset').on('click', async function (event) {
