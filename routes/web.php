@@ -1245,6 +1245,18 @@ Route::middleware("auth")->group(function () {
             AdminApprovalSettingController::class,
             "index",
         ])->name("admin_approval_setting");
+        Route::post("/admin/approval/setting/create", [
+            AdminApprovalSettingController::class,
+            "create",
+        ])->name("admin_approval_setting_create");
+        Route::post("/admin/approval/setting/update", [
+            AdminApprovalSettingController::class,
+            "update",
+        ])->name("admin_approval_setting_update");
+        Route::post("/admin/approval/setting/delete", [
+            AdminApprovalSettingController::class,
+            "delete",
+        ])->name("admin_approval_setting_delete");
     });
 
     Route::middleware(["permission:viewrole"])->group(function () {
