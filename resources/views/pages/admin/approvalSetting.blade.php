@@ -275,14 +275,14 @@
                             <td>
                                 <div class="cell-content">
                                     <span class="cell-text">
-                                        {{ $approvalSetting->hcga_employee->fullname ?: "-" }}
+                                        {{ $approvalSetting->hcga_employee ? $approvalSetting->hcga_employee->fullname ?: "-" : "-" }}
                                     </span>
                                 </div>
                             </td>
                             <td>
                                 <div class="cell-content">
                                     <span class="cell-text">
-                                        {{ $approvalSetting->ktu_employee->fullname ?: "-" }}
+                                        {{ $approvalSetting->ktu_employee ? $approvalSetting->ktu_employee->fullname ?: "-" : "-" }}
                                     </span>
                                 </div>
                             </td>

@@ -24,6 +24,7 @@ use App\Models\MessApproval;
 use App\Models\TaksiApproval;
 use App\Models\HealthCoverage;
 use App\Models\ApprovalPriority;
+use App\Models\ApprovalSetting;
 use Carbon\Carbon;
 use Excel;
 use Illuminate\Support\Facades\DB;
@@ -1332,6 +1333,19 @@ class BusinessTripController extends Controller
                     )
                     ->get();
 
+                // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+                $location_work_area = Location::where("area", $request->tujuan)->value('work_area');
+                $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
+                    ->where(function ($query) use ($request) {
+                        $query->where("contribution_level_codes", "like", "%" . $request->bb_perusahaan . "%")
+                            ->orWhere("contribution_level_codes", null);
+                    })
+                    ->where(function ($query) use ($location_work_area) {
+                        $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                            ->orWhere("work_areas", null);
+                    })
+                    ->first();
+
                 foreach ($data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
@@ -1343,6 +1357,17 @@ class BusinessTripController extends Controller
                         $employee_id = $director_id;
                     } else {
                         $employee_id = $data_matrix_approval->employee_id;
+                    }
+
+                    // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+                    if ($data_approval_setting) {
+                        if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
+                            $employee_id = $data_approval_setting->hcga_employee_id;
+                        }
+
+                        if ($data_approval_setting->ktu_employee_id && $data_matrix_approval->desc == "Dept Head AR & AP") {
+                            $employee_id = $data_approval_setting->ktu_employee_id;
+                        }
                     }
 
                     if ($employee_id != null) {
@@ -1357,7 +1382,8 @@ class BusinessTripController extends Controller
                         // Simpan data ke database
                         $model_approval->save();
                     }
-                    $model_approval->save();
+                    // WE DON'T NEED THIS
+                    // $model_approval->save();
                 }
             }
         } else {
@@ -1604,6 +1630,20 @@ class BusinessTripController extends Controller
                         [$total_ca],
                     )
                     ->get();
+
+                // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+                $location_work_area = Location::where("area", $request->tujuan)->value('work_area');
+                $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
+                    ->where(function ($query) use ($request) {
+                        $query->where("contribution_level_codes", "like", "%" . $request->bb_perusahaan . "%")
+                            ->orWhere("contribution_level_codes", null);
+                    })
+                    ->where(function ($query) use ($location_work_area) {
+                        $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                            ->orWhere("work_areas", null);
+                    })
+                    ->first();
+
                 foreach ($data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
@@ -1616,6 +1656,18 @@ class BusinessTripController extends Controller
                     } else {
                         $employee_id = $data_matrix_approval->employee_id;
                     }
+
+                    // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+                    if ($data_approval_setting) {
+                        if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
+                            $employee_id = $data_approval_setting->hcga_employee_id;
+                        }
+
+                        if ($data_approval_setting->ktu_employee_id && $data_matrix_approval->desc == "Dept Head AR & AP") {
+                            $employee_id = $data_approval_setting->ktu_employee_id;
+                        }
+                    }
+
                     if ($employee_id != null) {
                         $model_approval = new ca_approval();
                         $model_approval->ca_id = $ent->id;
@@ -1629,8 +1681,8 @@ class BusinessTripController extends Controller
                         $model_approval->save();
                     }
 
-                    // Simpan data ke database
-                    $model_approval->save();
+                    // WE DON'T NEED THIS
+                    // $model_approval->save();
                 }
                 $ent->save();
             }
@@ -3566,6 +3618,19 @@ class BusinessTripController extends Controller
                     )
                     ->get();
 
+                // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+                $location_work_area = Location::where("area", $request->tujuan)->value('work_area');
+                $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
+                    ->where(function ($query) use ($request) {
+                        $query->where("contribution_level_codes", "like", "%" . $request->bb_perusahaan . "%")
+                            ->orWhere("contribution_level_codes", null);
+                    })
+                    ->where(function ($query) use ($location_work_area) {
+                        $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                            ->orWhere("work_areas", null);
+                    })
+                    ->first();
+
                 foreach ($data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
@@ -3577,6 +3642,17 @@ class BusinessTripController extends Controller
                         $employee_id = $director_id;
                     } else {
                         $employee_id = $data_matrix_approval->employee_id;
+                    }
+
+                    // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+                    if ($data_approval_setting) {
+                        if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
+                            $employee_id = $data_approval_setting->hcga_employee_id;
+                        }
+
+                        if ($data_approval_setting->ktu_employee_id && $data_matrix_approval->desc == "Dept Head AR & AP") {
+                            $employee_id = $data_approval_setting->ktu_employee_id;
+                        }
                     }
 
                     if ($employee_id != null) {
@@ -3591,7 +3667,9 @@ class BusinessTripController extends Controller
                         // Simpan data ke database
                         $model_approval->save();
                     }
-                    $model_approval->save();
+
+                    // WE DON'T NEED THIS
+                    // $model_approval->save();
                 }
             }
 
@@ -3619,6 +3697,19 @@ class BusinessTripController extends Controller
                     )
                     ->get();
 
+                // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+                $location_work_area = Location::where("area", $request->tujuan)->value('work_area');
+                $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
+                    ->where(function ($query) use ($request) {
+                        $query->where("contribution_level_codes", "like", "%" . $request->bb_perusahaan . "%")
+                            ->orWhere("contribution_level_codes", null);
+                    })
+                    ->where(function ($query) use ($location_work_area) {
+                        $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                            ->orWhere("work_areas", null);
+                    })
+                    ->first();
+
                 foreach ($data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
@@ -3630,6 +3721,17 @@ class BusinessTripController extends Controller
                         $employee_id = $director_id;
                     } else {
                         $employee_id = $data_matrix_approval->employee_id;
+                    }
+
+                    // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+                    if ($data_approval_setting) {
+                        if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
+                            $employee_id = $data_approval_setting->hcga_employee_id;
+                        }
+
+                        if ($data_approval_setting->ktu_employee_id && $data_matrix_approval->desc == "Dept Head AR & AP") {
+                            $employee_id = $data_approval_setting->ktu_employee_id;
+                        }
                     }
 
                     if ($employee_id != null) {
@@ -3646,7 +3748,9 @@ class BusinessTripController extends Controller
                         // Simpan data ke database
                         $model_approval->save();
                     }
-                    $model_approval->save();
+
+                    // WE DON'T NEED THIS
+                    // $model_approval->save();
                 }
             }
             $managerEmail = Employee::where("employee_id", $managerL1)
@@ -3892,237 +3996,6 @@ class BusinessTripController extends Controller
         );
     }
 
-
-//     public function deklarasiCreate(Request $request, $id)
-// {
-//     $n = BusinessTrip::find($id);
-//     if ($request->has("action_draft")) {
-//         $statusValue = "Declaration Draft";
-//     } elseif ($request->has("action_submit")) {
-//         $statusValue = "Declaration L1";
-//     }
-
-//     $oldNoSppd = $n->no_sppd;
-//     $userId = Auth::id();
-//     $employee = Employee::where("id", $userId)->first();
-//     $isRestricted = ($employee->job_level < 8);
-
-//     $deptHeadManager = $this->findDepartmentHead($employee);
-//     $managerL1 = $deptHeadManager->employee_id;
-//     $managerL2 = $deptHeadManager->manager_l1_id;
-
-//     $caRecords = CATransaction::where("no_sppd", $oldNoSppd)->get();
-//     $dnsRecord = $caRecords->where("type_ca", "dns")->first();
-//     $entrRecord = $caRecords->where("type_ca", "entr")->first();
-
-//     $entrTab = $entrRecord ? true : false;
-//     $dnsTab = $dnsRecord ? true : false;
-//     $employee_data = Employee::where("id", $userId)->first();
-
-//     if ($isRestricted && $request->totalca_ca_deklarasi == 0 && $request->totalca == 0) {
-//         return redirect()->back()->with("error", "CA Real cannot be zero for your job level.")->withInput();
-//     }
-
-//     if ($request->has("removed_prove_declare")) {
-//         $removedFiles = json_decode($request->removed_prove_declare, true);
-//         $existingFiles = $request->existing_prove_declare ? json_decode($request->existing_prove_declare, true) : [];
-//         foreach ($removedFiles as $fileToRemove) {
-//             if (in_array($fileToRemove, $existingFiles)) {
-//                 $filePath = public_path($fileToRemove);
-//                 if (file_exists($filePath)) {
-//                     unlink($filePath);
-//                 }
-//                 $existingFiles = array_filter($existingFiles, fn($file) => $file !== $fileToRemove);
-//             }
-//         }
-//     } else {
-//         $existingFiles = $request->existing_prove_declare ? json_decode($request->existing_prove_declare, true) : [];
-//     }
-
-//     if ($request->hasFile("prove_declare")) {
-//         $request->validate([
-//             "prove_declare.*" => "required|mimes:jpeg,png,jpg,gif,pdf|max:2048",
-//         ]);
-//         foreach ($request->file("prove_declare") as $file) {
-//             $filename = time() . "_" . $file->getClientOriginalName();
-//             $upload_path = "uploads/proofs/" . $employee_data->employee_id;
-//             $file->storeAs($upload_path, $filename, "public");
-//             $existingFiles[] = $upload_path . "/" . $filename;
-//         }
-//     }
-
-//     if ($caRecords->isEmpty()) {
-//         if ($entrTab == false && $request->totalca > 0) {
-//             $ent = new CATransaction();
-//             $entrTab = true;
-//             $ent->id = (string) Str::uuid();
-//             $ent->no_ca = $this->generateNoCa();
-//             $ent->no_sppd = $oldNoSppd;
-//             $ent->unit = $request->divisi;
-//             $ent->contribution_level_code = $request->bb_perusahaan;
-//             $ent->user_id = $userId;
-//             $ent->destination = $request->tujuan;
-//             $ent->start_date = $request->mulai;
-//             $ent->end_date = $request->kembali;
-//             $ent->ca_needs = $request->keperluan;
-//             $ent->type_ca = "entr";
-//             $ent->declare_estimate = Carbon::parse($request->kembali)->addDays(3);
-//             $ent->total_days = Carbon::parse($request->mulai)->diffInDays(Carbon::parse($request->kembali));
-//             $ent->total_ca = "0";
-//             $ent->total_real = (int) str_replace(".", "", $request->totalca);
-//             $ent->total_cost = -1 * $ent->total_real;
-
-//             if ($isRestricted && $ent->total_real === 0) {
-//                 return redirect()->back()->with("error", "CA Real cannot be zero.")->withInput();
-//             }
-
-//             $ent->approval_sett = ($statusValue === "Declaration L1") ? "Pending" : "Draft";
-//             $ent->approval_status = "Approved";
-//             $ent->created_by = $userId;
-//             $ent->declaration_at = Carbon::now();
-
-//             $detail_e = [];
-//             $relation_e = [];
-//             if ($request->has("enter_type_e_detail")) {
-//                 foreach ($request->enter_type_e_detail as $key => $type) {
-//                     $nominal = str_replace(".", "", $request->nominal_e_detail[$key]);
-//                     if (!empty($type) && !empty($nominal)) {
-//                         $detail_e[] = ["type" => $type, "fee_detail" => $request->enter_fee_e_detail[$key], "nominal" => $nominal];
-//                     }
-//                 }
-//             }
-//             if ($request->has("rname_e_relation")) {
-//                 foreach ($request->rname_e_relation as $key => $name) {
-//                     if (!empty($name)) {
-//                         $relation_e[] = [
-//                             "name" => $name,
-//                             "position" => $request->rposition_e_relation[$key],
-//                             "company" => $request->rcompany_e_relation[$key],
-//                             "purpose" => $request->rpurpose_e_relation[$key],
-//                             "relation_type" => array_filter([
-//                                 "Food" => ($request->food_e_relation[$key] ?? null) === "food",
-//                                 "Transport" => ($request->transport_e_relation[$key] ?? null) === "transport",
-//                                 "Accommodation" => ($request->accommodation_e_relation[$key] ?? null) === "accommodation",
-//                                 "Gift" => ($request->gift_e_relation[$key] ?? null) === "gift",
-//                                 "Fund" => ($request->fund_e_relation[$key] ?? null) === "fund",
-//                             ])
-//                         ];
-//                     }
-//                 }
-//             }
-//             $ent->detail_ca = '{"detail_e":[],"relation_e":[]}';
-//             $ent->declare_ca = json_encode(["detail_e" => $detail_e, "relation_e" => $relation_e]);
-//             $ent->prove_declare = json_encode(array_values($existingFiles));
-//             $ent->sett_id = $managerL1;
-//             $ent->save();
-//         }
-
-//         if ($dnsTab == false && $request->totalca_ca_deklarasi > 0) {
-//             $ca = new CATransaction();
-//             $dnsTab = true;
-//             $ca->id = (string) Str::uuid();
-//             $ca->no_ca = $this->generateNoCa();
-//             $ca->no_sppd = $oldNoSppd;
-//             $ca->unit = $request->divisi;
-//             $ca->user_id = $userId;
-//             $ca->type_ca = "dns";
-//             $ca->total_real = (int) str_replace(".", "", $request->totalca_ca_deklarasi);
-//             $ca->total_cost = -1 * $ca->total_real;
-
-//             if ($isRestricted && $ca->total_real === 0) {
-//                 return redirect()->back()->with("error", "CA Real cannot be zero.")->withInput();
-//             }
-
-//             $ca->approval_sett = ($statusValue === "Declaration L1") ? "Pending" : "Draft";
-//             $ca->declaration_at = Carbon::now();
-//             $ca->prove_declare = json_encode(array_values($existingFiles));
-//             $ca->sett_id = $managerL1;
-//             $ca->save();
-//         }
-//     }
-
-//     if ($caRecords->isNotEmpty()) {
-//         foreach ($caRecords as $ca) {
-//             $ca->approval_sett = ($statusValue === "Declaration L1") ? "Pending" : "Draft";
-//             $ca->declaration_at = Carbon::now();
-//             $current_real = ($ca->type_ca == "dns") ? $request->totalca_ca_deklarasi : $request->totalca;
-//             $total_real = (int) str_replace(".", "", $current_real);
-
-//             if ($isRestricted && $total_real === 0) {
-//                 return redirect()->back()->with("error", "CA Real cannot be zero.")->withInput();
-//             }
-
-//             if ($ca->detail_ca === null) {
-//                 $ca->total_ca = "0";
-//                 $ca->total_real = $total_real;
-//                 $ca->total_cost = -1 * $total_real;
-//             } else {
-//                 $ca->total_real = $total_real;
-//                 $ca->total_cost = $ca->total_ca - $total_real;
-//             }
-
-//             $ca->prove_declare = json_encode(array_values($existingFiles));
-//             $ca->sett_id = $managerL1;
-//             $ca->save();
-//         }
-//     }
-
-//     $n->update(["status" => $statusValue]);
-
-//     if ($statusValue !== "Declaration Draft") {
-//         $cek_director_id = Employee::select(["emp.employee_id"])
-//             ->leftJoin("designations as dsg", "dsg.job_code", "=", "employees.designation_code")
-//             ->leftJoin("designations as dsg2", "dsg2.department_code", "=", DB::raw("SUBSTRING_INDEX(SUBSTRING_INDEX(dsg.department_level2, '(', -1), ')', 1)"))
-//             ->leftJoin("employees as emp", "emp.designation_code", "=", "dsg2.job_code")
-//             ->where("employees.designation_code", "=", $employee->designation_code)
-//             ->where("dsg2.director_flag", "=", "T")
-//             ->first();
-
-//         $director_id = $cek_director_id ? $cek_director_id->employee_id : "";
-
-//         $caStatus = ($statusValue === "Declaration L1") ? "Pending" : $statusValue;
-
-//         if ($dnsTab || $entrTab) {
-//             $active_ca = $caRecords->first() ?? ($ent ?? ($ca ?? null));
-//             if ($active_ca) {
-//                 $data_matrix_approvals = MatrixApproval::where("modul", "dns")
-//                     ->where("group_company", "like", "%" . $employee->group_company . "%")
-//                     ->where("job_level", "like", "%" . $employee->job_level . "%")
-//                     ->get();
-
-//                 foreach ($data_matrix_approvals as $dm) {
-//                     $emp_id = match($dm->employee_id) {
-//                         "cek_L1" => $managerL1,
-//                         "cek_L2" => $managerL2,
-//                         "cek_director" => $director_id,
-//                         default => $dm->employee_id
-//                     };
-
-//                     if ($emp_id) {
-//                         ca_sett_approval::create([
-//                             "ca_id" => $active_ca->id,
-//                             "role_name" => $dm->desc,
-//                             "employee_id" => $emp_id,
-//                             "layer" => $dm->layer,
-//                             "approval_status" => $caStatus
-//                         ]);
-//                     }
-//                 }
-
-//                 try {
-//                     Mail::to(Employee::where("employee_id", $managerL1)->value("email"))
-//                         ->bcc("dali.kewara@kpn-corp.com")
-//                         ->send(new DeclarationNotification($n, [], [], [], [], $managerL1, "", "", "", "", "", "", true, true, ""));
-//                 } catch (\Exception $e) {
-//                     Log::error("Email Error: " . $e->getMessage());
-//                 }
-//             }
-//         }
-//     }
-
-//     return redirect("/businessTrip")->with("success", "Declaration created successfully");
-// }
-
     public function businessTripExtend(Request $req)
     {
         $id = $req->input("no_id"); // Get the ID from the no_id input
@@ -4214,6 +4087,20 @@ class BusinessTripController extends Controller
                         "%" . $req->companyFilter . "%",
                     )
                     ->get();
+
+                // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+                $location_work_area = Location::where("area", $model_bt->tujuan)->value('work_area');
+                $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee_data->group_company . "%")
+                    ->where(function ($query) use ($req) {
+                        $query->where("contribution_level_codes", "like", "%" . $req->companyFilter . "%")
+                            ->orWhere("contribution_level_codes", null);
+                    })
+                    ->where(function ($query) use ($location_work_area) {
+                        $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                            ->orWhere("work_areas", null);
+                    })
+                    ->first();
+
                 foreach ($data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
@@ -4226,6 +4113,18 @@ class BusinessTripController extends Controller
                     } else {
                         $employee_id = $data_matrix_approval->employee_id;
                     }
+
+                    // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+                    if ($data_approval_setting) {
+                        if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
+                            $employee_id = $data_approval_setting->hcga_employee_id;
+                        }
+
+                        if ($data_approval_setting->ktu_employee_id && $data_matrix_approval->desc == "Dept Head AR & AP") {
+                            $employee_id = $data_approval_setting->ktu_employee_id;
+                        }
+                    }
+
                     if ($employee_id != null) {
                         $model_approval = new ca_extend();
                         $model_approval->ca_id = $model_ca_bt->id;
@@ -4247,8 +4146,8 @@ class BusinessTripController extends Controller
                             "ext_reason",
                         );
 
-                        // Simpan data ke database
-                        $model_approval->save();
+                        // WE DON'T NEED THIS
+                        // $model_approval->save();
                     }
                 }
 
@@ -4322,6 +4221,20 @@ class BusinessTripController extends Controller
                         "%" . $req->companyFilter . "%",
                     )
                     ->get();
+
+                // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+                $location_work_area = Location::where("area", $model_bt->tujuan)->value('work_area');
+                $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee_data->group_company . "%")
+                    ->where(function ($query) use ($req) {
+                        $query->where("contribution_level_codes", "like", "%" . $req->companyFilter . "%")
+                            ->orWhere("contribution_level_codes", null);
+                    })
+                    ->where(function ($query) use ($location_work_area) {
+                        $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                            ->orWhere("work_areas", null);
+                    })
+                    ->first();
+
                 foreach ($data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
@@ -4334,6 +4247,18 @@ class BusinessTripController extends Controller
                     } else {
                         $employee_id = $data_matrix_approval->employee_id;
                     }
+
+                    // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+                    if ($data_approval_setting) {
+                        if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
+                            $employee_id = $data_approval_setting->hcga_employee_id;
+                        }
+
+                        if ($data_approval_setting->ktu_employee_id && $data_matrix_approval->desc == "Dept Head AR & AP") {
+                            $employee_id = $data_approval_setting->ktu_employee_id;
+                        }
+                    }
+
                     if ($employee_id != null) {
                         $model_approval = new ca_extend();
                         $model_approval->ca_id = $model_ca_ent->id;
@@ -4355,8 +4280,8 @@ class BusinessTripController extends Controller
                             "ext_reason",
                         );
 
-                        // Simpan data ke database
-                        $model_approval->save();
+                        // WE DON'T NEED THIS
+                        // $model_approval->save();
                     }
                 }
 
@@ -6530,6 +6455,20 @@ class BusinessTripController extends Controller
                         [$total_ca],
                     )
                     ->get();
+
+                // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+                $location_work_area = Location::where("area", $request->tujuan)->value('work_area');
+                $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
+                    ->where(function ($query) use ($request) {
+                        $query->where("contribution_level_codes", "like", "%" . $request->bb_perusahaan . "%")
+                            ->orWhere("contribution_level_codes", null);
+                    })
+                    ->where(function ($query) use ($location_work_area) {
+                        $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                            ->orWhere("work_areas", null);
+                    })
+                    ->first();
+
                 foreach ($data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
@@ -6542,6 +6481,18 @@ class BusinessTripController extends Controller
                     } else {
                         $employee_id = $data_matrix_approval->employee_id;
                     }
+
+                    // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+                    if ($data_approval_setting) {
+                        if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
+                            $employee_id = $data_approval_setting->hcga_employee_id;
+                        }
+
+                        if ($data_approval_setting->ktu_employee_id && $data_matrix_approval->desc == "Dept Head AR & AP") {
+                            $employee_id = $data_approval_setting->ktu_employee_id;
+                        }
+                    }
+
                     if ($employee_id != null) {
                         $model_approval = new ca_approval();
                         $model_approval->ca_id = $ca_id;
@@ -6555,8 +6506,8 @@ class BusinessTripController extends Controller
                         $model_approval->save();
                     }
 
-                    // Simpan data ke database
-                    $model_approval->save();
+                    // WE DON'T NEED THIS
+                    // $model_approval->save();
                 }
                 $ca->save();
             }
@@ -6790,6 +6741,20 @@ class BusinessTripController extends Controller
                         [$total_ca],
                     )
                     ->get();
+
+                // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+                $location_work_area = Location::where("area", $request->tujuan)->value('work_area');
+                $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
+                    ->where(function ($query) use ($request) {
+                        $query->where("contribution_level_codes", "like", "%" . $request->bb_perusahaan . "%")
+                            ->orWhere("contribution_level_codes", null);
+                    })
+                    ->where(function ($query) use ($location_work_area) {
+                        $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                            ->orWhere("work_areas", null);
+                    })
+                    ->first();
+
                 foreach ($data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
@@ -6802,6 +6767,18 @@ class BusinessTripController extends Controller
                     } else {
                         $employee_id = $data_matrix_approval->employee_id;
                     }
+
+                    // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+                    if ($data_approval_setting) {
+                        if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
+                            $employee_id = $data_approval_setting->hcga_employee_id;
+                        }
+
+                        if ($data_approval_setting->ktu_employee_id && $data_matrix_approval->desc == "Dept Head AR & AP") {
+                            $employee_id = $data_approval_setting->ktu_employee_id;
+                        }
+                    }
+
                     if ($employee_id != null) {
                         $model_approval = new ca_approval();
                         $model_approval->ca_id = $ent_id;
@@ -6815,8 +6792,8 @@ class BusinessTripController extends Controller
                         $model_approval->save();
                     }
 
-                    // Simpan data ke database
-                    $model_approval->save();
+                    // WE DON'T NEED THIS
+                    // $model_approval->save();
                 }
                 $ent->save();
             }
