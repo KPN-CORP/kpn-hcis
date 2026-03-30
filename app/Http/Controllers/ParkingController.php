@@ -21,7 +21,7 @@ class ParkingController extends Controller
 
         if ($response->successful()) {
             $data = $response->json();
-            $token = $data->token ?? '';
+            $token = $data['token'] ?? '';
             $query = http_build_query([
                 'employee_id' => $employee_id,
                 'token' => $token,
