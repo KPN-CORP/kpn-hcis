@@ -105,8 +105,8 @@ class ApprovalSettingController extends Controller
             'group_companies' => 'nullable|string',
             'contribution_level_codes' => 'nullable|string',
             'work_areas' => 'nullable|string',
-            'hcga_employee_id' => 'required|exists:employees,employee_id',
-            'ktu_employee_id' => 'required|exists:employees,employee_id',
+            'hcga_employee_id' => 'nullable|exists:employees,employee_id',
+            'ktu_employee_id' => 'nullable|exists:employees,employee_id',
         ], [
             'approval_name.required' => 'Nama approval wajib diisi',
             'approval_name.string' => 'Nama approval harus berupa text',
@@ -117,8 +117,6 @@ class ApprovalSettingController extends Controller
             'group_companies.string' => 'Group company harus berupa text',
             'contribution_level_codes.string' => 'Company harus berupa text',
             'work_areas.string' => 'Location harus berupa text',
-            'hcga_employee_id.required' => 'HCGA wajib dipilih',
-            'ktu_employee_id.required' => 'KTU wajib dipilih',
         ]);
 
         if ($validator->fails()) {
@@ -163,8 +161,8 @@ class ApprovalSettingController extends Controller
             'group_companies' => 'nullable|string',
             'contribution_level_codes' => 'nullable|string',
             'work_areas' => 'nullable|string',
-            'hcga_employee_id' => 'required|exists:employees,employee_id',
-            'ktu_employee_id' => 'required|exists:employees,employee_id',
+            'hcga_employee_id' => 'nullable|exists:employees,employee_id',
+            'ktu_employee_id' => 'nullable|exists:employees,employee_id',
         ], [
             'id.required' => 'ID wajib dikirim',
             'approval_name.required' => 'Nama approval wajib diisi',
@@ -176,8 +174,6 @@ class ApprovalSettingController extends Controller
             'group_companies.string' => 'Group company harus berupa text',
             'contribution_level_codes.string' => 'Company harus berupa text',
             'work_areas.string' => 'Location harus berupa text',
-            'hcga_employee_id.required' => 'HCGA wajib dipilih',
-            'ktu_employee_id.required' => 'KTU wajib dipilih',
         ]);
 
         if ($validator->fails()) {
