@@ -30,6 +30,7 @@ use App\Models\HomeTrip;
 use App\Models\master_holiday;
 use App\Models\HotelApproval;
 use App\Models\tkt_transaction;
+use App\Models\ApprovalSetting;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;

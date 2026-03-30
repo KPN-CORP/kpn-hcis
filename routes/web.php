@@ -43,6 +43,7 @@ use App\Http\Controllers\BTApprovalController;
 use App\Http\Controllers\ApiEmployeeController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\DocumentGeneratorController;
+use App\Http\Controllers\ParkingController;
 use App\Models\Designation;
 use Faker\Provider\Medical;
 use Illuminate\Support\Facades\Route;
@@ -774,6 +775,11 @@ Route::middleware("auth")->group(function () {
         "changesGroupCompany",
     ]);
     Route::get("/changes-company", [ReportController::class, "changesCompany"]);
+
+    // Parking
+    Route::get("/parking", [ParkingController::class, "index"])->name(
+        "parking",
+    );
 
     //Medical
     Route::get("/medical", [MedicalController::class, "medical"])->name(
