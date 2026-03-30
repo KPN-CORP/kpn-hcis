@@ -24,7 +24,7 @@
         object-fit: contain;
     }
     .menu-text {
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 600;
         color: #313a46;
         line-height: 1.3;
@@ -87,7 +87,7 @@
         <div class="col">
             <a href="{{ route('parking') }}" class="text-decoration-none">
                 <div class="menu-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
-                    <img src="{{ asset('images/menu/TEST.png') }}" alt="Parking" class="menu-icon mb-3">
+                    <img src="{{ asset('images/menu/logo-parking.png') }}" alt="Parking" class="menu-icon mb-3">
                     <span class="menu-text">Parking</span>
                 </div>
             </a>
