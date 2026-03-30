@@ -84,6 +84,15 @@
             </a>
         </div>
 
+        <div class="col">
+            <a href="{{ route('parking') }}" class="text-decoration-none">
+                <div class="menu-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                    <img src="{{ asset('images/menu/TEST.png') }}" alt="Parking" class="menu-icon mb-3">
+                    <span class="menu-text">Parking</span>
+                </div>
+            </a>
+        </div>
+
     </div>
 
     @if (auth()->check() && (auth()->user()->can('reportca_hcis') || auth()->user()->can('report_hcis_md')))
