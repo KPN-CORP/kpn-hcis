@@ -475,6 +475,7 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
+                                    <input class="d-none" name="is_use_current_nominal[]" value="{{ (int) ($perdiem_dec['is_use_current_nominal'] ?? 0) === 1 ? 1 : 0 }}" type="hidden" />
                                     <input class="form-control bg-light" name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}" type="text" value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}" onchange="onNominalChange()" readonly>
                                 </div>
                             </div>
@@ -555,6 +556,7 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
+                                    <input class="d-none" name="is_use_current_nominal[]" value="{{ (int) ($perdiem_dec['is_use_current_nominal'] ?? 0) === 1 ? 1 : 0 }}" type="hidden" />
                                     <input class="form-control bg-light" name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}" type="text" value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}" onchange="onNominalChange()" readonly>
                                 </div>
                             </div>
@@ -652,6 +654,7 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
+                                    <input class="d-none" name="is_use_current_nominal[]" value="{{ (int) ($perdiem_dec['is_use_current_nominal'] ?? 0) === 1 ? 1 : 0 }}" type="hidden" />
                                     <input class="form-control bg-light" name="nominal_bt_perdiem[]" id="nominal_bt_perdiem_{{ $loop->index + 1 }}" type="text" value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}" onchange="onNominalChange()" readonly>
                                 </div>
                             </div>

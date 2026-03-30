@@ -256,6 +256,7 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
+                                    <input class="d-none" name="is_use_current_nominal[]" value="{{ (int) ($perdiem['is_use_current_nominal'] ?? 0) === 1 ? 1 : 0 }}" type="hidden" />
                                     <input class="form-control {{ $n->is_overseas === 'T' ? '' : 'bg-light' }}" name="nominal_bt_perdiem[]"
                                         id="nominal_bt_perdiem_{{ $loop->index + 1 }}" type="text"
                                         value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
@@ -355,6 +356,7 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
+                                    <input class="d-none" name="is_use_current_nominal[]" value="{{ (int) ($perdiem['is_use_current_nominal'] ?? 0) === 1 ? 1 : 0 }}" type="hidden" />
                                     <input class="form-control {{ $n->is_overseas === 'T' ? '' : 'bg-light' }}" name="nominal_bt_perdiem[]"
                                         id="nominal_bt_perdiem_{{ $loop->index + 1 }}" type="text"
                                         value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"
@@ -476,6 +478,7 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Rp</span>
                                     </div>
+                                    <input class="d-none" name="is_use_current_nominal[]" value="{{ (int) ($perdiem['is_use_current_nominal'] ?? 0) === 1 ? 1 : 0 }}" type="hidden" />
                                     <input class="form-control {{ $n->is_overseas === 'T' ? '' : 'bg-light' }}" name="nominal_bt_perdiem[]"
                                         id="nominal_bt_perdiem_{{ $loop->index + 1 }}" type="text"
                                         value="{{ number_format($perdiem_dec['nominal'], 0, ',', '.') }}"

@@ -1039,7 +1039,7 @@
                             const position = document.querySelectorAll('input[name="rposition_e_relation[]"]')[0]?.value.trim();
                             const company = document.querySelectorAll('input[name="rcompany_e_relation[]"]')[0]?.value.trim();
                             const purpose = document.querySelectorAll('textarea[name="rpurpose_e_relation[]"]')[0]?.value.trim();
-                            
+
                             if (!amount) validationErrors.push(`Amount row ${i + 1}`);
                             // if (!fee) validationErrors.push(`Fee Detail row ${i + 1}`);
                             // if (!receiver) validationErrors.push(`Receiver Type row ${i + 1}`);

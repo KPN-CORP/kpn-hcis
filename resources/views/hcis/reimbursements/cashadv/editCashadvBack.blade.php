@@ -234,6 +234,7 @@
                                                                                     <div class="input-group-append">
                                                                                         <span class="input-group-text">Rp</span>
                                                                                     </div>
+                                                                                    <input class="d-none" name="is_use_current_nominal[]" value="{{ (int) ($perdiem['is_use_current_nominal'] ?? 0) === 1 ? 1 : 0 }}" type="hidden" />
                                                                                     <input class="form-control" name="nominal_bt_perdiem[]" id="nominal_bt_perdiem" type="text" min="0" value="{{ number_format($perdiem['nominal'], 0, ',', '.') }}">
                                                                                 </div>
                                                                                 <hr class="border border-primary border-1 opacity-50">

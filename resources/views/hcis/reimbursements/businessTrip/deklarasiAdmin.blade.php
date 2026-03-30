@@ -333,23 +333,23 @@
                                                         @php
                                                             // Ambil data dari dnsData atau entrData
                                                             $proveDeclare = $dnsData->prove_declare ?? $entrData->prove_declare;
-                                                
+
                                                             // Cek apakah data berbentuk JSON (array) atau string biasa
                                                             $decodedData = json_decode($proveDeclare, true);
                                                             $existingFiles = is_array($decodedData) ? $decodedData : [$proveDeclare];
-                                                
+
                                                             // Pastikan setiap path mengarah ke penyimpanan yang benar
                                                             $existingFiles = array_map(function ($file) {
                                                                 // Pastikan file tidak mengandung 'public/' di dalam path
                                                                 $file = str_replace('public/', '', $file);
-                                                            
+
                                                                 // Cek apakah file benar-benar ada di storage
-                                                                return Storage::exists("public/{$file}") 
-                                                                    ? asset("storage/{$file}") 
+                                                                return Storage::exists("public/{$file}")
+                                                                    ? asset("storage/{$file}")
                                                                     : asset($file);
                                                             }, $existingFiles);
                                                         @endphp
-                                                
+
                                                         <div id="existing-file-preview" class="mt-2">
                                                             @foreach ($existingFiles as $file)
                                                                 @php $extension = pathinfo($file, PATHINFO_EXTENSION); @endphp
