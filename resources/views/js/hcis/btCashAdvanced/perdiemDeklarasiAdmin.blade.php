@@ -197,6 +197,9 @@
         const allowanceInput = formGroup.querySelector(
             'input[name="nominal_bt_perdiem[]"]'
         );
+        const isUseCurrentNominal = formGroup.querySelector(
+            'input[name="is_use_current_nominal[]"]'
+        );
 
         const formIndex = formGroup.getAttribute("id").match(/\d+/)[0];
         // Cek apakah tanggal sudah digunakan di form lain
@@ -246,7 +249,11 @@
                 }
 
                 if(is_overseas.value==='F'){
-                    allowanceInput.value = formatNumberPerdiem(allowance);
+                    if (isUseCurrentNominal && isUseCurrentNominal.value == "1") {
+                        isUseCurrentNominal.value = "0";
+                    } else {
+                        allowanceInput.value = formatNumberPerdiem(allowance);
+                    }
                 }
                 calculateTotalNominalBTPerdiem();
             } else {
