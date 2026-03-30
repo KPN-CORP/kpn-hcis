@@ -30,6 +30,6 @@ class ParkingController extends Controller
             return redirect()->away('https://apps-stage.hcis.live/auth-token-login?'.$query);
         }
 
-        return redirect()->away('https://apps-stage.hcis.live/auth-token-login');
+        return redirect()->away('https://apps-stage.hcis.live');
     }
 }
