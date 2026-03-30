@@ -19,6 +19,8 @@ class ParkingController extends Controller
             'employee_id' => $employee_id,
         ]);
 
+        dd($response);
+
         if ($response->successful()) {
             $data = $response->json();
             $token = $data->token ?? '';
