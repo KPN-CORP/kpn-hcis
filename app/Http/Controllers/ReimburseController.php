@@ -1229,6 +1229,20 @@ class ReimburseController extends Controller
                     [$total_ca],
                 )
                 ->get();
+
+            // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+            $location_work_area = Location::where("area", $req->locationFilter)->value('work_area');
+            $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee_data->group_company . "%")
+                ->where(function ($query) use ($req) {
+                    $query->where("contribution_level_codes", "like", "%" . $req->companyFilter . "%")
+                        ->orWhere("contribution_level_codes", null);
+                })
+                ->where(function ($query) use ($location_work_area) {
+                    $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                        ->orWhere("work_areas", null);
+                })
+                ->first();
+
             // dd($data_matrix_approvals);
             foreach ($data_matrix_approvals as $data_matrix_approval) {
                 if ($data_matrix_approval->employee_id == "cek_L1") {
@@ -1241,6 +1255,17 @@ class ReimburseController extends Controller
                     $employee_id = $director_id;
                 } else {
                     $employee_id = $data_matrix_approval->employee_id;
+                }
+
+                // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+                if ($data_approval_setting) {
+                    if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
+                        $employee_id = $data_approval_setting->hcga_employee_id;
+                    }
+
+                    if ($data_approval_setting->ktu_employee_id && $data_matrix_approval->desc == "Dept Head AR & AP") {
+                        $employee_id = $data_approval_setting->ktu_employee_id;
+                    }
                 }
 
                 if ($employee_id != null) {
@@ -1738,6 +1763,19 @@ class ReimburseController extends Controller
                 )
                 ->get();
 
+            // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+            $location_work_area = Location::where("area", $req->locationFilter)->value('work_area');
+            $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee_data->group_company . "%")
+                ->where(function ($query) use ($req) {
+                    $query->where("contribution_level_codes", "like", "%" . $req->companyFilter . "%")
+                        ->orWhere("contribution_level_codes", null);
+                })
+                ->where(function ($query) use ($location_work_area) {
+                    $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                        ->orWhere("work_areas", null);
+                })
+                ->first();
+
             // dd($data_matrix_approvals);
             foreach ($data_matrix_approvals as $data_matrix_approval) {
                 if ($data_matrix_approval->employee_id == "cek_L1") {
@@ -1751,6 +1789,18 @@ class ReimburseController extends Controller
                 } else {
                     $employee_id = $data_matrix_approval->employee_id;
                 }
+
+                // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+                if ($data_approval_setting) {
+                    if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
+                        $employee_id = $data_approval_setting->hcga_employee_id;
+                    }
+
+                    if ($data_approval_setting->ktu_employee_id && $data_matrix_approval->desc == "Dept Head AR & AP") {
+                        $employee_id = $data_approval_setting->ktu_employee_id;
+                    }
+                }
+
                 if ($employee_id != null) {
                     $model_approval = new ca_approval();
                     $model_approval->ca_id = $req->no_id;
@@ -1920,6 +1970,20 @@ class ReimburseController extends Controller
                     "%" . $req->companyFilter . "%",
                 )
                 ->get();
+
+            // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+            $location_work_area = Location::where("area", $model->destination)->value('work_area');
+            $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee_data->group_company . "%")
+                ->where(function ($query) use ($req) {
+                    $query->where("contribution_level_codes", "like", "%" . $req->companyFilter . "%")
+                        ->orWhere("contribution_level_codes", null);
+                })
+                ->where(function ($query) use ($location_work_area) {
+                    $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                        ->orWhere("work_areas", null);
+                })
+                ->first();
+
             foreach ($data_matrix_approvals as $data_matrix_approval) {
                 if ($data_matrix_approval->employee_id == "cek_L1") {
                     $employee_id = $managerL1;
@@ -1932,6 +1996,18 @@ class ReimburseController extends Controller
                 } else {
                     $employee_id = $data_matrix_approval->employee_id;
                 }
+
+                // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+                if ($data_approval_setting) {
+                    if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
+                        $employee_id = $data_approval_setting->hcga_employee_id;
+                    }
+
+                    if ($data_approval_setting->ktu_employee_id && $data_matrix_approval->desc == "Dept Head AR & AP") {
+                        $employee_id = $data_approval_setting->ktu_employee_id;
+                    }
+                }
+
                 if ($employee_id != null) {
                     $model_approval = new ca_extend();
                     $model_approval->ca_id = $req->no_id;
@@ -2546,6 +2622,20 @@ class ReimburseController extends Controller
                     [$total_ca],
                 )
                 ->get();
+
+            // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+            $location_work_area = Location::where("area", $model->destination)->value('work_area');
+            $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee_data->group_company . "%")
+                ->where(function ($query) use ($req) {
+                    $query->where("contribution_level_codes", "like", "%" . $req->contribution_level_code . "%")
+                        ->orWhere("contribution_level_codes", null);
+                })
+                ->where(function ($query) use ($location_work_area) {
+                    $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                        ->orWhere("work_areas", null);
+                })
+                ->first();
+
             // dd($req->contribution_level_code);
             $nextApproval = null; // Inisialisasi variabel di luar loop
             foreach ($data_matrix_approvals as $data_matrix_approval) {
@@ -2562,6 +2652,17 @@ class ReimburseController extends Controller
                     $employee_id = $director_id;
                 } else {
                     $employee_id = $data_matrix_approval->employee_id;
+                }
+
+                // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
+                if ($data_approval_setting) {
+                    if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
+                        $employee_id = $data_approval_setting->hcga_employee_id;
+                    }
+
+                    if ($data_approval_setting->ktu_employee_id && $data_matrix_approval->desc == "Dept Head AR & AP") {
+                        $employee_id = $data_approval_setting->ktu_employee_id;
+                    }
                 }
 
                 if ($employee_id != null) {
