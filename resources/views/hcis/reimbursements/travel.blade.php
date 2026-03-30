@@ -24,7 +24,7 @@
         object-fit: contain;
     }
     .menu-text {
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 600;
         color: #313a46;
         line-height: 1.3;
