@@ -69,6 +69,7 @@
 @section('content')
     <!-- Begin Page Content -->
     <div class="container-fluid">
+        <input class="d-none" id="page-identifier-name" value="reimbursementCAAdmin" type="hidden" disabled/>
         <!-- Page Heading -->
         <div class="row">
             <div class="col-12">
@@ -400,15 +401,15 @@
                                             </td>
                                             <!-- Button Delete -->
                                             <td class="text-center">
-                                                <form id="delete-form-{{ $ca_transaction->id }}" action="{{ route('cashadvanced.delete', $ca_transaction->id) }}" method="POST" style="display:inline;">  
-                                                    @csrf  
+                                                <form id="delete-form-{{ $ca_transaction->id }}" action="{{ route('cashadvanced.delete', $ca_transaction->id) }}" method="POST" style="display:inline;">
+                                                    @csrf
                                                     <button type="button" class="btn btn-outline-danger delete-button" data-id="{{ $ca_transaction->id }}" data-ca="{{ $ca_transaction->no_ca }}" title="Delete">
                                                         <i class="ri-delete-bin-line"></i>
-                                                    </button>                                                                                                        
-                                                </form>  
-                                                
-                                                <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>  
-                                                <script>  
+                                                    </button>
+                                                </form>
+
+                                                <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                                                <script>
                                                     document.addEventListener('DOMContentLoaded', function () {
                                                         document.querySelectorAll('.delete-button').forEach(button => {
                                                             button.addEventListener('click', function(event) {
@@ -440,7 +441,7 @@
                                                         });
                                                     });
 
-                                                </script>  
+                                                </script>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -555,7 +556,7 @@
             statInput.type = "hidden";
             statInput.name = "stat";
             statInput.value = stat;
-            
+
             const ca_statusInput = document.createElement("input");
             ca_statusInput.type = "hidden";
             ca_statusInput.name = "ca_status";
@@ -603,6 +604,7 @@
         }
         //script modal
 
+        // WE COMMENT THIS TO AVOID DUPLICATION
         // Modal Export
         document.addEventListener("DOMContentLoaded", function () {
             var exportModal = document.getElementById("exportModal");
@@ -642,6 +644,7 @@
             });
         });
 
+        // WE COMMENT THIS TO AVOID DUPLICATION
         // Modal Mengubah Status
         document.addEventListener("DOMContentLoaded", function () {
             var statusModal = document.getElementById("statusModal");
@@ -1572,6 +1575,7 @@
             });
         });
 
+        // WE COMMENT THIS TO AVOID DUPLICATION
         function addSweetAlert(approveButton) {
             approveButton.addEventListener("click", function (event) {
                 event.preventDefault(); // Mencegah submit form secara langsung
@@ -1603,6 +1607,7 @@
             });
         }
 
+        // WE COMMENT THIS TO AVOID DUPLICATION
         function addSweetAlertDec(approveButtonDec) {
             approveButtonDec.addEventListener("click", function (event) {
                 event.preventDefault(); // Mencegah submit form secara langsung
@@ -1634,6 +1639,7 @@
             });
         }
 
+        // WE COMMENT THIS TO AVOID DUPLICATION
         function addSweetAlertExt(approveButtonExt) {
             approveButtonExt.addEventListener("click", function (event) {
                 event.preventDefault(); // Mencegah submit form secara langsung
@@ -1665,6 +1671,7 @@
             });
         }
 
+        // WE COMMENT THIS TO AVOID DUPLICATION
         function addSweetAlertDecExt(approveButtonDec) {
             approveButtonDec.addEventListener("click", function (event) {
                 event.preventDefault(); // Mencegah submit form secara langsung
@@ -1697,6 +1704,7 @@
         }
 
 
+        // WE COMMENT THIS TO AVOID DUPLICATION
         // Reject Request Modal
         document.addEventListener("DOMContentLoaded", function () {
             var modalReject = document.getElementById("modalReject");
@@ -1721,6 +1729,7 @@
             });
         });
 
+        // WE COMMENT THIS TO AVOID DUPLICATION
         // Reject Declaration Modal
         document.addEventListener("DOMContentLoaded", function () {
             var modalRejectDec = document.getElementById("modalRejectDec");
@@ -1746,6 +1755,7 @@
             });
         });
 
+        // WE COMMENT THIS TO AVOID DUPLICATION
         // Reject Extend Modal
         document.addEventListener("DOMContentLoaded", function () {
             var modalRejectExt = document.getElementById("modalRejectExt");
