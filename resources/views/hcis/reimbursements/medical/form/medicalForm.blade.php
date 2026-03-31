@@ -129,7 +129,7 @@
                                     <!-- Preview untuk file lama -->
                                     <div id="existing-files-label" style="margin-bottom: 10px; font-weight: bold;">
                                         @if ($transactions->medical_proof)
-                                            
+
                                             Document on Draft:
                                         @endif
                                     </div>
@@ -198,9 +198,9 @@
                 : null;
             const selectedTypes = $("#medical_type").val();
             const balanceContainer = $("#balanceContainer");
-    
+
             balanceContainer.empty(); // Clear previous balances
-    
+
             if (selectedYear && selectedTypes && selectedTypes.length > 0) {
                 selectedTypes.forEach(function (type) {
                     // Fetch the balance based on type and year
@@ -220,7 +220,7 @@
                 });
             }
         });
-    
+
         function formatCurrency(value) {
             return new Intl.NumberFormat("id-ID").format(value); // Format number as currency
         }
@@ -230,12 +230,12 @@
         medicalTypeData.forEach(function (type) {
             typeToNameMap[type.medical_type] = type.name;
         });
-    
+
         $("#medical_type").on("change", function () {
             var selectedTypes = $(this).val();
             var dynamicForms = $("#dynamicForms");
             dynamicForms.empty();
-    
+
             if (selectedTypes && selectedTypes.length > 0) {
                 selectedTypes.forEach(function (type) {
                     var formGroup = `
@@ -249,27 +249,27 @@
                 `;
                     dynamicForms.append(formGroup);
                 });
-    
+
                 // Re-initialize currency formatting for new inputs
                 initCurrencyFormatting();
             }
         });
-    
+
         function initCurrencyFormatting() {
             $(".currency-input").on("input", function () {
                 var value = $(this).val().replace(/\D/g, "");
                 $(this).val(formatCurrency(value));
             });
         }
-    
+
         function formatCurrency(value) {
             return new Intl.NumberFormat("id-ID").format(value);
         }
-    
+
         // Initialize currency formatting
         initCurrencyFormatting();
     });
-    
+
     function formatCurrency(input) {
         // Your currency formatting logic here
         let value = input.value.replace(/\D/g, ""); // Remove non-digit characters
@@ -278,7 +278,7 @@
             input.value = value;
         }
     }
-    
+
     // Ambil tanggal hari ini
     const today = new Date();
 
@@ -669,30 +669,30 @@
                 files.forEach(file => {
                     const fileExtension = file.name.split('.').pop().toLowerCase();
                     if (file.size > 2 * 1024 * 1024) {
-                        Swal.fire({  
-                            icon: 'error',  
-                            title: 'File Size Exceeded',  
-                            text: `File "${file.name}" exceeds the 2MB size limit.`,  
-                        });  
-                        return;  
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'File Size Exceeded',
+                            text: `File "${file.name}" exceeds the 2MB size limit.`,
+                        });
+                        return;
                     }
                     if (!['jpg', 'jpeg', 'png', 'gif', 'pdf'].includes(fileExtension)) {
-                        Swal.fire({  
-                            icon: 'error',  
-                            title: 'Unsupported File Type',  
-                            text: `File type "${fileExtension}" not supported.`,  
-                        });  
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Unsupported File Type',
+                            text: `File type "${fileExtension}" not supported.`,
+                        });
                         return;
                     }
                     if (!selectedFiles.some(existingFile => existingFile.name === file.name)) {
                         if (totalFiles < 10) {
                             selectedFiles.push(file);
                         } else {
-                            Swal.fire({  
-                                icon: 'error',  
-                                title: 'File Limit Exceeded',  
-                                text: 'You can upload a maximum of 10 files.',  
-                            });  
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'File Limit Exceeded',
+                                text: 'You can upload a maximum of 10 files.',
+                            });
                         }
                     }
                 });
