@@ -945,6 +945,8 @@
     // Modal Mengubah Status
     document.addEventListener("DOMContentLoaded", function () {
         var statusModal = document.getElementById("statusModal");
+        var baseActionStatusModal = "{{ route('cashadvanced.adupdate', ':id') }}";
+
         statusModal.addEventListener("show.bs.modal", function (event) {
             // Dapatkan tombol yang men-trigger modal
             var button = event.relatedTarget;
@@ -959,8 +961,8 @@
 
             // Temukan form di dalam modal dan update action-nya
             var form = statusModal.querySelector("form");
-            var action = form.getAttribute("action");
-            form.setAttribute("action", action.replace(":id", transactionId));
+            // var action = form.getAttribute("action");
+            form.setAttribute("action", baseActionStatusModal.replace(":id", transactionId));
 
             // Set nilai transaction_id di input hidden
             var transactionInput = form.querySelector("#transaction_id");
@@ -977,7 +979,7 @@
             ca_paid_date.value = caPaidDate;
 
             var paidDateInput = form.querySelector("#paid_date");
-            paid_date.value = paidDate;
+            paidDateInput.value = paidDate;
 
             if (appSett === "Approved") {
                 statusSelect.parentElement.style.display = "block";
@@ -1029,1553 +1031,1554 @@
         }
     });
 
-    // let pageIdentifierName = document.getElementById("page-identifier-name");
-
-    // if (!pageIdentifierName || pageIdentifierName.value != "reimbursementCAAdmin") {
-    //     // Approval Request Modal
-    //     document.addEventListener('DOMContentLoaded', function () {
-    //         var approvalModal = document.getElementById('approvalModal');
-    //         approvalModal.addEventListener('show.bs.modal', function (event) {
-    //             var button = event.relatedTarget;
-
-    //             var transactionType = button.getAttribute('data-type');
-    //             var transactionTotal = button.getAttribute('data-total');
-    //             var transactionId = button.getAttribute('data-id');
-    //             var transactionNo = button.getAttribute('data-no');
-    //             var transactionSPPD = button.getAttribute('data-sppd');
-
-    //             var form = approvalModal.querySelector('form');
-    //             var action = form.getAttribute('action');
-    //             form.setAttribute('action', action.replace(':id', transactionId));
-
-    //             form.querySelector('#ca_type').value = transactionType;
-    //             form.querySelector('#totalca').value = transactionTotal;
-    //             form.querySelector('#no_id').value = transactionId;
-    //             form.querySelector('#no_ca').value = transactionNo;
-    //             form.querySelector('#bisnis_numb').value = transactionSPPD;
-
-    //             var buttonList = document.getElementById('buttonList');
-    //             buttonList.innerHTML = '';
-
-    //             var previousLayerApproved = true; // Untuk mengecek status layer sebelumnya
-
-    //             @foreach ($ca_approvals as $approval)
-    //                 if (transactionId === "{{ $approval->ca_id }}") {
-    //                     var rowContainer = document.createElement('div');
-    //                     rowContainer.className = 'row mb-3 text-right';
-
-    //                     var nameCol = document.createElement('div');
-    //                     nameCol.className = 'col-md-12 mb-2';
-    //                     var nameText = document.createElement('div');
-    //                     nameText.innerHTML = `
-    //                         <b>{{ $approval->role_name }}</b> : {{ $approval->ReqName }}
-    //                     `;
-    //                     nameCol.appendChild(nameText);
-
-    //                     var buttonCol = document.createElement('div');
-    //                     buttonCol.className = 'col-md-10';
-
-    //                     var dateText = document.createElement('p');
-
-    //                     if ("{{ $approval->approval_status }}" === "Approved") {
-    //                         const approvedBy = "{{ $approval->by_admin }}" === "T"
-    //                             ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}"
-    //                             : "{{ $approval->ReqName }}";
-
-    //                         dateText.innerHTML = `
-    //                             <div class="border rounded p-2 mb-2">
-    //                                 <strong>Status:</strong> {{ $approval->approval_status }}<br>
-    //                                 <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br>
-    //                                 <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
-    //                             </div>
-    //                         `;
-    //                         buttonCol.appendChild(dateText);
-    //                     } else if (previousLayerApproved) {
-    //                         // Form Data
-    //                         var dataNoIdInput = document.createElement('input');
-    //                         dataNoIdInput.type = 'hidden';
-    //                         dataNoIdInput.name = 'data_no_id';
-    //                         dataNoIdInput.value = "{{ $approval->id }}";
-
-    //                         // Tombol Approve
-    //                         var rejectButton = document.createElement('button');
-    //                         rejectButton.type = 'button';
-    //                         rejectButton.className = 'btn btn-sm btn-primary btn-pill px-1 me-1';
-    //                         rejectButton.setAttribute('data-bs-toggle', 'modal'); // Menambahkan atribut data-bs-toggle
-    //                         rejectButton.setAttribute('data-bs-target', '#modalReject'); // Menambahkan atribut data-bs-target
-    //                         rejectButton.setAttribute('data-no-id', transactionId); // Menambahkan atribut data-no-id
-    //                         rejectButton.setAttribute('data-no-ca', transactionNo); // Menambahkan atribut data-no-ca
-    //                         rejectButton.setAttribute('data-no-idCA', '{{ $approval->id }}');
-    //                         rejectButton.textContent = 'Reject';
-
-    //                         // Tombol Approve
-    //                         var approveButton = document.createElement('button');
-    //                         approveButton.type = 'submit';
-    //                         approveButton.name = 'action_ca_approve';
-    //                         approveButton.value = 'Approve';
-    //                         approveButton.className = 'btn btn-sm btn-success btn-pill px-1 me-1';
-    //                         approveButton.textContent = 'Approve';
-    //                         approveButton.setAttribute('data-no-ca', transactionNo); // Tambahkan data-no-ca agar SweetAlert bisa menggunakan nilai ini
-
-    //                         // Tambahkan event listener SweetAlert pada tombol Approve
-    //                         addSweetAlert(approveButton);
-
-    //                         form.querySelector('#data_no_id').value = "{{ $approval->id }}";
-
-    //                         buttonCol.appendChild(approveButton);
-    //                         buttonCol.appendChild(rejectButton);
-    //                     } else {
-    //                         // Jika layer sebelumnya tidak disetujui, layer ini tidak menampilkan tombol
-    //                         dateText.textContent = 'Waiting for previous approval';
-    //                         buttonCol.appendChild(dateText);
-    //                     }
-
-    //                     // Jika approval_status tidak "Approved", previousLayerApproved menjadi false
-    //                     if ("{{ $approval->approval_status }}" !== "Approved") {
-    //                         previousLayerApproved = false;
-    //                     }
-
-    //                     rowContainer.appendChild(nameCol);
-    //                     rowContainer.appendChild(buttonCol);
-
-    //                     buttonList.appendChild(rowContainer);
-    //                 }
-    //             @endforeach
-    //         });
-    //     });
-
-    //     // Approval Declaration Modal
-    //     document.addEventListener('DOMContentLoaded', function () {
-    //         var approvalDecModal = document.getElementById('approvalDecModal');
-
-    //         approvalDecModal.addEventListener('show.bs.modal', function (event) {
-    //             var button = event.relatedTarget;
-
-    //             var transactionType = button.getAttribute('data-type');
-    //             var transactionTotal = button.getAttribute('data-total');
-    //             var transactionId = button.getAttribute('data-id');
-    //             var transactionNo = button.getAttribute('data-no');
-    //             var transactionSPPD = button.getAttribute('data-sppd');
-    //             var transactionStart = button.getAttribute('data-start-date');
-    //             var transactionEnd = button.getAttribute('data-end-date');
-    //             var transactionTotal = button.getAttribute('data-total-days');
-
-    //             document.getElementById('approval_no_ca').textContent = transactionNo;
-
-    //             var form = approvalDecModal.querySelector('form');
-    //             var action = form.getAttribute('action');
-    //             form.setAttribute('action', action.replace(':id', transactionId));
-
-    //             form.querySelector('#ca_type').value = transactionType;
-    //             form.querySelector('#totalca').value = transactionTotal;
-    //             form.querySelector('#no_id').value = transactionId;
-    //             form.querySelector('#no_ca').value = transactionNo;
-    //             form.querySelector('#bisnis_numb').value = transactionSPPD;
-
-    //             // Clear existing content to prevent duplicates
-    //             document.getElementById('requestList').innerHTML = '';
-    //             document.getElementById('declarationList').innerHTML = '';
-
-    //             var previousLayerApproved = true; // To check previous layer status
-    //             var previousLayerApprovedDec = true; // To check previous declaration status
-
-    //             var requestLabel = document.createElement('label');
-    //             requestLabel.className = 'col-form-label mb-3';
-    //             requestLabel.textContent = 'Approval Request';
-    //             document.getElementById('requestList').appendChild(requestLabel);
-
-    //             var declarationLabel = document.createElement('label');
-    //             declarationLabel.className = 'col-form-label mb-3';
-    //             declarationLabel.textContent = 'Approval Declaration';
-    //             document.getElementById('declarationList').appendChild(declarationLabel);
-
-    //             @foreach ($ca_approvals as $approval)
-    //                 if (transactionId === "{{ $approval->ca_id }}") {
-    //                     var rowContainer = document.createElement('div');
-    //                     rowContainer.className = 'row mb-3 text-right';
-
-    //                     var nameCol = document.createElement('div');
-    //                     nameCol.className = 'col-md-12';
-    //                     var nameText = document.createElement('p');
-    //                     nameText.innerHTML = `
-    //                         <b>{{ $approval->role_name }}</b> : {{ $approval->ReqName }}
-    //                     `;
-    //                     nameCol.appendChild(nameText);
-
-    //                     var buttonCol = document.createElement('div');
-    //                     buttonCol.className = 'col-md-10';
-
-    //                     var dateText = document.createElement('p');
-
-    //                     if ("{{ $approval->approval_status }}" === "Approved") {
-    //                         const approvedBy = "{{ $approval->by_admin }}" === "T"
-    //                             ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}"
-    //                             : "{{ $approval->ReqName }}";
-
-    //                         dateText.innerHTML = `
-    //                             <div class="border rounded p-2 mb-2">
-    //                                 <strong>Status:</strong> {{ $approval->approval_status }}<br>
-    //                                 <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br>
-    //                                 <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
-    //                             </div>
-    //                         `;
-    //                         buttonCol.appendChild(dateText);
-    //                     } else if (previousLayerApproved) {
-    //                         dateText.textContent = 'Something Wrong, This form just for Approve Declaration';
-    //                         buttonCol.appendChild(dateText);
-    //                     } else {
-    //                         dateText.textContent = 'Waiting for previous approval';
-    //                         buttonCol.appendChild(dateText);
-    //                     }
-
-    //                     if ("{{ $approval->approval_status }}" !== "Approved") {
-    //                         previousLayerApproved = false;
-    //                     }
-
-    //                     rowContainer.appendChild(nameCol);
-    //                     rowContainer.appendChild(buttonCol);
-
-    //                     document.getElementById('requestList').appendChild(rowContainer);
-    //                 }
-    //             @endforeach
-
-    //             @foreach ($ca_sett as $approval_sett)
-    //                 if (transactionId === "{{ $approval_sett->ca_id }}") {
-    //                     var rowContainerDec = document.createElement('div');
-    //                     rowContainerDec.className = 'row mb-3 text-right';
-
-    //                     var nameColDec = document.createElement('div');
-    //                     nameColDec.className = 'col-md-12';
-    //                     var nameTextDec = document.createElement('p');
-    //                     nameTextDec.innerHTML = `
-    //                         <b>{{ $approval_sett->role_name }}</b> : {{ $approval_sett->ReqName }}
-    //                     `;
-    //                     nameColDec.appendChild(nameTextDec);
-
-    //                     var buttonColDec = document.createElement('div');
-    //                     buttonColDec.className = 'col-md-10';
-
-    //                     var dateTextDec = document.createElement('p');
-
-    //                     if ("{{ $approval_sett->approval_status }}" === "Approved") {
-    //                         const approvedBy = "{{ $approval_sett->by_admin }}" === "T"
-    //                             ? "{{ $approval_sett->admin->name ?? 'Admin tidak tersedia.' }} (Admin)"
-    //                             : "{{ $approval_sett->ReqName }}";
-
-    //                         dateTextDec.innerHTML = `
-    //                             <div class="border rounded p-2 mb-2">
-    //                                 <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>
-    //                                 <strong>Approved By:</strong> ${approvedBy}<br>
-    //                                 <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}
-    //                             </div>
-    //                         `;
-    //                         buttonColDec.appendChild(dateTextDec);
-    //                     } else if (previousLayerApprovedDec) {
-    //                         var rejectButtonDec = document.createElement('button');
-    //                         rejectButtonDec.type = 'button'; // Mengubah type menjadi 'button'
-    //                         rejectButtonDec.className = 'btn btn-sm btn-primary btn-pill px-1 me-1 mb-2';
-    //                         rejectButtonDec.setAttribute('data-bs-toggle', 'modal'); // Menambahkan atribut data-bs-toggle
-    //                         rejectButtonDec.setAttribute('data-bs-target', '#modalRejectDec'); // Menambahkan atribut data-bs-target
-    //                         rejectButtonDec.setAttribute('data-no-id', transactionId); // Menambahkan atribut data-no-id
-    //                         rejectButtonDec.setAttribute('data-no-ca', transactionNo); // Menambahkan atribut data-no-ca
-    //                         rejectButtonDec.setAttribute('data-start-date', transactionStart); // Menambahkan atribut data-start-date
-    //                         rejectButtonDec.setAttribute('data-end-date', transactionEnd); // Menambahkan atribut data-end-date
-    //                         rejectButtonDec.setAttribute('data-total-days', transactionTotal); // Menambahkan atribut data-total-days
-    //                         rejectButtonDec.setAttribute('data-no-idCA', '{{ $approval_sett->id }}');
-    //                         rejectButtonDec.textContent = 'Reject'; // Mengubah text button
-
-    //                         var approveButtonDec = document.createElement('button');
-    //                         approveButtonDec.type = 'submit';
-    //                         approveButtonDec.name = 'action_ca_approve';
-    //                         approveButtonDec.value = 'Approve';
-    //                         approveButtonDec.className = 'btn btn-sm btn-success btn-pill px-1 me-1 mb-2';
-    //                         approveButtonDec.textContent = 'Approve';
-    //                         approveButtonDec.setAttribute('data-no-ca', transactionNo); // Tambahkan data-no-ca agar SweetAlert bisa menggunakan nilai ini
-
-    //                         // Tambahkan event listener SweetAlert pada tombol Approve
-    //                         addSweetAlertDec(approveButtonDec);
-
-    //                         form.querySelector('#data_no_id').value = "{{ $approval_sett->id }}";
-
-    //                         buttonColDec.appendChild(approveButtonDec);
-    //                         buttonColDec.appendChild(rejectButtonDec);
-    //                     } else {
-    //                         dateTextDec.textContent = 'Waiting for previous approval';
-    //                         buttonColDec.appendChild(dateTextDec);
-    //                     }
-
-    //                     if ("{{ $approval_sett->approval_status }}" !== "Approved") {
-    //                         previousLayerApprovedDec = false;
-    //                     }
-    //                     rowContainerDec.appendChild(nameColDec);
-    //                     rowContainerDec.appendChild(buttonColDec);
-
-    //                     document.getElementById('declarationList').appendChild(rowContainerDec);
-    //                 }
-    //             @endforeach
-    //         });
-    //     });
-
-    //     // Approval Extend Modal
-    //     document.addEventListener('DOMContentLoaded', function () {
-    //         var approvalExtModal = document.getElementById('approvalExtModal');
-
-    //         approvalExtModal.addEventListener('show.bs.modal', function (event) {
-    //             var button = event.relatedTarget;
-
-    //             var transactionType = button.getAttribute('data-type');
-    //             var transactionTotal = button.getAttribute('data-total');
-    //             var transactionTotalAmmount = button.getAttribute('data-total-amount');
-    //             var transactionId = button.getAttribute('data-id');
-    //             var transactionNo = button.getAttribute('data-no');
-    //             var transactionSPPD = button.getAttribute('data-sppd');
-    //             var transactionStart = button.getAttribute('data-start-date');
-    //             var transactionEnd = button.getAttribute('data-end-date');
-    //             var extendEnd = button.getAttribute('data-ext-end');
-    //             var extendTotal = button.getAttribute('data-ext-total');
-    //             var extendReason = button.getAttribute('data-ext-reason');
-
-    //             document.getElementById('approvalExt_no_ca').textContent = transactionNo;
-
-    //             var form = approvalExtModal.querySelector('form');
-    //             var action = form.getAttribute('action');
-    //             form.setAttribute('action', action.replace(':id', transactionId));
-
-    //             form.querySelector('#ca_type').value = transactionType;
-    //             form.querySelector('#totalca').value = transactionTotalAmmount;
-    //             form.querySelector('#no_id').value = transactionId;
-    //             form.querySelector('#no_ca').value = transactionNo;
-    //             form.querySelector('#bisnis_numb').value = transactionSPPD;
-    //             form.querySelector('#ext_end_date').value = extendEnd;
-    //             form.querySelector('#ext_totaldays').value = extendTotal;
-    //             form.querySelector('#ext_reason').value = extendReason;
-
-    //             // Clear existing content to prevent duplicates
-    //             document.getElementById('requestExtList').innerHTML = '';
-    //             document.getElementById('extendList').innerHTML = '';
-
-    //             var previousLayerApproved = true;
-    //             var previousLayerApprovedExt = true;
-
-    //             var requestLabel = document.createElement('label');
-    //             requestLabel.className = 'col-form-label mb-3';
-    //             requestLabel.textContent = 'Approval Request';
-    //             document.getElementById('requestExtList').appendChild(requestLabel);
-
-    //             var extendLabel = document.createElement('label');
-    //             extendLabel.className = 'col-form-label mb-3';
-    //             extendLabel.textContent = 'Approval Extend';
-    //             document.getElementById('extendList').appendChild(extendLabel);
-
-    //             // First loop for CA approvals
-    //             @foreach ($ca_approvals as $approval)
-    //                 if (transactionId === "{{ $approval->ca_id }}") {
-    //                     var rowContainer = document.createElement('div');
-    //                     rowContainer.className = 'row mb-3 text-right';
-
-    //                     var nameCol = document.createElement('div');
-    //                     nameCol.className = 'col-md-12';
-    //                     var nameText = document.createElement('p');
-    //                     nameText.innerHTML = `
-    //                         <b>{{ $approval->role_name }}</b> : {{ $approval->ReqName }}
-    //                     `;
-    //                     nameCol.appendChild(nameText);
-
-    //                     var buttonCol = document.createElement('div');
-    //                     buttonCol.className = 'col-md-10';
-
-    //                     var dateText = document.createElement('p');
-
-    //                     if ("{{ $approval->approval_status }}" === "Approved") {
-    //                         const approvedBy = "{{ $approval->by_admin }}" === "T"
-    //                             ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}"
-    //                             : "{{ $approval->ReqName }}";
-
-    //                         dateText.innerHTML = `
-    //                             <div class="border rounded p-2 mb-2">
-    //                                 <strong>Status:</strong> {{ $approval->approval_status }}<br>
-    //                                 <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br>
-    //                                 <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
-    //                             </div>
-    //                         `;
-    //                         buttonCol.appendChild(dateText);
-    //                     } else if (previousLayerApproved) {
-    //                         dateText.textContent = 'Something Wrong, This form just for Approve Extend';
-    //                         buttonCol.appendChild(dateText);
-    //                     } else {
-    //                         dateText.textContent = 'Waiting for previous approval';
-    //                         buttonCol.appendChild(dateText);
-    //                     }
-
-    //                     if ("{{ $approval->approval_status }}" !== "Approved") {
-    //                         previousLayerApproved = false;
-    //                     }
-
-    //                     rowContainer.appendChild(nameCol);
-    //                     rowContainer.appendChild(buttonCol);
-
-    //                     document.getElementById('requestExtList').appendChild(rowContainer);
-    //                 }
-    //             @endforeach
-
-    //             // Create array to store matching extend items
-    //             var matchingExtendItems = [];
-
-    //             // First collect all matching items
-    //             @foreach ($ca_extend as $approval_extend)
-    //                 if (transactionId === "{{ $approval_extend->ca_id }}") {
-    //                     matchingExtendItems.push({
-    //                         employee_id: "{{ $approval_extend->ReqName }}",
-    //                         layer: "{{ $approval_extend->layer }}",
-    //                         approval_status: "{{ $approval_extend->approval_status }}",
-    //                         by_admin: "{{ $approval_extend->by_admin }}",
-    //                         role_name: "{{ $approval_extend->role_name }}",
-    //                         admin_name: "{{ $approval_extend->admin->name ?? 'Admin tidak tersedia.' }}",
-    //                         approved_at: "{{ $approval_extend->approved_at }}",
-    //                         id: "{{ $approval_extend->id }}"
-    //                     });
-    //                 }
-    //             @endforeach
-
-    //             // Then render the items with dividers
-    //             matchingExtendItems.forEach((item, index) => {
-    //                 var rowContainerExt = document.createElement('div');
-    //                 rowContainerExt.className = 'row mb-3 text-right';
-
-    //                 var nameColExt = document.createElement('div');
-    //                 nameColExt.className = 'col-md-12';
-    //                 var nameTextExt = document.createElement('p');
-    //                 nameTextExt.innerHTML = `
-    //                     <b>${item.role_name}</b> : ${item.employee_id}
+    let pageIdentifierName = document.getElementById("page-identifier-name");
+
+    if (!pageIdentifierName || pageIdentifierName.value != "reimbursementCAAdmin") {
+        // Approval Request Modal
+        document.addEventListener('DOMContentLoaded', function () {
+            var approvalModal = document.getElementById('approvalModal');
+            approvalModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+
+                var transactionType = button.getAttribute('data-type');
+                var transactionTotal = button.getAttribute('data-total');
+                var transactionId = button.getAttribute('data-id');
+                var transactionNo = button.getAttribute('data-no');
+                var transactionSPPD = button.getAttribute('data-sppd');
+
+                var form = approvalModal.querySelector('form');
+                var action = form.getAttribute('action');
+                form.setAttribute('action', action.replace(':id', transactionId));
+
+                form.querySelector('#ca_type').value = transactionType;
+                form.querySelector('#totalca').value = transactionTotal;
+                form.querySelector('#no_id').value = transactionId;
+                form.querySelector('#no_ca').value = transactionNo;
+                form.querySelector('#bisnis_numb').value = transactionSPPD;
+
+                var buttonList = document.getElementById('buttonList');
+                buttonList.innerHTML = '';
+
+                var previousLayerApproved = true; // Untuk mengecek status layer sebelumnya
+
+                @foreach ($ca_approvals as $approval)
+                    if (transactionId === "{{ $approval->ca_id }}") {
+                        var rowContainer = document.createElement('div');
+                        rowContainer.className = 'row mb-3 text-right';
+
+                        var nameCol = document.createElement('div');
+                        nameCol.className = 'col-md-12 mb-2';
+                        var nameText = document.createElement('div');
+                        nameText.innerHTML = `
+                            <b>{{ $approval->role_name }}</b> : {{ $approval->ReqName }}
+                        `;
+                        nameCol.appendChild(nameText);
+
+                        var buttonCol = document.createElement('div');
+                        buttonCol.className = 'col-md-10';
+
+                        var dateText = document.createElement('p');
+
+                        if ("{{ $approval->approval_status }}" === "Approved") {
+                            const approvedBy = "{{ $approval->by_admin }}" === "T"
+                                ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}"
+                                : "{{ $approval->ReqName }}";
+
+                            dateText.innerHTML = `
+                                <div class="border rounded p-2 mb-2">
+                                    <strong>Status:</strong> {{ $approval->approval_status }}<br>
+                                    <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br>
+                                    <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
+                                </div>
+                            `;
+                            buttonCol.appendChild(dateText);
+                        } else if (previousLayerApproved) {
+                            // Form Data
+                            var dataNoIdInput = document.createElement('input');
+                            dataNoIdInput.type = 'hidden';
+                            dataNoIdInput.name = 'data_no_id';
+                            dataNoIdInput.value = "{{ $approval->id }}";
+
+                            // Tombol Approve
+                            var rejectButton = document.createElement('button');
+                            rejectButton.type = 'button';
+                            rejectButton.className = 'btn btn-sm btn-primary btn-pill px-1 me-1';
+                            rejectButton.setAttribute('data-bs-toggle', 'modal'); // Menambahkan atribut data-bs-toggle
+                            rejectButton.setAttribute('data-bs-target', '#modalReject'); // Menambahkan atribut data-bs-target
+                            rejectButton.setAttribute('data-no-id', transactionId); // Menambahkan atribut data-no-id
+                            rejectButton.setAttribute('data-no-ca', transactionNo); // Menambahkan atribut data-no-ca
+                            rejectButton.setAttribute('data-no-idCA', '{{ $approval->id }}');
+                            rejectButton.textContent = 'Reject';
+
+                            // Tombol Approve
+                            var approveButton = document.createElement('button');
+                            approveButton.type = 'submit';
+                            approveButton.name = 'action_ca_approve';
+                            approveButton.value = 'Approve';
+                            approveButton.className = 'btn btn-sm btn-success btn-pill px-1 me-1';
+                            approveButton.textContent = 'Approve';
+                            approveButton.setAttribute('data-no-ca', transactionNo); // Tambahkan data-no-ca agar SweetAlert bisa menggunakan nilai ini
+
+                            // Tambahkan event listener SweetAlert pada tombol Approve
+                            addSweetAlert(approveButton);
+
+                            form.querySelector('#data_no_id').value = "{{ $approval->id }}";
+
+                            buttonCol.appendChild(approveButton);
+                            buttonCol.appendChild(rejectButton);
+                        } else {
+                            // Jika layer sebelumnya tidak disetujui, layer ini tidak menampilkan tombol
+                            dateText.textContent = 'Waiting for previous approval';
+                            buttonCol.appendChild(dateText);
+                        }
+
+                        // Jika approval_status tidak "Approved", previousLayerApproved menjadi false
+                        if ("{{ $approval->approval_status }}" !== "Approved") {
+                            previousLayerApproved = false;
+                        }
+
+                        rowContainer.appendChild(nameCol);
+                        rowContainer.appendChild(buttonCol);
+
+                        buttonList.appendChild(rowContainer);
+                    }
+                @endforeach
+            });
+        });
+
+        // Approval Declaration Modal
+        document.addEventListener('DOMContentLoaded', function () {
+            var approvalDecModal = document.getElementById('approvalDecModal');
+
+            approvalDecModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+
+                var transactionType = button.getAttribute('data-type');
+                var transactionTotal = button.getAttribute('data-total');
+                var transactionId = button.getAttribute('data-id');
+                var transactionNo = button.getAttribute('data-no');
+                var transactionSPPD = button.getAttribute('data-sppd');
+                var transactionStart = button.getAttribute('data-start-date');
+                var transactionEnd = button.getAttribute('data-end-date');
+                var transactionTotal = button.getAttribute('data-total-days');
+
+                document.getElementById('approval_no_ca').textContent = transactionNo;
+
+                var form = approvalDecModal.querySelector('form');
+                var action = form.getAttribute('action');
+                form.setAttribute('action', action.replace(':id', transactionId));
+
+                form.querySelector('#ca_type').value = transactionType;
+                form.querySelector('#totalca').value = transactionTotal;
+                form.querySelector('#no_id').value = transactionId;
+                form.querySelector('#no_ca').value = transactionNo;
+                form.querySelector('#bisnis_numb').value = transactionSPPD;
+
+                // Clear existing content to prevent duplicates
+                document.getElementById('requestList').innerHTML = '';
+                document.getElementById('declarationList').innerHTML = '';
+
+                var previousLayerApproved = true; // To check previous layer status
+                var previousLayerApprovedDec = true; // To check previous declaration status
+
+                var requestLabel = document.createElement('label');
+                requestLabel.className = 'col-form-label mb-3';
+                requestLabel.textContent = 'Approval Request';
+                document.getElementById('requestList').appendChild(requestLabel);
+
+                var declarationLabel = document.createElement('label');
+                declarationLabel.className = 'col-form-label mb-3';
+                declarationLabel.textContent = 'Approval Declaration';
+                document.getElementById('declarationList').appendChild(declarationLabel);
+
+                @foreach ($ca_approvals as $approval)
+                    if (transactionId === "{{ $approval->ca_id }}") {
+                        var rowContainer = document.createElement('div');
+                        rowContainer.className = 'row mb-3 text-right';
+
+                        var nameCol = document.createElement('div');
+                        nameCol.className = 'col-md-12';
+                        var nameText = document.createElement('p');
+                        nameText.innerHTML = `
+                            <b>{{ $approval->role_name }}</b> : {{ $approval->ReqName }}
+                        `;
+                        nameCol.appendChild(nameText);
+
+                        var buttonCol = document.createElement('div');
+                        buttonCol.className = 'col-md-10';
+
+                        var dateText = document.createElement('p');
+
+                        if ("{{ $approval->approval_status }}" === "Approved") {
+                            const approvedBy = "{{ $approval->by_admin }}" === "T"
+                                ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}"
+                                : "{{ $approval->ReqName }}";
+
+                            dateText.innerHTML = `
+                                <div class="border rounded p-2 mb-2">
+                                    <strong>Status:</strong> {{ $approval->approval_status }}<br>
+                                    <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br>
+                                    <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
+                                </div>
+                            `;
+                            buttonCol.appendChild(dateText);
+                        } else if (previousLayerApproved) {
+                            dateText.textContent = 'Something Wrong, This form just for Approve Declaration';
+                            buttonCol.appendChild(dateText);
+                        } else {
+                            dateText.textContent = 'Waiting for previous approval';
+                            buttonCol.appendChild(dateText);
+                        }
+
+                        if ("{{ $approval->approval_status }}" !== "Approved") {
+                            previousLayerApproved = false;
+                        }
+
+                        rowContainer.appendChild(nameCol);
+                        rowContainer.appendChild(buttonCol);
+
+                        document.getElementById('requestList').appendChild(rowContainer);
+                    }
+                @endforeach
+
+                @foreach ($ca_sett as $approval_sett)
+                    if (transactionId === "{{ $approval_sett->ca_id }}") {
+                        var rowContainerDec = document.createElement('div');
+                        rowContainerDec.className = 'row mb-3 text-right';
+
+                        var nameColDec = document.createElement('div');
+                        nameColDec.className = 'col-md-12';
+                        var nameTextDec = document.createElement('p');
+                        nameTextDec.innerHTML = `
+                            <b>{{ $approval_sett->role_name }}</b> : {{ $approval_sett->ReqName }}
+                        `;
+                        nameColDec.appendChild(nameTextDec);
+
+                        var buttonColDec = document.createElement('div');
+                        buttonColDec.className = 'col-md-10';
+
+                        var dateTextDec = document.createElement('p');
+
+                        if ("{{ $approval_sett->approval_status }}" === "Approved") {
+                            const approvedBy = "{{ $approval_sett->by_admin }}" === "T"
+                                ? "{{ $approval_sett->admin->name ?? 'Admin tidak tersedia.' }} (Admin)"
+                                : "{{ $approval_sett->ReqName }}";
+
+                            dateTextDec.innerHTML = `
+                                <div class="border rounded p-2 mb-2">
+                                    <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>
+                                    <strong>Approved By:</strong> ${approvedBy}<br>
+                                    <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}
+                                </div>
+                            `;
+                            buttonColDec.appendChild(dateTextDec);
+                        } else if (previousLayerApprovedDec) {
+                            var rejectButtonDec = document.createElement('button');
+                            rejectButtonDec.type = 'button'; // Mengubah type menjadi 'button'
+                            rejectButtonDec.className = 'btn btn-sm btn-primary btn-pill px-1 me-1 mb-2';
+                            rejectButtonDec.setAttribute('data-bs-toggle', 'modal'); // Menambahkan atribut data-bs-toggle
+                            rejectButtonDec.setAttribute('data-bs-target', '#modalRejectDec'); // Menambahkan atribut data-bs-target
+                            rejectButtonDec.setAttribute('data-no-id', transactionId); // Menambahkan atribut data-no-id
+                            rejectButtonDec.setAttribute('data-no-ca', transactionNo); // Menambahkan atribut data-no-ca
+                            rejectButtonDec.setAttribute('data-start-date', transactionStart); // Menambahkan atribut data-start-date
+                            rejectButtonDec.setAttribute('data-end-date', transactionEnd); // Menambahkan atribut data-end-date
+                            rejectButtonDec.setAttribute('data-total-days', transactionTotal); // Menambahkan atribut data-total-days
+                            rejectButtonDec.setAttribute('data-no-idCA', '{{ $approval_sett->id }}');
+                            rejectButtonDec.textContent = 'Reject'; // Mengubah text button
+
+                            var approveButtonDec = document.createElement('button');
+                            approveButtonDec.type = 'submit';
+                            approveButtonDec.name = 'action_ca_approve';
+                            approveButtonDec.value = 'Approve';
+                            approveButtonDec.className = 'btn btn-sm btn-success btn-pill px-1 me-1 mb-2';
+                            approveButtonDec.textContent = 'Approve';
+                            approveButtonDec.setAttribute('data-no-ca', transactionNo); // Tambahkan data-no-ca agar SweetAlert bisa menggunakan nilai ini
+
+                            // Tambahkan event listener SweetAlert pada tombol Approve
+                            addSweetAlertDec(approveButtonDec);
+
+                            form.querySelector('#data_no_id').value = "{{ $approval_sett->id }}";
+
+                            buttonColDec.appendChild(approveButtonDec);
+                            buttonColDec.appendChild(rejectButtonDec);
+                        } else {
+                            dateTextDec.textContent = 'Waiting for previous approval';
+                            buttonColDec.appendChild(dateTextDec);
+                        }
+
+                        if ("{{ $approval_sett->approval_status }}" !== "Approved") {
+                            previousLayerApprovedDec = false;
+                        }
+                        rowContainerDec.appendChild(nameColDec);
+                        rowContainerDec.appendChild(buttonColDec);
+
+                        document.getElementById('declarationList').appendChild(rowContainerDec);
+                    }
+                @endforeach
+            });
+        });
+
+        // Approval Extend Modal
+        document.addEventListener('DOMContentLoaded', function () {
+            var approvalExtModal = document.getElementById('approvalExtModal');
+
+            approvalExtModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+
+                var transactionType = button.getAttribute('data-type');
+                var transactionTotal = button.getAttribute('data-total');
+                var transactionTotalAmmount = button.getAttribute('data-total-amount');
+                var transactionId = button.getAttribute('data-id');
+                var transactionNo = button.getAttribute('data-no');
+                var transactionSPPD = button.getAttribute('data-sppd');
+                var transactionStart = button.getAttribute('data-start-date');
+                var transactionEnd = button.getAttribute('data-end-date');
+                var extendEnd = button.getAttribute('data-ext-end');
+                var extendTotal = button.getAttribute('data-ext-total');
+                var extendReason = button.getAttribute('data-ext-reason');
+
+                document.getElementById('approvalExt_no_ca').textContent = transactionNo;
+
+                var form = approvalExtModal.querySelector('form');
+                var action = form.getAttribute('action');
+                form.setAttribute('action', action.replace(':id', transactionId));
+
+                form.querySelector('#ca_type').value = transactionType;
+                form.querySelector('#totalca').value = transactionTotalAmmount;
+                form.querySelector('#no_id').value = transactionId;
+                form.querySelector('#no_ca').value = transactionNo;
+                form.querySelector('#bisnis_numb').value = transactionSPPD;
+                form.querySelector('#ext_end_date').value = extendEnd;
+                form.querySelector('#ext_totaldays').value = extendTotal;
+                form.querySelector('#ext_reason').value = extendReason;
+
+                // Clear existing content to prevent duplicates
+                document.getElementById('requestExtList').innerHTML = '';
+                document.getElementById('extendList').innerHTML = '';
+
+                var previousLayerApproved = true;
+                var previousLayerApprovedExt = true;
+
+                var requestLabel = document.createElement('label');
+                requestLabel.className = 'col-form-label mb-3';
+                requestLabel.textContent = 'Approval Request';
+                document.getElementById('requestExtList').appendChild(requestLabel);
+
+                var extendLabel = document.createElement('label');
+                extendLabel.className = 'col-form-label mb-3';
+                extendLabel.textContent = 'Approval Extend';
+                document.getElementById('extendList').appendChild(extendLabel);
+
+                // First loop for CA approvals
+                @foreach ($ca_approvals as $approval)
+                    if (transactionId === "{{ $approval->ca_id }}") {
+                        var rowContainer = document.createElement('div');
+                        rowContainer.className = 'row mb-3 text-right';
+
+                        var nameCol = document.createElement('div');
+                        nameCol.className = 'col-md-12';
+                        var nameText = document.createElement('p');
+                        nameText.innerHTML = `
+                            <b>{{ $approval->role_name }}</b> : {{ $approval->ReqName }}
+                        `;
+                        nameCol.appendChild(nameText);
+
+                        var buttonCol = document.createElement('div');
+                        buttonCol.className = 'col-md-10';
+
+                        var dateText = document.createElement('p');
+
+                        if ("{{ $approval->approval_status }}" === "Approved") {
+                            const approvedBy = "{{ $approval->by_admin }}" === "T"
+                                ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}"
+                                : "{{ $approval->ReqName }}";
+
+                            dateText.innerHTML = `
+                                <div class="border rounded p-2 mb-2">
+                                    <strong>Status:</strong> {{ $approval->approval_status }}<br>
+                                    <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br>
+                                    <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
+                                </div>
+                            `;
+                            buttonCol.appendChild(dateText);
+                        } else if (previousLayerApproved) {
+                            dateText.textContent = 'Something Wrong, This form just for Approve Extend';
+                            buttonCol.appendChild(dateText);
+                        } else {
+                            dateText.textContent = 'Waiting for previous approval';
+                            buttonCol.appendChild(dateText);
+                        }
+
+                        if ("{{ $approval->approval_status }}" !== "Approved") {
+                            previousLayerApproved = false;
+                        }
+
+                        rowContainer.appendChild(nameCol);
+                        rowContainer.appendChild(buttonCol);
+
+                        document.getElementById('requestExtList').appendChild(rowContainer);
+                    }
+                @endforeach
+
+                // Create array to store matching extend items
+                var matchingExtendItems = [];
+
+                // First collect all matching items
+                @foreach ($ca_extend as $approval_extend)
+                    if (transactionId === "{{ $approval_extend->ca_id }}") {
+                        matchingExtendItems.push({
+                            employee_id: "{{ $approval_extend->ReqName }}",
+                            layer: "{{ $approval_extend->layer }}",
+                            approval_status: "{{ $approval_extend->approval_status }}",
+                            by_admin: "{{ $approval_extend->by_admin }}",
+                            role_name: "{{ $approval_extend->role_name }}",
+                            admin_name: "{{ $approval_extend->admin->name ?? 'Admin tidak tersedia.' }}",
+                            approved_at: "{{ $approval_extend->approved_at }}",
+                            id: "{{ $approval_extend->id }}"
+                        });
+                    }
+                @endforeach
+
+                // Then render the items with dividers
+                matchingExtendItems.forEach((item, index) => {
+                    var rowContainerExt = document.createElement('div');
+                    rowContainerExt.className = 'row mb-3 text-right';
+
+                    var nameColExt = document.createElement('div');
+                    nameColExt.className = 'col-md-12';
+                    var nameTextExt = document.createElement('p');
+                    nameTextExt.innerHTML = `
+                        <b>${item.role_name}</b> : ${item.employee_id}
+                    `;
+                    nameColExt.appendChild(nameTextExt);
+
+                    var buttonColExt = document.createElement('div');
+                    buttonColExt.className = 'col-md-10';
+
+                    var dateTextExt = document.createElement('p');
+
+                    if (item.approval_status === "Approved") {
+                        const approvedBy = item.by_admin === "T"
+                            ? item.admin_name
+                            : item.employee_id;
+
+                        dateTextExt.innerHTML = `
+                            <div class="border rounded p-2 mb-2">
+                                <strong>Status:</strong> ${item.approval_status}<br>
+                                <strong>Approved By:</strong> ${approvedBy} ${item.by_admin === "T" ? " (Admin)" : ""}<br>
+                                <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}
+                            </div>
+                        `;
+                        buttonColExt.appendChild(dateTextExt);
+                    } else if (previousLayerApprovedExt) {
+                        var rejectButtonExt = document.createElement('button');
+                        rejectButtonExt.type = 'button';
+                        rejectButtonExt.className = 'btn btn-sm btn-primary btn-pill px-1 me-1 mb-2';
+                        rejectButtonExt.setAttribute('data-bs-toggle', 'modal');
+                        rejectButtonExt.setAttribute('data-bs-target', '#modalRejectExt');
+                        rejectButtonExt.setAttribute('data-no-id', transactionId);
+                        rejectButtonExt.setAttribute('data-no-ca', transactionNo);
+                        rejectButtonExt.setAttribute('data-start-date', transactionStart);
+                        rejectButtonExt.setAttribute('data-end-date', transactionEnd);
+                        rejectButtonExt.setAttribute('data-total-days', transactionTotal);
+                        rejectButtonExt.setAttribute('data-no-idCA', item.id);
+                        rejectButtonExt.textContent = 'Reject';
+
+                        var approveButtonExt = document.createElement('button');
+                        approveButtonExt.type = 'submit';
+                        approveButtonExt.name = 'action_ca_approve';
+                        approveButtonExt.value = 'Approve';
+                        approveButtonExt.className = 'btn btn-sm btn-success btn-pill px-1 me-1 mb-2';
+                        approveButtonExt.textContent = 'Approve';
+                        approveButtonExt.setAttribute('data-no-ca', transactionNo);
+
+                        addSweetAlertExt(approveButtonExt);
+
+                        form.querySelector('#data_no_id').value = item.id;
+
+                        buttonColExt.appendChild(approveButtonExt);
+                        buttonColExt.appendChild(rejectButtonExt);
+                    } else {
+                        dateTextExt.textContent = 'Waiting for previous approval';
+                        buttonColExt.appendChild(dateTextExt);
+                    }
+
+                    if (item.approval_status !== "Approved") {
+                        previousLayerApprovedExt = false;
+                    }
+
+                    rowContainerExt.appendChild(nameColExt);
+                    rowContainerExt.appendChild(buttonColExt);
+
+                    document.getElementById('extendList').appendChild(rowContainerExt);
+
+                    // Add divider after every 4 items, but only if we have more than 4 items total
+                    // and we're not at the last item
+                    if (matchingExtendItems.length > 4 &&
+                        (index + 1) % 4 === 0 &&
+                        (index + 1) !== matchingExtendItems.length) {
+                        var dividerContainer = document.createElement('div');
+                        dividerContainer.className = 'd-flex align-items-center my-3'; // Container fleksibel untuk divider
+                        var lineLeft = document.createElement('hr');
+                        lineLeft.className = 'flex-grow-1 border border-primary opacity-50 m-0'; // Garis kiri
+                        var text = document.createElement('span');
+                        text.className = 'mx-2 text-primary'; // Teks di tengah
+                        text.textContent = 'Other Approval Extend';
+                        var lineRight = document.createElement('hr');
+                        lineRight.className = 'flex-grow-1 border border-primary opacity-50 m-0'; // Garis kanan
+                        // Susun elemen dalam container
+                        dividerContainer.appendChild(lineLeft);
+                        dividerContainer.appendChild(text);
+                        dividerContainer.appendChild(lineRight);
+
+                        document.getElementById('extendList').appendChild(dividerContainer);
+                    }
+                });
+            });
+        });
+
+        // Approval Extend dan Declaration Modal
+        document.addEventListener('DOMContentLoaded', function () {
+            var approvalDecExtModal = document.getElementById('approvalDecExtModal');
+
+            approvalDecExtModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+
+                var transactionType = button.getAttribute('data-type');
+                var transactionTotal = button.getAttribute('data-total');
+                var transactionId = button.getAttribute('data-id');
+                var transactionNo = button.getAttribute('data-no');
+                var transactionSPPD = button.getAttribute('data-sppd');
+                var transactionStart = button.getAttribute('data-start-date');
+                var transactionEnd = button.getAttribute('data-end-date');
+                var transactionTotal = button.getAttribute('data-total-days');
+
+                document.getElementById('approvalExtDec_no_ca').textContent = transactionNo;
+
+                var form = approvalDecExtModal.querySelector('form');
+                var action = form.getAttribute('action');
+                form.setAttribute('action', action.replace(':id', transactionId));
+
+                form.querySelector('#ca_type').value = transactionType;
+                form.querySelector('#totalca').value = transactionTotal;
+                form.querySelector('#no_id').value = transactionId;
+                form.querySelector('#data_no_id').value = transactionId;
+                form.querySelector('#no_ca').value = transactionNo;
+                form.querySelector('#bisnis_numb').value = transactionSPPD;
+
+                // Clear existing content to prevent duplicates
+                document.getElementById('requestExtDecList').innerHTML = '';
+                document.getElementById('declarationExtDecList').innerHTML = '';
+                document.getElementById('extendExtDecList').innerHTML = '';
+
+                var previousLayerApproved = true; // To check previous layer status
+                var previousLayerApprovedDec = true; // To check previous declaration status
+
+                var requestLabel = document.createElement('label');
+                requestLabel.className = 'col-form-label mb-3';
+                requestLabel.textContent = 'Approval Request';
+                document.getElementById('requestExtDecList').appendChild(requestLabel);
+
+                var declarationLabel = document.createElement('label');
+                declarationLabel.className = 'col-form-label mb-3';
+                declarationLabel.textContent = 'Approval Declaration';
+                document.getElementById('declarationExtDecList').appendChild(declarationLabel);
+
+                var extendLabel = document.createElement('label');
+                extendLabel.className = 'col-form-label mb-3';
+                extendLabel.textContent = 'Approval Extend';
+                document.getElementById('extendExtDecList').appendChild(extendLabel);
+
+                @foreach ($ca_approvals as $approval)
+                    if (transactionId === "{{ $approval->ca_id }}") {
+                        var rowContainer = document.createElement('div');
+                        rowContainer.className = 'row mb-3 text-right';
+
+                        var nameCol = document.createElement('div');
+                        nameCol.className = 'col-md-12';
+                        var nameText = document.createElement('p');
+                        nameText.innerHTML = `
+                            <b>{{ $approval->role_name }}</b> : {{ $approval->ReqName }}
+                        `;
+                        nameCol.appendChild(nameText);
+
+                        var buttonCol = document.createElement('div');
+                        buttonCol.className = 'col-md-12';
+
+                        var dateText = document.createElement('p');
+
+                        if ("{{ $approval->approval_status }}" === "Approved") {
+                            const approvedBy = "{{ $approval->by_admin }}" === "T"
+                                ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}"
+                                : "{{ $approval->ReqName }}";
+
+                            dateText.innerHTML = `
+                                <div class="border rounded p-2 mb-2">
+                                    <strong>Status:</strong> {{ $approval->approval_status }}<br>
+                                    <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br>
+                                    <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
+                                </div>
+                            `;
+                            buttonCol.appendChild(dateText);
+                            // dateText.textContent = "{{ $approval->approval_status }} ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
+                            // buttonCol.appendChild(dateText);
+                        } else if (previousLayerApproved) {
+                            dateText.textContent = 'Something Wrong, This form just for Approve Declaration';
+                            buttonCol.appendChild(dateText);
+                        } else {
+                            dateText.textContent = 'Waiting for previous approval';
+                            buttonCol.appendChild(dateText);
+                        }
+
+                        if ("{{ $approval->approval_status }}" !== "Approved") {
+                            previousLayerApproved = false;
+                        }
+
+                        rowContainer.appendChild(nameCol);
+                        rowContainer.appendChild(buttonCol);
+
+                        document.getElementById('requestExtDecList').appendChild(rowContainer);
+                    }
+                @endforeach
+
+                @foreach ($ca_sett as $approval_sett)
+                    if (transactionId === "{{ $approval_sett->ca_id }}") {
+                        var rowContainerDec = document.createElement('div');
+                        rowContainerDec.className = 'row mb-3 text-right';
+
+                        var nameColDec = document.createElement('div');
+                        nameColDec.className = 'col-md-12';
+                        var nameTextDec = document.createElement('p');
+                        nameTextDec.innerHTML = `
+                            <b>{{ $approval_sett->role_name }}</b> : {{ $approval_sett->ReqName }}
+                        `;
+                        nameColDec.appendChild(nameTextDec);
+
+                        var buttonColDec = document.createElement('div');
+                        buttonColDec.className = 'col-md-12';
+
+                        var dateTextDec = document.createElement('p');
+
+                        if ("{{ $approval_sett->approval_status }}" === "Approved") {
+                            const approvedBy = "{{ $approval_sett->by_admin }}" === "T"
+                                ? "{{ $approval_sett->admin->name ?? 'Admin tidak tersedia.' }} (Admin)"
+                                : "{{ $approval_sett->ReqName }}";
+
+                            dateTextDec.innerHTML = `
+                                <div class="border rounded p-2 mb-2">
+                                    <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>
+                                    <strong>Approved By:</strong> ${approvedBy}<br>
+                                    <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}
+                                </div>
+                            `;
+                            buttonColDec.appendChild(dateTextDec);
+                        } else if (previousLayerApprovedDec) {
+                            var rejectButtonDec = document.createElement('button');
+                            rejectButtonDec.type = 'button'; // Mengubah type menjadi 'button'
+                            rejectButtonDec.className = 'btn btn-sm btn-primary btn-pill px-1 me-1 mb-2';
+                            rejectButtonDec.setAttribute('data-bs-toggle', 'modal'); // Menambahkan atribut data-bs-toggle
+                            rejectButtonDec.setAttribute('data-bs-target', '#modalRejectDec'); // Menambahkan atribut data-bs-target
+                            rejectButtonDec.setAttribute('data-no-id', transactionId); // Menambahkan atribut data-no-id
+                            rejectButtonDec.setAttribute('data-no-ca', transactionNo); // Menambahkan atribut data-no-ca
+                            rejectButtonDec.setAttribute('data-start-date', transactionStart); // Menambahkan atribut data-start-date
+                            rejectButtonDec.setAttribute('data-end-date', transactionEnd); // Menambahkan atribut data-end-date
+                            rejectButtonDec.setAttribute('data-total-days', transactionTotal); // Menambahkan atribut data-total-days
+                            rejectButtonDec.setAttribute('data-no-idCA', '{{ $approval_sett->id }}');
+                            rejectButtonDec.textContent = 'Reject'; // Mengubah text button
+
+                            var approveButtonDec = document.createElement('button');
+                            approveButtonDec.type = 'submit';
+                            approveButtonDec.name = 'action_ca_approve';
+                            approveButtonDec.value = 'Approve';
+                            approveButtonDec.className = 'btn btn-sm btn-success btn-pill px-1 me-1 mb-2';
+                            approveButtonDec.textContent = 'Approve';
+                            approveButtonDec.setAttribute('data-no-ca', transactionNo); // Tambahkan data-no-ca agar SweetAlert bisa menggunakan nilai ini
+
+                            // Tambahkan event listener SweetAlert pada tombol Approve
+                            addSweetAlertDecExt(approveButtonDec);
+
+                            form.querySelector('#data_no_id').value = "{{ $approval_sett->id }}";
+
+                            buttonColDec.appendChild(approveButtonDec);
+                            buttonColDec.appendChild(rejectButtonDec);
+                        } else {
+                            dateTextDec.textContent = 'Waiting for previous approval';
+                            buttonColDec.appendChild(dateTextDec);
+                        }
+
+                        if ("{{ $approval_sett->approval_status }}" !== "Approved") {
+                            previousLayerApprovedDec = false;
+                        }
+                        rowContainerDec.appendChild(nameColDec);
+                        rowContainerDec.appendChild(buttonColDec);
+
+                        document.getElementById('declarationExtDecList').appendChild(rowContainerDec);
+                    }
+                @endforeach
+
+                var matchingDeclarationExtendItems = [];
+
+                @foreach ($ca_extend as $approval_extend)
+                    if (transactionId === "{{ $approval_extend->ca_id }}") {
+                        matchingDeclarationExtendItems.push({
+                            employee_id: "{{ $approval_extend->ReqName }}",
+                            layer: "{{ $approval_extend->layer }}",
+                            approval_status: "{{ $approval_extend->approval_status }}",
+                            by_admin: "{{ $approval_extend->by_admin }}",
+                            role_name: "{{ $approval_extend->role_name }}",
+                            admin_name: "{{ $approval_extend->admin->name ?? 'Admin tidak tersedia.' }}",
+                            approved_at: "{{ $approval_extend->approved_at }}",
+                            id: "{{ $approval_extend->id }}"
+                        });
+                    }
+                @endforeach
+
+                matchingDeclarationExtendItems.forEach((item, index) => {
+                    var rowContainerExt = document.createElement('div');
+                    rowContainerExt.className = 'row mb-3 text-right';
+
+                    var nameColExt = document.createElement('div');
+                    nameColExt.className = 'col-md-12';
+                    var nameTextExt = document.createElement('p');
+                    nameTextExt.innerHTML = `
+                        <b>${item.role_name}</b> : ${item.employee_id}
+                    `;
+                    nameColExt.appendChild(nameTextExt);
+
+                    var buttonColExt = document.createElement('div');
+                    buttonColExt.className = 'col-md-12';
+
+                    var dateTextExt = document.createElement('p');
+
+                    if (item.approval_status === "Approved") {
+                        const approvedBy = item.by_admin === "T"
+                            ? item.admin_name
+                            : item.employee_id;
+
+                        dateTextExt.innerHTML = `
+                            <div class="border rounded p-2 mb-2">
+                                <strong>Status:</strong> ${item.approval_status}<br>
+                                <strong>Approved By:</strong> ${approvedBy} ${item.by_admin === "T" ? " (Admin)" : ""}<br>
+                                <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}
+                            </div>
+                        `;
+                        buttonColExt.appendChild(dateTextExt);
+                    } else if (previousLayerApprovedExt) {
+                        dateText.textContent = 'Something Wrong, This form just for Approve Declaration';
+                        buttonCol.appendChild(dateTextExt);
+                    } else {
+                        dateTextExt.textContent = 'Waiting for previous approval';
+                        buttonColExt.appendChild(dateTextExt);
+                    }
+
+                    if (item.approval_status !== "Approved") {
+                        previousLayerApprovedExt = false;
+                    }
+
+                    rowContainerExt.appendChild(nameColExt);
+                    rowContainerExt.appendChild(buttonColExt);
+
+                    document.getElementById('extendExtDecList').appendChild(rowContainerExt);
+
+                    // Add divider after every 4 items, but only if we have more than 4 items total
+                    // and we're not at the last item
+                    if (matchingDeclarationExtendItems.length > 4 &&
+                        (index + 1) % 4 === 0 &&
+                        (index + 1) !== matchingDeclarationExtendItems.length) {
+                        var dividerContainer = document.createElement('div');
+                        dividerContainer.className = 'd-flex align-items-center my-3'; // Container fleksibel untuk divider
+                        var lineLeft = document.createElement('hr');
+                        lineLeft.className = 'flex-grow-1 border border-primary opacity-50 m-0'; // Garis kiri
+                        var text = document.createElement('span');
+                        text.className = 'mx-2 text-primary'; // Teks di tengah
+                        text.textContent = 'Other Approval Extend';
+                        var lineRight = document.createElement('hr');
+                        lineRight.className = 'flex-grow-1 border border-primary opacity-50 m-0'; // Garis kanan
+                        // Susun elemen dalam container
+                        dividerContainer.appendChild(lineLeft);
+                        dividerContainer.appendChild(text);
+                        dividerContainer.appendChild(lineRight);
+
+                        document.getElementById('extendExtDecList').appendChild(dividerContainer);
+                    }
+
+                });
+            });
+        });
+    }
+
+    // OLD LOGIC
+    // // Approval Request Modal
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     var approvalModal = document.getElementById('approvalModal');
+    //     approvalModal.addEventListener('show.bs.modal', function (event) {
+    //         var button = event.relatedTarget;
+
+    //         var transactionType = button.getAttribute('data-type');
+    //         var transactionTotal = button.getAttribute('data-total');
+    //         var transactionId = button.getAttribute('data-id');
+    //         var transactionNo = button.getAttribute('data-no');
+    //         var transactionSPPD = button.getAttribute('data-sppd');
+
+    //         var form = approvalModal.querySelector('form');
+    //         var action = form.getAttribute('action');
+    //         form.setAttribute('action', action.replace(':id', transactionId));
+
+    //         form.querySelector('#ca_type').value = transactionType;
+    //         form.querySelector('#totalca').value = transactionTotal;
+    //         form.querySelector('#no_id').value = transactionId;
+    //         form.querySelector('#no_ca').value = transactionNo;
+    //         form.querySelector('#bisnis_numb').value = transactionSPPD;
+
+    //         var buttonList = document.getElementById('buttonList');
+    //         buttonList.innerHTML = '';
+
+    //         var previousLayerApproved = true; // Untuk mengecek status layer sebelumnya
+
+    //         @foreach ($ca_approvals as $approval)
+    //             if (transactionId === "{{ $approval->ca_id }}") {
+    //                 var rowContainer = document.createElement('div');
+    //                 rowContainer.className = 'row mb-3 text-right';
+
+    //                 var nameCol = document.createElement('div');
+    //                 nameCol.className = 'col-md-12 mb-2';
+    //                 var nameText = document.createElement('div');
+    //                 nameText.innerHTML = `
+    //                     <b>{{ $approval->role_name }}</b> : {{ $approval->ReqName }}
     //                 `;
-    //                 nameColExt.appendChild(nameTextExt);
+    //                 nameCol.appendChild(nameText);
 
-    //                 var buttonColExt = document.createElement('div');
-    //                 buttonColExt.className = 'col-md-10';
+    //                 var buttonCol = document.createElement('div');
+    //                 buttonCol.className = 'col-md-10';
 
-    //                 var dateTextExt = document.createElement('p');
+    //                 var dateText = document.createElement('p');
 
-    //                 if (item.approval_status === "Approved") {
-    //                     const approvedBy = item.by_admin === "T"
-    //                         ? item.admin_name
-    //                         : item.employee_id;
+    //                 if ("{{ $approval->approval_status }}" === "Approved") {
+    //                     const approvedBy = "{{ $approval->by_admin }}" === "T"
+    //                         ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}"
+    //                         : "{{ $approval->ReqName }}";
 
-    //                     dateTextExt.innerHTML = `
+    //                     dateText.innerHTML = `
     //                         <div class="border rounded p-2 mb-2">
-    //                             <strong>Status:</strong> ${item.approval_status}<br>
-    //                             <strong>Approved By:</strong> ${approvedBy} ${item.by_admin === "T" ? " (Admin)" : ""}<br>
-    //                             <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}
+    //                             <strong>Status:</strong> {{ $approval->approval_status }}<br>
+    //                             <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br>
+    //                             <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
     //                         </div>
     //                     `;
-    //                     buttonColExt.appendChild(dateTextExt);
-    //                 } else if (previousLayerApprovedExt) {
-    //                     var rejectButtonExt = document.createElement('button');
-    //                     rejectButtonExt.type = 'button';
-    //                     rejectButtonExt.className = 'btn btn-sm btn-primary btn-pill px-1 me-1 mb-2';
-    //                     rejectButtonExt.setAttribute('data-bs-toggle', 'modal');
-    //                     rejectButtonExt.setAttribute('data-bs-target', '#modalRejectExt');
-    //                     rejectButtonExt.setAttribute('data-no-id', transactionId);
-    //                     rejectButtonExt.setAttribute('data-no-ca', transactionNo);
-    //                     rejectButtonExt.setAttribute('data-start-date', transactionStart);
-    //                     rejectButtonExt.setAttribute('data-end-date', transactionEnd);
-    //                     rejectButtonExt.setAttribute('data-total-days', transactionTotal);
-    //                     rejectButtonExt.setAttribute('data-no-idCA', item.id);
-    //                     rejectButtonExt.textContent = 'Reject';
+    //                     buttonCol.appendChild(dateText);
+    //                 } else if (previousLayerApproved) {
+    //                     // Form Data
+    //                     var dataNoIdInput = document.createElement('input');
+    //                     dataNoIdInput.type = 'hidden';
+    //                     dataNoIdInput.name = 'data_no_id';
+    //                     dataNoIdInput.value = "{{ $approval->id }}";
 
-    //                     var approveButtonExt = document.createElement('button');
-    //                     approveButtonExt.type = 'submit';
-    //                     approveButtonExt.name = 'action_ca_approve';
-    //                     approveButtonExt.value = 'Approve';
-    //                     approveButtonExt.className = 'btn btn-sm btn-success btn-pill px-1 me-1 mb-2';
-    //                     approveButtonExt.textContent = 'Approve';
-    //                     approveButtonExt.setAttribute('data-no-ca', transactionNo);
+    //                     // Tombol Approve
+    //                     var rejectButton = document.createElement('button');
+    //                     rejectButton.type = 'button';
+    //                     rejectButton.className = 'btn btn-sm btn-primary btn-pill px-1 me-1';
+    //                     rejectButton.setAttribute('data-bs-toggle', 'modal'); // Menambahkan atribut data-bs-toggle
+    //                     rejectButton.setAttribute('data-bs-target', '#modalReject'); // Menambahkan atribut data-bs-target
+    //                     rejectButton.setAttribute('data-no-id', transactionId); // Menambahkan atribut data-no-id
+    //                     rejectButton.setAttribute('data-no-ca', transactionNo); // Menambahkan atribut data-no-ca
+    //                     rejectButton.setAttribute('data-no-idCA', '{{ $approval->id }}');
+    //                     rejectButton.textContent = 'Reject';
 
-    //                     addSweetAlertExt(approveButtonExt);
+    //                     // Tombol Approve
+    //                     var approveButton = document.createElement('button');
+    //                     approveButton.type = 'submit';
+    //                     approveButton.name = 'action_ca_approve';
+    //                     approveButton.value = 'Approve';
+    //                     approveButton.className = 'btn btn-sm btn-success btn-pill px-1 me-1';
+    //                     approveButton.textContent = 'Approve';
+    //                     approveButton.setAttribute('data-no-ca', transactionNo); // Tambahkan data-no-ca agar SweetAlert bisa menggunakan nilai ini
 
-    //                     form.querySelector('#data_no_id').value = item.id;
+    //                     // Tambahkan event listener SweetAlert pada tombol Approve
+    //                     addSweetAlert(approveButton);
 
-    //                     buttonColExt.appendChild(approveButtonExt);
-    //                     buttonColExt.appendChild(rejectButtonExt);
+    //                     form.querySelector('#data_no_id').value = "{{ $approval->id }}";
+
+    //                     buttonCol.appendChild(approveButton);
+    //                     buttonCol.appendChild(rejectButton);
     //                 } else {
-    //                     dateTextExt.textContent = 'Waiting for previous approval';
-    //                     buttonColExt.appendChild(dateTextExt);
+    //                     // Jika layer sebelumnya tidak disetujui, layer ini tidak menampilkan tombol
+    //                     dateText.textContent = 'Waiting for previous approval';
+    //                     buttonCol.appendChild(dateText);
     //                 }
 
-    //                 if (item.approval_status !== "Approved") {
-    //                     previousLayerApprovedExt = false;
+    //                 // Jika approval_status tidak "Approved", previousLayerApproved menjadi false
+    //                 if ("{{ $approval->approval_status }}" !== "Approved") {
+    //                     previousLayerApproved = false;
     //                 }
 
-    //                 rowContainerExt.appendChild(nameColExt);
-    //                 rowContainerExt.appendChild(buttonColExt);
+    //                 rowContainer.appendChild(nameCol);
+    //                 rowContainer.appendChild(buttonCol);
 
-    //                 document.getElementById('extendList').appendChild(rowContainerExt);
-
-    //                 // Add divider after every 4 items, but only if we have more than 4 items total
-    //                 // and we're not at the last item
-    //                 if (matchingExtendItems.length > 4 &&
-    //                     (index + 1) % 4 === 0 &&
-    //                     (index + 1) !== matchingExtendItems.length) {
-    //                     var dividerContainer = document.createElement('div');
-    //                     dividerContainer.className = 'd-flex align-items-center my-3'; // Container fleksibel untuk divider
-    //                     var lineLeft = document.createElement('hr');
-    //                     lineLeft.className = 'flex-grow-1 border border-primary opacity-50 m-0'; // Garis kiri
-    //                     var text = document.createElement('span');
-    //                     text.className = 'mx-2 text-primary'; // Teks di tengah
-    //                     text.textContent = 'Other Approval Extend';
-    //                     var lineRight = document.createElement('hr');
-    //                     lineRight.className = 'flex-grow-1 border border-primary opacity-50 m-0'; // Garis kanan
-    //                     // Susun elemen dalam container
-    //                     dividerContainer.appendChild(lineLeft);
-    //                     dividerContainer.appendChild(text);
-    //                     dividerContainer.appendChild(lineRight);
-
-    //                     document.getElementById('extendList').appendChild(dividerContainer);
-    //                 }
-    //             });
-    //         });
+    //                 buttonList.appendChild(rowContainer);
+    //             }
+    //         @endforeach
     //     });
+    // });
 
-    //     // Approval Extend dan Declaration Modal
-    //     document.addEventListener('DOMContentLoaded', function () {
-    //         var approvalDecExtModal = document.getElementById('approvalDecExtModal');
+    // // Approval Declaration Modal
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     var approvalDecModal = document.getElementById('approvalDecModal');
 
-    //         approvalDecExtModal.addEventListener('show.bs.modal', function (event) {
-    //             var button = event.relatedTarget;
+    //     approvalDecModal.addEventListener('show.bs.modal', function (event) {
+    //         var button = event.relatedTarget;
 
-    //             var transactionType = button.getAttribute('data-type');
-    //             var transactionTotal = button.getAttribute('data-total');
-    //             var transactionId = button.getAttribute('data-id');
-    //             var transactionNo = button.getAttribute('data-no');
-    //             var transactionSPPD = button.getAttribute('data-sppd');
-    //             var transactionStart = button.getAttribute('data-start-date');
-    //             var transactionEnd = button.getAttribute('data-end-date');
-    //             var transactionTotal = button.getAttribute('data-total-days');
+    //         var transactionType = button.getAttribute('data-type');
+    //         var transactionTotal = button.getAttribute('data-total');
+    //         var transactionId = button.getAttribute('data-id');
+    //         var transactionNo = button.getAttribute('data-no');
+    //         var transactionSPPD = button.getAttribute('data-sppd');
+    //         var transactionStart = button.getAttribute('data-start-date');
+    //         var transactionEnd = button.getAttribute('data-end-date');
+    //         var transactionTotal = button.getAttribute('data-total-days');
 
-    //             document.getElementById('approvalExtDec_no_ca').textContent = transactionNo;
+    //         document.getElementById('approval_no_ca').textContent = transactionNo;
 
-    //             var form = approvalDecExtModal.querySelector('form');
-    //             var action = form.getAttribute('action');
-    //             form.setAttribute('action', action.replace(':id', transactionId));
+    //         var form = approvalDecModal.querySelector('form');
+    //         var action = form.getAttribute('action');
+    //         form.setAttribute('action', action.replace(':id', transactionId));
 
-    //             form.querySelector('#ca_type').value = transactionType;
-    //             form.querySelector('#totalca').value = transactionTotal;
-    //             form.querySelector('#no_id').value = transactionId;
-    //             form.querySelector('#data_no_id').value = transactionId;
-    //             form.querySelector('#no_ca').value = transactionNo;
-    //             form.querySelector('#bisnis_numb').value = transactionSPPD;
+    //         form.querySelector('#ca_type').value = transactionType;
+    //         form.querySelector('#totalca').value = transactionTotal;
+    //         form.querySelector('#no_id').value = transactionId;
+    //         form.querySelector('#no_ca').value = transactionNo;
+    //         form.querySelector('#bisnis_numb').value = transactionSPPD;
 
-    //             // Clear existing content to prevent duplicates
-    //             document.getElementById('requestExtDecList').innerHTML = '';
-    //             document.getElementById('declarationExtDecList').innerHTML = '';
-    //             document.getElementById('extendExtDecList').innerHTML = '';
+    //         // Clear existing content to prevent duplicates
+    //         document.getElementById('requestList').innerHTML = '';
+    //         document.getElementById('declarationList').innerHTML = '';
 
-    //             var previousLayerApproved = true; // To check previous layer status
-    //             var previousLayerApprovedDec = true; // To check previous declaration status
+    //         var previousLayerApproved = true; // To check previous layer status
+    //         var previousLayerApprovedDec = true; // To check previous declaration status
 
-    //             var requestLabel = document.createElement('label');
-    //             requestLabel.className = 'col-form-label mb-3';
-    //             requestLabel.textContent = 'Approval Request';
-    //             document.getElementById('requestExtDecList').appendChild(requestLabel);
+    //         var requestLabel = document.createElement('label');
+    //         requestLabel.className = 'col-form-label mb-3';
+    //         requestLabel.textContent = 'Approval Request';
+    //         document.getElementById('requestList').appendChild(requestLabel);
 
-    //             var declarationLabel = document.createElement('label');
-    //             declarationLabel.className = 'col-form-label mb-3';
-    //             declarationLabel.textContent = 'Approval Declaration';
-    //             document.getElementById('declarationExtDecList').appendChild(declarationLabel);
+    //         var declarationLabel = document.createElement('label');
+    //         declarationLabel.className = 'col-form-label mb-3';
+    //         declarationLabel.textContent = 'Approval Declaration';
+    //         document.getElementById('declarationList').appendChild(declarationLabel);
 
-    //             var extendLabel = document.createElement('label');
-    //             extendLabel.className = 'col-form-label mb-3';
-    //             extendLabel.textContent = 'Approval Extend';
-    //             document.getElementById('extendExtDecList').appendChild(extendLabel);
+    //         @foreach ($ca_approvals as $approval)
+    //             if (transactionId === "{{ $approval->ca_id }}") {
+    //                 var rowContainer = document.createElement('div');
+    //                 rowContainer.className = 'row mb-3 text-right';
 
-    //             @foreach ($ca_approvals as $approval)
-    //                 if (transactionId === "{{ $approval->ca_id }}") {
-    //                     var rowContainer = document.createElement('div');
-    //                     rowContainer.className = 'row mb-3 text-right';
-
-    //                     var nameCol = document.createElement('div');
-    //                     nameCol.className = 'col-md-12';
-    //                     var nameText = document.createElement('p');
-    //                     nameText.innerHTML = `
-    //                         <b>{{ $approval->role_name }}</b> : {{ $approval->ReqName }}
-    //                     `;
-    //                     nameCol.appendChild(nameText);
-
-    //                     var buttonCol = document.createElement('div');
-    //                     buttonCol.className = 'col-md-12';
-
-    //                     var dateText = document.createElement('p');
-
-    //                     if ("{{ $approval->approval_status }}" === "Approved") {
-    //                         const approvedBy = "{{ $approval->by_admin }}" === "T"
-    //                             ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}"
-    //                             : "{{ $approval->ReqName }}";
-
-    //                         dateText.innerHTML = `
-    //                             <div class="border rounded p-2 mb-2">
-    //                                 <strong>Status:</strong> {{ $approval->approval_status }}<br>
-    //                                 <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br>
-    //                                 <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
-    //                             </div>
-    //                         `;
-    //                         buttonCol.appendChild(dateText);
-    //                         // dateText.textContent = "{{ $approval->approval_status }} ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
-    //                         // buttonCol.appendChild(dateText);
-    //                     } else if (previousLayerApproved) {
-    //                         dateText.textContent = 'Something Wrong, This form just for Approve Declaration';
-    //                         buttonCol.appendChild(dateText);
-    //                     } else {
-    //                         dateText.textContent = 'Waiting for previous approval';
-    //                         buttonCol.appendChild(dateText);
-    //                     }
-
-    //                     if ("{{ $approval->approval_status }}" !== "Approved") {
-    //                         previousLayerApproved = false;
-    //                     }
-
-    //                     rowContainer.appendChild(nameCol);
-    //                     rowContainer.appendChild(buttonCol);
-
-    //                     document.getElementById('requestExtDecList').appendChild(rowContainer);
-    //                 }
-    //             @endforeach
-
-    //             @foreach ($ca_sett as $approval_sett)
-    //                 if (transactionId === "{{ $approval_sett->ca_id }}") {
-    //                     var rowContainerDec = document.createElement('div');
-    //                     rowContainerDec.className = 'row mb-3 text-right';
-
-    //                     var nameColDec = document.createElement('div');
-    //                     nameColDec.className = 'col-md-12';
-    //                     var nameTextDec = document.createElement('p');
-    //                     nameTextDec.innerHTML = `
-    //                         <b>{{ $approval_sett->role_name }}</b> : {{ $approval_sett->ReqName }}
-    //                     `;
-    //                     nameColDec.appendChild(nameTextDec);
-
-    //                     var buttonColDec = document.createElement('div');
-    //                     buttonColDec.className = 'col-md-12';
-
-    //                     var dateTextDec = document.createElement('p');
-
-    //                     if ("{{ $approval_sett->approval_status }}" === "Approved") {
-    //                         const approvedBy = "{{ $approval_sett->by_admin }}" === "T"
-    //                             ? "{{ $approval_sett->admin->name ?? 'Admin tidak tersedia.' }} (Admin)"
-    //                             : "{{ $approval_sett->ReqName }}";
-
-    //                         dateTextDec.innerHTML = `
-    //                             <div class="border rounded p-2 mb-2">
-    //                                 <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>
-    //                                 <strong>Approved By:</strong> ${approvedBy}<br>
-    //                                 <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}
-    //                             </div>
-    //                         `;
-    //                         buttonColDec.appendChild(dateTextDec);
-    //                     } else if (previousLayerApprovedDec) {
-    //                         var rejectButtonDec = document.createElement('button');
-    //                         rejectButtonDec.type = 'button'; // Mengubah type menjadi 'button'
-    //                         rejectButtonDec.className = 'btn btn-sm btn-primary btn-pill px-1 me-1 mb-2';
-    //                         rejectButtonDec.setAttribute('data-bs-toggle', 'modal'); // Menambahkan atribut data-bs-toggle
-    //                         rejectButtonDec.setAttribute('data-bs-target', '#modalRejectDec'); // Menambahkan atribut data-bs-target
-    //                         rejectButtonDec.setAttribute('data-no-id', transactionId); // Menambahkan atribut data-no-id
-    //                         rejectButtonDec.setAttribute('data-no-ca', transactionNo); // Menambahkan atribut data-no-ca
-    //                         rejectButtonDec.setAttribute('data-start-date', transactionStart); // Menambahkan atribut data-start-date
-    //                         rejectButtonDec.setAttribute('data-end-date', transactionEnd); // Menambahkan atribut data-end-date
-    //                         rejectButtonDec.setAttribute('data-total-days', transactionTotal); // Menambahkan atribut data-total-days
-    //                         rejectButtonDec.setAttribute('data-no-idCA', '{{ $approval_sett->id }}');
-    //                         rejectButtonDec.textContent = 'Reject'; // Mengubah text button
-
-    //                         var approveButtonDec = document.createElement('button');
-    //                         approveButtonDec.type = 'submit';
-    //                         approveButtonDec.name = 'action_ca_approve';
-    //                         approveButtonDec.value = 'Approve';
-    //                         approveButtonDec.className = 'btn btn-sm btn-success btn-pill px-1 me-1 mb-2';
-    //                         approveButtonDec.textContent = 'Approve';
-    //                         approveButtonDec.setAttribute('data-no-ca', transactionNo); // Tambahkan data-no-ca agar SweetAlert bisa menggunakan nilai ini
-
-    //                         // Tambahkan event listener SweetAlert pada tombol Approve
-    //                         addSweetAlertDecExt(approveButtonDec);
-
-    //                         form.querySelector('#data_no_id').value = "{{ $approval_sett->id }}";
-
-    //                         buttonColDec.appendChild(approveButtonDec);
-    //                         buttonColDec.appendChild(rejectButtonDec);
-    //                     } else {
-    //                         dateTextDec.textContent = 'Waiting for previous approval';
-    //                         buttonColDec.appendChild(dateTextDec);
-    //                     }
-
-    //                     if ("{{ $approval_sett->approval_status }}" !== "Approved") {
-    //                         previousLayerApprovedDec = false;
-    //                     }
-    //                     rowContainerDec.appendChild(nameColDec);
-    //                     rowContainerDec.appendChild(buttonColDec);
-
-    //                     document.getElementById('declarationExtDecList').appendChild(rowContainerDec);
-    //                 }
-    //             @endforeach
-
-    //             var matchingDeclarationExtendItems = [];
-
-    //             @foreach ($ca_extend as $approval_extend)
-    //                 if (transactionId === "{{ $approval_extend->ca_id }}") {
-    //                     matchingDeclarationExtendItems.push({
-    //                         employee_id: "{{ $approval_extend->ReqName }}",
-    //                         layer: "{{ $approval_extend->layer }}",
-    //                         approval_status: "{{ $approval_extend->approval_status }}",
-    //                         by_admin: "{{ $approval_extend->by_admin }}",
-    //                         role_name: "{{ $approval_extend->role_name }}",
-    //                         admin_name: "{{ $approval_extend->admin->name ?? 'Admin tidak tersedia.' }}",
-    //                         approved_at: "{{ $approval_extend->approved_at }}",
-    //                         id: "{{ $approval_extend->id }}"
-    //                     });
-    //                 }
-    //             @endforeach
-
-    //             matchingDeclarationExtendItems.forEach((item, index) => {
-    //                 var rowContainerExt = document.createElement('div');
-    //                 rowContainerExt.className = 'row mb-3 text-right';
-
-    //                 var nameColExt = document.createElement('div');
-    //                 nameColExt.className = 'col-md-12';
-    //                 var nameTextExt = document.createElement('p');
-    //                 nameTextExt.innerHTML = `
-    //                     <b>${item.role_name}</b> : ${item.employee_id}
+    //                 var nameCol = document.createElement('div');
+    //                 nameCol.className = 'col-md-12';
+    //                 var nameText = document.createElement('p');
+    //                 nameText.innerHTML = `
+    //                     <b>{{ $approval->role_name }}</b> : {{ $approval->ReqName }}
     //                 `;
-    //                 nameColExt.appendChild(nameTextExt);
+    //                 nameCol.appendChild(nameText);
 
-    //                 var buttonColExt = document.createElement('div');
-    //                 buttonColExt.className = 'col-md-12';
+    //                 var buttonCol = document.createElement('div');
+    //                 buttonCol.className = 'col-md-10';
 
-    //                 var dateTextExt = document.createElement('p');
+    //                 var dateText = document.createElement('p');
 
-    //                 if (item.approval_status === "Approved") {
-    //                     const approvedBy = item.by_admin === "T"
-    //                         ? item.admin_name
-    //                         : item.employee_id;
+    //                 if ("{{ $approval->approval_status }}" === "Approved") {
+    //                     const approvedBy = "{{ $approval->by_admin }}" === "T"
+    //                         ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}"
+    //                         : "{{ $approval->ReqName }}";
 
-    //                     dateTextExt.innerHTML = `
+    //                     dateText.innerHTML = `
     //                         <div class="border rounded p-2 mb-2">
-    //                             <strong>Status:</strong> ${item.approval_status}<br>
-    //                             <strong>Approved By:</strong> ${approvedBy} ${item.by_admin === "T" ? " (Admin)" : ""}<br>
-    //                             <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}
+    //                             <strong>Status:</strong> {{ $approval->approval_status }}<br>
+    //                             <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br>
+    //                             <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
     //                         </div>
     //                     `;
-    //                     buttonColExt.appendChild(dateTextExt);
-    //                 } else if (previousLayerApprovedExt) {
+    //                     buttonCol.appendChild(dateText);
+    //                 } else if (previousLayerApproved) {
     //                     dateText.textContent = 'Something Wrong, This form just for Approve Declaration';
-    //                     buttonCol.appendChild(dateTextExt);
+    //                     buttonCol.appendChild(dateText);
     //                 } else {
-    //                     dateTextExt.textContent = 'Waiting for previous approval';
-    //                     buttonColExt.appendChild(dateTextExt);
+    //                     dateText.textContent = 'Waiting for previous approval';
+    //                     buttonCol.appendChild(dateText);
     //                 }
 
-    //                 if (item.approval_status !== "Approved") {
-    //                     previousLayerApprovedExt = false;
+    //                 if ("{{ $approval->approval_status }}" !== "Approved") {
+    //                     previousLayerApproved = false;
     //                 }
 
-    //                 rowContainerExt.appendChild(nameColExt);
-    //                 rowContainerExt.appendChild(buttonColExt);
+    //                 rowContainer.appendChild(nameCol);
+    //                 rowContainer.appendChild(buttonCol);
 
-    //                 document.getElementById('extendExtDecList').appendChild(rowContainerExt);
+    //                 document.getElementById('requestList').appendChild(rowContainer);
+    //             }
+    //         @endforeach
 
-    //                 // Add divider after every 4 items, but only if we have more than 4 items total
-    //                 // and we're not at the last item
-    //                 if (matchingDeclarationExtendItems.length > 4 &&
-    //                     (index + 1) % 4 === 0 &&
-    //                     (index + 1) !== matchingDeclarationExtendItems.length) {
-    //                     var dividerContainer = document.createElement('div');
-    //                     dividerContainer.className = 'd-flex align-items-center my-3'; // Container fleksibel untuk divider
-    //                     var lineLeft = document.createElement('hr');
-    //                     lineLeft.className = 'flex-grow-1 border border-primary opacity-50 m-0'; // Garis kiri
-    //                     var text = document.createElement('span');
-    //                     text.className = 'mx-2 text-primary'; // Teks di tengah
-    //                     text.textContent = 'Other Approval Extend';
-    //                     var lineRight = document.createElement('hr');
-    //                     lineRight.className = 'flex-grow-1 border border-primary opacity-50 m-0'; // Garis kanan
-    //                     // Susun elemen dalam container
-    //                     dividerContainer.appendChild(lineLeft);
-    //                     dividerContainer.appendChild(text);
-    //                     dividerContainer.appendChild(lineRight);
+    //         @foreach ($ca_sett as $approval_sett)
+    //             if (transactionId === "{{ $approval_sett->ca_id }}") {
+    //                 var rowContainerDec = document.createElement('div');
+    //                 rowContainerDec.className = 'row mb-3 text-right';
 
-    //                     document.getElementById('extendExtDecList').appendChild(dividerContainer);
+    //                 var nameColDec = document.createElement('div');
+    //                 nameColDec.className = 'col-md-12';
+    //                 var nameTextDec = document.createElement('p');
+    //                 nameTextDec.innerHTML = `
+    //                     <b>{{ $approval_sett->role_name }}</b> : {{ $approval_sett->ReqName }}
+    //                 `;
+    //                 nameColDec.appendChild(nameTextDec);
+
+    //                 var buttonColDec = document.createElement('div');
+    //                 buttonColDec.className = 'col-md-10';
+
+    //                 var dateTextDec = document.createElement('p');
+
+    //                 if ("{{ $approval_sett->approval_status }}" === "Approved") {
+    //                     const approvedBy = "{{ $approval_sett->by_admin }}" === "T"
+    //                         ? "{{ $approval_sett->admin->name ?? 'Admin tidak tersedia.' }} (Admin)"
+    //                         : "{{ $approval_sett->ReqName }}";
+
+    //                     dateTextDec.innerHTML = `
+    //                         <div class="border rounded p-2 mb-2">
+    //                             <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>
+    //                             <strong>Approved By:</strong> ${approvedBy}<br>
+    //                             <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}
+    //                         </div>
+    //                     `;
+    //                     buttonColDec.appendChild(dateTextDec);
+    //                 } else if (previousLayerApprovedDec) {
+    //                     var rejectButtonDec = document.createElement('button');
+    //                     rejectButtonDec.type = 'button'; // Mengubah type menjadi 'button'
+    //                     rejectButtonDec.className = 'btn btn-sm btn-primary btn-pill px-1 me-1 mb-2';
+    //                     rejectButtonDec.setAttribute('data-bs-toggle', 'modal'); // Menambahkan atribut data-bs-toggle
+    //                     rejectButtonDec.setAttribute('data-bs-target', '#modalRejectDec'); // Menambahkan atribut data-bs-target
+    //                     rejectButtonDec.setAttribute('data-no-id', transactionId); // Menambahkan atribut data-no-id
+    //                     rejectButtonDec.setAttribute('data-no-ca', transactionNo); // Menambahkan atribut data-no-ca
+    //                     rejectButtonDec.setAttribute('data-start-date', transactionStart); // Menambahkan atribut data-start-date
+    //                     rejectButtonDec.setAttribute('data-end-date', transactionEnd); // Menambahkan atribut data-end-date
+    //                     rejectButtonDec.setAttribute('data-total-days', transactionTotal); // Menambahkan atribut data-total-days
+    //                     rejectButtonDec.setAttribute('data-no-idCA', '{{ $approval_sett->id }}');
+    //                     rejectButtonDec.textContent = 'Reject'; // Mengubah text button
+
+    //                     var approveButtonDec = document.createElement('button');
+    //                     approveButtonDec.type = 'submit';
+    //                     approveButtonDec.name = 'action_ca_approve';
+    //                     approveButtonDec.value = 'Approve';
+    //                     approveButtonDec.className = 'btn btn-sm btn-success btn-pill px-1 me-1 mb-2';
+    //                     approveButtonDec.textContent = 'Approve';
+    //                     approveButtonDec.setAttribute('data-no-ca', transactionNo); // Tambahkan data-no-ca agar SweetAlert bisa menggunakan nilai ini
+
+    //                     // Tambahkan event listener SweetAlert pada tombol Approve
+    //                     addSweetAlertDec(approveButtonDec);
+
+    //                     form.querySelector('#data_no_id').value = "{{ $approval_sett->id }}";
+
+    //                     buttonColDec.appendChild(approveButtonDec);
+    //                     buttonColDec.appendChild(rejectButtonDec);
+    //                 } else {
+    //                     dateTextDec.textContent = 'Waiting for previous approval';
+    //                     buttonColDec.appendChild(dateTextDec);
     //                 }
 
-    //             });
+    //                 if ("{{ $approval_sett->approval_status }}" !== "Approved") {
+    //                     previousLayerApprovedDec = false;
+    //                 }
+    //                 rowContainerDec.appendChild(nameColDec);
+    //                 rowContainerDec.appendChild(buttonColDec);
+
+    //                 document.getElementById('declarationList').appendChild(rowContainerDec);
+    //             }
+    //         @endforeach
+    //     });
+    // });
+
+    // // Approval Extend Modal
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     var approvalExtModal = document.getElementById('approvalExtModal');
+
+    //     approvalExtModal.addEventListener('show.bs.modal', function (event) {
+    //         var button = event.relatedTarget;
+
+    //         var transactionType = button.getAttribute('data-type');
+    //         var transactionTotal = button.getAttribute('data-total');
+    //         var transactionTotalAmmount = button.getAttribute('data-total-amount');
+    //         var transactionId = button.getAttribute('data-id');
+    //         var transactionNo = button.getAttribute('data-no');
+    //         var transactionSPPD = button.getAttribute('data-sppd');
+    //         var transactionStart = button.getAttribute('data-start-date');
+    //         var transactionEnd = button.getAttribute('data-end-date');
+    //         var extendEnd = button.getAttribute('data-ext-end');
+    //         var extendTotal = button.getAttribute('data-ext-total');
+    //         var extendReason = button.getAttribute('data-ext-reason');
+
+    //         document.getElementById('approvalExt_no_ca').textContent = transactionNo;
+
+    //         var form = approvalExtModal.querySelector('form');
+    //         var action = form.getAttribute('action');
+    //         form.setAttribute('action', action.replace(':id', transactionId));
+
+    //         form.querySelector('#ca_type').value = transactionType;
+    //         form.querySelector('#totalca').value = transactionTotalAmmount;
+    //         form.querySelector('#no_id').value = transactionId;
+    //         form.querySelector('#no_ca').value = transactionNo;
+    //         form.querySelector('#bisnis_numb').value = transactionSPPD;
+    //         form.querySelector('#ext_end_date').value = extendEnd;
+    //         form.querySelector('#ext_totaldays').value = extendTotal;
+    //         form.querySelector('#ext_reason').value = extendReason;
+
+    //         // Clear existing content to prevent duplicates
+    //         document.getElementById('requestExtList').innerHTML = '';
+    //         document.getElementById('extendList').innerHTML = '';
+
+    //         var previousLayerApproved = true;
+    //         var previousLayerApprovedExt = true;
+
+    //         var requestLabel = document.createElement('label');
+    //         requestLabel.className = 'col-form-label mb-3';
+    //         requestLabel.textContent = 'Approval Request';
+    //         document.getElementById('requestExtList').appendChild(requestLabel);
+
+    //         var extendLabel = document.createElement('label');
+    //         extendLabel.className = 'col-form-label mb-3';
+    //         extendLabel.textContent = 'Approval Extend';
+    //         document.getElementById('extendList').appendChild(extendLabel);
+
+    //         // First loop for CA approvals
+    //         @foreach ($ca_approvals as $approval)
+    //             if (transactionId === "{{ $approval->ca_id }}") {
+    //                 var rowContainer = document.createElement('div');
+    //                 rowContainer.className = 'row mb-3 text-right';
+
+    //                 var nameCol = document.createElement('div');
+    //                 nameCol.className = 'col-md-12';
+    //                 var nameText = document.createElement('p');
+    //                 nameText.innerHTML = `
+    //                     <b>{{ $approval->role_name }}</b> : {{ $approval->ReqName }}
+    //                 `;
+    //                 nameCol.appendChild(nameText);
+
+    //                 var buttonCol = document.createElement('div');
+    //                 buttonCol.className = 'col-md-10';
+
+    //                 var dateText = document.createElement('p');
+
+    //                 if ("{{ $approval->approval_status }}" === "Approved") {
+    //                     const approvedBy = "{{ $approval->by_admin }}" === "T"
+    //                         ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}"
+    //                         : "{{ $approval->ReqName }}";
+
+    //                     dateText.innerHTML = `
+    //                         <div class="border rounded p-2 mb-2">
+    //                             <strong>Status:</strong> {{ $approval->approval_status }}<br>
+    //                             <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br>
+    //                             <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
+    //                         </div>
+    //                     `;
+    //                     buttonCol.appendChild(dateText);
+    //                 } else if (previousLayerApproved) {
+    //                     dateText.textContent = 'Something Wrong, This form just for Approve Extend';
+    //                     buttonCol.appendChild(dateText);
+    //                 } else {
+    //                     dateText.textContent = 'Waiting for previous approval';
+    //                     buttonCol.appendChild(dateText);
+    //                 }
+
+    //                 if ("{{ $approval->approval_status }}" !== "Approved") {
+    //                     previousLayerApproved = false;
+    //                 }
+
+    //                 rowContainer.appendChild(nameCol);
+    //                 rowContainer.appendChild(buttonCol);
+
+    //                 document.getElementById('requestExtList').appendChild(rowContainer);
+    //             }
+    //         @endforeach
+
+    //         // Create array to store matching extend items
+    //         var matchingExtendItems = [];
+
+    //         // First collect all matching items
+    //         @foreach ($ca_extend as $approval_extend)
+    //             if (transactionId === "{{ $approval_extend->ca_id }}") {
+    //                 matchingExtendItems.push({
+    //                     employee_id: "{{ $approval_extend->ReqName }}",
+    //                     layer: "{{ $approval_extend->layer }}",
+    //                     approval_status: "{{ $approval_extend->approval_status }}",
+    //                     by_admin: "{{ $approval_extend->by_admin }}",
+    //                     role_name: "{{ $approval_extend->role_name }}",
+    //                     admin_name: "{{ $approval_extend->admin->name ?? 'Admin tidak tersedia.' }}",
+    //                     approved_at: "{{ $approval_extend->approved_at }}",
+    //                     id: "{{ $approval_extend->id }}"
+    //                 });
+    //             }
+    //         @endforeach
+
+    //         // Then render the items with dividers
+    //         matchingExtendItems.forEach((item, index) => {
+    //             var rowContainerExt = document.createElement('div');
+    //             rowContainerExt.className = 'row mb-3 text-right';
+
+    //             var nameColExt = document.createElement('div');
+    //             nameColExt.className = 'col-md-12';
+    //             var nameTextExt = document.createElement('p');
+    //             nameTextExt.innerHTML = `
+    //                 <b>${item.role_name}</b> : ${item.employee_id}
+    //             `;
+    //             nameColExt.appendChild(nameTextExt);
+
+    //             var buttonColExt = document.createElement('div');
+    //             buttonColExt.className = 'col-md-10';
+
+    //             var dateTextExt = document.createElement('p');
+
+    //             if (item.approval_status === "Approved") {
+    //                 const approvedBy = item.by_admin === "T"
+    //                     ? item.admin_name
+    //                     : item.employee_id;
+
+    //                 dateTextExt.innerHTML = `
+    //                     <div class="border rounded p-2 mb-2">
+    //                         <strong>Status:</strong> ${item.approval_status}<br>
+    //                         <strong>Approved By:</strong> ${approvedBy} ${item.by_admin === "T" ? " (Admin)" : ""}<br>
+    //                         <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}
+    //                     </div>
+    //                 `;
+    //                 buttonColExt.appendChild(dateTextExt);
+    //             } else if (previousLayerApprovedExt) {
+    //                 var rejectButtonExt = document.createElement('button');
+    //                 rejectButtonExt.type = 'button';
+    //                 rejectButtonExt.className = 'btn btn-sm btn-primary btn-pill px-1 me-1 mb-2';
+    //                 rejectButtonExt.setAttribute('data-bs-toggle', 'modal');
+    //                 rejectButtonExt.setAttribute('data-bs-target', '#modalRejectExt');
+    //                 rejectButtonExt.setAttribute('data-no-id', transactionId);
+    //                 rejectButtonExt.setAttribute('data-no-ca', transactionNo);
+    //                 rejectButtonExt.setAttribute('data-start-date', transactionStart);
+    //                 rejectButtonExt.setAttribute('data-end-date', transactionEnd);
+    //                 rejectButtonExt.setAttribute('data-total-days', transactionTotal);
+    //                 rejectButtonExt.setAttribute('data-no-idCA', item.id);
+    //                 rejectButtonExt.textContent = 'Reject';
+
+    //                 var approveButtonExt = document.createElement('button');
+    //                 approveButtonExt.type = 'submit';
+    //                 approveButtonExt.name = 'action_ca_approve';
+    //                 approveButtonExt.value = 'Approve';
+    //                 approveButtonExt.className = 'btn btn-sm btn-success btn-pill px-1 me-1 mb-2';
+    //                 approveButtonExt.textContent = 'Approve';
+    //                 approveButtonExt.setAttribute('data-no-ca', transactionNo);
+
+    //                 addSweetAlertExt(approveButtonExt);
+
+    //                 form.querySelector('#data_no_id').value = item.id;
+
+    //                 buttonColExt.appendChild(approveButtonExt);
+    //                 buttonColExt.appendChild(rejectButtonExt);
+    //             } else {
+    //                 dateTextExt.textContent = 'Waiting for previous approval';
+    //                 buttonColExt.appendChild(dateTextExt);
+    //             }
+
+    //             if (item.approval_status !== "Approved") {
+    //                 previousLayerApprovedExt = false;
+    //             }
+
+    //             rowContainerExt.appendChild(nameColExt);
+    //             rowContainerExt.appendChild(buttonColExt);
+
+    //             document.getElementById('extendList').appendChild(rowContainerExt);
+
+    //             // Add divider after every 4 items, but only if we have more than 4 items total
+    //             // and we're not at the last item
+    //             if (matchingExtendItems.length > 4 &&
+    //                 (index + 1) % 4 === 0 &&
+    //                 (index + 1) !== matchingExtendItems.length) {
+    //                 var dividerContainer = document.createElement('div');
+    //                 dividerContainer.className = 'd-flex align-items-center my-3'; // Container fleksibel untuk divider
+    //                 var lineLeft = document.createElement('hr');
+    //                 lineLeft.className = 'flex-grow-1 border border-primary opacity-50 m-0'; // Garis kiri
+    //                 var text = document.createElement('span');
+    //                 text.className = 'mx-2 text-primary'; // Teks di tengah
+    //                 text.textContent = 'Other Approval Extend';
+    //                 var lineRight = document.createElement('hr');
+    //                 lineRight.className = 'flex-grow-1 border border-primary opacity-50 m-0'; // Garis kanan
+    //                 // Susun elemen dalam container
+    //                 dividerContainer.appendChild(lineLeft);
+    //                 dividerContainer.appendChild(text);
+    //                 dividerContainer.appendChild(lineRight);
+
+    //                 document.getElementById('extendList').appendChild(dividerContainer);
+    //             }
     //         });
     //     });
-    // }
-
-    // Approval Request Modal
-    document.addEventListener('DOMContentLoaded', function () {
-        var approvalModal = document.getElementById('approvalModal');
-        approvalModal.addEventListener('show.bs.modal', function (event) {
-            var button = event.relatedTarget;
-
-            var transactionType = button.getAttribute('data-type');
-            var transactionTotal = button.getAttribute('data-total');
-            var transactionId = button.getAttribute('data-id');
-            var transactionNo = button.getAttribute('data-no');
-            var transactionSPPD = button.getAttribute('data-sppd');
-
-            var form = approvalModal.querySelector('form');
-            var action = form.getAttribute('action');
-            form.setAttribute('action', action.replace(':id', transactionId));
-
-            form.querySelector('#ca_type').value = transactionType;
-            form.querySelector('#totalca').value = transactionTotal;
-            form.querySelector('#no_id').value = transactionId;
-            form.querySelector('#no_ca').value = transactionNo;
-            form.querySelector('#bisnis_numb').value = transactionSPPD;
-
-            var buttonList = document.getElementById('buttonList');
-            buttonList.innerHTML = '';
-
-            var previousLayerApproved = true; // Untuk mengecek status layer sebelumnya
-
-            @foreach ($ca_approvals as $approval)
-                if (transactionId === "{{ $approval->ca_id }}") {
-                    var rowContainer = document.createElement('div');
-                    rowContainer.className = 'row mb-3 text-right';
-
-                    var nameCol = document.createElement('div');
-                    nameCol.className = 'col-md-12 mb-2';
-                    var nameText = document.createElement('div');
-                    nameText.innerHTML = `
-                        <b>{{ $approval->role_name }}</b> : {{ $approval->ReqName }}
-                    `;
-                    nameCol.appendChild(nameText);
-
-                    var buttonCol = document.createElement('div');
-                    buttonCol.className = 'col-md-10';
-
-                    var dateText = document.createElement('p');
-
-                    if ("{{ $approval->approval_status }}" === "Approved") {
-                        const approvedBy = "{{ $approval->by_admin }}" === "T"
-                            ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}"
-                            : "{{ $approval->ReqName }}";
-
-                        dateText.innerHTML = `
-                            <div class="border rounded p-2 mb-2">
-                                <strong>Status:</strong> {{ $approval->approval_status }}<br>
-                                <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br>
-                                <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
-                            </div>
-                        `;
-                        buttonCol.appendChild(dateText);
-                    } else if (previousLayerApproved) {
-                        // Form Data
-                        var dataNoIdInput = document.createElement('input');
-                        dataNoIdInput.type = 'hidden';
-                        dataNoIdInput.name = 'data_no_id';
-                        dataNoIdInput.value = "{{ $approval->id }}";
-
-                        // Tombol Approve
-                        var rejectButton = document.createElement('button');
-                        rejectButton.type = 'button';
-                        rejectButton.className = 'btn btn-sm btn-primary btn-pill px-1 me-1';
-                        rejectButton.setAttribute('data-bs-toggle', 'modal'); // Menambahkan atribut data-bs-toggle
-                        rejectButton.setAttribute('data-bs-target', '#modalReject'); // Menambahkan atribut data-bs-target
-                        rejectButton.setAttribute('data-no-id', transactionId); // Menambahkan atribut data-no-id
-                        rejectButton.setAttribute('data-no-ca', transactionNo); // Menambahkan atribut data-no-ca
-                        rejectButton.setAttribute('data-no-idCA', '{{ $approval->id }}');
-                        rejectButton.textContent = 'Reject';
-
-                        // Tombol Approve
-                        var approveButton = document.createElement('button');
-                        approveButton.type = 'submit';
-                        approveButton.name = 'action_ca_approve';
-                        approveButton.value = 'Approve';
-                        approveButton.className = 'btn btn-sm btn-success btn-pill px-1 me-1';
-                        approveButton.textContent = 'Approve';
-                        approveButton.setAttribute('data-no-ca', transactionNo); // Tambahkan data-no-ca agar SweetAlert bisa menggunakan nilai ini
-
-                        // Tambahkan event listener SweetAlert pada tombol Approve
-                        addSweetAlert(approveButton);
-
-                        form.querySelector('#data_no_id').value = "{{ $approval->id }}";
-
-                        buttonCol.appendChild(approveButton);
-                        buttonCol.appendChild(rejectButton);
-                    } else {
-                        // Jika layer sebelumnya tidak disetujui, layer ini tidak menampilkan tombol
-                        dateText.textContent = 'Waiting for previous approval';
-                        buttonCol.appendChild(dateText);
-                    }
-
-                    // Jika approval_status tidak "Approved", previousLayerApproved menjadi false
-                    if ("{{ $approval->approval_status }}" !== "Approved") {
-                        previousLayerApproved = false;
-                    }
-
-                    rowContainer.appendChild(nameCol);
-                    rowContainer.appendChild(buttonCol);
-
-                    buttonList.appendChild(rowContainer);
-                }
-            @endforeach
-        });
-    });
-
-    // Approval Declaration Modal
-    document.addEventListener('DOMContentLoaded', function () {
-        var approvalDecModal = document.getElementById('approvalDecModal');
-
-        approvalDecModal.addEventListener('show.bs.modal', function (event) {
-            var button = event.relatedTarget;
-
-            var transactionType = button.getAttribute('data-type');
-            var transactionTotal = button.getAttribute('data-total');
-            var transactionId = button.getAttribute('data-id');
-            var transactionNo = button.getAttribute('data-no');
-            var transactionSPPD = button.getAttribute('data-sppd');
-            var transactionStart = button.getAttribute('data-start-date');
-            var transactionEnd = button.getAttribute('data-end-date');
-            var transactionTotal = button.getAttribute('data-total-days');
-
-            document.getElementById('approval_no_ca').textContent = transactionNo;
-
-            var form = approvalDecModal.querySelector('form');
-            var action = form.getAttribute('action');
-            form.setAttribute('action', action.replace(':id', transactionId));
-
-            form.querySelector('#ca_type').value = transactionType;
-            form.querySelector('#totalca').value = transactionTotal;
-            form.querySelector('#no_id').value = transactionId;
-            form.querySelector('#no_ca').value = transactionNo;
-            form.querySelector('#bisnis_numb').value = transactionSPPD;
-
-            // Clear existing content to prevent duplicates
-            document.getElementById('requestList').innerHTML = '';
-            document.getElementById('declarationList').innerHTML = '';
-
-            var previousLayerApproved = true; // To check previous layer status
-            var previousLayerApprovedDec = true; // To check previous declaration status
-
-            var requestLabel = document.createElement('label');
-            requestLabel.className = 'col-form-label mb-3';
-            requestLabel.textContent = 'Approval Request';
-            document.getElementById('requestList').appendChild(requestLabel);
-
-            var declarationLabel = document.createElement('label');
-            declarationLabel.className = 'col-form-label mb-3';
-            declarationLabel.textContent = 'Approval Declaration';
-            document.getElementById('declarationList').appendChild(declarationLabel);
-
-            @foreach ($ca_approvals as $approval)
-                if (transactionId === "{{ $approval->ca_id }}") {
-                    var rowContainer = document.createElement('div');
-                    rowContainer.className = 'row mb-3 text-right';
-
-                    var nameCol = document.createElement('div');
-                    nameCol.className = 'col-md-12';
-                    var nameText = document.createElement('p');
-                    nameText.innerHTML = `
-                        <b>{{ $approval->role_name }}</b> : {{ $approval->ReqName }}
-                    `;
-                    nameCol.appendChild(nameText);
-
-                    var buttonCol = document.createElement('div');
-                    buttonCol.className = 'col-md-10';
-
-                    var dateText = document.createElement('p');
-
-                    if ("{{ $approval->approval_status }}" === "Approved") {
-                        const approvedBy = "{{ $approval->by_admin }}" === "T"
-                            ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}"
-                            : "{{ $approval->ReqName }}";
-
-                        dateText.innerHTML = `
-                            <div class="border rounded p-2 mb-2">
-                                <strong>Status:</strong> {{ $approval->approval_status }}<br>
-                                <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br>
-                                <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
-                            </div>
-                        `;
-                        buttonCol.appendChild(dateText);
-                    } else if (previousLayerApproved) {
-                        dateText.textContent = 'Something Wrong, This form just for Approve Declaration';
-                        buttonCol.appendChild(dateText);
-                    } else {
-                        dateText.textContent = 'Waiting for previous approval';
-                        buttonCol.appendChild(dateText);
-                    }
-
-                    if ("{{ $approval->approval_status }}" !== "Approved") {
-                        previousLayerApproved = false;
-                    }
-
-                    rowContainer.appendChild(nameCol);
-                    rowContainer.appendChild(buttonCol);
-
-                    document.getElementById('requestList').appendChild(rowContainer);
-                }
-            @endforeach
-
-            @foreach ($ca_sett as $approval_sett)
-                if (transactionId === "{{ $approval_sett->ca_id }}") {
-                    var rowContainerDec = document.createElement('div');
-                    rowContainerDec.className = 'row mb-3 text-right';
-
-                    var nameColDec = document.createElement('div');
-                    nameColDec.className = 'col-md-12';
-                    var nameTextDec = document.createElement('p');
-                    nameTextDec.innerHTML = `
-                        <b>{{ $approval_sett->role_name }}</b> : {{ $approval_sett->ReqName }}
-                    `;
-                    nameColDec.appendChild(nameTextDec);
-
-                    var buttonColDec = document.createElement('div');
-                    buttonColDec.className = 'col-md-10';
-
-                    var dateTextDec = document.createElement('p');
-
-                    if ("{{ $approval_sett->approval_status }}" === "Approved") {
-                        const approvedBy = "{{ $approval_sett->by_admin }}" === "T"
-                            ? "{{ $approval_sett->admin->name ?? 'Admin tidak tersedia.' }} (Admin)"
-                            : "{{ $approval_sett->ReqName }}";
-
-                        dateTextDec.innerHTML = `
-                            <div class="border rounded p-2 mb-2">
-                                <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>
-                                <strong>Approved By:</strong> ${approvedBy}<br>
-                                <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}
-                            </div>
-                        `;
-                        buttonColDec.appendChild(dateTextDec);
-                    } else if (previousLayerApprovedDec) {
-                        var rejectButtonDec = document.createElement('button');
-                        rejectButtonDec.type = 'button'; // Mengubah type menjadi 'button'
-                        rejectButtonDec.className = 'btn btn-sm btn-primary btn-pill px-1 me-1 mb-2';
-                        rejectButtonDec.setAttribute('data-bs-toggle', 'modal'); // Menambahkan atribut data-bs-toggle
-                        rejectButtonDec.setAttribute('data-bs-target', '#modalRejectDec'); // Menambahkan atribut data-bs-target
-                        rejectButtonDec.setAttribute('data-no-id', transactionId); // Menambahkan atribut data-no-id
-                        rejectButtonDec.setAttribute('data-no-ca', transactionNo); // Menambahkan atribut data-no-ca
-                        rejectButtonDec.setAttribute('data-start-date', transactionStart); // Menambahkan atribut data-start-date
-                        rejectButtonDec.setAttribute('data-end-date', transactionEnd); // Menambahkan atribut data-end-date
-                        rejectButtonDec.setAttribute('data-total-days', transactionTotal); // Menambahkan atribut data-total-days
-                        rejectButtonDec.setAttribute('data-no-idCA', '{{ $approval_sett->id }}');
-                        rejectButtonDec.textContent = 'Reject'; // Mengubah text button
-
-                        var approveButtonDec = document.createElement('button');
-                        approveButtonDec.type = 'submit';
-                        approveButtonDec.name = 'action_ca_approve';
-                        approveButtonDec.value = 'Approve';
-                        approveButtonDec.className = 'btn btn-sm btn-success btn-pill px-1 me-1 mb-2';
-                        approveButtonDec.textContent = 'Approve';
-                        approveButtonDec.setAttribute('data-no-ca', transactionNo); // Tambahkan data-no-ca agar SweetAlert bisa menggunakan nilai ini
-
-                        // Tambahkan event listener SweetAlert pada tombol Approve
-                        addSweetAlertDec(approveButtonDec);
-
-                        form.querySelector('#data_no_id').value = "{{ $approval_sett->id }}";
-
-                        buttonColDec.appendChild(approveButtonDec);
-                        buttonColDec.appendChild(rejectButtonDec);
-                    } else {
-                        dateTextDec.textContent = 'Waiting for previous approval';
-                        buttonColDec.appendChild(dateTextDec);
-                    }
-
-                    if ("{{ $approval_sett->approval_status }}" !== "Approved") {
-                        previousLayerApprovedDec = false;
-                    }
-                    rowContainerDec.appendChild(nameColDec);
-                    rowContainerDec.appendChild(buttonColDec);
-
-                    document.getElementById('declarationList').appendChild(rowContainerDec);
-                }
-            @endforeach
-        });
-    });
-
-    // Approval Extend Modal
-    document.addEventListener('DOMContentLoaded', function () {
-        var approvalExtModal = document.getElementById('approvalExtModal');
-
-        approvalExtModal.addEventListener('show.bs.modal', function (event) {
-            var button = event.relatedTarget;
-
-            var transactionType = button.getAttribute('data-type');
-            var transactionTotal = button.getAttribute('data-total');
-            var transactionTotalAmmount = button.getAttribute('data-total-amount');
-            var transactionId = button.getAttribute('data-id');
-            var transactionNo = button.getAttribute('data-no');
-            var transactionSPPD = button.getAttribute('data-sppd');
-            var transactionStart = button.getAttribute('data-start-date');
-            var transactionEnd = button.getAttribute('data-end-date');
-            var extendEnd = button.getAttribute('data-ext-end');
-            var extendTotal = button.getAttribute('data-ext-total');
-            var extendReason = button.getAttribute('data-ext-reason');
-
-            document.getElementById('approvalExt_no_ca').textContent = transactionNo;
-
-            var form = approvalExtModal.querySelector('form');
-            var action = form.getAttribute('action');
-            form.setAttribute('action', action.replace(':id', transactionId));
-
-            form.querySelector('#ca_type').value = transactionType;
-            form.querySelector('#totalca').value = transactionTotalAmmount;
-            form.querySelector('#no_id').value = transactionId;
-            form.querySelector('#no_ca').value = transactionNo;
-            form.querySelector('#bisnis_numb').value = transactionSPPD;
-            form.querySelector('#ext_end_date').value = extendEnd;
-            form.querySelector('#ext_totaldays').value = extendTotal;
-            form.querySelector('#ext_reason').value = extendReason;
-
-            // Clear existing content to prevent duplicates
-            document.getElementById('requestExtList').innerHTML = '';
-            document.getElementById('extendList').innerHTML = '';
-
-            var previousLayerApproved = true;
-            var previousLayerApprovedExt = true;
-
-            var requestLabel = document.createElement('label');
-            requestLabel.className = 'col-form-label mb-3';
-            requestLabel.textContent = 'Approval Request';
-            document.getElementById('requestExtList').appendChild(requestLabel);
-
-            var extendLabel = document.createElement('label');
-            extendLabel.className = 'col-form-label mb-3';
-            extendLabel.textContent = 'Approval Extend';
-            document.getElementById('extendList').appendChild(extendLabel);
-
-            // First loop for CA approvals
-            @foreach ($ca_approvals as $approval)
-                if (transactionId === "{{ $approval->ca_id }}") {
-                    var rowContainer = document.createElement('div');
-                    rowContainer.className = 'row mb-3 text-right';
-
-                    var nameCol = document.createElement('div');
-                    nameCol.className = 'col-md-12';
-                    var nameText = document.createElement('p');
-                    nameText.innerHTML = `
-                        <b>{{ $approval->role_name }}</b> : {{ $approval->ReqName }}
-                    `;
-                    nameCol.appendChild(nameText);
-
-                    var buttonCol = document.createElement('div');
-                    buttonCol.className = 'col-md-10';
-
-                    var dateText = document.createElement('p');
-
-                    if ("{{ $approval->approval_status }}" === "Approved") {
-                        const approvedBy = "{{ $approval->by_admin }}" === "T"
-                            ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}"
-                            : "{{ $approval->ReqName }}";
-
-                        dateText.innerHTML = `
-                            <div class="border rounded p-2 mb-2">
-                                <strong>Status:</strong> {{ $approval->approval_status }}<br>
-                                <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br>
-                                <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
-                            </div>
-                        `;
-                        buttonCol.appendChild(dateText);
-                    } else if (previousLayerApproved) {
-                        dateText.textContent = 'Something Wrong, This form just for Approve Extend';
-                        buttonCol.appendChild(dateText);
-                    } else {
-                        dateText.textContent = 'Waiting for previous approval';
-                        buttonCol.appendChild(dateText);
-                    }
-
-                    if ("{{ $approval->approval_status }}" !== "Approved") {
-                        previousLayerApproved = false;
-                    }
-
-                    rowContainer.appendChild(nameCol);
-                    rowContainer.appendChild(buttonCol);
-
-                    document.getElementById('requestExtList').appendChild(rowContainer);
-                }
-            @endforeach
-
-            // Create array to store matching extend items
-            var matchingExtendItems = [];
-
-            // First collect all matching items
-            @foreach ($ca_extend as $approval_extend)
-                if (transactionId === "{{ $approval_extend->ca_id }}") {
-                    matchingExtendItems.push({
-                        employee_id: "{{ $approval_extend->ReqName }}",
-                        layer: "{{ $approval_extend->layer }}",
-                        approval_status: "{{ $approval_extend->approval_status }}",
-                        by_admin: "{{ $approval_extend->by_admin }}",
-                        role_name: "{{ $approval_extend->role_name }}",
-                        admin_name: "{{ $approval_extend->admin->name ?? 'Admin tidak tersedia.' }}",
-                        approved_at: "{{ $approval_extend->approved_at }}",
-                        id: "{{ $approval_extend->id }}"
-                    });
-                }
-            @endforeach
-
-            // Then render the items with dividers
-            matchingExtendItems.forEach((item, index) => {
-                var rowContainerExt = document.createElement('div');
-                rowContainerExt.className = 'row mb-3 text-right';
-
-                var nameColExt = document.createElement('div');
-                nameColExt.className = 'col-md-12';
-                var nameTextExt = document.createElement('p');
-                nameTextExt.innerHTML = `
-                    <b>${item.role_name}</b> : ${item.employee_id}
-                `;
-                nameColExt.appendChild(nameTextExt);
-
-                var buttonColExt = document.createElement('div');
-                buttonColExt.className = 'col-md-10';
-
-                var dateTextExt = document.createElement('p');
-
-                if (item.approval_status === "Approved") {
-                    const approvedBy = item.by_admin === "T"
-                        ? item.admin_name
-                        : item.employee_id;
-
-                    dateTextExt.innerHTML = `
-                        <div class="border rounded p-2 mb-2">
-                            <strong>Status:</strong> ${item.approval_status}<br>
-                            <strong>Approved By:</strong> ${approvedBy} ${item.by_admin === "T" ? " (Admin)" : ""}<br>
-                            <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}
-                        </div>
-                    `;
-                    buttonColExt.appendChild(dateTextExt);
-                } else if (previousLayerApprovedExt) {
-                    var rejectButtonExt = document.createElement('button');
-                    rejectButtonExt.type = 'button';
-                    rejectButtonExt.className = 'btn btn-sm btn-primary btn-pill px-1 me-1 mb-2';
-                    rejectButtonExt.setAttribute('data-bs-toggle', 'modal');
-                    rejectButtonExt.setAttribute('data-bs-target', '#modalRejectExt');
-                    rejectButtonExt.setAttribute('data-no-id', transactionId);
-                    rejectButtonExt.setAttribute('data-no-ca', transactionNo);
-                    rejectButtonExt.setAttribute('data-start-date', transactionStart);
-                    rejectButtonExt.setAttribute('data-end-date', transactionEnd);
-                    rejectButtonExt.setAttribute('data-total-days', transactionTotal);
-                    rejectButtonExt.setAttribute('data-no-idCA', item.id);
-                    rejectButtonExt.textContent = 'Reject';
-
-                    var approveButtonExt = document.createElement('button');
-                    approveButtonExt.type = 'submit';
-                    approveButtonExt.name = 'action_ca_approve';
-                    approveButtonExt.value = 'Approve';
-                    approveButtonExt.className = 'btn btn-sm btn-success btn-pill px-1 me-1 mb-2';
-                    approveButtonExt.textContent = 'Approve';
-                    approveButtonExt.setAttribute('data-no-ca', transactionNo);
-
-                    addSweetAlertExt(approveButtonExt);
-
-                    form.querySelector('#data_no_id').value = item.id;
-
-                    buttonColExt.appendChild(approveButtonExt);
-                    buttonColExt.appendChild(rejectButtonExt);
-                } else {
-                    dateTextExt.textContent = 'Waiting for previous approval';
-                    buttonColExt.appendChild(dateTextExt);
-                }
-
-                if (item.approval_status !== "Approved") {
-                    previousLayerApprovedExt = false;
-                }
-
-                rowContainerExt.appendChild(nameColExt);
-                rowContainerExt.appendChild(buttonColExt);
-
-                document.getElementById('extendList').appendChild(rowContainerExt);
-
-                // Add divider after every 4 items, but only if we have more than 4 items total
-                // and we're not at the last item
-                if (matchingExtendItems.length > 4 &&
-                    (index + 1) % 4 === 0 &&
-                    (index + 1) !== matchingExtendItems.length) {
-                    var dividerContainer = document.createElement('div');
-                    dividerContainer.className = 'd-flex align-items-center my-3'; // Container fleksibel untuk divider
-                    var lineLeft = document.createElement('hr');
-                    lineLeft.className = 'flex-grow-1 border border-primary opacity-50 m-0'; // Garis kiri
-                    var text = document.createElement('span');
-                    text.className = 'mx-2 text-primary'; // Teks di tengah
-                    text.textContent = 'Other Approval Extend';
-                    var lineRight = document.createElement('hr');
-                    lineRight.className = 'flex-grow-1 border border-primary opacity-50 m-0'; // Garis kanan
-                    // Susun elemen dalam container
-                    dividerContainer.appendChild(lineLeft);
-                    dividerContainer.appendChild(text);
-                    dividerContainer.appendChild(lineRight);
-
-                    document.getElementById('extendList').appendChild(dividerContainer);
-                }
-            });
-        });
-    });
-
-    // Approval Extend dan Declaration Modal
-    document.addEventListener('DOMContentLoaded', function () {
-        var approvalDecExtModal = document.getElementById('approvalDecExtModal');
-
-        approvalDecExtModal.addEventListener('show.bs.modal', function (event) {
-            var button = event.relatedTarget;
-
-            var transactionType = button.getAttribute('data-type');
-            var transactionTotal = button.getAttribute('data-total');
-            var transactionId = button.getAttribute('data-id');
-            var transactionNo = button.getAttribute('data-no');
-            var transactionSPPD = button.getAttribute('data-sppd');
-            var transactionStart = button.getAttribute('data-start-date');
-            var transactionEnd = button.getAttribute('data-end-date');
-            var transactionTotal = button.getAttribute('data-total-days');
-
-            document.getElementById('approvalExtDec_no_ca').textContent = transactionNo;
-
-            var form = approvalDecExtModal.querySelector('form');
-            var action = form.getAttribute('action');
-            form.setAttribute('action', action.replace(':id', transactionId));
-
-            form.querySelector('#ca_type').value = transactionType;
-            form.querySelector('#totalca').value = transactionTotal;
-            form.querySelector('#no_id').value = transactionId;
-            form.querySelector('#data_no_id').value = transactionId;
-            form.querySelector('#no_ca').value = transactionNo;
-            form.querySelector('#bisnis_numb').value = transactionSPPD;
-
-            // Clear existing content to prevent duplicates
-            document.getElementById('requestExtDecList').innerHTML = '';
-            document.getElementById('declarationExtDecList').innerHTML = '';
-            document.getElementById('extendExtDecList').innerHTML = '';
-
-            var previousLayerApproved = true; // To check previous layer status
-            var previousLayerApprovedDec = true; // To check previous declaration status
-
-            var requestLabel = document.createElement('label');
-            requestLabel.className = 'col-form-label mb-3';
-            requestLabel.textContent = 'Approval Request';
-            document.getElementById('requestExtDecList').appendChild(requestLabel);
-
-            var declarationLabel = document.createElement('label');
-            declarationLabel.className = 'col-form-label mb-3';
-            declarationLabel.textContent = 'Approval Declaration';
-            document.getElementById('declarationExtDecList').appendChild(declarationLabel);
-
-            var extendLabel = document.createElement('label');
-            extendLabel.className = 'col-form-label mb-3';
-            extendLabel.textContent = 'Approval Extend';
-            document.getElementById('extendExtDecList').appendChild(extendLabel);
-
-            @foreach ($ca_approvals as $approval)
-                if (transactionId === "{{ $approval->ca_id }}") {
-                    var rowContainer = document.createElement('div');
-                    rowContainer.className = 'row mb-3 text-right';
-
-                    var nameCol = document.createElement('div');
-                    nameCol.className = 'col-md-12';
-                    var nameText = document.createElement('p');
-                    nameText.innerHTML = `
-                        <b>{{ $approval->role_name }}</b> : {{ $approval->ReqName }}
-                    `;
-                    nameCol.appendChild(nameText);
-
-                    var buttonCol = document.createElement('div');
-                    buttonCol.className = 'col-md-12';
-
-                    var dateText = document.createElement('p');
-
-                    if ("{{ $approval->approval_status }}" === "Approved") {
-                        const approvedBy = "{{ $approval->by_admin }}" === "T"
-                            ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}"
-                            : "{{ $approval->ReqName }}";
-
-                        dateText.innerHTML = `
-                            <div class="border rounded p-2 mb-2">
-                                <strong>Status:</strong> {{ $approval->approval_status }}<br>
-                                <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br>
-                                <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
-                            </div>
-                        `;
-                        buttonCol.appendChild(dateText);
-                        // dateText.textContent = "{{ $approval->approval_status }} ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
-                        // buttonCol.appendChild(dateText);
-                    } else if (previousLayerApproved) {
-                        dateText.textContent = 'Something Wrong, This form just for Approve Declaration';
-                        buttonCol.appendChild(dateText);
-                    } else {
-                        dateText.textContent = 'Waiting for previous approval';
-                        buttonCol.appendChild(dateText);
-                    }
-
-                    if ("{{ $approval->approval_status }}" !== "Approved") {
-                        previousLayerApproved = false;
-                    }
-
-                    rowContainer.appendChild(nameCol);
-                    rowContainer.appendChild(buttonCol);
-
-                    document.getElementById('requestExtDecList').appendChild(rowContainer);
-                }
-            @endforeach
-
-            @foreach ($ca_sett as $approval_sett)
-                if (transactionId === "{{ $approval_sett->ca_id }}") {
-                    var rowContainerDec = document.createElement('div');
-                    rowContainerDec.className = 'row mb-3 text-right';
-
-                    var nameColDec = document.createElement('div');
-                    nameColDec.className = 'col-md-12';
-                    var nameTextDec = document.createElement('p');
-                    nameTextDec.innerHTML = `
-                        <b>{{ $approval_sett->role_name }}</b> : {{ $approval_sett->ReqName }}
-                    `;
-                    nameColDec.appendChild(nameTextDec);
-
-                    var buttonColDec = document.createElement('div');
-                    buttonColDec.className = 'col-md-12';
-
-                    var dateTextDec = document.createElement('p');
-
-                    if ("{{ $approval_sett->approval_status }}" === "Approved") {
-                        const approvedBy = "{{ $approval_sett->by_admin }}" === "T"
-                            ? "{{ $approval_sett->admin->name ?? 'Admin tidak tersedia.' }} (Admin)"
-                            : "{{ $approval_sett->ReqName }}";
-
-                        dateTextDec.innerHTML = `
-                            <div class="border rounded p-2 mb-2">
-                                <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>
-                                <strong>Approved By:</strong> ${approvedBy}<br>
-                                <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}
-                            </div>
-                        `;
-                        buttonColDec.appendChild(dateTextDec);
-                    } else if (previousLayerApprovedDec) {
-                        var rejectButtonDec = document.createElement('button');
-                        rejectButtonDec.type = 'button'; // Mengubah type menjadi 'button'
-                        rejectButtonDec.className = 'btn btn-sm btn-primary btn-pill px-1 me-1 mb-2';
-                        rejectButtonDec.setAttribute('data-bs-toggle', 'modal'); // Menambahkan atribut data-bs-toggle
-                        rejectButtonDec.setAttribute('data-bs-target', '#modalRejectDec'); // Menambahkan atribut data-bs-target
-                        rejectButtonDec.setAttribute('data-no-id', transactionId); // Menambahkan atribut data-no-id
-                        rejectButtonDec.setAttribute('data-no-ca', transactionNo); // Menambahkan atribut data-no-ca
-                        rejectButtonDec.setAttribute('data-start-date', transactionStart); // Menambahkan atribut data-start-date
-                        rejectButtonDec.setAttribute('data-end-date', transactionEnd); // Menambahkan atribut data-end-date
-                        rejectButtonDec.setAttribute('data-total-days', transactionTotal); // Menambahkan atribut data-total-days
-                        rejectButtonDec.setAttribute('data-no-idCA', '{{ $approval_sett->id }}');
-                        rejectButtonDec.textContent = 'Reject'; // Mengubah text button
-
-                        var approveButtonDec = document.createElement('button');
-                        approveButtonDec.type = 'submit';
-                        approveButtonDec.name = 'action_ca_approve';
-                        approveButtonDec.value = 'Approve';
-                        approveButtonDec.className = 'btn btn-sm btn-success btn-pill px-1 me-1 mb-2';
-                        approveButtonDec.textContent = 'Approve';
-                        approveButtonDec.setAttribute('data-no-ca', transactionNo); // Tambahkan data-no-ca agar SweetAlert bisa menggunakan nilai ini
-
-                        // Tambahkan event listener SweetAlert pada tombol Approve
-                        addSweetAlertDecExt(approveButtonDec);
-
-                        form.querySelector('#data_no_id').value = "{{ $approval_sett->id }}";
-
-                        buttonColDec.appendChild(approveButtonDec);
-                        buttonColDec.appendChild(rejectButtonDec);
-                    } else {
-                        dateTextDec.textContent = 'Waiting for previous approval';
-                        buttonColDec.appendChild(dateTextDec);
-                    }
-
-                    if ("{{ $approval_sett->approval_status }}" !== "Approved") {
-                        previousLayerApprovedDec = false;
-                    }
-                    rowContainerDec.appendChild(nameColDec);
-                    rowContainerDec.appendChild(buttonColDec);
-
-                    document.getElementById('declarationExtDecList').appendChild(rowContainerDec);
-                }
-            @endforeach
-
-            var matchingDeclarationExtendItems = [];
-
-            @foreach ($ca_extend as $approval_extend)
-                if (transactionId === "{{ $approval_extend->ca_id }}") {
-                    matchingDeclarationExtendItems.push({
-                        employee_id: "{{ $approval_extend->ReqName }}",
-                        layer: "{{ $approval_extend->layer }}",
-                        approval_status: "{{ $approval_extend->approval_status }}",
-                        by_admin: "{{ $approval_extend->by_admin }}",
-                        role_name: "{{ $approval_extend->role_name }}",
-                        admin_name: "{{ $approval_extend->admin->name ?? 'Admin tidak tersedia.' }}",
-                        approved_at: "{{ $approval_extend->approved_at }}",
-                        id: "{{ $approval_extend->id }}"
-                    });
-                }
-            @endforeach
-
-            matchingDeclarationExtendItems.forEach((item, index) => {
-                var rowContainerExt = document.createElement('div');
-                rowContainerExt.className = 'row mb-3 text-right';
-
-                var nameColExt = document.createElement('div');
-                nameColExt.className = 'col-md-12';
-                var nameTextExt = document.createElement('p');
-                nameTextExt.innerHTML = `
-                    <b>${item.role_name}</b> : ${item.employee_id}
-                `;
-                nameColExt.appendChild(nameTextExt);
-
-                var buttonColExt = document.createElement('div');
-                buttonColExt.className = 'col-md-12';
-
-                var dateTextExt = document.createElement('p');
-
-                if (item.approval_status === "Approved") {
-                    const approvedBy = item.by_admin === "T"
-                        ? item.admin_name
-                        : item.employee_id;
-
-                    dateTextExt.innerHTML = `
-                        <div class="border rounded p-2 mb-2">
-                            <strong>Status:</strong> ${item.approval_status}<br>
-                            <strong>Approved By:</strong> ${approvedBy} ${item.by_admin === "T" ? " (Admin)" : ""}<br>
-                            <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}
-                        </div>
-                    `;
-                    buttonColExt.appendChild(dateTextExt);
-                } else if (previousLayerApprovedExt) {
-                    dateText.textContent = 'Something Wrong, This form just for Approve Declaration';
-                    buttonCol.appendChild(dateTextExt);
-                } else {
-                    dateTextExt.textContent = 'Waiting for previous approval';
-                    buttonColExt.appendChild(dateTextExt);
-                }
-
-                if (item.approval_status !== "Approved") {
-                    previousLayerApprovedExt = false;
-                }
-
-                rowContainerExt.appendChild(nameColExt);
-                rowContainerExt.appendChild(buttonColExt);
-
-                document.getElementById('extendExtDecList').appendChild(rowContainerExt);
-
-                // Add divider after every 4 items, but only if we have more than 4 items total
-                // and we're not at the last item
-                if (matchingDeclarationExtendItems.length > 4 &&
-                    (index + 1) % 4 === 0 &&
-                    (index + 1) !== matchingDeclarationExtendItems.length) {
-                    var dividerContainer = document.createElement('div');
-                    dividerContainer.className = 'd-flex align-items-center my-3'; // Container fleksibel untuk divider
-                    var lineLeft = document.createElement('hr');
-                    lineLeft.className = 'flex-grow-1 border border-primary opacity-50 m-0'; // Garis kiri
-                    var text = document.createElement('span');
-                    text.className = 'mx-2 text-primary'; // Teks di tengah
-                    text.textContent = 'Other Approval Extend';
-                    var lineRight = document.createElement('hr');
-                    lineRight.className = 'flex-grow-1 border border-primary opacity-50 m-0'; // Garis kanan
-                    // Susun elemen dalam container
-                    dividerContainer.appendChild(lineLeft);
-                    dividerContainer.appendChild(text);
-                    dividerContainer.appendChild(lineRight);
-
-                    document.getElementById('extendExtDecList').appendChild(dividerContainer);
-                }
-
-            });
-        });
-    });
+    // });
+
+    // // Approval Extend dan Declaration Modal
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     var approvalDecExtModal = document.getElementById('approvalDecExtModal');
+
+    //     approvalDecExtModal.addEventListener('show.bs.modal', function (event) {
+    //         var button = event.relatedTarget;
+
+    //         var transactionType = button.getAttribute('data-type');
+    //         var transactionTotal = button.getAttribute('data-total');
+    //         var transactionId = button.getAttribute('data-id');
+    //         var transactionNo = button.getAttribute('data-no');
+    //         var transactionSPPD = button.getAttribute('data-sppd');
+    //         var transactionStart = button.getAttribute('data-start-date');
+    //         var transactionEnd = button.getAttribute('data-end-date');
+    //         var transactionTotal = button.getAttribute('data-total-days');
+
+    //         document.getElementById('approvalExtDec_no_ca').textContent = transactionNo;
+
+    //         var form = approvalDecExtModal.querySelector('form');
+    //         var action = form.getAttribute('action');
+    //         form.setAttribute('action', action.replace(':id', transactionId));
+
+    //         form.querySelector('#ca_type').value = transactionType;
+    //         form.querySelector('#totalca').value = transactionTotal;
+    //         form.querySelector('#no_id').value = transactionId;
+    //         form.querySelector('#data_no_id').value = transactionId;
+    //         form.querySelector('#no_ca').value = transactionNo;
+    //         form.querySelector('#bisnis_numb').value = transactionSPPD;
+
+    //         // Clear existing content to prevent duplicates
+    //         document.getElementById('requestExtDecList').innerHTML = '';
+    //         document.getElementById('declarationExtDecList').innerHTML = '';
+    //         document.getElementById('extendExtDecList').innerHTML = '';
+
+    //         var previousLayerApproved = true; // To check previous layer status
+    //         var previousLayerApprovedDec = true; // To check previous declaration status
+
+    //         var requestLabel = document.createElement('label');
+    //         requestLabel.className = 'col-form-label mb-3';
+    //         requestLabel.textContent = 'Approval Request';
+    //         document.getElementById('requestExtDecList').appendChild(requestLabel);
+
+    //         var declarationLabel = document.createElement('label');
+    //         declarationLabel.className = 'col-form-label mb-3';
+    //         declarationLabel.textContent = 'Approval Declaration';
+    //         document.getElementById('declarationExtDecList').appendChild(declarationLabel);
+
+    //         var extendLabel = document.createElement('label');
+    //         extendLabel.className = 'col-form-label mb-3';
+    //         extendLabel.textContent = 'Approval Extend';
+    //         document.getElementById('extendExtDecList').appendChild(extendLabel);
+
+    //         @foreach ($ca_approvals as $approval)
+    //             if (transactionId === "{{ $approval->ca_id }}") {
+    //                 var rowContainer = document.createElement('div');
+    //                 rowContainer.className = 'row mb-3 text-right';
+
+    //                 var nameCol = document.createElement('div');
+    //                 nameCol.className = 'col-md-12';
+    //                 var nameText = document.createElement('p');
+    //                 nameText.innerHTML = `
+    //                     <b>{{ $approval->role_name }}</b> : {{ $approval->ReqName }}
+    //                 `;
+    //                 nameCol.appendChild(nameText);
+
+    //                 var buttonCol = document.createElement('div');
+    //                 buttonCol.className = 'col-md-12';
+
+    //                 var dateText = document.createElement('p');
+
+    //                 if ("{{ $approval->approval_status }}" === "Approved") {
+    //                     const approvedBy = "{{ $approval->by_admin }}" === "T"
+    //                         ? "{{ $approval->admin->name ?? 'Admin tidak tersedia.' }}"
+    //                         : "{{ $approval->ReqName }}";
+
+    //                     dateText.innerHTML = `
+    //                         <div class="border rounded p-2 mb-2">
+    //                             <strong>Status:</strong> {{ $approval->approval_status }}<br>
+    //                             <strong>Approved By:</strong> ${approvedBy} ${"{{ $approval->by_admin }}" === "T" ? " (Admin)" : ""}<br>
+    //                             <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }}
+    //                         </div>
+    //                     `;
+    //                     buttonCol.appendChild(dateText);
+    //                     // dateText.textContent = "{{ $approval->approval_status }} ({{ \Carbon\Carbon::parse($approval->approved_at)->format('d-M-y') }})";
+    //                     // buttonCol.appendChild(dateText);
+    //                 } else if (previousLayerApproved) {
+    //                     dateText.textContent = 'Something Wrong, This form just for Approve Declaration';
+    //                     buttonCol.appendChild(dateText);
+    //                 } else {
+    //                     dateText.textContent = 'Waiting for previous approval';
+    //                     buttonCol.appendChild(dateText);
+    //                 }
+
+    //                 if ("{{ $approval->approval_status }}" !== "Approved") {
+    //                     previousLayerApproved = false;
+    //                 }
+
+    //                 rowContainer.appendChild(nameCol);
+    //                 rowContainer.appendChild(buttonCol);
+
+    //                 document.getElementById('requestExtDecList').appendChild(rowContainer);
+    //             }
+    //         @endforeach
+
+    //         @foreach ($ca_sett as $approval_sett)
+    //             if (transactionId === "{{ $approval_sett->ca_id }}") {
+    //                 var rowContainerDec = document.createElement('div');
+    //                 rowContainerDec.className = 'row mb-3 text-right';
+
+    //                 var nameColDec = document.createElement('div');
+    //                 nameColDec.className = 'col-md-12';
+    //                 var nameTextDec = document.createElement('p');
+    //                 nameTextDec.innerHTML = `
+    //                     <b>{{ $approval_sett->role_name }}</b> : {{ $approval_sett->ReqName }}
+    //                 `;
+    //                 nameColDec.appendChild(nameTextDec);
+
+    //                 var buttonColDec = document.createElement('div');
+    //                 buttonColDec.className = 'col-md-12';
+
+    //                 var dateTextDec = document.createElement('p');
+
+    //                 if ("{{ $approval_sett->approval_status }}" === "Approved") {
+    //                     const approvedBy = "{{ $approval_sett->by_admin }}" === "T"
+    //                         ? "{{ $approval_sett->admin->name ?? 'Admin tidak tersedia.' }} (Admin)"
+    //                         : "{{ $approval_sett->ReqName }}";
+
+    //                     dateTextDec.innerHTML = `
+    //                         <div class="border rounded p-2 mb-2">
+    //                             <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>
+    //                             <strong>Approved By:</strong> ${approvedBy}<br>
+    //                             <strong>Approved At:</strong> {{ \Carbon\Carbon::parse($approval_sett->approved_at)->format('d-M-y') }}
+    //                         </div>
+    //                     `;
+    //                     buttonColDec.appendChild(dateTextDec);
+    //                 } else if (previousLayerApprovedDec) {
+    //                     var rejectButtonDec = document.createElement('button');
+    //                     rejectButtonDec.type = 'button'; // Mengubah type menjadi 'button'
+    //                     rejectButtonDec.className = 'btn btn-sm btn-primary btn-pill px-1 me-1 mb-2';
+    //                     rejectButtonDec.setAttribute('data-bs-toggle', 'modal'); // Menambahkan atribut data-bs-toggle
+    //                     rejectButtonDec.setAttribute('data-bs-target', '#modalRejectDec'); // Menambahkan atribut data-bs-target
+    //                     rejectButtonDec.setAttribute('data-no-id', transactionId); // Menambahkan atribut data-no-id
+    //                     rejectButtonDec.setAttribute('data-no-ca', transactionNo); // Menambahkan atribut data-no-ca
+    //                     rejectButtonDec.setAttribute('data-start-date', transactionStart); // Menambahkan atribut data-start-date
+    //                     rejectButtonDec.setAttribute('data-end-date', transactionEnd); // Menambahkan atribut data-end-date
+    //                     rejectButtonDec.setAttribute('data-total-days', transactionTotal); // Menambahkan atribut data-total-days
+    //                     rejectButtonDec.setAttribute('data-no-idCA', '{{ $approval_sett->id }}');
+    //                     rejectButtonDec.textContent = 'Reject'; // Mengubah text button
+
+    //                     var approveButtonDec = document.createElement('button');
+    //                     approveButtonDec.type = 'submit';
+    //                     approveButtonDec.name = 'action_ca_approve';
+    //                     approveButtonDec.value = 'Approve';
+    //                     approveButtonDec.className = 'btn btn-sm btn-success btn-pill px-1 me-1 mb-2';
+    //                     approveButtonDec.textContent = 'Approve';
+    //                     approveButtonDec.setAttribute('data-no-ca', transactionNo); // Tambahkan data-no-ca agar SweetAlert bisa menggunakan nilai ini
+
+    //                     // Tambahkan event listener SweetAlert pada tombol Approve
+    //                     addSweetAlertDecExt(approveButtonDec);
+
+    //                     form.querySelector('#data_no_id').value = "{{ $approval_sett->id }}";
+
+    //                     buttonColDec.appendChild(approveButtonDec);
+    //                     buttonColDec.appendChild(rejectButtonDec);
+    //                 } else {
+    //                     dateTextDec.textContent = 'Waiting for previous approval';
+    //                     buttonColDec.appendChild(dateTextDec);
+    //                 }
+
+    //                 if ("{{ $approval_sett->approval_status }}" !== "Approved") {
+    //                     previousLayerApprovedDec = false;
+    //                 }
+    //                 rowContainerDec.appendChild(nameColDec);
+    //                 rowContainerDec.appendChild(buttonColDec);
+
+    //                 document.getElementById('declarationExtDecList').appendChild(rowContainerDec);
+    //             }
+    //         @endforeach
+
+    //         var matchingDeclarationExtendItems = [];
+
+    //         @foreach ($ca_extend as $approval_extend)
+    //             if (transactionId === "{{ $approval_extend->ca_id }}") {
+    //                 matchingDeclarationExtendItems.push({
+    //                     employee_id: "{{ $approval_extend->ReqName }}",
+    //                     layer: "{{ $approval_extend->layer }}",
+    //                     approval_status: "{{ $approval_extend->approval_status }}",
+    //                     by_admin: "{{ $approval_extend->by_admin }}",
+    //                     role_name: "{{ $approval_extend->role_name }}",
+    //                     admin_name: "{{ $approval_extend->admin->name ?? 'Admin tidak tersedia.' }}",
+    //                     approved_at: "{{ $approval_extend->approved_at }}",
+    //                     id: "{{ $approval_extend->id }}"
+    //                 });
+    //             }
+    //         @endforeach
+
+    //         matchingDeclarationExtendItems.forEach((item, index) => {
+    //             var rowContainerExt = document.createElement('div');
+    //             rowContainerExt.className = 'row mb-3 text-right';
+
+    //             var nameColExt = document.createElement('div');
+    //             nameColExt.className = 'col-md-12';
+    //             var nameTextExt = document.createElement('p');
+    //             nameTextExt.innerHTML = `
+    //                 <b>${item.role_name}</b> : ${item.employee_id}
+    //             `;
+    //             nameColExt.appendChild(nameTextExt);
+
+    //             var buttonColExt = document.createElement('div');
+    //             buttonColExt.className = 'col-md-12';
+
+    //             var dateTextExt = document.createElement('p');
+
+    //             if (item.approval_status === "Approved") {
+    //                 const approvedBy = item.by_admin === "T"
+    //                     ? item.admin_name
+    //                     : item.employee_id;
+
+    //                 dateTextExt.innerHTML = `
+    //                     <div class="border rounded p-2 mb-2">
+    //                         <strong>Status:</strong> ${item.approval_status}<br>
+    //                         <strong>Approved By:</strong> ${approvedBy} ${item.by_admin === "T" ? " (Admin)" : ""}<br>
+    //                         <strong>Approved At:</strong> ${moment(item.approved_at).format('DD-MMM-YY')}
+    //                     </div>
+    //                 `;
+    //                 buttonColExt.appendChild(dateTextExt);
+    //             } else if (previousLayerApprovedExt) {
+    //                 dateText.textContent = 'Something Wrong, This form just for Approve Declaration';
+    //                 buttonCol.appendChild(dateTextExt);
+    //             } else {
+    //                 dateTextExt.textContent = 'Waiting for previous approval';
+    //                 buttonColExt.appendChild(dateTextExt);
+    //             }
+
+    //             if (item.approval_status !== "Approved") {
+    //                 previousLayerApprovedExt = false;
+    //             }
+
+    //             rowContainerExt.appendChild(nameColExt);
+    //             rowContainerExt.appendChild(buttonColExt);
+
+    //             document.getElementById('extendExtDecList').appendChild(rowContainerExt);
+
+    //             // Add divider after every 4 items, but only if we have more than 4 items total
+    //             // and we're not at the last item
+    //             if (matchingDeclarationExtendItems.length > 4 &&
+    //                 (index + 1) % 4 === 0 &&
+    //                 (index + 1) !== matchingDeclarationExtendItems.length) {
+    //                 var dividerContainer = document.createElement('div');
+    //                 dividerContainer.className = 'd-flex align-items-center my-3'; // Container fleksibel untuk divider
+    //                 var lineLeft = document.createElement('hr');
+    //                 lineLeft.className = 'flex-grow-1 border border-primary opacity-50 m-0'; // Garis kiri
+    //                 var text = document.createElement('span');
+    //                 text.className = 'mx-2 text-primary'; // Teks di tengah
+    //                 text.textContent = 'Other Approval Extend';
+    //                 var lineRight = document.createElement('hr');
+    //                 lineRight.className = 'flex-grow-1 border border-primary opacity-50 m-0'; // Garis kanan
+    //                 // Susun elemen dalam container
+    //                 dividerContainer.appendChild(lineLeft);
+    //                 dividerContainer.appendChild(text);
+    //                 dividerContainer.appendChild(lineRight);
+
+    //                 document.getElementById('extendExtDecList').appendChild(dividerContainer);
+    //             }
+
+    //         });
+    //     });
+    // });
 
     function addSweetAlert(approveButton) {
         approveButton.addEventListener("click", function (event) {

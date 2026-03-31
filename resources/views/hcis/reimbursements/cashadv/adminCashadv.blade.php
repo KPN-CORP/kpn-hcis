@@ -605,132 +605,132 @@
         //script modal
 
         // WE COMMENT THIS TO AVOID DUPLICATION
-        // Modal Export
-        document.addEventListener("DOMContentLoaded", function () {
-            var exportModal = document.getElementById("exportModal");
-            var declareSection = document.querySelector(".declare-section");
-            exportModal.addEventListener("show.bs.modal", function (event) {
-                var button = event.relatedTarget;
+        // // Modal Export
+        // document.addEventListener("DOMContentLoaded", function () {
+        //     var exportModal = document.getElementById("exportModal");
+        //     var declareSection = document.querySelector(".declare-section");
+        //     exportModal.addEventListener("show.bs.modal", function (event) {
+        //         var button = event.relatedTarget;
 
-                var transactionId = button.getAttribute("data-id");
-                var status = button.getAttribute("data-status");
-                console.log(status);
+        //         var transactionId = button.getAttribute("data-id");
+        //         var status = button.getAttribute("data-status");
+        //         console.log(status);
 
-                var downloadLink = document.getElementById("downloadLink");
-                downloadLink.href =
-                    '{{ route("cashadvanced.download", ":id") }}'.replace(
-                        ":id",
-                        transactionId
-                    );
+        //         var downloadLink = document.getElementById("downloadLink");
+        //         downloadLink.href =
+        //             '{{ route("cashadvanced.download", ":id") }}'.replace(
+        //                 ":id",
+        //                 transactionId
+        //             );
 
-                var declareLink = document.getElementById("declareLink");
-                declareLink.href =
-                    '{{ route("cashadvanced.downloadDeclare", ":id") }}'.replace(
-                        ":id",
-                        transactionId
-                    );
+        //         var declareLink = document.getElementById("declareLink");
+        //         declareLink.href =
+        //             '{{ route("cashadvanced.downloadDeclare", ":id") }}'.replace(
+        //                 ":id",
+        //                 transactionId
+        //             );
 
-                var transactionInput = document.getElementById("transaction_id");
-                transactionInput.value = transactionId;
+        //         var transactionInput = document.getElementById("transaction_id");
+        //         transactionInput.value = transactionId;
 
-                if (
-                    status === "Pending" ||
-                    status === "Approved"
-                ) {
-                    declareSection.style.display = "flex"; // Tampilkan
-                } else {
-                    declareSection.style.display = "none"; // Sembunyikan
-                }
-            });
-        });
+        //         if (
+        //             status === "Pending" ||
+        //             status === "Approved"
+        //         ) {
+        //             declareSection.style.display = "flex"; // Tampilkan
+        //         } else {
+        //             declareSection.style.display = "none"; // Sembunyikan
+        //         }
+        //     });
+        // });
 
         // WE COMMENT THIS TO AVOID DUPLICATION
-        // Modal Mengubah Status
-        document.addEventListener("DOMContentLoaded", function () {
-            var statusModal = document.getElementById("statusModal");
-            statusModal.addEventListener("show.bs.modal", function (event) {
-                // Dapatkan tombol yang men-trigger modal
-                var button = event.relatedTarget;
+        // // Modal Mengubah Status
+        // document.addEventListener("DOMContentLoaded", function () {
+        //     var statusModal = document.getElementById("statusModal");
+        //     statusModal.addEventListener("show.bs.modal", function (event) {
+        //         // Dapatkan tombol yang men-trigger modal
+        //         var button = event.relatedTarget;
 
-                // Ambil data-id dan data-status dari tombol tersebut
-                var transactionId = button.getAttribute("data-id");
-                var transactionStatus = button.getAttribute("data-status");
-                var appSett = button.getAttribute("data-appsett");
-                var dateReq = button.getAttribute("data-datereq");
-                var caPaidDate = button.getAttribute("data-capaiddate");
-                var paidDate = button.getAttribute("data-paiddate");
+        //         // Ambil data-id dan data-status dari tombol tersebut
+        //         var transactionId = button.getAttribute("data-id");
+        //         var transactionStatus = button.getAttribute("data-status");
+        //         var appSett = button.getAttribute("data-appsett");
+        //         var dateReq = button.getAttribute("data-datereq");
+        //         var caPaidDate = button.getAttribute("data-capaiddate");
+        //         var paidDate = button.getAttribute("data-paiddate");
 
-                // Temukan form di dalam modal dan update action-nya
-                var form = statusModal.querySelector("form");
-                var action = form.getAttribute("action");
-                form.setAttribute("action", action.replace(":id", transactionId));
+        //         // Temukan form di dalam modal dan update action-nya
+        //         var form = statusModal.querySelector("form");
+        //         var action = form.getAttribute("action");
+        //         form.setAttribute("action", action.replace(":id", transactionId));
 
-                // Set nilai transaction_id di input hidden
-                var transactionInput = form.querySelector("#transaction_id");
-                transactionInput.value = transactionId;
+        //         // Set nilai transaction_id di input hidden
+        //         var transactionInput = form.querySelector("#transaction_id");
+        //         transactionInput.value = transactionId;
 
-                // Pilih status yang sesuai di dropdown
-                var statusSelect = form.querySelector("#ca_status");
-                statusSelect.value = transactionStatus;
+        //         // Pilih status yang sesuai di dropdown
+        //         var statusSelect = form.querySelector("#ca_status");
+        //         statusSelect.value = transactionStatus;
 
-                var date_required = form.querySelector("#date_required");
-                date_required.value = dateReq;
+        //         var date_required = form.querySelector("#date_required");
+        //         date_required.value = dateReq;
 
-                var ca_paid_date = form.querySelector("#ca_paid_date");
-                ca_paid_date.value = caPaidDate;
+        //         var ca_paid_date = form.querySelector("#ca_paid_date");
+        //         ca_paid_date.value = caPaidDate;
 
-                var paidDateInput = form.querySelector("#paid_date");
-                paid_date.value = paidDate;
+        //         var paidDateInput = form.querySelector("#paid_date");
+        //         paid_date.value = paidDate;
 
-                if (appSett === "Approved") {
-                    statusSelect.parentElement.style.display = "block";
-                    paidDateInput.parentElement.style.display = "block";
-                } else {
-                    statusSelect.parentElement.style.display = "none";
-                    paidDateInput.parentElement.style.display = "none";
-                }
+        //         if (appSett === "Approved") {
+        //             statusSelect.parentElement.style.display = "block";
+        //             paidDateInput.parentElement.style.display = "block";
+        //         } else {
+        //             statusSelect.parentElement.style.display = "none";
+        //             paidDateInput.parentElement.style.display = "none";
+        //         }
 
-                // Update opsi dropdown berdasarkan status yang dipilih
-                updateStatusOptions(transactionStatus, statusSelect);
-            });
+        //         // Update opsi dropdown berdasarkan status yang dipilih
+        //         updateStatusOptions(transactionStatus, statusSelect);
+        //     });
 
-            function updateStatusOptions(selectedStatus, statusSelect) {
-                // Reset opsi yang ada
-                var options = [
-                    { value: 'On Progress', text: 'On Progress' },
-                    { value: 'Refund', text: 'Refund' },
-                    { value: 'Done', text: 'Done' }
-                ];
+        //     function updateStatusOptions(selectedStatus, statusSelect) {
+        //         // Reset opsi yang ada
+        //         var options = [
+        //             { value: 'On Progress', text: 'On Progress' },
+        //             { value: 'Refund', text: 'Refund' },
+        //             { value: 'Done', text: 'Done' }
+        //         ];
 
-                // Filter opsi berdasarkan status yang dipilih
-                var filteredOptions;
-                if (selectedStatus === 'On Progress') {
-                    filteredOptions = options.filter(function(option) {
-                        return option.value === 'On Progress' || option.value === 'Done';
-                    });
-                } else if (selectedStatus === 'Refund') {
-                    filteredOptions = options.filter(function(option) {
-                        return option.value === 'Refund' || option.value === 'Done';
-                    });
-                } else {
-                    filteredOptions = options; // Default: tampilkan semua opsi
-                }
+        //         // Filter opsi berdasarkan status yang dipilih
+        //         var filteredOptions;
+        //         if (selectedStatus === 'On Progress') {
+        //             filteredOptions = options.filter(function(option) {
+        //                 return option.value === 'On Progress' || option.value === 'Done';
+        //             });
+        //         } else if (selectedStatus === 'Refund') {
+        //             filteredOptions = options.filter(function(option) {
+        //                 return option.value === 'Refund' || option.value === 'Done';
+        //             });
+        //         } else {
+        //             filteredOptions = options; // Default: tampilkan semua opsi
+        //         }
 
-                // Hapus opsi yang ada
-                while (statusSelect.options.length > 0) {
-                    statusSelect.remove(0);
-                }
+        //         // Hapus opsi yang ada
+        //         while (statusSelect.options.length > 0) {
+        //             statusSelect.remove(0);
+        //         }
 
-                // Tambahkan opsi baru yang sudah difilter
-                filteredOptions.forEach(function(option) {
-                    var newOption = new Option(option.text, option.value);
-                    statusSelect.add(newOption);
-                });
+        //         // Tambahkan opsi baru yang sudah difilter
+        //         filteredOptions.forEach(function(option) {
+        //             var newOption = new Option(option.text, option.value);
+        //             statusSelect.add(newOption);
+        //         });
 
-                // Set nilai dropdown ke status yang dipilih
-                statusSelect.value = selectedStatus;
-            }
-        });
+        //         // Set nilai dropdown ke status yang dipilih
+        //         statusSelect.value = selectedStatus;
+        //     }
+        // });
 
         // Approval Request Modal
         document.addEventListener('DOMContentLoaded', function () {
@@ -1576,210 +1576,203 @@
         });
 
         // WE COMMENT THIS TO AVOID DUPLICATION
-        function addSweetAlert(approveButton) {
-            approveButton.addEventListener("click", function (event) {
-                event.preventDefault(); // Mencegah submit form secara langsung
-                const transactionCA = approveButton.getAttribute("data-no-ca");
-                const form = document.getElementById("approveForm");
+        // function addSweetAlert(approveButton) {
+        //     approveButton.addEventListener("click", function (event) {
+        //         event.preventDefault(); // Mencegah submit form secara langsung
+        //         const transactionCA = approveButton.getAttribute("data-no-ca");
+        //         const form = document.getElementById("approveForm");
 
-                Swal.fire({
-                    title: `Do you want to approve transaction "${transactionCA}"?`,
-                    text: "You won't be able to revert this!",
-                    icon: "question",
-                    showCancelButton: true,
-                    confirmButtonColor: "#0c63e4",
-                    cancelButtonColor: "#9a2a27",
-                    confirmButtonText: "Yes, approve it!",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Buat input baru untuk action_ca_approve
-                        const input = document.createElement("input");
-                        input.type = "hidden"; // Set input sebagai hidden
-                        input.name = "action_ca_approve"; // Set nama input
-                        input.value = "Approve"; // Set nilai input
+        //         Swal.fire({
+        //             title: `Do you want to approve transaction "${transactionCA}"?`,
+        //             text: "You won't be able to revert this!",
+        //             icon: "question",
+        //             showCancelButton: true,
+        //             confirmButtonColor: "#0c63e4",
+        //             cancelButtonColor: "#9a2a27",
+        //             confirmButtonText: "Yes, approve it!",
+        //         }).then((result) => {
+        //             if (result.isConfirmed) {
+        //                 // Buat input baru untuk action_ca_approve
+        //                 const input = document.createElement("input");
+        //                 input.type = "hidden"; // Set input sebagai hidden
+        //                 input.name = "action_ca_approve"; // Set nama input
+        //                 input.value = "Approve"; // Set nilai input
 
-                        // Tambahkan input ke form
-                        form.appendChild(input);
+        //                 // Tambahkan input ke form
+        //                 form.appendChild(input);
 
-                        form.submit(); // Kirim form
-                    }
-                });
-            });
-        }
+        //                 form.submit(); // Kirim form
+        //             }
+        //         });
+        //     });
+        // }
 
-        // WE COMMENT THIS TO AVOID DUPLICATION
-        function addSweetAlertDec(approveButtonDec) {
-            approveButtonDec.addEventListener("click", function (event) {
-                event.preventDefault(); // Mencegah submit form secara langsung
-                const transactionCA = approveButtonDec.getAttribute("data-no-ca");
-                const form = document.getElementById("approveFormDec");
+        // function addSweetAlertDec(approveButtonDec) {
+        //     approveButtonDec.addEventListener("click", function (event) {
+        //         event.preventDefault(); // Mencegah submit form secara langsung
+        //         const transactionCA = approveButtonDec.getAttribute("data-no-ca");
+        //         const form = document.getElementById("approveFormDec");
 
-                Swal.fire({
-                    title: `Do you want to approve transaction "${transactionCA}"?`,
-                    text: "You won't be able to revert this!",
-                    icon: "question",
-                    showCancelButton: true,
-                    confirmButtonColor: "#0c63e4",
-                    cancelButtonColor: "#9a2a27",
-                    confirmButtonText: "Yes, approve it!",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Buat input baru untuk action_ca_approve
-                        const input = document.createElement("input");
-                        input.type = "hidden"; // Set input sebagai hidden
-                        input.name = "action_ca_approve"; // Set nama input
-                        input.value = "Approve"; // Set nilai input
+        //         Swal.fire({
+        //             title: `Do you want to approve transaction "${transactionCA}"?`,
+        //             text: "You won't be able to revert this!",
+        //             icon: "question",
+        //             showCancelButton: true,
+        //             confirmButtonColor: "#0c63e4",
+        //             cancelButtonColor: "#9a2a27",
+        //             confirmButtonText: "Yes, approve it!",
+        //         }).then((result) => {
+        //             if (result.isConfirmed) {
+        //                 // Buat input baru untuk action_ca_approve
+        //                 const input = document.createElement("input");
+        //                 input.type = "hidden"; // Set input sebagai hidden
+        //                 input.name = "action_ca_approve"; // Set nama input
+        //                 input.value = "Approve"; // Set nilai input
 
-                        // Tambahkan input ke form
-                        form.appendChild(input);
+        //                 // Tambahkan input ke form
+        //                 form.appendChild(input);
 
-                        form.submit(); // Kirim form
-                    }
-                });
-            });
-        }
+        //                 form.submit(); // Kirim form
+        //             }
+        //         });
+        //     });
+        // }
 
-        // WE COMMENT THIS TO AVOID DUPLICATION
-        function addSweetAlertExt(approveButtonExt) {
-            approveButtonExt.addEventListener("click", function (event) {
-                event.preventDefault(); // Mencegah submit form secara langsung
-                const transactionCA = approveButtonExt.getAttribute("data-no-ca");
-                const form = document.getElementById("approveFormExt");
+        // function addSweetAlertExt(approveButtonExt) {
+        //     approveButtonExt.addEventListener("click", function (event) {
+        //         event.preventDefault(); // Mencegah submit form secara langsung
+        //         const transactionCA = approveButtonExt.getAttribute("data-no-ca");
+        //         const form = document.getElementById("approveFormExt");
 
-                Swal.fire({
-                    title: `Do you want to approve transaction "${transactionCA}"?`,
-                    text: "You won't be able to revert this!",
-                    icon: "question",
-                    showCancelButton: true,
-                    confirmButtonColor: "#0c63e4",
-                    cancelButtonColor: "#9a2a27",
-                    confirmButtonText: "Yes, approve it!",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Buat input baru untuk action_ca_approve
-                        const input = document.createElement("input");
-                        input.type = "hidden"; // Set input sebagai hidden
-                        input.name = "action_ca_approve"; // Set nama input
-                        input.value = "Approve"; // Set nilai input
+        //         Swal.fire({
+        //             title: `Do you want to approve transaction "${transactionCA}"?`,
+        //             text: "You won't be able to revert this!",
+        //             icon: "question",
+        //             showCancelButton: true,
+        //             confirmButtonColor: "#0c63e4",
+        //             cancelButtonColor: "#9a2a27",
+        //             confirmButtonText: "Yes, approve it!",
+        //         }).then((result) => {
+        //             if (result.isConfirmed) {
+        //                 // Buat input baru untuk action_ca_approve
+        //                 const input = document.createElement("input");
+        //                 input.type = "hidden"; // Set input sebagai hidden
+        //                 input.name = "action_ca_approve"; // Set nama input
+        //                 input.value = "Approve"; // Set nilai input
 
-                        // Tambahkan input ke form
-                        form.appendChild(input);
+        //                 // Tambahkan input ke form
+        //                 form.appendChild(input);
 
-                        form.submit(); // Kirim form
-                    }
-                });
-            });
-        }
+        //                 form.submit(); // Kirim form
+        //             }
+        //         });
+        //     });
+        // }
 
-        // WE COMMENT THIS TO AVOID DUPLICATION
-        function addSweetAlertDecExt(approveButtonDec) {
-            approveButtonDec.addEventListener("click", function (event) {
-                event.preventDefault(); // Mencegah submit form secara langsung
-                const transactionCA = approveButtonDec.getAttribute("data-no-ca");
-                const form = document.getElementById("approveFormDecExt");
+        // function addSweetAlertDecExt(approveButtonDec) {
+        //     approveButtonDec.addEventListener("click", function (event) {
+        //         event.preventDefault(); // Mencegah submit form secara langsung
+        //         const transactionCA = approveButtonDec.getAttribute("data-no-ca");
+        //         const form = document.getElementById("approveFormDecExt");
 
-                Swal.fire({
-                    title: `Do you want to approve transaction "${transactionCA}"?`,
-                    text: "You won't be able to revert this!",
-                    icon: "question",
-                    showCancelButton: true,
-                    confirmButtonColor: "#0c63e4",
-                    cancelButtonColor: "#9a2a27",
-                    confirmButtonText: "Yes, approve it!",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Buat input baru untuk action_ca_approve
-                        const input = document.createElement("input");
-                        input.type = "hidden"; // Set input sebagai hidden
-                        input.name = "action_ca_approve"; // Set nama input
-                        input.value = "Approve"; // Set nilai input
+        //         Swal.fire({
+        //             title: `Do you want to approve transaction "${transactionCA}"?`,
+        //             text: "You won't be able to revert this!",
+        //             icon: "question",
+        //             showCancelButton: true,
+        //             confirmButtonColor: "#0c63e4",
+        //             cancelButtonColor: "#9a2a27",
+        //             confirmButtonText: "Yes, approve it!",
+        //         }).then((result) => {
+        //             if (result.isConfirmed) {
+        //                 // Buat input baru untuk action_ca_approve
+        //                 const input = document.createElement("input");
+        //                 input.type = "hidden"; // Set input sebagai hidden
+        //                 input.name = "action_ca_approve"; // Set nama input
+        //                 input.value = "Approve"; // Set nilai input
 
-                        // Tambahkan input ke form
-                        form.appendChild(input);
+        //                 // Tambahkan input ke form
+        //                 form.appendChild(input);
 
-                        form.submit(); // Kirim form
-                    }
-                });
-            });
-        }
+        //                 form.submit(); // Kirim form
+        //             }
+        //         });
+        //     });
+        // }
 
+        // // Reject Request Modal
+        // document.addEventListener("DOMContentLoaded", function () {
+        //     var modalReject = document.getElementById("modalReject");
+        //     modalReject.addEventListener("show.bs.modal", function (event) {
+        //         var button = event.relatedTarget;
 
-        // WE COMMENT THIS TO AVOID DUPLICATION
-        // Reject Request Modal
-        document.addEventListener("DOMContentLoaded", function () {
-            var modalReject = document.getElementById("modalReject");
-            modalReject.addEventListener("show.bs.modal", function (event) {
-                var button = event.relatedTarget;
+        //         var transactionId = button.getAttribute("data-no-id");
+        //         var transactionNo = button.getAttribute("data-no-ca");
+        //         var transactionIdCA = button.getAttribute("data-no-idCA");
+        //         console.log(transactionIdCA);
 
-                var transactionId = button.getAttribute("data-no-id");
-                var transactionNo = button.getAttribute("data-no-ca");
-                var transactionIdCA = button.getAttribute("data-no-idCA");
-                console.log(transactionIdCA);
+        //         // Mendefinisikan form terlebih dahulu
+        //         var form = modalReject.querySelector("form");
 
-                // Mendefinisikan form terlebih dahulu
-                var form = modalReject.querySelector("form");
+        //         form.querySelector("#data_no_id").value = transactionIdCA;
 
-                form.querySelector("#data_no_id").value = transactionIdCA;
+        //         document.getElementById("reject_no_ca_2").textContent = transactionNo;
 
-                document.getElementById("reject_no_ca_2").textContent = transactionNo;
+        //         var form = modalReject.querySelector("form");
+        //         var action = form.getAttribute("action");
+        //         form.setAttribute("action", action.replace(":id", transactionId));
+        //     });
+        // });
 
-                var form = modalReject.querySelector("form");
-                var action = form.getAttribute("action");
-                form.setAttribute("action", action.replace(":id", transactionId));
-            });
-        });
+        // // Reject Declaration Modal
+        // document.addEventListener("DOMContentLoaded", function () {
+        //     var modalRejectDec = document.getElementById("modalRejectDec");
+        //     modalRejectDec.addEventListener("show.bs.modal", function (event) {
+        //         var button = event.relatedTarget;
 
-        // WE COMMENT THIS TO AVOID DUPLICATION
-        // Reject Declaration Modal
-        document.addEventListener("DOMContentLoaded", function () {
-            var modalRejectDec = document.getElementById("modalRejectDec");
-            modalRejectDec.addEventListener("show.bs.modal", function (event) {
-                var button = event.relatedTarget;
+        //         var transactionId = button.getAttribute("data-no-id");
+        //         var transactionNo = button.getAttribute("data-no-ca");
+        //         var transactionIdCA = button.getAttribute("data-no-idCA");
+        //         console.log(transactionIdCA);
 
-                var transactionId = button.getAttribute("data-no-id");
-                var transactionNo = button.getAttribute("data-no-ca");
-                var transactionIdCA = button.getAttribute("data-no-idCA");
-                console.log(transactionIdCA);
+        //         // Mendefinisikan form terlebih dahulu
+        //         var form = modalRejectDec.querySelector("form");
 
-                // Mendefinisikan form terlebih dahulu
-                var form = modalRejectDec.querySelector("form");
+        //         form.querySelector("#data_no_id").value = transactionIdCA;
 
-                form.querySelector("#data_no_id").value = transactionIdCA;
+        //         document.getElementById("rejectDec_no_ca_2").textContent =
+        //             transactionNo;
 
-                document.getElementById("rejectDec_no_ca_2").textContent =
-                    transactionNo;
+        //         var form = modalRejectDec.querySelector("form");
+        //         var action = form.getAttribute("action");
+        //         form.setAttribute("action", action.replace(":id", transactionId));
+        //     });
+        // });
 
-                var form = modalRejectDec.querySelector("form");
-                var action = form.getAttribute("action");
-                form.setAttribute("action", action.replace(":id", transactionId));
-            });
-        });
+        // // Reject Extend Modal
+        // document.addEventListener("DOMContentLoaded", function () {
+        //     var modalRejectExt = document.getElementById("modalRejectExt");
+        //     modalRejectExt.addEventListener("show.bs.modal", function (event) {
+        //         var button = event.relatedTarget;
 
-        // WE COMMENT THIS TO AVOID DUPLICATION
-        // Reject Extend Modal
-        document.addEventListener("DOMContentLoaded", function () {
-            var modalRejectExt = document.getElementById("modalRejectExt");
-            modalRejectExt.addEventListener("show.bs.modal", function (event) {
-                var button = event.relatedTarget;
+        //         var transactionId = button.getAttribute("data-no-id");
+        //         var transactionNo = button.getAttribute("data-no-ca");
+        //         var transactionIdCA = button.getAttribute("data-no-idCA");
+        //         console.log(transactionIdCA);
 
-                var transactionId = button.getAttribute("data-no-id");
-                var transactionNo = button.getAttribute("data-no-ca");
-                var transactionIdCA = button.getAttribute("data-no-idCA");
-                console.log(transactionIdCA);
+        //         // Mendefinisikan form terlebih dahulu
+        //         var form = modalRejectExt.querySelector("form");
 
-                // Mendefinisikan form terlebih dahulu
-                var form = modalRejectExt.querySelector("form");
+        //         form.querySelector("#data_no_id").value = transactionIdCA;
 
-                form.querySelector("#data_no_id").value = transactionIdCA;
+        //         document.getElementById("rejectExt_no_ca_2").textContent =
+        //             transactionNo;
 
-                document.getElementById("rejectExt_no_ca_2").textContent =
-                    transactionNo;
-
-                var form = modalRejectExt.querySelector("form");
-                var action = form.getAttribute("action");
-                form.setAttribute("action", action.replace(":id", transactionId));
-            });
-        });
+        //         var form = modalRejectExt.querySelector("form");
+        //         var action = form.getAttribute("action");
+        //         form.setAttribute("action", action.replace(":id", transactionId));
+        //     });
+        // });
 
         function updateDateTime() {
             const now = new Date();
