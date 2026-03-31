@@ -31,4 +31,9 @@ return [
         ],
     ],
 
+    'ocr' => [
+        'base_url' => env('OCR_BASE_URL'),
+        'internal_url' => env('OCR_INTERNAL_URL'),
+    ],
+
 ];
