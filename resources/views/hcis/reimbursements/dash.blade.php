@@ -84,14 +84,14 @@
             </a>
         </div>
 
-        <div class="col">
+        {{-- <div class="col">
             <a href="{{ route('parking') }}" class="text-decoration-none">
                 <div class="menu-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
                     <img src="{{ asset('images/menu/logo-parking.png') }}" alt="Parking" class="menu-icon mb-3">
                     <span class="menu-text">Parking</span>
                 </div>
             </a>
-        </div>
+        </div> --}}
 
     </div>
 
