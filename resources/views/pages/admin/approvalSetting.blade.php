@@ -134,7 +134,7 @@
         Edit Data
     </div>
 
-    <div class="card border-0 shadow-sm mb-4">
+    <div id="approval-setting-form-wrapper" class="card border-0 shadow-sm mb-4">
         <div class="card-header bg-white ">
             <h5 class="mb-0 text-kpn fw-bold">Create Approval Flow</h5>
         </div>
@@ -359,10 +359,18 @@
             event.preventDefault();
             $('.select2-single, .select2-multiple').val(null).trigger('change');
             document.getElementById('approval-setting-form').reset();
-            $('#approval-setting-form-alert')
-                .addClass('d-none')
-                .hide()
-                .fadeIn(200);
+            $('#approval-setting-submit')
+                .removeClass('btn-warning');
+            $('#approval-setting-submit')
+                .addClass('btn-primary');
+            $('#approval-setting-submit')
+                .removeClass('text-black');
+            $('#approval-setting-form-wrapper')
+                .removeClass('border-5');
+            $('#approval-setting-form-wrapper')
+                .removeClass('border-warning');
+            $('#approval-setting-form-wrapper')
+                .addClass('border-0');
         });
 
         $('#approval-setting-submit').on('click', async function (event) {
@@ -468,7 +476,7 @@
             }
         });
 
-        $('.approval-setting-edit').on('click', async function (event) {
+        $('#approval-setting-table').on('click', '.approval-setting-edit', async function (event) {
             event.preventDefault();
 
             let btn = $(this);
@@ -500,14 +508,22 @@
                 .animate({ scrollTop: 0 }, 200)
                 .promise()
                 .done(function () {
-                    $('#approval-setting-form-alert')
-                        .removeClass('d-none')
-                        .hide()
-                        .fadeIn(200);
+                    $('#approval-setting-submit')
+                        .removeClass('btn-primary');
+                    $('#approval-setting-submit')
+                        .addClass('btn-warning');
+                    $('#approval-setting-submit')
+                        .addClass('text-black');
+                    $('#approval-setting-form-wrapper')
+                        .removeClass('border-0');
+                    $('#approval-setting-form-wrapper')
+                        .addClass('border-5');
+                    $('#approval-setting-form-wrapper')
+                        .addClass('border-warning');
                 });
         });
 
-        $('.approval-setting-delete').on('click', async function () {
+        $('#approval-setting-table').on('click', '.approval-setting-delete', async function () {
             let id = $(this).data('id');
 
             const confirmDelete = await Swal.fire({
