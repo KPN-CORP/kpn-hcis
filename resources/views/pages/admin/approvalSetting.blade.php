@@ -183,7 +183,7 @@
                         <select class="form-select form-select-sm select2-single" name="hcga_employee_id" data-placeholder="Select HCGA">
                             <option value=""></option>
                             @foreach ($hcgaEmployees as $hcgaEmployee)
-                              <option value="{{ $hcgaEmployee->employee_id }}">{{ $hcgaEmployee->fullname.' ('.$hcgaEmployee->group_company.' - '.$hcgaEmployee->company_name.')' }}</option>
+                              <option value="{{ $hcgaEmployee->employee_id }}">{{ $hcgaEmployee->fullname.' ('.$hcgaEmployee->group_company.' - '.$hcgaEmployee->company_name.' - '.$hcgaEmployee->employee_id.')' }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -193,7 +193,7 @@
                         <select class="form-select form-select-sm select2-single" name="ktu_employee_id" data-placeholder="Select KTU">
                             <option value=""></option>
                             @foreach ($ktuEmployees as $ktuEmployee)
-                              <option value="{{ $ktuEmployee->employee_id }}">{{ $ktuEmployee->fullname.' ('.$ktuEmployee->group_company.' - '.$ktuEmployee->company_name.')' }}</option>
+                              <option value="{{ $ktuEmployee->employee_id }}">{{ $ktuEmployee->fullname.' ('.$ktuEmployee->group_company.' - '.$ktuEmployee->company_name.' - '.$ktuEmployee->employee_id.')' }}</option>
                             @endforeach
                         </select>
                     </div>
