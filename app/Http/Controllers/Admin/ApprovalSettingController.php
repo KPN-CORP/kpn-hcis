@@ -302,6 +302,16 @@ class ApprovalSettingController extends Controller
             })
             ->get();
 
-        return Excel::store(new ApprovalSettingSyncOldApprovalExport($bt_approvals, $ca_approvals, $ca_sett_approvals), 'ca_approvals.xlsx');
+        try {
+            Excel::store(
+                new ApprovalSettingSyncOldApprovalExport($bt_approvals, $ca_approvals, $ca_sett_approvals),
+                'all_approvals.xlsx',
+                'local'
+            );
+
+            return "SUCCESS";
+        } catch (\Throwable $e) {
+            dd($e);
+        }
     }
 }

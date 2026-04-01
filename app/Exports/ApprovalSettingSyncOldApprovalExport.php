@@ -48,19 +48,62 @@ class ApprovalSettingSyncOldApprovalExport implements WithMultipleSheets, FromCo
 
     public function map($row): array
     {
-        return [
-            $row->id,
-            $row->role_name,
-            $row->approved_at,
-        ];
+        return match ($this->type) {
+            'bt' => [
+                $row->id,
+                $row->role_name,
+                // $row->businessTrip->status ?? null,
+                $row->approved_at,
+            ],
+
+            'ca' => [
+                $row->id,
+                $row->role_name,
+                // $row->caTransaction->no_ca ?? null,
+                // $row->caTransaction->approval_status ?? null,
+                $row->approved_at,
+            ],
+
+            'sett' => [
+                $row->id,
+                $row->role_name,
+                // $row->caTransaction->no_ca ?? null,
+                // $row->caTransaction->approval_sett ?? null,
+                $row->approved_at,
+            ],
+
+            default => [],
+        };
     }
 
     public function headings(): array
     {
-        return [
-            'ID',
-            'Role Name',
-            'Approved At',
-        ];
+        return match ($this->type) {
+
+            'bt' => [
+                'ID',
+                'Role',
+                // 'Status BT',
+                'Approved At',
+            ],
+
+            'ca' => [
+                'ID',
+                'Role',
+                // 'No CA',
+                // 'Approval Status',
+                'Approved At',
+            ],
+
+            'sett' => [
+                'ID',
+                'Role',
+                // 'No CA',
+                // 'Approval Settlement',
+                'Approved At',
+            ],
+
+            default => [],
+        };
     }
 }
