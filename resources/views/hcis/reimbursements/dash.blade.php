@@ -84,6 +84,45 @@
             </a>
         </div>
 
+        @if (
+            auth()->check() &&
+            in_array(auth()->user()->employee_id, [
+                "01123070004",
+                "01124040023",
+                "01124090037",
+                "01125050016",
+                "01120040011",
+                "01126010010",
+                "04124040185",
+                "04124040208",
+                "04125050340",
+                "04125050692",
+                "01124020005",
+                "01123090028",
+                "01124090041",
+                "01118090002",
+                "04125010017",
+                "01122100006",
+                "01114090009",
+                "01123090020",
+                "04125050643",
+                "04125050800",
+                "04125050529",
+                "01123090014",
+                "01113090005",
+                "01123070031",
+            ])
+        )
+            <div class="col">
+                <a href="{{ route('parking') }}" class="text-decoration-none">
+                    <div class="menu-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                        <img src="{{ asset('images/menu/logo-parking.png') }}" alt="Parking" class="menu-icon mb-3">
+                        <span class="menu-text">Parking</span>
+                    </div>
+                </a>
+            </div>
+        @endif
+
         {{-- <div class="col">
             <a href="{{ route('parking') }}" class="text-decoration-none">
                 <div class="menu-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
@@ -92,7 +131,6 @@
                 </div>
             </a>
         </div> --}}
-
     </div>
 
     @if (auth()->check() && (auth()->user()->can('reportca_hcis') || auth()->user()->can('report_hcis_md')))

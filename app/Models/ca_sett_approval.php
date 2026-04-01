@@ -74,4 +74,9 @@ class ca_sett_approval extends Model
     {
         return $this->belongsTo(User::class, 'admin_id', 'employee_id');
     }
+
+    public function caTransaction()
+    {
+        return $this->belongsTo(CATransaction::class, 'ca_id', 'id');
+    }
 }
