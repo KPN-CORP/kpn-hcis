@@ -468,7 +468,7 @@
             }
         });
 
-        $('.approval-setting-edit').on('click', async function (event) {
+        $('#approval-setting-table').on('click', '.approval-setting-edit', async function (event) {
             event.preventDefault();
 
             let btn = $(this);
@@ -507,7 +507,7 @@
                 });
         });
 
-        $('.approval-setting-delete').on('click', async function () {
+        $('#approval-setting-table').on('click', '.approval-setting-delete', async function () {
             let id = $(this).data('id');
 
             const confirmDelete = await Swal.fire({
