@@ -80,4 +80,9 @@ class ca_approval extends Model
     {
         return $this->hasOne(Employee::class, 'employee_id', 'employee_id')->where('role_name', 'Div Head');
     }
+
+    public function caTransaction()
+    {
+        return $this->belongsTo(CATransaction::class, 'ca_id', 'id');
+    }
 }

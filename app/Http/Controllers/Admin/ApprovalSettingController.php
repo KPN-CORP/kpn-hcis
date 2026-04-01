@@ -6,11 +6,16 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ApprovalSettingSyncOldApprovalExport;
 use App\Http\Controllers\Controller;
 use App\Models\ApprovalSetting;
 use App\Models\Company;
 use App\Models\Location;
 use App\Models\Employee;
+use App\Models\BTApproval;
+use App\Models\ca_approval;
+use App\Models\ca_sett_approval;
 
 class ApprovalSettingController extends Controller
 {
@@ -249,5 +254,54 @@ class ApprovalSettingController extends Controller
             'success' => true,
             'message' => 'Data berhasil dihapus!'
         ]);
+    }
+
+    public function syncOldApproval() {
+        $bt_approvals = BTApproval::with(['businessTrip'])
+            ->where(function ($query) {
+                $query->where(function ($query) {
+                    $query->where("role_name", "Dept Head HC GA")
+                        ->orWhere("role_name", "HC GA");
+                })->orWhere(function ($query) {
+                    $query->where("role_name", "Dept Head AR & AP");
+                });
+            })
+            ->whereNull('approved_at')
+            ->whereHas('businessTrip', function ($query) {
+                $query->whereNot('status', 'Approved')->where('deleted_at', null);
+            })
+            ->get();
+
+        $ca_approvals = ca_approval::with(['caTransaction'])
+            ->where(function ($query) {
+                $query->where(function ($query) {
+                    $query->where("role_name", "Dept Head HC GA")
+                        ->orWhere("role_name", "HC GA");
+                })->orWhere(function ($query) {
+                    $query->where("role_name", "Dept Head AR & AP");
+                });
+            })
+            ->whereNull('approved_at')
+            ->whereHas('caTransaction', function ($query) {
+                $query->whereNot('approval_status', 'Approved')->where('deleted_at', null);
+            })
+            ->get();
+
+        $ca_sett_approvals = ca_sett_approval::with(['caTransaction'])
+            ->where(function ($query) {
+                $query->where(function ($query) {
+                    $query->where("role_name", "Dept Head HC GA")
+                        ->orWhere("role_name", "HC GA");
+                })->orWhere(function ($query) {
+                    $query->where("role_name", "Dept Head AR & AP");
+                });
+            })
+            ->whereNull('approved_at')
+            ->whereHas('caTransaction', function ($query) {
+                $query->whereNot('approval_sett', 'Approved')->where('deleted_at', null);
+            })
+            ->get();
+
+        return Excel::store(new ApprovalSettingSyncOldApprovalExport($bt_approvals, $ca_approvals, $ca_sett_approvals), 'ca_approvals.xlsx');
     }
 }
