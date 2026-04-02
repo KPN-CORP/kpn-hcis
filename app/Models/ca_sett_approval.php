@@ -64,6 +64,10 @@ class ca_sett_approval extends Model
     {
         return $this->belongsTo(Employee::class, 'employee_id', 'employee_id');
     }
+    public function oldEmployee()
+    {
+        return $this->belongsTo(Employee::class, 'old_employee_id', 'employee_id');
+    }
 
     public function admin()
     {

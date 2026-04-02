@@ -20,6 +20,10 @@ class BTApproval extends Model
     {
         return $this->belongsTo(Employee::class, 'employee_id', 'employee_id');
     }
+    public function oldEmployee()
+    {
+        return $this->belongsTo(Employee::class, 'old_employee_id', 'employee_id');
+    }
     public function manager1()
     {
         return $this->belongsTo(Employee::class, 'manager_l1_id', 'employee_id');

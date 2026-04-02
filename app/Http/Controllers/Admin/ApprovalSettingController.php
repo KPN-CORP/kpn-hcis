@@ -257,52 +257,284 @@ class ApprovalSettingController extends Controller
     }
 
     public function syncOldApproval() {
-        $bt_approvals = BTApproval::with(['businessTrip'])
-            ->where(function ($query) {
-                $query->where(function ($query) {
-                    $query->where("role_name", "Dept Head HC GA")
-                        ->orWhere("role_name", "HC GA");
-                })->orWhere(function ($query) {
-                    $query->where("role_name", "Dept Head AR & AP");
-                });
-            })
-            ->whereNull('approved_at')
-            ->whereHas('businessTrip', function ($query) {
-                $query->whereNot('status', 'Approved')->where('deleted_at', null);
-            })
-            ->get();
-
-        $ca_approvals = ca_approval::with(['caTransaction'])
-            ->where(function ($query) {
-                $query->where(function ($query) {
-                    $query->where("role_name", "Dept Head HC GA")
-                        ->orWhere("role_name", "HC GA");
-                })->orWhere(function ($query) {
-                    $query->where("role_name", "Dept Head AR & AP");
-                });
-            })
-            ->whereNull('approved_at')
-            ->whereHas('caTransaction', function ($query) {
-                $query->whereNot('approval_status', 'Approved')->where('deleted_at', null);
-            })
-            ->get();
-
-        $ca_sett_approvals = ca_sett_approval::with(['caTransaction'])
-            ->where(function ($query) {
-                $query->where(function ($query) {
-                    $query->where("role_name", "Dept Head HC GA")
-                        ->orWhere("role_name", "HC GA");
-                })->orWhere(function ($query) {
-                    $query->where("role_name", "Dept Head AR & AP");
-                });
-            })
-            ->whereNull('approved_at')
-            ->whereHas('caTransaction', function ($query) {
-                $query->whereNot('approval_sett', 'Approved')->where('deleted_at', null);
-            })
-            ->get();
-
         try {
+            $bt_approvals = BTApproval::with([
+                    'employee',
+                    'oldEmployee',
+                    'businessTrip' => function ($query) {
+                        $query->with([
+                            'employee',
+                        ]);
+                    },
+                ])
+                ->where(function ($query) {
+                    $query->where(function ($query) {
+                        $query->where("role_name", "Dept Head HC GA")
+                            ->orWhere("role_name", "HC GA");
+                    })->orWhere(function ($query) {
+                        $query->where("role_name", "Dept Head AR & AP");
+                    });
+                })
+                ->where(function ($query) {
+                    $query->whereNull('approved_at')->where('approval_status', '!=', 'Approved');
+                })
+                ->whereHas('businessTrip', function ($query) {
+                    $query->whereNot('status', 'Approved')->where('deleted_at', null);
+                })
+                ->whereHas('businessTrip.employee', function ($query) {
+                    $query->where("group_company", "like", "%Plantation%");
+                })
+                ->get();
+
+            $ca_approvals = ca_approval::with([
+                    'employee',
+                    'oldEmployee',
+                    'caTransaction' => function ($query) {
+                        $query->with([
+                            'employee',
+                        ]);
+                    },
+                ])
+                ->where(function ($query) {
+                    $query->where(function ($query) {
+                        $query->where("role_name", "Dept Head HC GA")
+                            ->orWhere("role_name", "HC GA");
+                    })->orWhere(function ($query) {
+                        $query->where("role_name", "Dept Head AR & AP");
+                    });
+                })
+                ->where(function ($query) {
+                    $query->whereNull('approved_at')->where('approval_status', '!=', 'Approved');
+                })
+                ->whereHas('caTransaction', function ($query) {
+                    $query->whereNot('ca_status', 'Done')->whereNot('approval_status', 'Approved')->where('deleted_at', null);
+                })
+                ->whereHas('caTransaction.employee', function ($query) {
+                    $query->where("group_company", "like", "%Plantation%");
+                })
+                ->get();
+
+            $ca_sett_approvals = ca_sett_approval::with([
+                    'employee',
+                    'oldEmployee',
+                    'caTransaction' => function ($query) {
+                        $query->with([
+                            'employee',
+                        ]);
+                    },
+                ])
+                ->where(function ($query) {
+                    $query->where(function ($query) {
+                        $query->where("role_name", "Dept Head HC GA")
+                            ->orWhere("role_name", "HC GA");
+                    })->orWhere(function ($query) {
+                        $query->where("role_name", "Dept Head AR & AP");
+                    });
+                })
+                ->where(function ($query) {
+                    $query->whereNull('approved_at')->where('approval_status', '!=', 'Approved');
+                })
+                ->whereHas('caTransaction', function ($query) {
+                    $query->whereNot('ca_status', 'Done')->whereNot('approval_sett', 'Approved')->where('deleted_at', null);
+                })
+                ->whereHas('caTransaction.employee', function ($query) {
+                    $query->where("group_company", "like", "%Plantation%");
+                })
+                ->get();
+
+            foreach ($bt_approvals as $item) {
+                $destination = $item->businessTrip ? ($item->businessTrip->tujuan ?? null) : null;
+                $contribution_level_code = $item->businessTrip ? ($item->businessTrip->bb_perusahaan ?? null) : null;
+                $group_company = null;
+
+                if ($item->businessTrip && $item->businessTrip->employee && $item->businessTrip->employee->group_company) {
+                    $group_company = $item->businessTrip->employee->group_company;
+                }
+
+                $data_approval_setting = null;
+                $location_work_area = Location::where("area", $destination)->value('work_area');
+
+                if ($group_company) {
+                    $data_approval_setting = ApprovalSetting::with(['hcga_employee', 'ktu_employee'])->where("company_names", "like", "%" . $group_company . "%")
+                        ->where(function ($query) use ($contribution_level_code) {
+                            $query->where("contribution_level_codes", "like", "%" . $contribution_level_code . "%")
+                                ->orWhere("contribution_level_codes", null);
+                        })
+                        ->where(function ($query) use ($location_work_area) {
+                            $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                                ->orWhere("work_areas", null);
+                        })
+                        ->first();
+                }
+
+                $new_employee_id = null;
+                $new_employee_name = null;
+                $approval_setting_name = null;
+                $approval_setting_company_names = null;
+                $approval_setting_contibution_level_codes = null;
+                $approval_setting_work_areas = null;
+
+                if ($data_approval_setting) {
+                    if ($data_approval_setting->hcga_employee_id && ($item->role_name == "Dept Head HC GA" || $item->role_name == "HC GA")) {
+                        $new_employee_id = $data_approval_setting->hcga_employee_id;
+                        $new_employee_name = $data_approval_setting->hcga_employee ? ($data_approval_setting->hcga_employee->fullname ?? null) : null;
+                    }
+
+                    if ($data_approval_setting->ktu_employee_id && $item->role_name == "Dept Head AR & AP") {
+                        $new_employee_id = $data_approval_setting->ktu_employee_id;
+                        $new_employee_name = $data_approval_setting->ktu_employee ? ($data_approval_setting->ktu_employee->fullname ?? null) : null;
+                    }
+
+                    $approval_setting_name = $data_approval_setting->name;
+                    $approval_setting_company_names = $data_approval_setting->company_names;
+                    $approval_setting_contibution_level_codes = $data_approval_setting->contribution_level_codes;
+                    $approval_setting_work_areas = $data_approval_setting->work_areas;
+                }
+
+                if ($new_employee_id) {
+                    $item->new_employee_id = $new_employee_id;
+                    $item->new_employee_fullname = $new_employee_name;
+                    $item->approval_setting_name = $approval_setting_name;
+                    $item->approval_setting_company_names = $approval_setting_company_names;
+                    $item->approval_setting_contibution_level_codes = $approval_setting_contibution_level_codes;
+                    $item->approval_setting_work_areas = $approval_setting_work_areas;
+
+                    // $item->old_employee_id = $item->employee_id;
+                    // $item->employee_id = $new_employee_id;
+                    // $item->save();
+                }
+
+                $item->bt_tujuan_area = $location_work_area;
+            }
+
+            foreach ($ca_approvals as $item) {
+                $destination = $item->caTransaction ? ($item->caTransaction->destination ?? null) : null;
+                $contribution_level_code = $item->caTransaction ? ($item->caTransaction->contribution_level_code ?? null) : null;
+                $group_company = null;
+
+                if ($item->caTransaction && $item->caTransaction->employee && $item->caTransaction->employee->group_company) {
+                    $group_company = $item->caTransaction->employee->group_company;
+                }
+
+                $data_approval_setting = null;
+                $location_work_area = Location::where("area", $destination)->value('work_area');
+
+                if ($group_company) {
+                    $data_approval_setting = ApprovalSetting::with(['hcga_employee', 'ktu_employee'])->where("company_names", "like", "%" . $group_company . "%")
+                        ->where(function ($query) use ($contribution_level_code) {
+                            $query->where("contribution_level_codes", "like", "%" . $contribution_level_code . "%")
+                                ->orWhere("contribution_level_codes", null);
+                        })
+                        ->where(function ($query) use ($location_work_area) {
+                            $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                                ->orWhere("work_areas", null);
+                        })
+                        ->first();
+                }
+
+                $new_employee_id = null;
+                $approval_setting_name = null;
+                $approval_setting_company_names = null;
+                $approval_setting_contibution_level_codes = null;
+                $approval_setting_work_areas = null;
+
+                if ($data_approval_setting) {
+                    if ($data_approval_setting->hcga_employee_id && ($item->role_name == "Dept Head HC GA" || $item->role_name == "HC GA")) {
+                        $new_employee_id = $data_approval_setting->hcga_employee_id;
+                        $new_employee_name = $data_approval_setting->hcga_employee ? ($data_approval_setting->hcga_employee->fullname ?? null) : null;
+                    }
+
+                    if ($data_approval_setting->ktu_employee_id && $item->role_name == "Dept Head AR & AP") {
+                        $new_employee_id = $data_approval_setting->ktu_employee_id;
+                        $new_employee_name = $data_approval_setting->ktu_employee ? ($data_approval_setting->ktu_employee->fullname ?? null) : null;
+                    }
+
+                    $approval_setting_name = $data_approval_setting->name;
+                    $approval_setting_company_names = $data_approval_setting->company_names;
+                    $approval_setting_contibution_level_codes = $data_approval_setting->contribution_level_codes;
+                    $approval_setting_work_areas = $data_approval_setting->work_areas;
+                }
+
+                if ($new_employee_id) {
+                    $item->new_employee_id = $new_employee_id;
+                    $item->new_employee_fullname = $new_employee_name;
+                    $item->approval_setting_name = $approval_setting_name;
+                    $item->approval_setting_company_names = $approval_setting_company_names;
+                    $item->approval_setting_contibution_level_codes = $approval_setting_contibution_level_codes;
+                    $item->approval_setting_work_areas = $approval_setting_work_areas;
+
+                    // $item->old_employee_id = $item->employee_id;
+                    // $item->employee_id = $new_employee_id;
+                    // $item->save();
+                }
+
+                $item->ca_destination_area = $location_work_area;
+            }
+
+            foreach ($ca_sett_approvals as $item) {
+                $destination = $item->caTransaction ? ($item->caTransaction->destination ?? null) : null;
+                $contribution_level_code = $item->caTransaction ? ($item->caTransaction->contribution_level_code ?? null) : null;
+                $group_company = null;
+
+                if ($item->caTransaction && $item->caTransaction->employee && $item->caTransaction->employee->group_company) {
+                    $group_company = $item->caTransaction->employee->group_company;
+                }
+
+                $data_approval_setting = null;
+                $location_work_area = Location::where("area", $destination)->value('work_area');
+
+                if ($group_company) {
+                    $data_approval_setting = ApprovalSetting::with(['hcga_employee', 'ktu_employee'])->where("company_names", "like", "%" . $group_company . "%")
+                        ->where(function ($query) use ($contribution_level_code) {
+                            $query->where("contribution_level_codes", "like", "%" . $contribution_level_code . "%")
+                                ->orWhere("contribution_level_codes", null);
+                        })
+                        ->where(function ($query) use ($location_work_area) {
+                            $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                                ->orWhere("work_areas", null);
+                        })
+                        ->first();
+                }
+
+                $new_employee_id = null;
+                $approval_setting_name = null;
+                $approval_setting_company_names = null;
+                $approval_setting_contibution_level_codes = null;
+                $approval_setting_work_areas = null;
+
+                if ($data_approval_setting) {
+                    if ($data_approval_setting->hcga_employee_id && ($item->role_name == "Dept Head HC GA" || $item->role_name == "HC GA")) {
+                        $new_employee_id = $data_approval_setting->hcga_employee_id;
+                        $new_employee_name = $data_approval_setting->hcga_employee ? ($data_approval_setting->hcga_employee->fullname ?? null) : null;
+                    }
+
+                    if ($data_approval_setting->ktu_employee_id && $item->role_name == "Dept Head AR & AP") {
+                        $new_employee_id = $data_approval_setting->ktu_employee_id;
+                        $new_employee_name = $data_approval_setting->ktu_employee ? ($data_approval_setting->ktu_employee->fullname ?? null) : null;
+                    }
+
+                    $approval_setting_name = $data_approval_setting->name;
+                    $approval_setting_company_names = $data_approval_setting->company_names;
+                    $approval_setting_contibution_level_codes = $data_approval_setting->contribution_level_codes;
+                    $approval_setting_work_areas = $data_approval_setting->work_areas;
+                }
+
+                if ($new_employee_id) {
+                    $item->new_employee_id = $new_employee_id;
+                    $item->new_employee_fullname = $new_employee_name;
+                    $item->approval_setting_name = $approval_setting_name;
+                    $item->approval_setting_company_names = $approval_setting_company_names;
+                    $item->approval_setting_contibution_level_codes = $approval_setting_contibution_level_codes;
+                    $item->approval_setting_work_areas = $approval_setting_work_areas;
+
+                    // $item->old_employee_id = $item->employee_id;
+                    // $item->employee_id = $new_employee_id;
+                    // $item->save();
+                }
+
+                $item->ca_destination_area = $location_work_area;
+            }
+
             Excel::store(
                 new ApprovalSettingSyncOldApprovalExport($bt_approvals, $ca_approvals, $ca_sett_approvals),
                 'all_approvals.xlsx',
