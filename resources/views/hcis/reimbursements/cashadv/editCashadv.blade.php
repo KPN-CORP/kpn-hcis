@@ -475,9 +475,11 @@
             // Menambahkan 3 hari kerja
             let daysToAdd = 0;
             while (daysToAdd < 3) {
-                declarationEstimateDate.setDate(declarationEstimateDate.getDate() + 1);
+                const declarationDateString = declarationEstimateDate.toISOString().split('T')[0]; // Format YYYY-MM-DD
+
                 // Jika bukan Sabtu (6) dan bukan Minggu (0), kita tambahkan hari
                 if (declarationEstimateDate.getDay() !== 6 && declarationEstimateDate.getDay() !== 0 && !holidays.includes(declarationDateString)) {
+                    declarationEstimateDate.setDate(declarationEstimateDate.getDate() + 1);
                     daysToAdd++;
                 }
             }

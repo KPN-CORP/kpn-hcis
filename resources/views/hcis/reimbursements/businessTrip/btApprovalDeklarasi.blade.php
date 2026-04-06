@@ -200,7 +200,7 @@
                                     @if (optional($dns)->prove_declare ?? optional($entr)->prove_declare)
                                         @php
                                             $proveDeclare = $dns->prove_declare ?? $entr->prove_declare;
-                                
+
                                             // Cek apakah data dalam format JSON atau masih string lama
                                             if (!empty($proveDeclare)) {
                                                 $decodedData = json_decode($proveDeclare, true);
@@ -209,7 +209,7 @@
                                                 $existingFiles = [];
                                             }
                                         @endphp
-                                
+
                                         <div id="existing-file-preview" class="mt-2">
                                             @if (count($existingFiles) > 1)
                                                 @foreach ($existingFiles as $file)
@@ -240,7 +240,7 @@
                                                     $fileUrl = asset("storage/{$file}"); // Gunakan storage URL
                                                     $extension = pathinfo($file, PATHINFO_EXTENSION);
                                                 @endphp
-                                
+
                                                 @if (!empty($file))
                                                     <div class="file-preview" data-file="{{ $fileUrl }}" style="position: relative; display: inline-block; margin: 10px;">
                                                         @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']))
