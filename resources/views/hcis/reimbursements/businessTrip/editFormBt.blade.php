@@ -1304,6 +1304,7 @@
 
             if (!endDateInput) return; // Exit if there is no date selected
 
+            const holidays = {!! json_encode($holiday) !!};
             const endDate = new Date(endDateInput);
             const declarationEstimateDate = new Date(endDate);
 
@@ -1312,7 +1313,7 @@
             while (daysToAdd < 3) {
                 declarationEstimateDate.setDate(declarationEstimateDate.getDate() + 1);
                 // Jika bukan Sabtu (6) dan bukan Minggu (0), kita tambahkan hari
-                if (declarationEstimateDate.getDay() !== 6 && declarationEstimateDate.getDay() !== 0) {
+                if (declarationEstimateDate.getDay() !== 6 && declarationEstimateDate.getDay() !== 0 && !holidays.includes(declarationDateString)) {
                     daysToAdd++;
                 }
             }

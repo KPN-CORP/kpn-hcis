@@ -731,7 +731,7 @@ class ReimburseController extends Controller
             ->where("status", "!=", "Verified")
             ->get();
 
-        $holiday = master_holiday::pluck("tanggal_libur");
+        $holiday = master_holiday::pluck("tanggal_libur")->toArray();
 
         function findDepartmentHead($employee)
         {
@@ -1232,14 +1232,13 @@ class ReimburseController extends Controller
                 ->get();
 
             // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-            $location_work_area = Location::where("area", $req->locationFilter)->value('work_area');
             $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee_data->group_company . "%")
-                ->where(function ($query) use ($req) {
-                    $query->where("contribution_level_codes", "like", "%" . $req->companyFilter . "%")
+                ->where(function ($query) use ($employee_data) {
+                    $query->where("contribution_level_codes", "like", "%" . $employee_data->contribution_level_code . "%")
                         ->orWhere("contribution_level_codes", null);
                 })
-                ->where(function ($query) use ($location_work_area) {
-                    $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                ->where(function ($query) use ($employee_data) {
+                    $query->where("work_areas", "like", "%" . $employee_data->work_area_code . "%")
                         ->orWhere("work_areas", null);
                 })
                 ->first();
@@ -1373,6 +1372,9 @@ class ReimburseController extends Controller
             ->get();
         // $transactions = CATransaction::find($key);
         $transactions = CATransaction::findByRouteKey($key);
+
+        $holiday = master_holiday::pluck("tanggal_libur")->toArray();
+
         // dd($key);
         return view("hcis.reimbursements.cashadv.editCashadv", [
             "link" => $link,
@@ -1386,6 +1388,7 @@ class ReimburseController extends Controller
             "noSppdListDNS" => $noSppdListDNS,
             "no_sppds" => $no_sppds,
             "transactions" => $transactions,
+            "holiday" => $holiday,
         ]);
     }
     function cashadvancedUpdate(Request $req, $key)
@@ -1765,14 +1768,13 @@ class ReimburseController extends Controller
                 ->get();
 
             // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-            $location_work_area = Location::where("area", $req->locationFilter)->value('work_area');
             $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee_data->group_company . "%")
-                ->where(function ($query) use ($req) {
-                    $query->where("contribution_level_codes", "like", "%" . $req->companyFilter . "%")
+                ->where(function ($query) use ($employee_data) {
+                    $query->where("contribution_level_codes", "like", "%" . $employee_data->contribution_level_code . "%")
                         ->orWhere("contribution_level_codes", null);
                 })
-                ->where(function ($query) use ($location_work_area) {
-                    $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                ->where(function ($query) use ($employee_data) {
+                    $query->where("work_areas", "like", "%" . $employee_data->work_area_code . "%")
                         ->orWhere("work_areas", null);
                 })
                 ->first();
@@ -1973,14 +1975,13 @@ class ReimburseController extends Controller
                 ->get();
 
             // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-            $location_work_area = Location::where("area", $model->destination)->value('work_area');
             $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee_data->group_company . "%")
-                ->where(function ($query) use ($req) {
-                    $query->where("contribution_level_codes", "like", "%" . $req->companyFilter . "%")
+                ->where(function ($query) use ($employee_data) {
+                    $query->where("contribution_level_codes", "like", "%" . $employee_data->contribution_level_code . "%")
                         ->orWhere("contribution_level_codes", null);
                 })
-                ->where(function ($query) use ($location_work_area) {
-                    $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                ->where(function ($query) use ($employee_data) {
+                    $query->where("work_areas", "like", "%" . $employee_data->work_area_code . "%")
                         ->orWhere("work_areas", null);
                 })
                 ->first();
@@ -2625,14 +2626,13 @@ class ReimburseController extends Controller
                 ->get();
 
             // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-            $location_work_area = Location::where("area", $model->destination)->value('work_area');
             $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee_data->group_company . "%")
-                ->where(function ($query) use ($req) {
-                    $query->where("contribution_level_codes", "like", "%" . $req->contribution_level_code . "%")
+                ->where(function ($query) use ($employee_data) {
+                    $query->where("contribution_level_codes", "like", "%" . $employee_data->contribution_level_code . "%")
                         ->orWhere("contribution_level_codes", null);
                 })
-                ->where(function ($query) use ($location_work_area) {
-                    $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                ->where(function ($query) use ($employee_data) {
+                    $query->where("work_areas", "like", "%" . $employee_data->work_area_code . "%")
                         ->orWhere("work_areas", null);
                 })
                 ->first();

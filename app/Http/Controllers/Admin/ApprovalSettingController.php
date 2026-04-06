@@ -343,16 +343,23 @@ class ApprovalSettingController extends Controller
                 ->get();
 
             foreach ($bt_approvals as $item) {
-                $destination = $item->businessTrip ? ($item->businessTrip->tujuan ?? null) : null;
-                $contribution_level_code = $item->businessTrip ? ($item->businessTrip->bb_perusahaan ?? null) : null;
+                $contribution_level_code = null;
                 $group_company = null;
 
                 if ($item->businessTrip && $item->businessTrip->employee && $item->businessTrip->employee->group_company) {
                     $group_company = $item->businessTrip->employee->group_company;
                 }
 
+                if ($item->businessTrip && $item->businessTrip->employee && $item->businessTrip->employee->contribution_level_code) {
+                    $contribution_level_code = $item->businessTrip->employee->contribution_level_code;
+                }
+
                 $data_approval_setting = null;
-                $location_work_area = Location::where("area", $destination)->value('work_area');
+                $location_work_area = null;
+
+                if ($item->businessTrip && $item->businessTrip->employee && $item->businessTrip->employee->work_area_code) {
+                    $location_work_area = $item->businessTrip->employee->work_area_code;
+                }
 
                 if ($group_company) {
                     $data_approval_setting = ApprovalSetting::with(['hcga_employee', 'ktu_employee'])->where("company_names", "like", "%" . $group_company . "%")
@@ -392,32 +399,39 @@ class ApprovalSettingController extends Controller
                 }
 
                 if ($new_employee_id) {
-                    $item->new_employee_id = $new_employee_id;
-                    $item->new_employee_fullname = $new_employee_name;
-                    $item->approval_setting_name = $approval_setting_name;
-                    $item->approval_setting_company_names = $approval_setting_company_names;
-                    $item->approval_setting_contibution_level_codes = $approval_setting_contibution_level_codes;
-                    $item->approval_setting_work_areas = $approval_setting_work_areas;
+                    // $item->new_employee_id = $new_employee_id;
+                    // $item->new_employee_fullname = $new_employee_name;
+                    // $item->approval_setting_name = $approval_setting_name;
+                    // $item->approval_setting_company_names = $approval_setting_company_names;
+                    // $item->approval_setting_contibution_level_codes = $approval_setting_contibution_level_codes;
+                    // $item->approval_setting_work_areas = $approval_setting_work_areas;
 
-                    // $item->old_employee_id = $item->employee_id;
-                    // $item->employee_id = $new_employee_id;
-                    // $item->save();
+                    $item->old_employee_id = $item->employee_id;
+                    $item->employee_id = $new_employee_id;
+                    $item->save();
                 }
 
-                $item->bt_tujuan_area = $location_work_area;
+                // $item->bt_tujuan_area = $location_work_area;
             }
 
             foreach ($ca_approvals as $item) {
-                $destination = $item->caTransaction ? ($item->caTransaction->destination ?? null) : null;
-                $contribution_level_code = $item->caTransaction ? ($item->caTransaction->contribution_level_code ?? null) : null;
+                $contribution_level_code = null;
                 $group_company = null;
 
                 if ($item->caTransaction && $item->caTransaction->employee && $item->caTransaction->employee->group_company) {
                     $group_company = $item->caTransaction->employee->group_company;
                 }
 
+                if ($item->caTransaction && $item->caTransaction->employee && $item->caTransaction->employee->contribution_level_code) {
+                    $contribution_level_code = $item->caTransaction->employee->contribution_level_code;
+                }
+
                 $data_approval_setting = null;
-                $location_work_area = Location::where("area", $destination)->value('work_area');
+                $location_work_area = null;
+
+                if ($item->caTransaction && $item->caTransaction->employee && $item->caTransaction->employee->work_area_code) {
+                    $location_work_area = $item->caTransaction->employee->work_area_code;
+                }
 
                 if ($group_company) {
                     $data_approval_setting = ApprovalSetting::with(['hcga_employee', 'ktu_employee'])->where("company_names", "like", "%" . $group_company . "%")
@@ -456,32 +470,39 @@ class ApprovalSettingController extends Controller
                 }
 
                 if ($new_employee_id) {
-                    $item->new_employee_id = $new_employee_id;
-                    $item->new_employee_fullname = $new_employee_name;
-                    $item->approval_setting_name = $approval_setting_name;
-                    $item->approval_setting_company_names = $approval_setting_company_names;
-                    $item->approval_setting_contibution_level_codes = $approval_setting_contibution_level_codes;
-                    $item->approval_setting_work_areas = $approval_setting_work_areas;
+                    // $item->new_employee_id = $new_employee_id;
+                    // $item->new_employee_fullname = $new_employee_name;
+                    // $item->approval_setting_name = $approval_setting_name;
+                    // $item->approval_setting_company_names = $approval_setting_company_names;
+                    // $item->approval_setting_contibution_level_codes = $approval_setting_contibution_level_codes;
+                    // $item->approval_setting_work_areas = $approval_setting_work_areas;
 
-                    // $item->old_employee_id = $item->employee_id;
-                    // $item->employee_id = $new_employee_id;
-                    // $item->save();
+                    $item->old_employee_id = $item->employee_id;
+                    $item->employee_id = $new_employee_id;
+                    $item->save();
                 }
 
-                $item->ca_destination_area = $location_work_area;
+                // $item->ca_destination_area = $location_work_area;
             }
 
             foreach ($ca_sett_approvals as $item) {
-                $destination = $item->caTransaction ? ($item->caTransaction->destination ?? null) : null;
-                $contribution_level_code = $item->caTransaction ? ($item->caTransaction->contribution_level_code ?? null) : null;
+                $contribution_level_code = null;
                 $group_company = null;
 
                 if ($item->caTransaction && $item->caTransaction->employee && $item->caTransaction->employee->group_company) {
                     $group_company = $item->caTransaction->employee->group_company;
                 }
 
+                if ($item->caTransaction && $item->caTransaction->employee && $item->caTransaction->employee->contribution_level_code) {
+                    $contribution_level_code = $item->caTransaction->employee->contribution_level_code;
+                }
+
                 $data_approval_setting = null;
-                $location_work_area = Location::where("area", $destination)->value('work_area');
+                $location_work_area = null;
+
+                if ($item->caTransaction && $item->caTransaction->employee && $item->caTransaction->employee->work_area_code) {
+                    $location_work_area = $item->caTransaction->employee->work_area_code;
+                }
 
                 if ($group_company) {
                     $data_approval_setting = ApprovalSetting::with(['hcga_employee', 'ktu_employee'])->where("company_names", "like", "%" . $group_company . "%")
@@ -520,19 +541,19 @@ class ApprovalSettingController extends Controller
                 }
 
                 if ($new_employee_id) {
-                    $item->new_employee_id = $new_employee_id;
-                    $item->new_employee_fullname = $new_employee_name;
-                    $item->approval_setting_name = $approval_setting_name;
-                    $item->approval_setting_company_names = $approval_setting_company_names;
-                    $item->approval_setting_contibution_level_codes = $approval_setting_contibution_level_codes;
-                    $item->approval_setting_work_areas = $approval_setting_work_areas;
+                    // $item->new_employee_id = $new_employee_id;
+                    // $item->new_employee_fullname = $new_employee_name;
+                    // $item->approval_setting_name = $approval_setting_name;
+                    // $item->approval_setting_company_names = $approval_setting_company_names;
+                    // $item->approval_setting_contibution_level_codes = $approval_setting_contibution_level_codes;
+                    // $item->approval_setting_work_areas = $approval_setting_work_areas;
 
-                    // $item->old_employee_id = $item->employee_id;
-                    // $item->employee_id = $new_employee_id;
-                    // $item->save();
+                    $item->old_employee_id = $item->employee_id;
+                    $item->employee_id = $new_employee_id;
+                    $item->save();
                 }
 
-                $item->ca_destination_area = $location_work_area;
+                // $item->ca_destination_area = $location_work_area;
             }
 
             Excel::store(

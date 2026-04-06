@@ -25,6 +25,7 @@ use App\Models\TaksiApproval;
 use App\Models\HealthCoverage;
 use App\Models\ApprovalPriority;
 use App\Models\ApprovalSetting;
+use App\Models\master_holiday;
 use Carbon\Carbon;
 use Excel;
 use Illuminate\Support\Facades\DB;
@@ -487,6 +488,8 @@ class BusinessTripController extends Controller
         $locations = Location::orderBy("area")->get();
         $companies = Company::orderBy("contribution_level")->get();
 
+        $holiday = master_holiday::pluck("tanggal_libur")->toArray();
+
         return view("hcis.reimbursements.businessTrip.editFormBt", [
             "n" => $n,
             "hotelData" => $hotelData,
@@ -512,6 +515,7 @@ class BusinessTripController extends Controller
             "job_level_number" => $job_level_number,
             "isDisabled" => $isDisabled,
             "revisiInfo" => $revisiInfo,
+            "holiday" => $holiday,
         ]);
     }
 
@@ -1334,14 +1338,13 @@ class BusinessTripController extends Controller
                     ->get();
 
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                $location_work_area = Location::where("area", $request->tujuan)->value('work_area');
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
-                    ->where(function ($query) use ($request) {
-                        $query->where("contribution_level_codes", "like", "%" . $request->bb_perusahaan . "%")
+                    ->where(function ($query) use ($employee) {
+                        $query->where("contribution_level_codes", "like", "%" . $employee->contribution_level_code . "%")
                             ->orWhere("contribution_level_codes", null);
                     })
-                    ->where(function ($query) use ($location_work_area) {
-                        $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                    ->where(function ($query) use ($employee) {
+                        $query->where("work_areas", "like", "%" . $employee->work_area_code . "%")
                             ->orWhere("work_areas", null);
                     })
                     ->first();
@@ -1632,14 +1635,13 @@ class BusinessTripController extends Controller
                     ->get();
 
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                $location_work_area = Location::where("area", $request->tujuan)->value('work_area');
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
-                    ->where(function ($query) use ($request) {
-                        $query->where("contribution_level_codes", "like", "%" . $request->bb_perusahaan . "%")
+                    ->where(function ($query) use ($employee) {
+                        $query->where("contribution_level_codes", "like", "%" . $employee->contribution_level_code . "%")
                             ->orWhere("contribution_level_codes", null);
                     })
-                    ->where(function ($query) use ($location_work_area) {
-                        $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                    ->where(function ($query) use ($employee) {
+                        $query->where("work_areas", "like", "%" . $employee->work_area_code . "%")
                             ->orWhere("work_areas", null);
                     })
                     ->first();
@@ -2013,6 +2015,8 @@ class BusinessTripController extends Controller
                 ->first();
         }
 
+        $holiday = master_holiday::pluck("tanggal_libur")->toArray();
+
         return view("hcis.reimbursements.businessTrip.deklarasi", [
             "n" => $n,
             "group_company" => $group_company,
@@ -2039,6 +2043,7 @@ class BusinessTripController extends Controller
             "parentLink" => $parentLink,
             "link" => $link,
             "revisiInfo" => $revisiInfo,
+            "holiday" => $holiday,
         ]);
     }
     public function deklarasiCreate(Request $request, $id)
@@ -3619,14 +3624,13 @@ class BusinessTripController extends Controller
                     ->get();
 
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                $location_work_area = Location::where("area", $request->tujuan)->value('work_area');
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
-                    ->where(function ($query) use ($request) {
-                        $query->where("contribution_level_codes", "like", "%" . $request->bb_perusahaan . "%")
+                    ->where(function ($query) use ($employee) {
+                        $query->where("contribution_level_codes", "like", "%" . $employee->contribution_level_code . "%")
                             ->orWhere("contribution_level_codes", null);
                     })
-                    ->where(function ($query) use ($location_work_area) {
-                        $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                    ->where(function ($query) use ($employee) {
+                        $query->where("work_areas", "like", "%" . $employee->work_area_code . "%")
                             ->orWhere("work_areas", null);
                     })
                     ->first();
@@ -3698,14 +3702,13 @@ class BusinessTripController extends Controller
                     ->get();
 
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                $location_work_area = Location::where("area", $request->tujuan)->value('work_area');
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
-                    ->where(function ($query) use ($request) {
-                        $query->where("contribution_level_codes", "like", "%" . $request->bb_perusahaan . "%")
+                    ->where(function ($query) use ($employee) {
+                        $query->where("contribution_level_codes", "like", "%" . $employee->contribution_level_code . "%")
                             ->orWhere("contribution_level_codes", null);
                     })
-                    ->where(function ($query) use ($location_work_area) {
-                        $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                    ->where(function ($query) use ($employee) {
+                        $query->where("work_areas", "like", "%" . $employee->work_area_code . "%")
                             ->orWhere("work_areas", null);
                     })
                     ->first();
@@ -4089,14 +4092,13 @@ class BusinessTripController extends Controller
                     ->get();
 
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                $location_work_area = Location::where("area", $model_bt->tujuan)->value('work_area');
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee_data->group_company . "%")
-                    ->where(function ($query) use ($req) {
-                        $query->where("contribution_level_codes", "like", "%" . $req->companyFilter . "%")
+                    ->where(function ($query) use ($employee_data) {
+                        $query->where("contribution_level_codes", "like", "%" . $employee_data->contribution_level_code . "%")
                             ->orWhere("contribution_level_codes", null);
                     })
-                    ->where(function ($query) use ($location_work_area) {
-                        $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                    ->where(function ($query) use ($employee_data) {
+                        $query->where("work_areas", "like", "%" . $employee_data->work_area_code . "%")
                             ->orWhere("work_areas", null);
                     })
                     ->first();
@@ -4223,14 +4225,13 @@ class BusinessTripController extends Controller
                     ->get();
 
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                $location_work_area = Location::where("area", $model_bt->tujuan)->value('work_area');
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee_data->group_company . "%")
-                    ->where(function ($query) use ($req) {
-                        $query->where("contribution_level_codes", "like", "%" . $req->companyFilter . "%")
+                    ->where(function ($query) use ($employee_data) {
+                        $query->where("contribution_level_codes", "like", "%" . $employee_data->contribution_level_code . "%")
                             ->orWhere("contribution_level_codes", null);
                     })
-                    ->where(function ($query) use ($location_work_area) {
-                        $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                    ->where(function ($query) use ($employee_data) {
+                        $query->where("work_areas", "like", "%" . $employee_data->work_area_code . "%")
                             ->orWhere("work_areas", null);
                     })
                     ->first();
@@ -5842,6 +5843,8 @@ class BusinessTripController extends Controller
             $isAllowed = $numericPart >= 8;
         }
 
+        $holiday = master_holiday::pluck("tanggal_libur")->toArray();
+
         $parentLink = "Business Travel";
         $link = "Business Travel Request";
         return view("hcis.reimbursements.businessTrip.formBusinessTrip", [
@@ -5859,6 +5862,7 @@ class BusinessTripController extends Controller
             "job_level_number" => $job_level_number,
             "group_company" => $employee_data->group_company,
             "isDisabled" => $isDisabled,
+            "holiday" => $holiday,
         ]);
     }
 
@@ -6457,14 +6461,13 @@ class BusinessTripController extends Controller
                     ->get();
 
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                $location_work_area = Location::where("area", $request->tujuan)->value('work_area');
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
-                    ->where(function ($query) use ($request) {
-                        $query->where("contribution_level_codes", "like", "%" . $request->bb_perusahaan . "%")
+                    ->where(function ($query) use ($employee) {
+                        $query->where("contribution_level_codes", "like", "%" . $employee->contribution_level_code . "%")
                             ->orWhere("contribution_level_codes", null);
                     })
-                    ->where(function ($query) use ($location_work_area) {
-                        $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                    ->where(function ($query) use ($employee) {
+                        $query->where("work_areas", "like", "%" . $employee->work_area_code . "%")
                             ->orWhere("work_areas", null);
                     })
                     ->first();
@@ -6743,14 +6746,13 @@ class BusinessTripController extends Controller
                     ->get();
 
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                $location_work_area = Location::where("area", $request->tujuan)->value('work_area');
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
-                    ->where(function ($query) use ($request) {
-                        $query->where("contribution_level_codes", "like", "%" . $request->bb_perusahaan . "%")
+                    ->where(function ($query) use ($employee) {
+                        $query->where("contribution_level_codes", "like", "%" . $employee->contribution_level_code . "%")
                             ->orWhere("contribution_level_codes", null);
                     })
-                    ->where(function ($query) use ($location_work_area) {
-                        $query->where("work_areas", "like", "%" . $location_work_area . "%")
+                    ->where(function ($query) use ($employee) {
+                        $query->where("work_areas", "like", "%" . $employee->work_area_code . "%")
                             ->orWhere("work_areas", null);
                     })
                     ->first();
@@ -7659,6 +7661,8 @@ class BusinessTripController extends Controller
         $locations = Location::orderBy("area")->get();
         $companies = Company::orderBy("contribution_level")->get();
 
+        $holiday = master_holiday::pluck("tanggal_libur")->toArray();
+
         $parentLink = "Business Travel Admin";
         $link = "Declaration Business Travel (Admin)";
 
@@ -7687,6 +7691,7 @@ class BusinessTripController extends Controller
             "job_level_number" => $job_level_number,
             "parentLink" => $parentLink,
             "link" => $link,
+            "holiday" => $holiday,
         ]);
     }
     public function deklarasiStatusAdmin(Request $request, $id)
@@ -8846,6 +8851,8 @@ class BusinessTripController extends Controller
         $companies = Company::orderBy("contribution_level")->get();
         // dd($taksi->toArray());
 
+        $holiday = master_holiday::pluck("tanggal_libur")->toArray();
+
         $parentLink = "Business Travel Approval";
         $link = "Approval Details";
 
@@ -8873,6 +8880,7 @@ class BusinessTripController extends Controller
             "bt_sppd" => $bt_sppd,
             "job_level_number" => $job_level_number,
             "messData" => $messData,
+            "holiday" => $holiday,
         ]);
     }
 
@@ -12939,6 +12947,8 @@ class BusinessTripController extends Controller
         $locations = Location::orderBy("id")->get();
         $companies = Company::orderBy("contribution_level")->get();
 
+        $holiday = master_holiday::pluck("tanggal_libur")->toArray();
+
         $parentLink = "Business Travel Approval";
         $link = "Approval Details";
 
@@ -12964,6 +12974,7 @@ class BusinessTripController extends Controller
             "job_level_number" => $job_level_number,
             "parentLink" => $parentLink,
             "link" => $link,
+            "holiday" => $holiday,
         ]);
     }
 
