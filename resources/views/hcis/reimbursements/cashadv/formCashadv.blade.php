@@ -483,12 +483,13 @@
             // Menambahkan 3 hari kerja
             let daysToAdd = 0;
             while (daysToAdd < 3) {
+                declarationEstimateDate.setDate(declarationEstimateDate.getDate() + 1);
+
                 const dayOfWeek = declarationEstimateDate.getDay();
                 const declarationDateString = declarationEstimateDate.toISOString().split('T')[0]; // Format YYYY-MM-DD
 
                 // Cek apakah tanggal adalah hari Sabtu (6) atau Minggu (0)
                 if (dayOfWeek !== 6 && dayOfWeek !== 0 && !holidays.includes(declarationDateString)) {
-                    declarationEstimateDate.setDate(declarationEstimateDate.getDate() + 1);
                     daysToAdd++;
                 }
             }
