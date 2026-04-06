@@ -1422,9 +1422,20 @@
         });
 
         document.getElementById('end_date').addEventListener('change', function() {
+            const holidays = {!! json_encode($holiday) !!};
             const endDate = new Date(this.value);
             const declarationEstimateDate = new Date(endDate);
-            declarationEstimateDate.setDate(declarationEstimateDate.getDate() + 3);
+
+            // declarationEstimateDate.setDate(declarationEstimateDate.getDate() + 3);
+            let daysToAdd = 0;
+            while (daysToAdd < 3) {
+                const declarationDateString = declarationEstimateDate.toISOString().split('T')[0]; // Format YYYY-MM-DD
+
+                if (declarationEstimateDate.getDay() !== 6 && declarationEstimateDate.getDay() !== 0 && !holidays.includes(declarationDateString)) {
+                    declarationEstimateDate.setDate(declarationEstimateDate.getDate() + 1);
+                    daysToAdd++;
+                }
+            }
 
             const year = declarationEstimateDate.getFullYear();
             const month = String(declarationEstimateDate.getMonth() + 1).padStart(2, '0');
