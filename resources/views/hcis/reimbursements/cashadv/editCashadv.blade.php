@@ -468,6 +468,7 @@
         });
 
         document.getElementById('end_date').addEventListener('change', function() {
+            const holidays = {!! json_encode($holiday) !!};
             const endDate = new Date(this.value);
             const declarationEstimateDate = new Date(endDate);
 
@@ -476,7 +477,7 @@
             while (daysToAdd < 3) {
                 declarationEstimateDate.setDate(declarationEstimateDate.getDate() + 1);
                 // Jika bukan Sabtu (6) dan bukan Minggu (0), kita tambahkan hari
-                if (declarationEstimateDate.getDay() !== 6 && declarationEstimateDate.getDay() !== 0) {
+                if (declarationEstimateDate.getDay() !== 6 && declarationEstimateDate.getDay() !== 0 && !holidays.includes(declarationDateString)) {
                     daysToAdd++;
                 }
             }
@@ -488,17 +489,18 @@
             document.getElementById('ca_decla').value = `${year}-${month}-${day}`;
         });
 
-        document.getElementById('end_date').addEventListener('change', function() {
-            const endDate = new Date(this.value);
-            const declarationEstimateDate = new Date(endDate);
-            declarationEstimateDate.setDate(declarationEstimateDate.getDate() + 3);
+        // WE DON'T NEED THIS
+        // document.getElementById('end_date').addEventListener('change', function() {
+        //     const endDate = new Date(this.value);
+        //     const declarationEstimateDate = new Date(endDate);
+        //     declarationEstimateDate.setDate(declarationEstimateDate.getDate() + 3);
 
-            const year = declarationEstimateDate.getFullYear();
-            const month = String(declarationEstimateDate.getMonth() + 1).padStart(2, '0');
-            const day = String(declarationEstimateDate.getDate()).padStart(2, '0');
+        //     const year = declarationEstimateDate.getFullYear();
+        //     const month = String(declarationEstimateDate.getMonth() + 1).padStart(2, '0');
+        //     const day = String(declarationEstimateDate.getDate()).padStart(2, '0');
 
-            document.getElementById('ca_decla').value = `${year}-${month}-${day}`;
-        });
+        //     document.getElementById('ca_decla').value = `${year}-${month}-${day}`;
+        // });
     </script>
 
     <script>
