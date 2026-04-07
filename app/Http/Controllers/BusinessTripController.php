@@ -9312,11 +9312,10 @@ class BusinessTripController extends Controller
                         );
 
                         // Find the next approver (Layer 3) explicitly
-                        $nextApproval = ca_approval::where(
-                            "ca_id",
-                            $caTransactions->id,
-                        )
-                            ->where("layer", $layer + 1)
+                        $nextApproval = ca_approval::where("ca_id", $caTransactions->id)
+                            ->where("layer", ">", $layer)
+                            ->where("approval_status", "Pending")
+                            ->orderBy("layer", "asc")
                             ->first();
 
                         if ($nextApproval) {
@@ -9619,11 +9618,10 @@ class BusinessTripController extends Controller
                         );
 
                         // Find the next approver (Layer 2) from ca_approval
-                        $nextApproval = ca_approval::where(
-                            "ca_id",
-                            $caTransactions->id,
-                        )
-                            ->where("layer", $layer + 1)
+                        $nextApproval = ca_approval::where("ca_id", $caTransactions->id)
+                            ->where("layer", ">", $layer)
+                            ->where("approval_status", "Pending")
+                            ->orderBy("layer", "asc")
                             ->first();
 
                         if ($nextApproval) {
@@ -9758,11 +9756,10 @@ class BusinessTripController extends Controller
                         );
 
                         // Find the next approver (Layer 3) explicitly
-                        $nextApproval = ca_approval::where(
-                            "ca_id",
-                            $caTransactions->id,
-                        )
-                            ->where("layer", $layer + 1) // This will ensure it gets the immediate next layer (3)
+                        $nextApproval = ca_approval::where("ca_id", $caTransactions->id)
+                            ->where("layer", ">", $layer)
+                            ->where("approval_status", "Pending")
+                            ->orderBy("layer", "asc")
                             ->first();
 
                         if ($nextApproval) {
