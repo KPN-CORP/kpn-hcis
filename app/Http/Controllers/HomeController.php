@@ -57,7 +57,7 @@ class HomeController extends Controller
 
         $mode = $request->query('mode');
         $demo = $request->query('demo');
-     
+
         if ($first == "assets")
             return redirect('home');
 
