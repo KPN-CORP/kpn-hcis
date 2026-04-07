@@ -44,6 +44,7 @@ use App\Mail\DeclarationNotification;
 use App\Mail\RefundNotification;
 use App\Models\ca_extend;
 use Illuminate\Support\Facades\Http;
+use App\Helpers\Attachment as AttachmentHelper;
 
 class BusinessTripController extends Controller
 {
@@ -5634,6 +5635,12 @@ class BusinessTripController extends Controller
                                         "hcis.reimbursements.businessTrip.deklarasi_pdf",
                                     "data" => $data,
                                 ];
+
+                                $attachmentPaths = AttachmentHelper::resolve_paths($dnsCA->prove_declare);
+
+                                foreach ($attachmentPaths as $attachmentPath) {
+                                    $zip->addFile($attachmentPath, 'lampiran/deklarasi/ca/dns/' . basename($attachmentPath));
+                                }
                             }
                             $entrCA = $allCa->where("type_ca", "entr")->first();
                             if ($entrCA) {
@@ -5695,6 +5702,12 @@ class BusinessTripController extends Controller
                                         "hcis.reimbursements.businessTrip.deklarasiEntr_pdf",
                                     "data" => $data,
                                 ];
+
+                                $attachmentPaths = AttachmentHelper::resolve_paths($entrCA->prove_declare);
+
+                                foreach ($attachmentPaths as $attachmentPath) {
+                                    $zip->addFile($attachmentPath, 'lampiran/deklarasi/ca/entr/' . basename($attachmentPath));
+                                }
                             }
                             foreach ($pdfFiles as $pdfFile) {
                                 $pdf = PDF::loadView(
