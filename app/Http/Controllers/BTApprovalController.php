@@ -605,8 +605,10 @@ class BTApprovalController extends Controller
                         }
 
                         // Find the next approver (Layer 2) from ca_approval
-                        $nextApproval = ca_approval::where('ca_id', $caTransactions->id)
-                            ->where('layer', $layer + 1)
+                        $nextApproval = ca_approval::where("ca_id", $caTransactions->id)
+                            ->where("layer", ">", $layer)
+                            ->where("approval_status", "Pending")
+                            ->orderBy("layer", "asc")
                             ->first();
 
                         if ($nextApproval) {
@@ -848,8 +850,10 @@ class BTApprovalController extends Controller
                         }
 
                         // Find the next approver (Layer 2) from ca_approval
-                        $nextApproval = ca_approval::where('ca_id', $caTransactions->id)
-                            ->where('layer', $layer + 1)
+                        $nextApproval = ca_approval::where("ca_id", $caTransactions->id)
+                            ->where("layer", ">", $layer)
+                            ->where("approval_status", "Pending")
+                            ->orderBy("layer", "asc")
                             ->first();
 
                         if ($nextApproval) {
@@ -975,8 +979,10 @@ class BTApprovalController extends Controller
                             }
 
                             // Find the next approver (Layer 2) from ca_approval
-                            $nextApproval = ca_approval::where('ca_id', $caTransactions->id)
-                                ->where('layer', $layer + 1)
+                            $nextApproval = ca_approval::where("ca_id", $caTransactions->id)
+                                ->where("layer", ">", $layer)
+                                ->where("approval_status", "Pending")
+                                ->orderBy("layer", "asc")
                                 ->first();
 
                             if ($nextApproval) {
@@ -1010,8 +1016,10 @@ class BTApprovalController extends Controller
                         }
 
                         // Find the next approver (Layer 2) from ca_approval
-                        $nextApproval = ca_approval::where('ca_id', $caTransactions->id)
-                            ->where('layer', $layer + 1)
+                        $nextApproval = ca_approval::where("ca_id", $caTransactions->id)
+                            ->where("layer", ">", $layer)
+                            ->where("approval_status", "Pending")
+                            ->orderBy("layer", "asc")
                             ->first();
 
                         if ($nextApproval) {
@@ -1074,9 +1082,15 @@ class BTApprovalController extends Controller
                     }
 
                     // Find the next approver (Layer 2) from ca_sett_approval
-                    $nextApproval = ca_sett_approval::where('ca_id', $caTransactions->id)
-                        ->where('layer', $layer + 1)
-                        ->where('approval_status', '!=', 'Rejected')
+                    // OLD LOGIC
+                    // $nextApproval = ca_sett_approval::where('ca_id', $caTransactions->id)
+                    //     ->where('layer', $layer + 1)
+                    //     ->where('approval_status', '!=', 'Rejected')
+                    //     ->first();
+                    $nextApproval = ca_sett_approval::where("ca_id", $caTransactions->id)
+                        ->where("layer", ">", $layer)
+                        ->where("approval_status", "Pending")
+                        ->orderBy("layer", "asc")
                         ->first();
 
                     if ($nextApproval) {
@@ -1234,10 +1248,17 @@ class BTApprovalController extends Controller
                     }
 
                     // Find the next approver (Layer 2) from ca_sett_approval
-                    $nextApproval = ca_sett_approval::where('ca_id', $caTransactions->id)
-                        ->where('layer', $layer + 1)
-                        ->where('approval_status', '!=', 'Rejected')
+                    // OLD LOGIC
+                    // $nextApproval = ca_sett_approval::where('ca_id', $caTransactions->id)
+                    //     ->where('layer', $layer + 1)
+                    //     ->where('approval_status', '!=', 'Rejected')
+                    //     ->first();
+                    $nextApproval = ca_sett_approval::where("ca_id", $caTransactions->id)
+                        ->where("layer", ">", $layer)
+                        ->where("approval_status", "Pending")
+                        ->orderBy("layer", "asc")
                         ->first();
+
 
                     if ($nextApproval) {
                         $updateCa = CATransaction::where('id', $caTransactions->id)->first();
@@ -1274,9 +1295,15 @@ class BTApprovalController extends Controller
                     }
 
                     // Find the next approver (Layer 2) from ca_sett_approval
-                    $nextApproval = ca_sett_approval::where('ca_id', $caTransactions->id)
-                        ->where('layer', $layer + 1)
-                        ->where('approval_status', '!=', 'Rejected')
+                    // OLD LOGIC
+                    // $nextApproval = ca_sett_approval::where('ca_id', $caTransactions->id)
+                    //     ->where('layer', $layer + 1)
+                    //     ->where('approval_status', '!=', 'Rejected')
+                    //     ->first();
+                    $nextApproval = ca_sett_approval::where("ca_id", $caTransactions->id)
+                        ->where("layer", ">", $layer)
+                        ->where("approval_status", "Pending")
+                        ->orderBy("layer", "asc")
                         ->first();
 
                     if ($nextApproval) {
@@ -1347,9 +1374,15 @@ class BTApprovalController extends Controller
                     }
 
                     // Find the next approver (Layer 2) from ca_extend
-                    $nextApproval = ca_extend::where('ca_id', $caTransactions->id)
-                        ->where('layer', $layer + 1)
-                        ->where('approval_status', '!=', 'Rejected')
+                    // OLD LOGIC
+                    // $nextApproval = ca_extend::where('ca_id', $caTransactions->id)
+                    //     ->where('layer', $layer + 1)
+                    //     ->where('approval_status', '!=', 'Rejected')
+                    //     ->first();
+                    $nextApproval = ca_extend::where("ca_id", $caTransactions->id)
+                        ->where("layer", ">", $layer)
+                        ->where("approval_status", "Pending")
+                        ->orderBy("layer", "asc")
                         ->first();
 
                     if ($nextApproval) {
@@ -1495,9 +1528,15 @@ class BTApprovalController extends Controller
                     }
 
                     // Find the next approver (Layer 2) from ca_extend
-                    $nextApproval = ca_extend::where('ca_id', $caTransactions->id)
-                        ->where('layer', $layer + 1)
-                        ->where('approval_status', '!=', 'Rejected')
+                    // OLD LOGIC
+                    // $nextApproval = ca_extend::where('ca_id', $caTransactions->id)
+                    //     ->where('layer', $layer + 1)
+                    //     ->where('approval_status', '!=', 'Rejected')
+                    //     ->first();
+                    $nextApproval = ca_extend::where("ca_id", $caTransactions->id)
+                        ->where("layer", ">", $layer)
+                        ->where("approval_status", "Pending")
+                        ->orderBy("layer", "asc")
                         ->first();
 
                     if ($nextApproval) {
@@ -1537,9 +1576,15 @@ class BTApprovalController extends Controller
                     }
 
                     // Find the next approver (Layer 2) from ca_extend
-                    $nextApproval = ca_extend::where('ca_id', $caTransactions->id)
-                        ->where('layer', $layer + 1)
-                        ->where('approval_status', '!=', 'Rejected')
+                    // OLD LOGIC
+                    // $nextApproval = ca_extend::where('ca_id', $caTransactions->id)
+                    //     ->where('layer', $layer + 1)
+                    //     ->where('approval_status', '!=', 'Rejected')
+                    //     ->first();
+                    $nextApproval = ca_extend::where("ca_id", $caTransactions->id)
+                        ->where("layer", ">", $layer)
+                        ->where("approval_status", "Pending")
+                        ->orderBy("layer", "asc")
                         ->first();
 
                     if ($nextApproval) {
