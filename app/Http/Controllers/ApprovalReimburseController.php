@@ -1457,6 +1457,7 @@ class ApprovalReimburseController extends Controller
 
         // Ambil semua approval yang terkait dengan ca_id
         $approvals = ca_extend::where('ca_id', $id)
+            ->where('approval_status', 'Pending')
             ->orderBy('layer', 'asc') // Mengurutkan berdasarkan layer
             ->get();
 
