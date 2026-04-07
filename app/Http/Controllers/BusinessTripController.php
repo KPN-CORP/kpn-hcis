@@ -5235,9 +5235,6 @@ class BusinessTripController extends Controller
     public function exportAdmin($id, $types = null)
     {
         try {
-            set_time_limit(300);
-            ini_set('max_execution_time', 300);
-
             $user = Auth::user();
             $sppd = BusinessTrip::findOrFail($id);
 
