@@ -608,6 +608,7 @@ class BTApprovalController extends Controller
                         $nextApproval = ca_approval::where("ca_id", $caTransactions->id)
                             ->where("layer", ">", $layer)
                             ->where("approval_status", "Pending")
+                            ->whereNull("deleted_at")
                             ->orderBy("layer", "asc")
                             ->first();
 
@@ -853,6 +854,7 @@ class BTApprovalController extends Controller
                         $nextApproval = ca_approval::where("ca_id", $caTransactions->id)
                             ->where("layer", ">", $layer)
                             ->where("approval_status", "Pending")
+                            ->whereNull("deleted_at")
                             ->orderBy("layer", "asc")
                             ->first();
 
@@ -982,6 +984,7 @@ class BTApprovalController extends Controller
                             $nextApproval = ca_approval::where("ca_id", $caTransactions->id)
                                 ->where("layer", ">", $layer)
                                 ->where("approval_status", "Pending")
+                                ->whereNull("deleted_at")
                                 ->orderBy("layer", "asc")
                                 ->first();
 
@@ -1019,6 +1022,7 @@ class BTApprovalController extends Controller
                         $nextApproval = ca_approval::where("ca_id", $caTransactions->id)
                             ->where("layer", ">", $layer)
                             ->where("approval_status", "Pending")
+                            ->whereNull("deleted_at")
                             ->orderBy("layer", "asc")
                             ->first();
 
@@ -1090,6 +1094,7 @@ class BTApprovalController extends Controller
                     $nextApproval = ca_sett_approval::where("ca_id", $caTransactions->id)
                         ->where("layer", ">", $layer)
                         ->where("approval_status", "Pending")
+                        ->whereNull("deleted_at")
                         ->orderBy("layer", "asc")
                         ->first();
 
@@ -1256,6 +1261,7 @@ class BTApprovalController extends Controller
                     $nextApproval = ca_sett_approval::where("ca_id", $caTransactions->id)
                         ->where("layer", ">", $layer)
                         ->where("approval_status", "Pending")
+                        ->whereNull("deleted_at")
                         ->orderBy("layer", "asc")
                         ->first();
 
@@ -1303,6 +1309,7 @@ class BTApprovalController extends Controller
                     $nextApproval = ca_sett_approval::where("ca_id", $caTransactions->id)
                         ->where("layer", ">", $layer)
                         ->where("approval_status", "Pending")
+                        ->whereNull("deleted_at")
                         ->orderBy("layer", "asc")
                         ->first();
 
@@ -1382,6 +1389,7 @@ class BTApprovalController extends Controller
                     $nextApproval = ca_extend::where("ca_id", $caTransactions->id)
                         ->where("layer", ">", $layer)
                         ->where("approval_status", "Pending")
+                        ->whereNull("deleted_at")
                         ->orderBy("layer", "asc")
                         ->first();
 
@@ -1536,6 +1544,7 @@ class BTApprovalController extends Controller
                     $nextApproval = ca_extend::where("ca_id", $caTransactions->id)
                         ->where("layer", ">", $layer)
                         ->where("approval_status", "Pending")
+                        ->whereNull("deleted_at")
                         ->orderBy("layer", "asc")
                         ->first();
 
@@ -1584,6 +1593,7 @@ class BTApprovalController extends Controller
                     $nextApproval = ca_extend::where("ca_id", $caTransactions->id)
                         ->where("layer", ">", $layer)
                         ->where("approval_status", "Pending")
+                        ->whereNull("deleted_at")
                         ->orderBy("layer", "asc")
                         ->first();
 

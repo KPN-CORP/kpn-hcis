@@ -9315,6 +9315,7 @@ class BusinessTripController extends Controller
                         $nextApproval = ca_approval::where("ca_id", $caTransactions->id)
                             ->where("layer", ">", $layer)
                             ->where("approval_status", "Pending")
+                            ->whereNull("deleted_at")
                             ->orderBy("layer", "asc")
                             ->first();
 
@@ -9621,6 +9622,7 @@ class BusinessTripController extends Controller
                         $nextApproval = ca_approval::where("ca_id", $caTransactions->id)
                             ->where("layer", ">", $layer)
                             ->where("approval_status", "Pending")
+                            ->whereNull("deleted_at")
                             ->orderBy("layer", "asc")
                             ->first();
 
@@ -9759,6 +9761,7 @@ class BusinessTripController extends Controller
                         $nextApproval = ca_approval::where("ca_id", $caTransactions->id)
                             ->where("layer", ">", $layer)
                             ->where("approval_status", "Pending")
+                            ->whereNull("deleted_at")
                             ->orderBy("layer", "asc")
                             ->first();
 
@@ -12118,6 +12121,7 @@ class BusinessTripController extends Controller
                     )
                         ->where("layer", ">", $layer)
                         ->where("approval_status", "Pending")
+                        ->whereNull("deleted_at")
                         ->orderBy("layer", "asc")
                         ->first();
 
@@ -12401,6 +12405,7 @@ class BusinessTripController extends Controller
                     )
                         ->where("layer", ">", $layer)
                         ->where("approval_status", "Pending")
+                        ->whereNull("deleted_at")
                         ->orderBy("layer", "asc")
                         ->first();
 
@@ -12460,6 +12465,7 @@ class BusinessTripController extends Controller
                     )
                         ->where("layer", ">", $layer)
                         ->where("approval_status", "Pending")
+                        ->whereNull("deleted_at")
                         ->orderBy("layer", "asc")
                         ->first();
 
