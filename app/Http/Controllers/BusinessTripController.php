@@ -4149,8 +4149,7 @@ class BusinessTripController extends Controller
                             "ext_reason",
                         );
 
-                        // WE DON'T NEED THIS
-                        // $model_approval->save();
+                        $model_approval->save();
                     }
                 }
 
@@ -4282,8 +4281,7 @@ class BusinessTripController extends Controller
                             "ext_reason",
                         );
 
-                        // WE DON'T NEED THIS
-                        // $model_approval->save();
+                        $model_approval->save();
                     }
                 }
 
