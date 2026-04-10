@@ -4813,6 +4813,7 @@ class BusinessTripController extends Controller
                                 $approval = ca_approval::with("employee")
                                     ->where("ca_id", $entrCA->id)
                                     ->where("approval_status", "!=", "Rejected")
+                                    ->whereNull("deleted_at")
                                     ->orderBy("layer", "asc")
                                     ->get();
                                 // if ($approval->isNotEmpty()) {
@@ -5047,6 +5048,7 @@ class BusinessTripController extends Controller
                                     ->where("ca_id", $dnsCA->id)
                                     ->where("approval_status", "!=", "Rejected")
                                     ->where("created_at", $latestCreatedAt)
+                                    ->whereNull("deleted_at")
                                     ->orderBy("layer", "asc")
                                     ->get();
 
@@ -5108,6 +5110,7 @@ class BusinessTripController extends Controller
                                 $approval = ca_sett_approval::with("employee")
                                     ->where("ca_id", $entrCA->id)
                                     ->where("approval_status", "!=", "Rejected")
+                                    ->whereNull("deleted_at")
                                     ->orderBy("layer", "asc")
                                     ->get();
 
@@ -5422,6 +5425,7 @@ class BusinessTripController extends Controller
                                 $approval = ca_approval::with("employee")
                                     ->where("ca_id", $entrCA->id)
                                     ->where("approval_status", "!=", "Rejected")
+                                    ->whereNull("deleted_at")
                                     ->orderBy("layer", "asc")
                                     ->get();
 
@@ -5663,6 +5667,7 @@ class BusinessTripController extends Controller
                                         "like",
                                         $latestCreatedAtFormatted . "%",
                                     )
+                                    ->whereNull("deleted_at")
                                     ->orderBy("layer", "asc")
                                     ->get();
 
@@ -5730,6 +5735,7 @@ class BusinessTripController extends Controller
                                 $approval = ca_sett_approval::with("employee")
                                     ->where("ca_id", $entrCA->id)
                                     ->where("approval_status", "!=", "Rejected")
+                                    ->whereNull("deleted_at")
                                     ->orderBy("layer", "asc")
                                     ->get();
 
