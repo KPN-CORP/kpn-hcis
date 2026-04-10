@@ -373,7 +373,15 @@
                                         @elseif ($role->role_name == 'Director')
                                             Approval 3
                                         @else
-                                            {{ $role->role_name }}
+                                            @if ($role->role_name == 'Dept Head HC GA' && $employee_data->group_company == 'Plantations' && ($employee_data->location && $employee_data->location->location_type == 'Kebun'))
+                                                HCO Region
+                                            @elseif ($role->role_name == 'HC GA' && $employee_data->group_company == 'Plantations' && ($employee_data->location && $employee_data->location->location_type == 'Kebun'))
+                                                HCO Region
+                                            @elseif ($role->role_name == 'Dept Head AR & AP' && $employee_data->group_company == 'Plantations' && ($employee_data->location && $employee_data->location->location_type == 'Kebun'))
+                                                KTU
+                                            @else
+                                                {{ $role->role_name }}
+                                            @endif
                                         @endif
                                     </td>
                                 @endforeach
@@ -469,7 +477,7 @@
                         </tr>
                     </table>
                 @endif
-                
+
                 @if (count($detailCA['detail_meals']) > 0 && !empty($detailCA['detail_meals'][0]['company_code']))
                     <table class="table-approve">
                         <tr>

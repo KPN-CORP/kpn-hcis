@@ -2121,7 +2121,13 @@ class ReimburseController extends Controller
         $no_sppds = CATransaction::where("user_id", $userId)
             ->where("approval_sett", "!=", "Done")
             ->get();
-        $transactions = CATransaction::find($key);
+        $transactions = CATransaction::with([
+            'employee' => function ($query) {
+                $query->with([
+                    'location',
+                ]);
+            }
+        ])->find($key);
         $approval = ca_approval::with("employee")
             ->where("ca_id", $key)
             ->where("approval_status", "!=", "Rejected")
@@ -2138,7 +2144,6 @@ class ReimburseController extends Controller
             "employee_data" => $employee_data,
             "perdiem" => $perdiem,
             "no_sppds" => $no_sppds,
-            "transactions" => $transactions,
             "transactions" => $transactions,
             "approval" => $approval,
         ])
@@ -2157,7 +2162,15 @@ class ReimburseController extends Controller
         $companies = Company::orderBy("contribution_level")->get();
         $locations = Location::orderBy("area")->get();
         // $transactions = CATransaction::find($key);
-        $transactions = CATransaction::with("companies")->find($key);
+        $transactions = CATransaction::with([
+            "companies",
+            'employee' => function ($query) {
+                $query->with([
+                    'location',
+                ]);
+            }
+
+        ])->find($key);
         $approval = ca_sett_approval::with("employee")
             ->where("ca_id", $key)
             ->where("approval_status", "<>", "Rejected")
