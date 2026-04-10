@@ -85,6 +85,32 @@
 
     <table>
         <tr>
+            <td colspan="3"><b>Employee Data:</b></td>
+        </tr>
+        <tr>
+            <td class="label">Name:</td>
+            <td class="colon">:</td>
+            <td class="value"><b>{{ $employee_name }}</b></td>
+        </tr>
+        <tr>
+            <td class="label">NIK:</td>
+            <td class="colon">:</td>
+            <td class="value">{{ $employee_id }}</td>
+        </tr>
+        <tr>
+            <td class="label">Email:</td>
+            <td class="colon">:</td>
+            <td class="value">{{ $employee_email }}</td>
+        </tr>
+        <tr>
+            <td class="label">Division:</td>
+            <td class="colon">:</td>
+            <td class="value">{{ $employee_division }}</td>
+        </tr>
+    </table>
+
+    <table>
+        <tr>
             <td colspan="3"><b>Passenger Information:</b></td>
         </tr>
         @foreach ($passengers as $index => $passenger)
@@ -95,6 +121,11 @@
                 <td class="label">Passenger Name</td>
                 <td class="colon">:</td>
                 <td class="value">{{ $passenger->np_tkt }}</td>
+            </tr>
+            <tr>
+                <td class="label">Relation</td>
+                <td class="colon">:</td>
+                <td class="value">{{ $passenger->relation }}</td>
             </tr>
             <tr>
                 <td class="label">Phone Number</td>

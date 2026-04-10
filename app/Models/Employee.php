@@ -188,4 +188,8 @@ class Employee extends Model
     {
         return $this->belongsTo(Location::class, 'work_area_code', 'work_area');
     }
+    public function dependents()
+    {
+        return $this->hasMany(Dependents::class, 'employee_id', 'employee_id');
+    }
 }

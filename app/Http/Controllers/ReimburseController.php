@@ -5786,13 +5786,48 @@ class ReimburseController extends Controller
     public function ticketExport($id)
     {
         // Fetch all tickets related to the provided ID (assuming 'no_sppd' is the common field)
-        $ticket = Tiket::findOrFail($id);
-        $tickets = Tiket::where("no_tkt", $ticket->no_tkt)->get();
+        $ticket = Tiket::with([
+            'employee'
+        ])->findOrFail($id);
+        $tickets = Tiket::with([
+            'employee' => function ($query) {
+                $query->with([
+                    'dependents',
+                ]);
+            }
+        ])->where("no_tkt", $ticket->no_tkt)->get();
+
+        $employeeID = "-";
+        $employeeName = "-";
+        $employeeEmail = "-";
+        $employeeDivision = "-";
+
+        if ($ticket->employee) {
+            $employeeID = $ticket->employee->employee_id ?? $employeeID;
+            $employeeName = $ticket->employee->fullname ?? $employeeName;
+            $employeeEmail = $ticket->employee->email ?? $employeeEmail;
+            $employeeDivision = $ticket->employee->designation ?? $employeeDivision;
+        }
 
         // Prepare the data to be passed to the PDF view
         $data = [
             "ticket" => $ticket,
+            "employee_id" => $employeeID,
+            "employee_name" => $employeeName,
+            "employee_email" => $employeeEmail,
+            "employee_division" => $employeeDivision,
             "passengers" => $tickets->map(function ($ticket) {
+                $relation = "-";
+
+                if ($ticket->employee && $ticket->employee->dependents) {
+                    foreach ($ticket->employee->dependents as $dependent) {
+                        if (strtolower($dependent->name) == strtolower($ticket->np_tkt)) {
+                            $relation = $dependent->relation_type ?? $relation;
+                            break;
+                        }
+                    }
+                }
+
                 return (object) [
                     "np_tkt" => $ticket->np_tkt,
                     "tlp_tkt" => $ticket->tlp_tkt,
@@ -5815,6 +5850,7 @@ class ReimburseController extends Controller
                     "cost_center" => $ticket->cost_center ?? "N/A",
                     "manager1_fullname" => $ticket->manager1_fullname, // Accessor attribute
                     "manager2_fullname" => $ticket->manager2_fullname,
+                    "relation" => $relation,
                 ];
             }),
         ];
