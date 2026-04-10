@@ -4746,6 +4746,7 @@ class BusinessTripController extends Controller
                                 $approval = ca_approval::with("employee")
                                     ->where("ca_id", $dnsCA->id)
                                     ->where("approval_status", "!=", "Rejected")
+                                    ->whereNull("deleted_at")
                                     ->orderBy("layer", "asc")
                                     ->get();
 
@@ -5354,6 +5355,7 @@ class BusinessTripController extends Controller
                                 $approval = ca_approval::with("employee")
                                     ->where("ca_id", $dnsCA->id)
                                     ->where("approval_status", "!=", "Rejected")
+                                    ->whereNull("deleted_at")
                                     ->orderBy("layer", "asc")
                                     ->get();
 
