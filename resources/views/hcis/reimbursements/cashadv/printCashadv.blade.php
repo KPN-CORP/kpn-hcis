@@ -420,7 +420,19 @@
                                     @elseif ($role->role_name == 'Director')
                                         Approval 3
                                     @else
-                                        {{ $role->role_name }}
+                                        @if ($transactions && $transactions->employee && $transactions->employee->group_company == 'Plantations' && ($transactions->employee->location && $transactions->employee->location->location_type == 'Kebun'))
+                                            @if ($role->role_name == 'Dept Head HC GA')
+                                                HCO Region
+                                            @elseif ($role->role_name == 'HC GA')
+                                                HCO Region
+                                            @elseif ($role->role_name == 'Dept Head AR & AP')
+                                                KTU
+                                            @else
+                                                {{ $role->role_name }}
+                                            @endif
+                                        @else
+                                            {{ $role->role_name }}
+                                        @endif
                                     @endif
                                 </td>
                             @endforeach

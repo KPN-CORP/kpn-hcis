@@ -184,4 +184,8 @@ class Employee extends Model
     {
         return $this->belongsTo(Employee::class, 'fullname', 'manager_l1_id');
     }
+    public function location()
+    {
+        return $this->belongsTo(Location::class, 'work_area_code', 'work_area');
+    }
 }

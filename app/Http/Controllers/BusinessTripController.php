@@ -5304,7 +5304,7 @@ class BusinessTripController extends Controller
                                 ->whereNotNull("status_id")
                                 ->first();
                             if ($dnsCA) {
-                                $employee_data = Employee::where(
+                                $employee_data = Employee::with(['location'])->where(
                                     "id",
                                     $sppd->user_id,
                                 )->first();
