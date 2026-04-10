@@ -2131,6 +2131,7 @@ class ReimburseController extends Controller
         $approval = ca_approval::with("employee")
             ->where("ca_id", $key)
             ->where("approval_status", "!=", "Rejected")
+            ->whereNull("deleted_at")
             ->orderBy("layer", "asc")
             ->get();
 
@@ -2174,6 +2175,7 @@ class ReimburseController extends Controller
         $approval = ca_sett_approval::with("employee")
             ->where("ca_id", $key)
             ->where("approval_status", "<>", "Rejected")
+            ->whereNull("deleted_at")
             ->orderBy("layer", "asc")
             ->get();
         if (
