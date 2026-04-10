@@ -4872,21 +4872,56 @@ class BusinessTripController extends Controller
 
                             break;
                         case "tiket":
-                            $tickets = Tiket::where(
+                            $tickets = Tiket::with([
+                                'employee' => function ($query) {
+                                    $query->with([
+                                        'dependents',
+                                    ]);
+                                }
+                            ])->where(
                                 "no_sppd",
                                 $sppd->no_sppd,
                             )->get();
                             if ($tickets->isEmpty()) {
                                 continue 2;
                             }
+
+                            $ticketData = $tickets->first();
+                            $employeeID = "-";
+                            $employeeName = "-";
+                            $employeeEmail = "-";
+                            $employeeDivision = "-";
+
+                            if ($ticketData->employee) {
+                                $employeeID = $ticketData->employee->employee_id ?? $employeeID;
+                                $employeeName = $ticketData->employee->fullname ?? $employeeName;
+                                $employeeEmail = $ticketData->employee->email ?? $employeeEmail;
+                                $employeeDivision = $ticketData->employee->designation ?? $employeeDivision;
+                            }
+
                             $pdfName = "Ticket.pdf";
                             $viewPath =
                                 "hcis.reimbursements.businessTrip.tiket_pdf";
                             $data = [
-                                "ticket" => $tickets->first(),
+                                "ticket" => $ticketData,
+                                "employee_id" => $employeeID,
+                                "employee_name" => $employeeName,
+                                "employee_email" => $employeeEmail,
+                                "employee_division" => $employeeDivision,
                                 "passengers" => $tickets->map(function (
                                     $ticket,
                                 ) {
+                                    $relation = "-";
+
+                                    if ($ticket->employee && $ticket->employee->dependents) {
+                                        foreach ($ticket->employee->dependents as $dependent) {
+                                            if (strtolower($dependent->name) == strtolower($ticket->np_tkt)) {
+                                                $relation = $dependent->relation_type ?? $relation;
+                                                break;
+                                            }
+                                        }
+                                    }
+
                                     return (object) [
                                         "np_tkt" => $ticket->np_tkt,
                                         "tlp_tkt" => $ticket->tlp_tkt,
@@ -4911,6 +4946,7 @@ class BusinessTripController extends Controller
                                             $ticket->manager1_fullname, // Accessor attribute
                                         "manager2_fullname" =>
                                             $ticket->manager2_fullname,
+                                        "relation" => $relation,
                                     ];
                                 }),
                             ];
@@ -5443,21 +5479,56 @@ class BusinessTripController extends Controller
 
                             break;
                         case "tiket":
-                            $tickets = Tiket::where(
+                            $tickets = Tiket::with([
+                                'employee' => function ($query) {
+                                    $query->with([
+                                        'dependents',
+                                    ]);
+                                }
+                            ])->where(
                                 "no_sppd",
                                 $sppd->no_sppd,
                             )->get();
                             if ($tickets->isEmpty()) {
                                 continue 2;
                             }
+
+                            $ticketData = $tickets->first();
+                            $employeeID = "-";
+                            $employeeName = "-";
+                            $employeeEmail = "-";
+                            $employeeDivision = "-";
+
+                            if ($ticketData->employee) {
+                                $employeeID = $ticketData->employee->employee_id ?? $employeeID;
+                                $employeeName = $ticketData->employee->fullname ?? $employeeName;
+                                $employeeEmail = $ticketData->employee->email ?? $employeeEmail;
+                                $employeeDivision = $ticketData->employee->designation ?? $employeeDivision;
+                            }
+
                             $pdfName = "Ticket.pdf";
                             $viewPath =
                                 "hcis.reimbursements.businessTrip.tiket_pdf";
                             $data = [
-                                "ticket" => $tickets->first(),
+                                "ticket" => $ticketData,
+                                "employee_id" => $employeeID,
+                                "employee_name" => $employeeName,
+                                "employee_email" => $employeeEmail,
+                                "employee_division" => $employeeDivision,
                                 "passengers" => $tickets->map(function (
                                     $ticket,
                                 ) {
+                                    $relation = "-";
+
+                                    if ($ticket->employee && $ticket->employee->dependents) {
+                                        foreach ($ticket->employee->dependents as $dependent) {
+                                            if (strtolower($dependent->name) == strtolower($ticket->np_tkt)) {
+                                                $relation = $dependent->relation_type ?? $relation;
+                                                break;
+                                            }
+                                        }
+                                    }
+
                                     return (object) [
                                         "np_tkt" => $ticket->np_tkt,
                                         "tlp_tkt" => $ticket->tlp_tkt,
@@ -5482,6 +5553,7 @@ class BusinessTripController extends Controller
                                             $ticket->manager1_fullname, // Accessor attribute
                                         "manager2_fullname" =>
                                             $ticket->manager2_fullname,
+                                        "relation" => $relation,
                                     ];
                                 }),
                             ];
