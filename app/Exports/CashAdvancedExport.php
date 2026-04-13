@@ -415,7 +415,7 @@ class CashAdvancedExport implements
                 $formatted_declare_estimate_date = $declare_estimate_date->format(
                     "d-F-Y",
                 );
-                $declare_estimate_days_overdue = CalculateDaysHelper::different_days_exclude_holiday(
+                $declare_estimate_days_overdue = CalculateDaysHelper::different_days_include_holiday(
                     $declare_estimate_date,
                     now(),
                 );
