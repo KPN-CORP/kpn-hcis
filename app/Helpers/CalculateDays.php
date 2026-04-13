@@ -21,34 +21,27 @@ class CalculateDays
         return $days;
     }
 
-    public static function different_days_exclude_holiday(
-        $start_date,
-        $end_date,
-    ) {
-        $start = Carbon::parse($start_date);
-        $end = Carbon::parse($end_date);
+    public static function different_days_exclude_holiday($start_date, $end_date)
+    {
+        $start = Carbon::parse($start_date)->startOfDay();
+        $end = Carbon::parse($end_date)->startOfDay();
 
-        if ($start->gte($end)) {
-            return 0;
-        }
+        $holidays = master_holiday::pluck("tanggal_libur")
+            ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
+            ->toArray();
 
-        $holidays = master_holiday::pluck("tanggal_libur")->toArray();
+        $step = $start->lt($end) ? 1 : -1;
 
         $days = 0;
 
-        while ($start->lt($end)) {
-            $start->addDay();
+        while (!$start->eq($end)) {
+            $start->addDay($step);
 
-            if (in_array($start->format("Y-m-d"), $holidays)) {
-                $days--;
+            if (in_array($start->format('Y-m-d'), $holidays)) {
                 continue;
             }
 
-            $days++;
-        }
-
-        if ($days > 0) {
-            $days--;
+            $days += $step;
         }
 
         return $days;
