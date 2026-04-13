@@ -12,14 +12,13 @@ class CalculateDays
         $start_date,
         $end_date,
     ) {
-        $start = Carbon::parse($start_date);
-        $end = Carbon::parse($end_date);
+        $days = (int) Carbon::parse($start_date)->diffInDays($end_date, false);
 
-        if ($start->gt($end)) {
-            return 0;
+        if ($days < 0) {
+            $days--;
         }
 
-        return $start->diffInDays($end) + 1;
+        return $days;
     }
 
     public static function different_days_exclude_holiday(
@@ -41,6 +40,7 @@ class CalculateDays
             $start->addDay();
 
             if (in_array($start->format("Y-m-d"), $holidays)) {
+                $days--;
                 continue;
             }
 
