@@ -68,7 +68,7 @@ class AttendanceController extends Controller
                 "out_time_date" => $dateformat,
                 "out_time" => $attdUpdate->shift_out,
                 "shift_name" => $attdUpdate->shift_name,
-                "policy_name" => $attdUpdate->policy_name,
+                "policy_name" => preg_replace('/\s+/', ' ', trim($attdUpdate->policy_name)),
                 "weekly_off_name" => $attdUpdate->assigned_weekly_off,
                 "comments" => "Business Travel"
             ];
