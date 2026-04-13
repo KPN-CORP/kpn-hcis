@@ -70,7 +70,7 @@ class UpdateBTtoDBJob implements ShouldQueue
                     "out_time_date" => $dateformat,
                     "out_time" => $attdUpdate->shift_out,
                     "shift_name" => $attdUpdate->shift_name,
-                    "policy_name" => $attdUpdate->policy_name,
+                    "policy_name" => preg_replace('/\s+/', ' ', trim($attdUpdate->policy_name)),
                     "weekly_off_name" => $attdUpdate->assigned_weekly_off,
                     "comments" => "Business Travel"
                 ];
@@ -286,7 +286,7 @@ class UpdateBTtoDBJob implements ShouldQueue
             Log::info('Sending request to API', ['url' => $url, 'data' => $data]); // Logging request details
 
             // Request ke API menggunakan Laravel Http Client
-            $response = Http::withHeaders($headers)->post($url, $data);
+            $response = Http::timeout(30)->connectTimeout(30)->retry(3, 2000)->withHeaders($headers)->post($url, $data);
 
             // Check response status
             if ($response->failed()) {
