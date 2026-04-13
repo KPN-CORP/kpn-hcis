@@ -113,7 +113,7 @@ class AttendanceController extends Controller
             Log::info('Sending request to API', ['url' => $url, 'data' => $data]); // Logging request details
 
             // Request ke API menggunakan Laravel Http Client
-            $response = Http::timeout(30)->->connectTimeout(30)->retry(3, 2000)->withHeaders($headers)->post($url, $data);
+            $response = Http::timeout(30)->connectTimeout(30)->retry(3, 2000)->withHeaders($headers)->post($url, $data);
 
             // Check response status
             if ($response->failed()) {
