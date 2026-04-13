@@ -29,7 +29,7 @@ class AttendanceController extends Controller
         // $attdUpdates = bt_attendance_backup::where('update_db', 'N')
         //     ->whereDate('date', '<', Carbon::today()) // Tambahkan filter tanggal
         //     ->get();
-        
+
         $today = Carbon::today()->toDateString();
         $attdUpdates = DB::table('bt_attendance_backups as ba')
         ->leftJoin('bt_transaction as bt', 'bt.no_sppd', '=', 'ba.no_sppd')
@@ -53,7 +53,7 @@ class AttendanceController extends Controller
         ])
         ->orderBy('ba.date', 'asc')
         ->get();
-        
+
 
         $no=0;
         $processedData = [];
@@ -113,7 +113,7 @@ class AttendanceController extends Controller
             Log::info('Sending request to API', ['url' => $url, 'data' => $data]); // Logging request details
 
             // Request ke API menggunakan Laravel Http Client
-            $response = Http::withHeaders($headers)->post($url, $data);
+            $response = Http::timeout(30)->->connectTimeout(30)->retry(3, 2000)->withHeaders($headers)->post($url, $data);
 
             // Check response status
             if ($response->failed()) {
