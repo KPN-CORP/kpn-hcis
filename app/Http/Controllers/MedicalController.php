@@ -16,6 +16,7 @@ use App\Models\CATransaction;
 use App\Models\BusinessTrip;
 use App\Models\Hotel;
 use App\Models\Tiket;
+use App\Models\ELogFirstReceipt;
 use App\Helpers\ELog as ELogHelper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -1095,6 +1096,11 @@ class MedicalController extends Controller
                         "balance_uncoverage" => $balance_diff_formatted,
                     ]);
                 }
+
+                // $eLogData = ELogHelper::generateInsertData($existingCoverage, DepartmentModel $department);
+
+                // Log::info("E-Log insert data: $eLogData");
+
                 // dd($existingCoverage);
 
                 // $MDCNotificationLayer = Employee::where('employee_id', $employee_id)->pluck('email')->first();

@@ -10,10 +10,10 @@ use App\Models\ELogFirstReceipt as ELogFirstReceiptModel;
 use App\Models\ELogSupplier as ELogSupplierModel;
 use App\Models\ELogUsersTab as ELogUsersTabModel;
 use App\Models\HealthCoverage as HealthCoverageModel;
-use App\Models\Department as DepartmentModel;
+use App\Models\Employee as EmployeeModel;
 
 class ELog {
-    public static function generateInsertData(HealthCoverageModel $medicalData, DepartmentModel $department) {
+    public static function generateInsertData(HealthCoverageModel $medicalData, EmployeeModel $employeeData) {
         $company = self::generateCompany($medicalData);
         $data = [
             'UUID' => self::generateUUID(),
@@ -24,7 +24,7 @@ class ELog {
             'VENDOR' => self::generateVendor($medicalData),
             'CURRENCY' => self::generateCurrency($medicalData),
             'AMOUNT' => self::generateAmount($medicalData),
-            'FIRST_DEPT' => self::generateFirstDept($department),
+            'FIRST_DEPT' => self::generateFirstDept($employeeData),
             'CREATED_BY' => self::generateCreatedBy($medicalData),
             'CREATED_AT' => self::generateCreatedAt($medicalData),
             'NOTES' => self::generateNotes($medicalData),
@@ -142,16 +142,16 @@ class ELog {
         return $medicalData->balance;
     }
 
-    public static function generateFirstDept(DepartmentModel $department) {
-        if (!$department || !$department->parent_company_id) {
+    public static function generateFirstDept(EmployeeModel $employeeData) {
+        if (!$employeeData || !$employeeData->group_company) {
             return null
         }
 
         $firstDept = null;
 
-        if (strtolower($department->parent_company_id) == "downstream") {
+        if (strtolower($employeeData->group_company) == "downstream") {
             $firstDept = "HRD-DWS";
-        } else if (strtolower($department->parent_company_id) == "kpn corporation") {
+        } else if (strtolower($employeeData->group_company) == "kpn corporation") {
             $firstDept = "HRD-CORP";
         } else { // TODO: THIS IS FOR UPSTREAM, PLEASE CONFIRM THIS
             $firstDept = "HRD";
