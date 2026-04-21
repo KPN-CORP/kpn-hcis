@@ -37,7 +37,7 @@ class AppServiceProvider extends ServiceProvider
                 str_contains($e->getMessage(), 'oci_') ||
                 str_contains($e->getMessage(), 'ORA-')
             ) {
-                \Log::warning('Oracle connection error: ' . $e->getMessage());
+                Log::warning('Oracle connection error: ' . $e->getMessage());
 
                 return false;
             }
