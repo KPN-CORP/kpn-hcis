@@ -25,11 +25,11 @@ class AppServiceProvider extends ServiceProvider
         * 1. Convert OCI warnings (oci_connect, etc) → Exception
         */
         set_error_handler(function ($severity, $message, $file, $line) {
-            if (!str_contains($message, 'oci_') || !str_contains($message, 'ORA-')) {
-                throw new \ErrorException($message, 0, $severity, $file, $line);
-            }
+            if (str_contains($message, 'oci_') || str_contains($message, 'ORA-')) {
+                Log::warning('Oracle connection error: ' . $message);
 
-            Log::warning('Oracle connection error: ' . $message);
+                return true;
+            }
 
             return false;
         });
