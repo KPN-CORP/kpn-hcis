@@ -25,24 +25,14 @@ class AppServiceProvider extends ServiceProvider
         * 1. Convert OCI warnings (oci_connect, etc) → Exception
         */
         set_error_handler(function ($severity, $message, $file, $line) {
-            if (str_contains($message, 'oci_') || str_contains($message, 'ORA-')) {
+            if (!str_contains($message, 'oci_') || !str_contains($message, 'ORA-')) {
                 throw new \ErrorException($message, 0, $severity, $file, $line);
             }
 
+            Log::warning('Oracle connection error: ' . $message);
+
             return false;
         });
-
-        app('Illuminate\Contracts\Debug\ExceptionHandler')->reportable(function (\Throwable $e) {
-            if (
-                str_contains($e->getMessage(), 'oci_') ||
-                str_contains($e->getMessage(), 'ORA-')
-            ) {
-                Log::warning('Oracle connection error: ' . $e->getMessage());
-
-                return false;
-            }
-        });
-
 
         /**
         * 3. Global Oracle guard (singleton)
