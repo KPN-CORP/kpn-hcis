@@ -134,8 +134,8 @@ class ApprovalReimburseController extends Controller
             ->get();
         $totalTKTCount = $transactions_tkt->filter(function ($ticket) use ($employee) {
             $ticketOwnerEmployee = Employee::where('id', $ticket->user_id)->first();
-            return ($ticket->approval_status == 'Pending L1' && $ticketOwnerEmployee->manager_l1_id == $employee->employee_id) ||
-                ($ticket->approval_status == 'Pending L2' && $ticketOwnerEmployee->manager_l2_id == $employee->employee_id);
+            return ($ticket->approval_status == 'Pending L1' && $ticket->manager_l1_id == $employee->employee_id) ||
+                ($ticket->approval_status == 'Pending L2' && $ticket->manager_l2_id == $employee->employee_id);
         })->count();
 
         $totalBTCount = BusinessTrip::where(function ($query) use ($user) {
@@ -163,9 +163,9 @@ class ApprovalReimburseController extends Controller
             // Get the employee who owns the ticket
             $ticketOwnerEmployee = Employee::where('id', $hotel->user_id)->first();
 
-            if ($hotel->approval_status == 'Pending L1' && $ticketOwnerEmployee->manager_l1_id == $employee->employee_id) {
+            if ($hotel->approval_status == 'Pending L1' && $hotel->manager_l1_id == $employee->employee_id) {
                 return true;
-            } elseif ($hotel->approval_status == 'Pending L2' && $ticketOwnerEmployee->manager_l2_id == $employee->employee_id) {
+            } elseif ($hotel->approval_status == 'Pending L2' && $hotel->manager_l2_id == $employee->employee_id) {
                 return true;
             }
             return false;
