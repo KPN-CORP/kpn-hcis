@@ -5,8 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Connection;
-use Yajra\Pdo\Oci8\Oci8Connection;
+// use Illuminate\Database\Connection;
+// use Yajra\Pdo\Oci8\Oci8Connection;
 
 class AppServiceProvider extends ServiceProvider
 {
