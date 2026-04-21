@@ -82,7 +82,7 @@ class ELog {
 
     public static function generateCompany(HealthCoverageModel $medicalData) {
         if (!$medicalData || !$medicalData->contribution_level_code) {
-            return null
+            return null;
         }
 
         $hcisCompanyCode = $medicalData->contribution_level_code;
