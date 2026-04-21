@@ -5039,15 +5039,15 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $latestCreatedAt = ca_sett_approval::where(
-                                    "ca_id",
-                                    $dnsCA->id,
-                                )->max("created_at");
+                                // $latestCreatedAt = ca_sett_approval::where(
+                                //     "ca_id",
+                                //     $dnsCA->id,
+                                // )->max("created_at");
 
                                 $approval = ca_sett_approval::with("employee")
                                     ->where("ca_id", $dnsCA->id)
                                     ->where("approval_status", "!=", "Rejected")
-                                    ->where("created_at", $latestCreatedAt)
+                                    // ->where("created_at", $latestCreatedAt)
                                     ->whereNull("deleted_at")
                                     ->orderBy("layer", "asc")
                                     ->get();
@@ -5650,23 +5650,23 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $latestCreatedAt = ca_sett_approval::where(
-                                    "ca_id",
-                                    $dnsCA->id,
-                                )->max("created_at");
+                                // $latestCreatedAt = ca_sett_approval::where(
+                                //     "ca_id",
+                                //     $dnsCA->id,
+                                // )->max("created_at");
 
-                                $latestCreatedAtFormatted = \Carbon\Carbon::parse(
-                                    $latestCreatedAt,
-                                )->format("Y-m-d H:i");
+                                // $latestCreatedAtFormatted = \Carbon\Carbon::parse(
+                                //     $latestCreatedAt,
+                                // )->format("Y-m-d H:i");
 
                                 $approval = ca_sett_approval::with("employee")
                                     ->where("ca_id", $dnsCA->id)
                                     ->where("approval_status", "!=", "Rejected")
-                                    ->where(
-                                        "created_at",
-                                        "like",
-                                        $latestCreatedAtFormatted . "%",
-                                    )
+                                    // ->where(
+                                    //     "created_at",
+                                    //     "like",
+                                    //     $latestCreatedAtFormatted . "%",
+                                    // )
                                     ->whereNull("deleted_at")
                                     ->orderBy("layer", "asc")
                                     ->get();
