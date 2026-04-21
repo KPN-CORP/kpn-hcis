@@ -82,7 +82,7 @@ class ELog {
 
     public static function generateCompany(HealthCoverageModel $medicalData) {
         if (!$medicalData || !$medicalData->contribution_level_code) {
-            return null
+            return null;
         }
 
         $hcisCompanyCode = $medicalData->contribution_level_code;
@@ -100,7 +100,7 @@ class ELog {
 
     public static function generateInvoiceCode(HealthCoverageModel $medicalData) {
         if (!$medicalData || !$medicalData->no_invoice) {
-            return null
+            return null;
         }
 
         return $medicalData->no_invoice;
@@ -108,7 +108,7 @@ class ELog {
 
     public static function generateNoPO(HealthCoverageModel $medicalData) {
         if (!$medicalData || !$medicalData->no_medic) {
-            return null
+            return null;
         }
 
         return $medicalData->no_medic;
@@ -116,7 +116,7 @@ class ELog {
 
     public static function generateVendor(HealthCoverageModel $medicalData) {
         if (!$medicalData || !$medicalData->created_by) {
-            return null
+            return null;
         }
 
         $hcisEmployeeID = $medicalData->created_by;
@@ -136,7 +136,7 @@ class ELog {
 
     public static function generateAmount(HealthCoverageModel $medicalData) {
         if (!$medicalData || !$medicalData->balance) {
-            return null
+            return null;
         }
 
         return $medicalData->balance;
@@ -144,7 +144,7 @@ class ELog {
 
     public static function generateFirstDept(EmployeeModel $employeeData) {
         if (!$employeeData || !$employeeData->group_company) {
-            return null
+            return null;
         }
 
         $firstDept = null;
@@ -162,7 +162,7 @@ class ELog {
 
     public static function generateCreatedBy(HealthCoverageModel $medicalData) {
         if (!$medicalData || !$medicalData->verif_by) {
-            return null
+            return null;
         }
 
         $eLogUser = ELogUsersTabModel::where("hcis_user", $medicalData->verif_by)
@@ -176,7 +176,7 @@ class ELog {
 
     public static function generateCreatedAt(HealthCoverageModel $medicalData) {
         if (!$medicalData || !$medicalData->verif_at) {
-            return null
+            return null;
         }
 
         return $medicalData->verif_at->format('m/d/Y');
@@ -184,7 +184,7 @@ class ELog {
 
     public static function generateNotes(HealthCoverageModel $medicalData) {
         if (!$medicalData || !$medicalData->coverage_detail) {
-            return null
+            return null;
         }
 
         return $medicalData->coverage_detail;
@@ -192,7 +192,7 @@ class ELog {
 
     public static function generateTotalAmount(HealthCoverageModel $medicalData) {
         if (!$medicalData || !$medicalData->balance) {
-            return null
+            return null;
         }
 
         return $medicalData->balance;
@@ -232,7 +232,7 @@ class ELog {
 
     public static function generateInvDate(HealthCoverageModel $medicalData) {
         if (!$medicalData || !$medicalData->date) {
-            return null
+            return null;
         }
 
         return $medicalData->date->format('m/d/Y');
@@ -256,7 +256,7 @@ class ELog {
 
     public static function generateTotalX(HealthCoverageModel $medicalData) {
         if (!$medicalData || !$medicalData->balance) {
-            return null
+            return null;
         }
 
         return $medicalData->balance;

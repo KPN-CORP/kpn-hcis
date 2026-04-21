@@ -16,8 +16,8 @@ use App\Models\CATransaction;
 use App\Models\BusinessTrip;
 use App\Models\Hotel;
 use App\Models\Tiket;
-// use App\Models\ELogFirstReceipt;
-// use App\Helpers\ELog as ELogHelper;
+use App\Models\ELogFirstReceipt;
+use App\Helpers\ELog as ELogHelper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
@@ -1032,7 +1032,7 @@ class MedicalController extends Controller
             "no_medic",
             $no_medic,
         )->get();
-        $medicalEmployee = HealthCoverage::where(
+        $medicalEmployee = HealthCoverage::with(['employee'])->where(
             "no_medic",
             $no_medic,
         )->first();
@@ -1097,9 +1097,9 @@ class MedicalController extends Controller
                     ]);
                 }
 
-                // $eLogData = ELogHelper::generateInsertData($existingCoverage, DepartmentModel $department);
+                $eLogData = ELogHelper::generateInsertData($existingCoverage, $medicalEmployee->employee);
 
-                // Log::info("E-Log insert data: $eLogData");
+                Log::info("E-Log insert data: $eLogData");
 
                 // dd($existingCoverage);
 

@@ -14,6 +14,10 @@ abstract class SafeOracleModel extends Model
     }
 
     public function getRelationValue($key) {
+        if (!app('oracle.guard')->isAvailable()) {
+            return null;
+        }
+
         try {
             return parent::getRelationValue($key);
         } catch (\Throwable $e) {
@@ -24,9 +28,11 @@ abstract class SafeOracleModel extends Model
     }
 
     protected function safe(callable $callback, $default = false) {
-        try {
-            $this->getConnection()->getPdo();
+        if (!app('oracle.guard')->isAvailable()) {
+            return $default;
+        }
 
+        try {
             return $callback();
         } catch (\Throwable $e) {
             Log::warning('Oracle model error: ' . $e->getMessage());
@@ -58,11 +64,11 @@ abstract class SafeOracleModel extends Model
     }
 
     public static function create(array $attributes = []) {
+        if (!app('oracle.guard')->isAvailable()) {
+            return null;
+        }
+
         try {
-            $instance = new static;
-
-            $instance->getConnection()->getPdo();
-
             return parent::create($attributes);
         } catch (\Throwable $e) {
             Log::warning('Oracle create failed: ' . $e->getMessage());
