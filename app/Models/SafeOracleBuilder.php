@@ -16,9 +16,11 @@ class SafeOracleBuilder extends Builder
     }
 
     protected function safe(callable $callback, $default) {
-        try {
-            $this->getConnection()->getPdo();
+        if (!app('oracle.guard')->isAvailable()) {
+            return $default;
+        }
 
+        try {
             return $callback();
         } catch (\Throwable $e) {
             Log::warning('Oracle builder error: ' . $e->getMessage());
@@ -65,19 +67,47 @@ class SafeOracleBuilder extends Builder
         return $this->safe(fn() => parent::delete(), 0);
     }
 
-    protected function eagerLoadRelations(array $models) {
+    protected function eagerLoadRelations(array $models)
+    {
+        if (!app('oracle.guard')->isAvailable()) {
+            return $this->setEmptyRelations($models);
+        }
+
         try {
             return parent::eagerLoadRelations($models);
         } catch (\Throwable $e) {
             Log::warning('Oracle eager load failed: ' . $e->getMessage());
 
-            foreach ($models as $model) {
-                foreach (array_keys($this->safeWith) as $relation) {
-                    $model->setRelation($relation, collect());
-                }
-            }
-
-            return $models;
+            return $this->setEmptyRelations($models);
         }
+    }
+
+    protected function setEmptyRelations(array $models)
+    {
+        foreach ($models as $model) {
+            foreach ($this->safeWith as $relation => $constraints) {
+                $relationName = is_numeric($relation) ? $constraints : $relation;
+
+                try {
+                    $relationObj = $model->$relationName();
+
+                    if (method_exists($relationObj, 'getResults')) {
+                        $result = $relationObj->getResults();
+
+                        $fallback = $result instanceof \Illuminate\Support\Collection
+                            ? collect()
+                            : null;
+                    } else {
+                        $fallback = null;
+                    }
+                } catch (\Throwable $e) {
+                    $fallback = null;
+                }
+
+                $model->setRelation($relationName, $fallback);
+            }
+        }
+
+        return $models;
     }
 }
