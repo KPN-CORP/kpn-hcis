@@ -32,6 +32,18 @@ class AppServiceProvider extends ServiceProvider
             return false;
         });
 
+        app('Illuminate\Contracts\Debug\ExceptionHandler')->reportable(function (\Throwable $e) {
+            if (
+                str_contains($e->getMessage(), 'oci_') ||
+                str_contains($e->getMessage(), 'ORA-')
+            ) {
+                \Log::warning('Oracle connection error: ' . $e->getMessage());
+
+                return false;
+            }
+        });
+
+
         /**
         * 3. Global Oracle guard (singleton)
         */
