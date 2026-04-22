@@ -18,7 +18,22 @@ class ELogService {
         $httpRes = $httpClient->postJSON("", $payload, [
             "Authorization": "Bearer 123",
         ]);
+        if (!$httpRes["status"]) {
+            return [
+                'status' => false,
+                'message'  => "",
+                'data'    => null,
+                'error'   => $httpRes["error"],
+            ];
+        }
 
-        $resData = ELogInsertFirstReceiptResponseDTO::fromArray($httpRes);
+        $resData = ELogInsertFirstReceiptResponseDTO::fromArray($httpRes["data"]);
+
+        return [
+            'status' => true,
+            'message'  => "",
+            'data'    => $resData,
+            'error'   => null,
+        ];
     }
 }
