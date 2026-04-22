@@ -452,7 +452,7 @@
                 </div>
             </div>
         @endforeach
-        @foreach ($declareCa['detail_meals'] as $index => $meals_dec)
+        @foreach ($declareCa['detail_meals'] ?? [] as $index => $meals_dec)
             @if (!isset($caDetail['detail_meals'][$index]))
                 <div id="form-container-bt-meals-{{ $loop->index + 1 }}" class="p-2 mb-2 bg-light rounded-3">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Meals {{ $loop->index + 1 }}</p>
@@ -553,7 +553,7 @@
     </div>
 @elseif (!empty($declareCa['detail_meals']) && $declareCa['detail_meals'][0]['nominal'] !== null)
     <div id="form-container-meals">
-        @foreach ($declareCa['detail_meals'] as $index => $meals_dec)
+        @foreach ($declareCa['detail_meals'] ?? [] as $index => $meals_dec)
             @if (!isset($caDetail['detail_meals'][$index]))
                 <div id="form-container-bt-meals-{{ $loop->index + 1 }}" class="card-body p-2 mb-2 bg-light">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Meals {{ $loop->index + 1 }}</p>
