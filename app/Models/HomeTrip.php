@@ -30,8 +30,8 @@ class HomeTrip extends Model
         return $this->belongsTo(Employee::class, 'employee_id', 'employee_id');
     }
 
-    public function dependents()  
-    {  
-        return $this->hasMany(Dependents::class, 'employee_id', 'employee_id');  
-    }  
+    public function dependents()
+    {
+        return $this->hasMany(Dependents::class, 'employee_id', 'employee_id');
+    }
 }
