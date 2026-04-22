@@ -283,7 +283,7 @@
                     <td>
 
                         <span
-                            style="float: right;">{{ number_format(array_sum(array_column($declareCA['detail_meals'], 'nominal')), 0, ',', '.') }}</span>
+                            style="float: right;">{{ number_format(array_sum(array_column($declareCA['detail_meals'] ?? [], 'nominal')), 0, ',', '.') }}</span>
                     </td>
                 </tr>
             @endif
@@ -768,7 +768,7 @@
                         <td>
                             <span style="float: left; margin-left:4px">Rp.</span>
                             <span
-                                style="float: right;">{{ number_format(array_sum(array_column($declareCA['detail_meals'], 'nominal')), 0, ',', '.') }}</span>
+                                style="float: right;">{{ number_format(array_sum(array_column($declareCA['detail_meals'] ?? [], 'nominal')), 0, ',', '.') }}</span>
                         </td>
                     </tr>
                 </table>

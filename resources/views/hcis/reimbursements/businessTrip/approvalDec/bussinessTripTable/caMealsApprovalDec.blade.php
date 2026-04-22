@@ -84,7 +84,7 @@
             <div class="table-responsive table-container bg-white" style="height: 300px; overflow-y: auto;">
 
                 <table class="table table-hover table-sm nowrap"
-                    id="{{ isset($declareCa['detail_meals']) && is_array($declareCa['detail_meals']) ? (array_sum(array_column($declareCa['detail_meals'], 'nominal')) > 0 ? 'penginapanTableDec' : '') : '' }}"
+                    id="{{ isset($declareCa['detail_meals']) && is_array($declareCa['detail_meals']) ? (array_sum(array_column($declareCa['detail_meals'] ?? [], 'nominal')) > 0 ? 'penginapanTableDec' : '') : '' }}"
                     width="100%" cellspacing="0">
 
                     <thead class="thead-light">
