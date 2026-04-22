@@ -308,47 +308,47 @@
         calculateTotalNominalBTMeals();
     }
 
-    document.addEventListener("DOMContentLoaded", function() {  
-        const startInputs = document.querySelectorAll('.start-meals');  
-        const endInputs = document.querySelectorAll('.end-meals');  
-        const totalDaysInputs = document.querySelectorAll('[id^="total_days_bt_meals_"]');  
+    document.addEventListener("DOMContentLoaded", function() {
+        const startInputs = document.querySelectorAll('.start-meals');
+        const endInputs = document.querySelectorAll('.end-meals');
+        const totalDaysInputs = document.querySelectorAll('[id^="total_days_bt_meals_"]');
 
-        startInputs.forEach((startInput, index) => {  
-            const endInput = endInputs[index];  
-            const totalDaysInput = totalDaysInputs[index];  
+        startInputs.forEach((startInput, index) => {
+            const endInput = endInputs[index];
+            const totalDaysInput = totalDaysInputs[index];
 
-            // Call the function to calculate total days on page load  
-            calculateTotalDaysMeals(startInput, endInput, totalDaysInput);  
-        });  
-    });  
+            // Call the function to calculate total days on page load
+            calculateTotalDaysMeals(startInput, endInput, totalDaysInput);
+        });
+    });
 
-    function calculateTotalDaysMeals(startInput, endInput, totalDaysInput) {  
-        const startDate = new Date(startInput.value);  
-        const endDate = new Date(endInput.value);  
+    function calculateTotalDaysMeals(startInput, endInput, totalDaysInput) {
+        const startDate = new Date(startInput.value);
+        const endDate = new Date(endInput.value);
 
-        // Set the minimum date for the endDate input  
-        endInput.min = startInput.value;  
+        // Set the minimum date for the endDate input
+        endInput.min = startInput.value;
 
-        if (startDate && endDate && endDate >= startDate) {  
-            const timeDiff = endDate - startDate;  
-            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)); // Convert time to days  
-            totalDaysInput.value = daysDiff >= 0 ? daysDiff + 1 : 0; // Add 1 if there is a stay on the same day  
-        } else {  
-            totalDaysInput.value = 0; // Set to 0 if invalid dates  
-            endInput.value = "";  
-        }  
+        if (startDate && endDate && endDate >= startDate) {
+            const timeDiff = endDate - startDate;
+            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)); // Convert time to days
+            totalDaysInput.value = daysDiff >= 0 ? daysDiff + 1 : 0; // Add 1 if there is a stay on the same day
+        } else {
+            totalDaysInput.value = 0; // Set to 0 if invalid dates
+            endInput.value = "";
+        }
 
-        if (endDate < startDate) {  
-            Swal.fire({  
-                icon: "error",  
-                title: "End Date cannot be earlier than Start Date",  
-                text: "Choose another date!",  
-                timer: 3000,  
-                confirmButtonColor: "#AB2F2B",  
-                confirmButtonText: "OK",  
-            });  
-        }  
-    }  
+        if (endDate < startDate) {
+            Swal.fire({
+                icon: "error",
+                title: "End Date cannot be earlier than Start Date",
+                text: "Choose another date!",
+                timer: 3000,
+                confirmButtonColor: "#AB2F2B",
+                confirmButtonText: "OK",
+            });
+        }
+    }
 </script>
 
 @if (!empty($caDetail['detail_meals']) && $caDetail['detail_meals'][0]['nominal'] !== null)
@@ -533,7 +533,7 @@
                                         oninput="formatInput(this)" onblur="formatOnBlur(this)">
                                 </div>
                             </div>
-        
+
                             <!-- Information -->
                             <div class="col-md-12">
                                     <label class="form-label">Information</label>
@@ -653,7 +653,7 @@
     </div>
 @elseif (!empty($declareCa['detail_meals']) && $declareCa['detail_meals'][0]['nominal'] !== null)
     <div id="form-container-meals">
-        @foreach ($declareCa['detail_meals'] as $index => $meals_dec)
+        @foreach ($declareCa['detail_meals'] ?? [] as $index => $meals_dec)
             @if (!isset($caDetail['detail_meals'][$index]))
                 <div id="form-container-bt-meals-{{ $loop->index + 1 }}" class="card-body p-2 rounded-3 bg-light mb-2">
                     <p class="fs-4 text-primary" style="font-weight: bold; ">Meals {{ $loop->index + 1 }}</p>
@@ -665,7 +665,7 @@
                                 <label class="form-label">Meals Start Plan</label>
                                 <input type="date" name="start_bt_meals[]"
                                     id="start_bt_meals_{{ $loop->index + 1 }}" class="form-control start-meals"
-                                    value="{{ $meals_dec['start_date'] ?? $meals_dec['tanggal'] }}" placeholder="mm/dd/yyyy"  
+                                    value="{{ $meals_dec['start_date'] ?? $meals_dec['tanggal'] }}" placeholder="mm/dd/yyyy"
                                     onchange="calculateTotalDaysMeals(this, document.getElementById('end_bt_meals_{{ $loop->index + 1 }}'), document.querySelector('#total_days_bt_meals_{{ $loop->index + 1 }}'))">
                             </div>
                             <div class="col-md-4 mb-2">
@@ -694,10 +694,10 @@
                                     name="company_bt_meals[]">
                                     <option value="">Select Company...</option>
                                     @foreach ($companies as $company)
-                                        <option value="{{ $company->contribution_level_code }}"  
-                                            @if ($company->contribution_level_code == ($meals_dec['company_code'] ?? '')) selected @endif>  
-                                            {{ $company->contribution_level . ' (' . $company->contribution_level_code . ')' }}  
-                                        </option>  
+                                        <option value="{{ $company->contribution_level_code }}"
+                                            @if ($company->contribution_level_code == ($meals_dec['company_code'] ?? '')) selected @endif>
+                                            {{ $company->contribution_level . ' (' . $company->contribution_level_code . ')' }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
