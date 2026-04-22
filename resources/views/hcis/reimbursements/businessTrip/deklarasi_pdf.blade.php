@@ -240,7 +240,7 @@
                             style="float: right;">{{ number_format(array_sum(array_column($declareCA['detail_perdiem'], 'nominal')), 0, ',', '.') }}</span>
                     </td>
                 </tr>
-                
+
                 @if (isset($declareCA['detail_meals']) &&
                         !(
                             in_array($transactions->employee->group_company, ['KPN Plantations', 'Plantations']) &&
@@ -255,7 +255,7 @@
                         <td>
                             <span style="float: left; margin-left:4px">Rp.</span>
                             <span
-                                style="float: right;">{{ number_format(array_sum(array_column($declareCA['detail_meals'], 'nominal')), 0, ',', '.') }}</span>
+                                style="float: right;">{{ number_format(array_sum(array_column($declareCA['detail_meals'] ?? [], 'nominal')), 0, ',', '.') }}</span>
                         </td>
                     </tr>
                 @endif
@@ -383,7 +383,7 @@
                         <td>
 
                             <span
-                                style="float: right;">{{ number_format(array_sum(array_column($declareCA['detail_meals'], 'nominal')), 0, ',', '.') }}</span>
+                                style="float: right;">{{ number_format(array_sum(array_column($declareCA['detail_meals'] ?? [], 'nominal')), 0, ',', '.') }}</span>
                         </td>
                     </tr>
                 @endif
@@ -830,7 +830,7 @@
 
                     @foreach ($declareCA['detail_meals'] as $meals)
                         <tr style="text-align: center">
-                            
+
                             <td>{{ isset($meals['start_date']) ? \Carbon\Carbon::parse($meals['start_date'])->format('d-M-y') : \Carbon\Carbon::parse($meals['tanggal'])->format('d-M-y') }}</td>
                             <td>{{ isset($meals['end_date']) ? \Carbon\Carbon::parse($meals['end_date'])->format('d-M-y') : \Carbon\Carbon::parse($meals['tanggal'])->format('d-M-y') }}</td>
 
@@ -848,7 +848,7 @@
                         <td>
                             <span style="float: left; margin-left:4px">Rp.</span>
                             <span
-                                style="float: right;">{{ number_format(array_sum(array_column($declareCA['detail_meals'], 'nominal')), 0, ',', '.') }}</span>
+                                style="float: right;">{{ number_format(array_sum(array_column($declareCA['detail_meals'] ?? [], 'nominal')), 0, ',', '.') }}</span>
                         </td>
                     </tr>
                 </table>
@@ -1041,7 +1041,7 @@
                                 <td style="text-align: left">@isset($lainnya['type'])
                                     {{ $lainnya['type'] }}
                                 @endisset</td>
-                                
+
                                 <td style="text-align: left">{{ $lainnya['keterangan'] }}</td>
                                 <td>
                                     <span style="float: left; margin-left:4px">Rp.</span>
