@@ -672,6 +672,8 @@
                                 'accommodation' => 'Accommodation',
                                 'gift' => 'Gift',
                                 'fund' => 'Fund',
+                                'meeting' => 'Meeting',
+                                'event' => 'Event',
                             ];
                         @endphp
                         <td>{{ $typeMap[$detail['type']] ?? $detail['type'] }}</td>
@@ -720,6 +722,8 @@
                                     'Transport' => 'Transport',
                                     'Accommodation' => 'Accommodation',
                                     'Fund' => 'Fund',
+                                    'Meeting' => 'Meeting',
+                                    'Event' => 'Event',
                                 ];
 
                                 // Mengumpulkan semua tipe relasi yang berstatus true

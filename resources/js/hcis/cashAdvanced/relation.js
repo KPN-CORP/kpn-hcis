@@ -61,6 +61,24 @@ function addMoreFormRelationDec(event) {
                             <label class="form-check-label"
                                 for="transport_e_relation_${formCountRelation}">Transport</label>
                         </div>
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                name="meeting_e_relation[]"
+                                type="checkbox"
+                                id="meeting_e_relation_${formCountRelation}"
+                                value="meeting">
+                            <label class="form-check-label"
+                                for="meeting_e_relation_${formCountRelation}">Meeting</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                name="event_e_relation[]"
+                                type="checkbox"
+                                id="event_e_relation_${formCountRelation}"
+                                value="event">
+                            <label class="form-check-label"
+                                for="event_e_relation_${formCountRelation}">Event</label>
+                        </div>
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label"
@@ -159,6 +177,24 @@ function addMoreFormRelationReq(event) {
                                 value="transport">
                             <label class="form-check-label"
                                 for="transport_e_relation_${formCountRelation}">Transport</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                name="meeting_e_relation[${checkboxCount}]"
+                                type="checkbox"
+                                id="meeting_e_relation_${formCountRelation}"
+                                value="meeting">
+                            <label class="form-check-label"
+                                for="meeting_e_relation_${formCountRelation}">Meeting</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                name="event_e_relation[${checkboxCount}]"
+                                type="checkbox"
+                                id="event_e_relation_${formCountRelation}"
+                                value="event">
+                            <label class="form-check-label"
+                                for="event_e_relation_${formCountRelation}">Event</label>
                         </div>
                     </div>
                     <div class="col-md-4 mb-2">

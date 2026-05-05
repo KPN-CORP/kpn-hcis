@@ -18,6 +18,8 @@
                                 <option value="fund" {{ $detail['type'] == 'fund' ? 'selected' : '' }}>Fund</option>
                                 <option value="gift" {{ $detail['type'] == 'gift' ? 'selected' : '' }}>Gift</option>
                                 <option value="transport" {{ $detail['type'] == 'transport' ? 'selected' : '' }}>Transport</option>
+                                <option value="meeting" {{ $detail['type'] == 'meeting' ? 'selected' : '' }}>Meeting</option>
+                                <option value="event" {{ $detail['type'] == 'event' ? 'selected' : '' }}>Event</option>
                             </select>
                         </div>
                         <div class="col-md-6 mb-2">
@@ -81,6 +83,8 @@
                             <option value="fund">Fund</option>
                             <option value="gift">Gift</option>
                             <option value="transport">Transport</option>
+                            <option value="meeting">Meeting</option>
+                            <option value="event">Event</option>
                         </select>
                     </div>
                     <div class="col-md-6 mb-2">

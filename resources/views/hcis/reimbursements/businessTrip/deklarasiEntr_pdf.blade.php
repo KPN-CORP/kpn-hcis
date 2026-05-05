@@ -1028,6 +1028,8 @@
                                         'accommodation' => 'Accommodation',
                                         'gift' => 'Gift',
                                         'fund' => 'Fund',
+                                        'meeting' => 'Meeting',
+                                        'event' => 'Event',
                                     ];
                                 @endphp
                                 <td>{{ $typeMap[$detail['type']] ?? $detail['type'] }}</td>
@@ -1076,6 +1078,8 @@
                                     'accommodation' => 'Accommodation',
                                     'gift' => 'Gift',
                                     'fund' => 'Fund',
+                                    'meeting' => 'Meeting',
+                                    'event' => 'Event',
                                 ];
                             @endphp
                             <td>{{ $typeMap[$detail_dec['type']] ?? $detail_dec['type'] }}</td>
@@ -1130,6 +1134,8 @@
                                             'Transport' => 'Transport',
                                             'Accommodation' => 'Accommodation',
                                             'Fund' => 'Fund',
+                                            'Meeting' => 'Meeting',
+                                            'Event' => 'Event',
                                         ];
 
                                         // Mengumpulkan semua tipe relasi yang berstatus true
@@ -1176,6 +1182,8 @@
                                         'Transport' => 'Transport',
                                         'Accommodation' => 'Accommodation',
                                         'Fund' => 'Fund',
+                                        'Meeting' => 'Meeting',
+                                        'Event' => 'Event',
                                     ];
 
                                     // Mengumpulkan semua tipe relasi yang berstatus true

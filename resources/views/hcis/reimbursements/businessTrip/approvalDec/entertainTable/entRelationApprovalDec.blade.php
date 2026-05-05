@@ -36,6 +36,8 @@
                                                 'Fund' => 'Fund',
                                                 'Gift' => 'Gift',
                                                 'Transport' => 'Transport',
+                                                'Meeting' => 'Meeting',
+                                                'Event' => 'Event',
                                             ];
 
                                             // Mengumpulkan semua tipe relasi yang berstatus true
@@ -106,6 +108,8 @@
                                                 'Fund' => 'Fund',
                                                 'Gift' => 'Gift',
                                                 'Transport' => 'Transport',
+                                                'Meeting' => 'Meeting',
+                                                'Event' => 'Event',
                                             ];
 
                                             // Mengumpulkan semua tipe relasi yang berstatus true

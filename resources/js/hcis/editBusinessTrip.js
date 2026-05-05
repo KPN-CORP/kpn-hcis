@@ -2458,6 +2458,8 @@ function resetFieldsEntertain() {
         "fund_e_relation",
         "gift_e_relation",
         "transport_e_relation",
+        "meeting_e_relation",
+        "event_e_relation",
     ];
 
     checkboxEntGroups.forEach((groupName) => {

@@ -25,6 +25,8 @@
                                                 'fund' => 'Fund',
                                                 'gift' => 'Gift',
                                                 'transport' => 'Transport',
+                                                'meeting' => 'Meeting',
+                                                'event' => 'Event',
                                             ];
                                         @endphp
                                         {{ $typeMap[$detail['type']] ?? $detail['type'] }}
@@ -68,6 +70,10 @@
                                     </option>
                                     <option value="transport"
                                         {{ $detail_dec['type'] == 'transport' ? 'selected' : '' }}>Transport</option>
+                                    <option value="meeting"
+                                        {{ $detail_dec['type'] == 'meeting' ? 'selected' : '' }}>Meeting</option>
+                                    <option value="event"
+                                        {{ $detail_dec['type'] == 'event' ? 'selected' : '' }}>Event</option>
                                 </select>
                             </div>
                             <div class="col-md-6 mb-2">
@@ -120,6 +126,10 @@
                                 <option value="gift" {{ $detail_dec['type'] == 'gift' ? 'selected' : '' }}>Gift
                                 </option>
                                 <option value="fund" {{ $detail_dec['type'] == 'fund' ? 'selected' : '' }}>Fund
+                                </option>
+                                <option value="meeting" {{ $detail_dec['type'] == 'meeting' ? 'selected' : '' }}>Meeting
+                                </option>
+                                <option value="event" {{ $detail_dec['type'] == 'event' ? 'selected' : '' }}>Event
                                 </option>
                             </select>
                         </div>
@@ -193,6 +203,10 @@
                                 </option>
                                 <option value="transport" {{ $detail_dec['type'] == 'transport' ? 'selected' : '' }}>
                                     Transport</option>
+                                <option value="meeting" {{ $detail_dec['type'] == 'meeting' ? 'selected' : '' }}>
+                                    Meeting</option>
+                                <option value="event" {{ $detail_dec['type'] == 'event' ? 'selected' : '' }}>
+                                    Event</option>
                             </select>
                         </div>
                         <div class="col-md-6 mb-2">
@@ -257,6 +271,8 @@
                             <option value="fund">Fund</option>
                             <option value="gift">Gift</option>
                             <option value="transport">Transport</option>
+                            <option value="meeting">Meeting</option>
+                            <option value="event">Event</option>
                         </select>
                     </div>
                     <div class="col-md-6 mb-2">

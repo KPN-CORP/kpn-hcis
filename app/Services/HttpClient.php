@@ -40,18 +40,18 @@ class HttpClient {
 
         if (in_array($status, [200, 201])) {
             return [
-                'success' => true,
-                'status'  => $status,
-                'data'    => $body ?? [],
-                'error'   => null,
+                'status' => true,
+                'http_status' => $status,
+                'data' => $body ?? [],
+                'error' => null,
             ];
         }
 
         return [
-            'success' => false,
-            'status'  => $status,
-            'data'    => null,
-            'error'   => $body ?? $response->body(),
+            'status' => false,
+            'http_status' => $status,
+            'data' => null,
+            'error' => $body ?? $response->body(),
         ];
     }
 

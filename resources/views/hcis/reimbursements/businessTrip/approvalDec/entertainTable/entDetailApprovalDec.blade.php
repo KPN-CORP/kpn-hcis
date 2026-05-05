@@ -43,6 +43,8 @@
                                                     'fund' => 'Fund',
                                                     'transport' => 'Transport',
                                                     'gift' => 'Gift',
+                                                    'meeting' => 'Meeting',
+                                                    'event' => 'Event',
                                                 ];
                                             @endphp
                                             {{ $typeMap[$detail['type']] ?? $detail['type'] }}
@@ -127,6 +129,8 @@
                                                     'fund' => 'Fund',
                                                     'transport' => 'Transport',
                                                     'gift' => 'Gift',
+                                                    'meeting' => 'Meeting',
+                                                    'event' => 'Event',
                                                 ];
                                             @endphp
                                             {{ $typeMap[$detail['type']] ?? $detail['type'] }}
