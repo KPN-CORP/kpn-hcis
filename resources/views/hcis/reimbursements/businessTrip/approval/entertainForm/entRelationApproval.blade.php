@@ -58,6 +58,24 @@
                                     <label class="form-check-label"
                                         for="transport_e_relation_{{ $loop->index + 1 }}">Transport</label>
                                 </div>
+                                <div class="form-check">
+                                    <input class="form-check-input"
+                                        name="meeting_e_relation[{{ $loop->index }}]"
+                                        type="checkbox"
+                                        id="meeting_e_relation_{{ $loop->index + 1 }}"
+                                        value="meeting" {{ isset($relation['relation_type']['Meeting']) && $relation['relation_type']['Meeting'] ? 'checked' : '' }} disabled>
+                                    <label class="form-check-label"
+                                        for="meeting_e_relation_{{ $loop->index + 1 }}">Meeting</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input"
+                                        name="event_e_relation[{{ $loop->index }}]"
+                                        type="checkbox"
+                                        id="event_e_relation_{{ $loop->index + 1 }}"
+                                        value="event" {{ isset($relation['relation_type']['Event']) && $relation['relation_type']['Event'] ? 'checked' : '' }} disabled>
+                                    <label class="form-check-label"
+                                        for="event_e_relation_{{ $loop->index + 1 }}">Event</label>
+                                </div>
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label"
@@ -100,10 +118,10 @@
             </div>
         @endforeach
     </div>
-    
+
     <script>
         let checkboxCount = {{ $initialCount }} - 1;
-    </script>    
+    </script>
 
     <div class="mt-3">
         <button class="btn btn-primary btn-sm" id="addMoreButtonRelation" onclick="addMoreFormRelationReq(event)">Add More</button>
@@ -157,6 +175,24 @@
                             <label class="form-check-label"
                                 for="transport_e_relation_0" disabled>Transport</label>
                         </div>
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                name="meeting_e_relation[0]"
+                                type="checkbox"
+                                id="meeting_e_relation_0"
+                                value="meeting" disabled>
+                            <label class="form-check-label"
+                                for="meeting_e_relation_0" disabled>Meeting</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                name="event_e_relation[0]"
+                                type="checkbox"
+                                id="event_e_relation_0"
+                                value="event" disabled>
+                            <label class="form-check-label"
+                                for="event_e_relation_0" disabled>Event</label>
+                        </div>
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label"
@@ -194,5 +230,5 @@
 
     <script>
         let checkboxCount = 0;
-    </script> 
+    </script>
 @endif

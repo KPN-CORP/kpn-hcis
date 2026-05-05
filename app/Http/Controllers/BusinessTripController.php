@@ -1535,6 +1535,18 @@ class BusinessTripController extends Controller
                                         ) &&
                                         $request->fund_e_relation[$key] ===
                                             "fund",
+                                    "Meeting" =>
+                                        !empty(
+                                            $request->meeting_e_relation[$key]
+                                        ) &&
+                                        $request->meeting_e_relation[$key] ===
+                                            "meeting",
+                                    "Event" =>
+                                        !empty(
+                                            $request->event_e_relation[$key]
+                                        ) &&
+                                        $request->event_e_relation[$key] ===
+                                            "event",
                                 ],
                                 fn($checked) => $checked,
                             ),
@@ -2293,6 +2305,18 @@ class BusinessTripController extends Controller
                                             ) &&
                                             $request->fund_e_relation[$key] ===
                                                 "fund",
+                                        "Meeting" =>
+                                            !empty(
+                                                $request->meeting_e_relation[$key]
+                                            ) &&
+                                            $request->meeting_e_relation[$key] ===
+                                                "meeting",
+                                        "Event" =>
+                                            !empty(
+                                                $request->event_e_relation[$key]
+                                            ) &&
+                                            $request->event_e_relation[$key] ===
+                                                "event",
                                     ],
                                     fn($checked) => $checked,
                                 ),
@@ -3007,6 +3031,24 @@ class BusinessTripController extends Controller
                                                 $request->fund_e_relation[
                                                     $key
                                                 ] === "fund",
+                                            "Meeting" =>
+                                                !empty(
+                                                    $request->meeting_e_relation[
+                                                        $key
+                                                    ]
+                                                ) &&
+                                                $request->meeting_e_relation[
+                                                    $key
+                                                ] === "meeting",
+                                            "Event" =>
+                                                !empty(
+                                                    $request->event_e_relation[
+                                                        $key
+                                                    ]
+                                                ) &&
+                                                $request->event_e_relation[
+                                                    $key
+                                                ] === "event",
                                         ],
                                         fn($checked) => $checked,
                                     ),
@@ -3203,6 +3245,24 @@ class BusinessTripController extends Controller
                                                 $request->fund_e_relation[
                                                     $key
                                                 ] === "fund",
+                                            "Meeting" =>
+                                                !empty(
+                                                    $request->meeting_e_relation[
+                                                        $key
+                                                    ]
+                                                ) &&
+                                                $request->meeting_e_relation[
+                                                    $key
+                                                ] === "meeting",
+                                            "Event" =>
+                                                !empty(
+                                                    $request->event_e_relation[
+                                                        $key
+                                                    ]
+                                                ) &&
+                                                $request->event_e_relation[
+                                                    $key
+                                                ] === "event",
                                         ],
                                         fn($checked) => $checked,
                                     ),
@@ -6736,6 +6796,18 @@ class BusinessTripController extends Controller
                                         ) &&
                                         $request->fund_e_relation[$key] ===
                                             "fund",
+                                    "Meeting" =>
+                                        !empty(
+                                            $request->meeting_e_relation[$key]
+                                        ) &&
+                                        $request->meeting_e_relation[$key] ===
+                                            "meeting",
+                                    "Event" =>
+                                        !empty(
+                                            $request->event_e_relation[$key]
+                                        ) &&
+                                        $request->event_e_relation[$key] ===
+                                            "event",
                                 ],
                                 fn($checked) => $checked,
                             ),
@@ -8190,6 +8262,26 @@ class BusinessTripController extends Controller
                                                     $request->fund_e_relation[
                                                         $key
                                                     ] === "fund",
+                                                "Meeting" =>
+                                                    !empty(
+                                                        $request
+                                                            ->meeting_e_relation[
+                                                            $key
+                                                        ]
+                                                    ) &&
+                                                    $request->meeting_e_relation[
+                                                        $key
+                                                    ] === "meeting",
+                                                "Event" =>
+                                                    !empty(
+                                                        $request
+                                                            ->event_e_relation[
+                                                            $key
+                                                        ]
+                                                    ) &&
+                                                    $request->event_e_relation[
+                                                        $key
+                                                    ] === "event",
                                             ],
                                             fn($checked) => $checked,
                                         ),

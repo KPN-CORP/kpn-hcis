@@ -1092,6 +1092,12 @@ class ReimburseController extends Controller
                                     "Fund" =>
                                         !empty($req->fund_e_relation[$key]) &&
                                         $req->fund_e_relation[$key] === "fund",
+                                    "Meeting" =>
+                                        !empty($req->meeting_e_relation[$key]) &&
+                                        $req->meeting_e_relation[$key] === "meeting",
+                                    "Event" =>
+                                        !empty($req->event_e_relation[$key]) &&
+                                        $req->event_e_relation[$key] === "event",
                                 ],
                                 fn($checked) => $checked,
                             ),
@@ -1630,6 +1636,12 @@ class ReimburseController extends Controller
                                     "Fund" =>
                                         !empty($req->fund_e_relation[$key]) &&
                                         $req->fund_e_relation[$key] === "fund",
+                                    "Meeting" =>
+                                        !empty($req->meeting_e_relation[$key]) &&
+                                        $req->meeting_e_relation[$key] === "meeting",
+                                    "Event" =>
+                                        !empty($req->event_e_relation[$key]) &&
+                                        $req->event_e_relation[$key] === "event",
                                 ],
                                 fn($checked) => $checked,
                             ),
@@ -2502,6 +2514,12 @@ class ReimburseController extends Controller
                                     "Fund" =>
                                         !empty($req->fund_e_relation[$key]) &&
                                         $req->fund_e_relation[$key] === "fund",
+                                    "Meeting" =>
+                                        !empty($req->meeting_e_relation[$key]) &&
+                                        $req->meeting_e_relation[$key] === "meeting",
+                                    "Event" =>
+                                        !empty($req->event_e_relation[$key]) &&
+                                        $req->event_e_relation[$key] === "event",
                                 ],
                                 fn($checked) => $checked,
                             ),

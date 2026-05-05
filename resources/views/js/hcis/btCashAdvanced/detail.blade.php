@@ -38,6 +38,8 @@ function addMoreFormDetailDec(event) {
                             <option value="fund">Fund</option>
                             <option value="gift">Gift</option>
                             <option value="transport">Transport</option>
+                            <option value="meeting">Meeting</option>
+                            <option value="event">Event</option>
                         </select>
                     </div>
                     <div class="col-md-6 mb-2">
@@ -115,6 +117,8 @@ function addMoreFormDetailReq(event) {
                             <option value="fund">Fund</option>
                             <option value="gift">Gift</option>
                             <option value="transport">Transport</option>
+                            <option value="meeting">Meeting</option>
+                            <option value="event">Event</option>
                         </select>
                     </div>
                     <div class="col-md-6 mb-2">

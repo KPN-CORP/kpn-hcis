@@ -2211,6 +2211,8 @@
                             <option value="accommodation">Accommodation</option>
                             <option value="gift">Gift</option>
                             <option value="fund">Fund</option>
+                            <option value="meeting">Meeting</option>
+                            <option value="event">Event</option>
                         </select>
                     </div>
                     <div class="mb-2">
@@ -2274,6 +2276,14 @@
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="fund_e_relation[]" value="fund">
                             <label class="form-check-label" for="fund_e_relation[]">Fund</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="meeting_e_relation[]" value="meeting">
+                            <label class="form-check-label" for="meeting_e_relation[]">Meeting</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="event_e_relation[]" value="event">
+                            <label class="form-check-label" for="event_e_relation[]">Event</label>
                         </div>
                     </div>
                     <div class="mb-2">

@@ -23,6 +23,8 @@
                                                 'fund' => 'Fund',
                                                 'gift' => 'Gift',
                                                 'transport' => 'Transport',
+                                                'meeting' => 'Meeting',
+                                                'event' => 'Event',
                                             ];
                                         @endphp
                                         {{ $typeMap[$detail['type']] ?? $detail['type'] }}
@@ -58,6 +60,8 @@
                                     <option value="fund" {{ $detail_dec['type'] == 'fund' ? 'selected' : '' }}>Fund</option>
                                     <option value="gift" {{ $detail_dec['type'] == 'gift' ? 'selected' : '' }}>Gift</option>
                                     <option value="transport" {{ $detail_dec['type'] == 'transport' ? 'selected' : '' }}>Transport</option>
+                                    <option value="meeting" {{ $detail_dec['type'] == 'meeting' ? 'selected' : '' }}>Meeting</option>
+                                    <option value="event" {{ $detail_dec['type'] == 'event' ? 'selected' : '' }}>Event</option>
                                 </select>
                             </div>
                             <div class="col-md-6 mb-2">
@@ -79,7 +83,7 @@
                             </div>
                         </div>
                     @endif
-                    
+
                     <div class="row mt-3">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormDetail({{ $loop->index + 1 }}, event)">Reset</button>
@@ -103,6 +107,8 @@
                                 <option value="accommodation" {{ $detail_dec['type'] == 'accommodation' ? 'selected' : '' }}>Accommodation</option>
                                 <option value="gift" {{ $detail_dec['type'] == 'gift' ? 'selected' : '' }}>Gift</option>
                                 <option value="fund" {{ $detail_dec['type'] == 'fund' ? 'selected' : '' }}>Fund</option>
+                                <option value="meeting" {{ $detail_dec['type'] == 'meeting' ? 'selected' : '' }}>Meeting</option>
+                                <option value="event" {{ $detail_dec['type'] == 'event' ? 'selected' : '' }}>Event</option>
                             </select>
                         </div>
                         <div class="col-md-6 mb-2">
@@ -123,7 +129,7 @@
                             <textarea name="enter_fee_e_detail[]" class="form-control">{{ $detail_dec['fee_detail'] }}</textarea>
                         </div>
                     </div>
-                    
+
                     <div class="row mt-3">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormDetail({{ $loop->index + 1 }}, event)">Reset</button>
@@ -167,6 +173,8 @@
                                 <option value="fund" {{ $detail_dec['type'] == 'fund' ? 'selected' : '' }}>Fund</option>
                                 <option value="gift" {{ $detail_dec['type'] == 'gift' ? 'selected' : '' }}>Gift</option>
                                 <option value="transport" {{ $detail_dec['type'] == 'transport' ? 'selected' : '' }}>Transport</option>
+                                <option value="meeting" {{ $detail_dec['type'] == 'meeting' ? 'selected' : '' }}>Meeting</option>
+                                <option value="event" {{ $detail_dec['type'] == 'event' ? 'selected' : '' }}>Event</option>
                             </select>
                         </div>
                         <div class="col-md-6 mb-2">
@@ -187,7 +195,7 @@
                             <textarea name="enter_fee_e_detail[]" class="form-control">{{ $detail_dec['fee_detail'] }}</textarea>
                         </div>
                     </div>
-                    
+
                     <div class="row mt-3">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormDetail({{ $loop->index + 1 }}, event)">Reset</button>
@@ -231,6 +239,8 @@
                             <option value="fund">Fund</option>
                             <option value="gift">Gift</option>
                             <option value="transport">Transport</option>
+                            <option value="meeting">Meeting</option>
+                            <option value="event">Event</option>
                         </select>
                     </div>
                     <div class="col-md-6 mb-2">
@@ -251,7 +261,7 @@
                         <textarea name="enter_fee_e_detail[]" class="form-control"></textarea>
                     </div>
                 </div>
-                
+
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px" onclick="clearFormDetail(1, event)">Reset</button>

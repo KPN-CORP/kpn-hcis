@@ -26,6 +26,8 @@
                                                 'Fund' => 'Fund',
                                                 'Gift' => 'Gift',
                                                 'Transport' => 'Transport',
+                                                'Meeting' => 'Meeting',
+                                                'Event' => 'Event',
                                             ];
 
                                             // Mengumpulkan semua tipe relasi yang berstatus true
@@ -115,6 +117,22 @@
                                     <label class="form-check-label"
                                         for="transport_e_relation_{{ $loop->index + 1 }}">Transport</label>
                                 </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" name="meeting_e_relation[{{ $loop->index }}]"
+                                        type="checkbox" id="meeting_e_relation_{{ $loop->index + 1 }}"
+                                        value="meeting"
+                                        {{ isset($relation['relation_type']['Meeting']) && $relation['relation_type']['Meeting'] ? 'checked' : '' }}>
+                                    <label class="form-check-label"
+                                        for="meeting_e_relation_{{ $loop->index + 1 }}">Meeting</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" name="event_e_relation[{{ $loop->index }}]"
+                                        type="checkbox" id="event_e_relation_{{ $loop->index + 1 }}"
+                                        value="event"
+                                        {{ isset($relation['relation_type']['Event']) && $relation['relation_type']['Event'] ? 'checked' : '' }}>
+                                    <label class="form-check-label"
+                                        for="event_e_relation_{{ $loop->index + 1 }}">Event</label>
+                                </div>
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label" for="name">Name</label>
@@ -142,7 +160,7 @@
                                     placeholder="Write your purpose ..." readonly>{{ $relation_dec['purpose'] }}</textarea>
                             </div>
                         </div>
-                        
+
                         <div class="row mt-3">
                             <div class="d-flex justify-start w-100">
                                 <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px"
@@ -200,6 +218,20 @@
                                 <label class="form-check-label"
                                     for="food_e_relation_{{ $loop->index + 1 }}">Food/Beverages/Souvenir</label>
                             </div>
+                            <div class="form-check">
+                                <input class="form-check-input" name="meeting_e_relation[{{ $loop->index }}]"
+                                    type="checkbox" id="meeting_e_relation_{{ $loop->index + 1 }}" value="meeting"
+                                    {{ isset($relation['relation_type']['Meeting']) && $relation['relation_type']['Meeting'] ? 'checked' : '' }}>
+                                <label class="form-check-label"
+                                    for="meeting_e_relation_{{ $loop->index + 1 }}">Meeting</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" name="event_e_relation[{{ $loop->index }}]"
+                                    type="checkbox" id="event_e_relation_{{ $loop->index + 1 }}" value="event"
+                                    {{ isset($relation['relation_type']['Event']) && $relation['relation_type']['Event'] ? 'checked' : '' }}>
+                                <label class="form-check-label"
+                                    for="event_e_relation_{{ $loop->index + 1 }}">Event</label>
+                            </div>
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label" for="name">Name</label>
@@ -224,7 +256,7 @@
                                 placeholder="Write your purpose ...">{{ $relation_dec['purpose'] }}</textarea>
                         </div>
                     </div>
-                    
+
                     <div class="row mt-3">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px"
@@ -299,6 +331,22 @@
                                 <label class="form-check-label"
                                     for="transport_e_relation_{{ $loop->index + 1 }}">Transport</label>
                             </div>
+                            <div class="form-check">
+                                <input class="form-check-input" name="meeting_e_relation[{{ $loop->index }}]"
+                                    type="checkbox" id="meeting_e_relation_{{ $loop->index + 1 }}"
+                                    value="meeting"
+                                    {{ isset($relation_dec['relation_type']['Meeting']) && $relation_dec['relation_type']['Meeting'] ? 'checked' : '' }}>
+                                <label class="form-check-label"
+                                    for="meeting_e_relation_{{ $loop->index + 1 }}">Meeting</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" name="event_e_relation[{{ $loop->index }}]"
+                                    type="checkbox" id="event_e_relation_{{ $loop->index + 1 }}"
+                                    value="event"
+                                    {{ isset($relation_dec['relation_type']['Event']) && $relation_dec['relation_type']['Event'] ? 'checked' : '' }}>
+                                <label class="form-check-label"
+                                    for="event_e_relation_{{ $loop->index + 1 }}">Event</label>
+                            </div>
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label" for="name">Name</label>
@@ -323,7 +371,7 @@
                                 placeholder="Write your purpose ...">{{ $relation_dec['purpose'] }}</textarea>
                         </div>
                     </div>
-                    
+
                     <div class="row mt-3">
                         <div class="d-flex justify-start w-100">
                             <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px"
@@ -381,6 +429,16 @@
                                 id="transport_e_relation_0" value="transport">
                             <label class="form-check-label" for="transport_e_relation_0">Transport</label>
                         </div>
+                        <div class="form-check">
+                            <input class="form-check-input" name="meeting_e_relation[0]" type="checkbox"
+                                id="meeting_e_relation_0" value="meeting">
+                            <label class="form-check-label" for="meeting_e_relation_0">Meeting</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" name="event_e_relation[0]" type="checkbox"
+                                id="event_e_relation_0" value="event">
+                            <label class="form-check-label" for="event_e_relation_0">Event</label>
+                        </div>
                     </div>
                     <div class="col-md-4 mb-2">
                         <label class="form-label" for="name">Name</label>
@@ -403,7 +461,7 @@
                             placeholder="Write your purpose ..."></textarea>
                     </div>
                 </div>
-                
+
                 <div class="row mt-3">
                     <div class="d-flex justify-start w-100">
                         <button class="btn btn-outline-warning mr-2 btn-sm" style="margin-right: 10px"

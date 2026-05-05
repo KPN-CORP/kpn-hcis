@@ -513,6 +513,8 @@
                                                                                             <option value="accommodation" {{ $detail['type'] == 'accommodation' ? 'selected' : '' }}>Accommodation</option>
                                                                                             <option value="gift" {{ $detail['type'] == 'gift' ? 'selected' : '' }}>Gift</option>
                                                                                             <option value="fund" {{ $detail['type'] == 'fund' ? 'selected' : '' }}>Fund</option>
+                                                                                            <option value="meeting" {{ $detail['type'] == 'meeting' ? 'selected' : '' }}>Meeting</option>
+                                                                                            <option value="event" {{ $detail['type'] == 'event' ? 'selected' : '' }}>Event</option>
                                                                                         </select>
                                                                                     </div>
                                                                                     <div class="mb-2">
@@ -580,6 +582,14 @@
                                                                                         <div class="form-check">
                                                                                             <input class="form-check-input" name="food_e_relation[]" type="checkbox" id="food_e_relation[]" value="food" {{ isset($relation['relation_type']['Food']) && $relation['relation_type']['Food'] ? 'checked' : '' }}>
                                                                                             <label class="form-check-label" for="food_e_relation[]">Food/Beverages/Souvenir</label>
+                                                                                        </div>
+                                                                                        <div class="form-check">
+                                                                                            <input class="form-check-input" name="meeting_e_relation[]" type="checkbox" id="meeting_e_relation[]" value="meeting" {{ isset($relation['relation_type']['Meeting']) && $relation['relation_type']['Meeting'] ? 'checked' : '' }}>
+                                                                                            <label class="form-check-label" for="meeting_e_relation[]">Meeting</label>
+                                                                                        </div>
+                                                                                        <div class="form-check">
+                                                                                            <input class="form-check-input" name="event_e_relation[]" type="checkbox" id="event_e_relation[]" value="event" {{ isset($relation['relation_type']['Event']) && $relation['relation_type']['Event'] ? 'checked' : '' }}>
+                                                                                            <label class="form-check-label" for="event_e_relation[]">Event</label>
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="mb-2">
@@ -1555,6 +1565,8 @@
                             <option value="accommodation">Accommodation</option>
                             <option value="gift">Gift</option>
                             <option value="fund">Fund</option>
+                            <option value="meeting">Meeting</option>
+                            <option value="event">Event</option>
                         </select>
                     </div>
                     <div class="mb-2">
@@ -1616,6 +1628,14 @@
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="food_e_relation[]" name="food_e_relation[]" value="food">
                             <label class="form-check-label" for="food_e_relation[]">Food/Beverages/Souvenir</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="meeting_e_relation[]" name="meeting_e_relation[]" value="meeting">
+                            <label class="form-check-label" for="meeting_e_relation[]">Meeting</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="event_e_relation[]" name="event_e_relation[]" value="event">
+                            <label class="form-check-label" for="event_e_relation[]">Event</label>
                         </div>
                     </div>
                     <div class="mb-2">
