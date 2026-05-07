@@ -32,6 +32,7 @@ class Hotel extends Model
         'manager_l2_id',
         'contribution_level_code',
         'no_sppd_htl',
+        'description',
     ];
     protected $table = 'htl_transactions';
 
@@ -47,12 +48,12 @@ class Hotel extends Model
             }
         });
     }
-    
+
     public function checkCompany()
     {
         return $this->belongsTo(Company::class, 'contribution_level_code', 'contribution_level_code');
     }
-    
+
     public function getRouteKey()
     {
         return encrypt($this->getKey());

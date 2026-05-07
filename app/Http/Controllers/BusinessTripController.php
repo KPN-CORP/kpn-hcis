@@ -446,6 +446,7 @@ class BusinessTripController extends Controller
                 "total_hari" => $hotel->total_hari,
                 "no_sppd_htl" => $hotel->no_sppd_htl,
                 "more_htl" => $index < count($hotels) - 1 ? "Ya" : "Tidak",
+                "description" => $hotel->description,
             ];
         }
 
@@ -790,6 +791,7 @@ class BusinessTripController extends Controller
                     "tgl_keluar_htl" => $request->tgl_keluar_htl_dalam_kota,
                     "total_hari" => $request->total_hari_dalam_kota,
                     "no_sppd_htl" => $request->no_sppd_dalam_kota,
+                    "description" => $request->description_dalam_kota,
                     "approval_status" => $statusValue,
                 ];
             } else {
@@ -802,6 +804,7 @@ class BusinessTripController extends Controller
                     "tgl_keluar_htl" => $request->tgl_keluar_htl,
                     "total_hari" => $request->total_hari,
                     "no_sppd_htl" => $request->no_sppd,
+                    "description" => $request->description,
                     "approval_status" => $statusValue,
                 ];
             }
@@ -824,6 +827,7 @@ class BusinessTripController extends Controller
                                 $hotelData["tgl_keluar_htl"][$key],
                             "total_hari" => $hotelData["total_hari"][$key],
                             "no_sppd_htl" => $hotelData["no_sppd_htl"][$key],
+                            "description" => $hotelData["description"][$key],
                             "approval_status" => $statusValue,
                             "contribution_level_code" =>
                                 $request->bb_perusahaan,
@@ -854,6 +858,7 @@ class BusinessTripController extends Controller
                                 $hotelData["tgl_keluar_htl"][$key],
                             "total_hari" => $hotelData["total_hari"][$key],
                             "no_sppd_htl" => $hotelData["no_sppd_htl"][$key],
+                            "description" => $hotelData["description"][$key],
                             "approval_status" => $statusValue,
                             "contribution_level_code" =>
                                 $request->bb_perusahaan,
@@ -1983,6 +1988,7 @@ class BusinessTripController extends Controller
                 "tgl_masuk_htl" => $hotel->tgl_masuk_htl,
                 "tgl_keluar_htl" => $hotel->tgl_keluar_htl,
                 "total_hari" => $hotel->total_hari,
+                "description" => $hotel->description,
                 "more_htl" => $index < count($hotels) - 1 ? "Ya" : "Tidak",
             ];
         }
@@ -6145,6 +6151,7 @@ class BusinessTripController extends Controller
                     "tgl_keluar_htl" => $request->tgl_keluar_htl_dalam_kota,
                     "total_hari" => $request->total_hari_dalam_kota,
                     "no_sppd_htl" => $request->no_sppd_dalam_kota,
+                    "description" => $request->description_dalam_kota,
                     "approval_status" => $statusValue,
                 ];
             } else {
@@ -6157,6 +6164,7 @@ class BusinessTripController extends Controller
                     "tgl_keluar_htl" => $request->tgl_keluar_htl,
                     "total_hari" => $request->total_hari,
                     "no_sppd_htl" => $request->no_sppd,
+                    "description" => $request->description,
                     "approval_status" => $statusValue,
                 ];
             }
@@ -6177,6 +6185,7 @@ class BusinessTripController extends Controller
                     $hotel->tgl_keluar_htl = $hotelData["tgl_keluar_htl"][$key];
                     $hotel->total_hari = $hotelData["total_hari"][$key];
                     $hotel->no_sppd_htl = $hotelData["no_sppd_htl"][$key];
+                    $hotel->description = $hotelData["description"][$key];
                     $hotel->approval_status = $statusValue;
                     $hotel->contribution_level_code = $request->bb_perusahaan;
                     $hotel->manager_l1_id = $managerL1;
@@ -7795,6 +7804,7 @@ class BusinessTripController extends Controller
                 "tgl_masuk_htl" => $hotel->tgl_masuk_htl,
                 "tgl_keluar_htl" => $hotel->tgl_keluar_htl,
                 "total_hari" => $hotel->total_hari,
+                "description" => $hotel->description,
                 "more_htl" => $index < count($hotels) - 1 ? "Ya" : "Tidak",
             ];
         }
@@ -8992,6 +9002,7 @@ class BusinessTripController extends Controller
                 "tgl_keluar_htl" => $hotel->tgl_keluar_htl,
                 "total_hari" => $hotel->total_hari,
                 "no_sppd_htl" => $hotel->no_sppd_htl,
+                "description" => $hotel->description,
                 "more_htl" => $index < count($hotels) - 1 ? "Ya" : "Tidak",
             ];
         }
@@ -13104,6 +13115,7 @@ class BusinessTripController extends Controller
                 "tgl_masuk_htl" => $hotel->tgl_masuk_htl,
                 "tgl_keluar_htl" => $hotel->tgl_keluar_htl,
                 "total_hari" => $hotel->total_hari,
+                "description" => $hotel->description,
                 "more_htl" => $index < count($hotels) - 1 ? "Ya" : "Tidak",
             ];
         }

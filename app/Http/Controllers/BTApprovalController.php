@@ -77,6 +77,7 @@ class BTApprovalController extends Controller
                 'tgl_masuk_htl' => $hotel->tgl_masuk_htl,
                 'tgl_keluar_htl' => $hotel->tgl_keluar_htl,
                 'total_hari' => $hotel->total_hari,
+                'description' => $hotel->description,
                 'more_htl' => ($index < count($hotels) - 1) ? 'Ya' : 'Tidak'
             ];
         }
@@ -164,6 +165,7 @@ class BTApprovalController extends Controller
                 'tgl_masuk_htl' => $hotel->tgl_masuk_htl,
                 'tgl_keluar_htl' => $hotel->tgl_keluar_htl,
                 'total_hari' => $hotel->total_hari,
+                'description' => $hotel->description,
                 'more_htl' => ($index < count($hotels) - 1) ? 'Ya' : 'Tidak'
             ];
         }
@@ -1662,6 +1664,7 @@ class BTApprovalController extends Controller
                 'tgl_masuk_htl' => $hotel->tgl_masuk_htl,
                 'tgl_keluar_htl' => $hotel->tgl_keluar_htl,
                 'total_hari' => $hotel->total_hari,
+                'description' => $hotel->description,
                 'more_htl' => ($index < count($hotels) - 1) ? 'Ya' : 'Tidak'
             ];
         }
@@ -1749,6 +1752,7 @@ class BTApprovalController extends Controller
                 'tgl_masuk_htl' => $hotel->tgl_masuk_htl,
                 'tgl_keluar_htl' => $hotel->tgl_keluar_htl,
                 'total_hari' => $hotel->total_hari,
+                'description' => $hotel->description,
                 'more_htl' => ($index < count($hotels) - 1) ? 'Ya' : 'Tidak'
             ];
         }

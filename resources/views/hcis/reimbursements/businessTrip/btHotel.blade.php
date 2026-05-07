@@ -78,6 +78,12 @@
                                            name="total_hari[]" readonly>
                                    </div>
                                </div>
+                               <div class="row mb-2">
+                                   <div class="col-lg mb-2">
+                                       <label class="form-label">Description</label>
+                                       <textarea class="form-control datepicker bg-light" name="description[]"></textarea>
+                                   </div>
+                               </div>
                                <?php if ($i < 5) : ?>
                                <div class="mt-3">
                                    <label class="form-label">Add more

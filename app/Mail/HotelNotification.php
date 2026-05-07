@@ -29,6 +29,7 @@ class HotelNotification extends Mailable
     public $base64Image;
     public $textNotification;
     public $employeeName;
+    public $descriptionHtl;
 
     public function __construct(array $data)
     {
@@ -47,6 +48,7 @@ class HotelNotification extends Mailable
         $this->base64Image = $data['base64Image'];
         $this->textNotification = $data['textNotification'];
         $this->employeeName = $data['employeeName'];
+        $this->descriptionHtl = $data['descriptionHtl'];
     }
 
     public function build()

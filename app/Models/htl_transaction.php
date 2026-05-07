@@ -11,7 +11,7 @@ class htl_transaction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'no_htl', 'user_id', 'no_sppd', 'nama_htl', 'lokasi_htl', 'jmlkmr_htl', 'bed_htl', 'tgl_masuk_htl', 'tgl_keluar_htl', 'start_date', 'end_date', 'date_required', 'detail_ca', 'total_ca', 'total_real', 'total_cost', 'approval_status', 'approval_sett', 'approval_extend'
+        'description', 'no_htl', 'user_id', 'no_sppd', 'nama_htl', 'lokasi_htl', 'jmlkmr_htl', 'bed_htl', 'tgl_masuk_htl', 'tgl_keluar_htl', 'start_date', 'end_date', 'date_required', 'detail_ca', 'total_ca', 'total_real', 'total_cost', 'approval_status', 'approval_sett', 'approval_extend'
     ];
 
     protected $keyType = 'string';

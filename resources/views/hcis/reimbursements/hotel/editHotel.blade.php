@@ -183,6 +183,12 @@
                                                     value="{{ $hotel['total_hari'] ?? '' }}">
                                             </div>
                                         </div>
+                                        <div class="row">
+                                            <div class="col-lg mb-2">
+                                                <label class="form-label">Description</label>
+                                                <textarea class="form-control form-control-sm bg-light" name="description[]" id="description-<?php echo $i; ?>">{{ $hotel['description'] ?? '' }}</textarea>
+                                            </div>
+                                        </div>
                                         <input type="hidden" name="hotel_ids[]" value="{{ $hotel['id'] ?? '' }}">
                                         <div class="mt-2">
                                             <button type="button" class="btn btn-sm btn-outline-danger remove-hotel-btn"
@@ -504,6 +510,12 @@
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Total Nights</label>
                             <input type="number" class="form-control form-control-sm bg-light" id="total-days-${formNumber}" name="total_hari[]" readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg mb-2">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control form-control-sm bg-light" id="description-${formNumber}" name="description[]"></textarea>
                         </div>
                     </div>
                     <div class="mt-2">

@@ -73,6 +73,12 @@
                             name="total_hari_dalam_kota[]" id="total-days-dalam-kota-<?php echo $i; ?>" readonly>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-lg mb-2">
+                        <label class="form-label">Description</label>
+                        <textarea type="date" class="form-control form-control-sm" name="description_dalam_kota[]" id="description-dalam-kota-<?php echo $i; ?>"></textarea>
+                    </div>
+                </div>
                 <div class="mt-2">
                     <button type="button" class="btn btn-sm btn-outline-danger remove-hotel-btn-dalam-kota"
                         id="remove-hotel-btn-dalam-kota-<?php echo $i; ?>">Delete</button>

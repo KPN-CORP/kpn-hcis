@@ -278,6 +278,8 @@
                     </th>
                 <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Total Nights
                     </th>
+                <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Description
+                    </th>
             </tr>
             @foreach ($hotelDetails as $index => $hotel)
                 <tr>
@@ -294,6 +296,7 @@
                     </td>
                     <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">{{ $hotel->total_hari }}
                         Nights</td>
+                    <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">{{ $hotel->description }}</td>
                 </tr>
             @endforeach
         </table>

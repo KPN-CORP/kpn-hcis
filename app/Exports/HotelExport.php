@@ -40,7 +40,7 @@ class HotelExport implements FromCollection, WithHeadings, WithStyles, WithEvent
     {
         $permissionGroupCompanies = $this->permissionGroupCompanies;
         $permissionCompanies = $this->permissionCompanies;
-        
+
         $hotelData = Hotel::where('approval_status', '!=', 'Draft')
             ->whereBetween('tgl_masuk_htl', [$this->startDate, $this->endDate]);
 
@@ -87,6 +87,7 @@ class HotelExport implements FromCollection, WithHeadings, WithStyles, WithEvent
                     'CheckIn' => \Carbon\Carbon::parse($items->tgl_masuk_htl)->format('d-F-Y'),
                     'CheckOut' => \Carbon\Carbon::parse($items->tgl_keluar_htl)->format('d-F-Y'),
                     'TotalDays' => $items->total_hari,
+                    'Description' => $items->description,
                 ];
             }
             $index++;

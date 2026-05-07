@@ -7,10 +7,10 @@
 
 <body>
     <div style="width: 100%; height: auto; text-align: center;">
-        <img src="{{ $base64Image }}" 
-             alt="Kop Surat" 
+        <img src="{{ $base64Image }}"
+             alt="Kop Surat"
              style="height: auto; margin-bottom: 20px; width: 15%;">
-    </div>  
+    </div>
     <h2>New Hotel Request Notification</h2>
     <p>Dear Sir/Madam: <b>{{ $managerName }}</b></p><br>
 
@@ -43,6 +43,7 @@
             <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Check-in Date</td>
             <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Check-out Date</td>
             <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Total Nights</td>
+            <td style="border: 1px solid #ddd; padding: 4px; text-align: center; vertical-align: top;">Description</td>
         </tr>
         @foreach ($noHtlList as $index => $noHtl)
             <tr>
@@ -59,6 +60,9 @@
                 <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">
                     {{ $totalHari[$index] }}
                 </td>
+                <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">
+                    {{ $descriptionHtl[$index] }}
+                </td>
             </tr>
         @endforeach
     </table>
@@ -66,8 +70,8 @@
     <hr>
     <p>For approval or rejection of the Hotels, you can choose the following links:</p>
     <p>
-        <a href="{{ $approvalLink }}" style="font-size: 20px;">Approve</a>    /     
-        <a href="{{ $revisionLink }}" style="font-size: 20px;">Revision</a>    /     
+        <a href="{{ $approvalLink }}" style="font-size: 20px;">Approve</a>    /
+        <a href="{{ $revisionLink }}" style="font-size: 20px;">Revision</a>    /
         <a href="{{ $rejectionLink }}" style="font-size: 20px;">Reject</a>
     </p>
 

@@ -151,6 +151,7 @@
                                                                 'Check In' => date('d-M-Y', strtotime($hotel->tgl_masuk_htl)),
                                                                 'Check Out' => date('d-M-Y', strtotime($hotel->tgl_keluar_htl)),
                                                                 'Total Days' => $hotel->total_hari,
+                                                                'Description' => $hotel->description,
                                                             ];
                                                         }),
                                                     ) }}">
@@ -188,11 +189,11 @@
                                                     @elseif ($transaction->approval_status == 'Declaration L1')
                                                         onclick="showManagerInfo('Next Approval L2 Manager', '{{ $managerL2Names[$transaction->manager_l2_id] ?? 'Unknown' }}')"
                                                     @elseif ($transaction->approval_status == 'Declaration L2')
-                                                        onclick="showManagerInfo('Previous Approval L1 Manager', '{{ $managerL1Names[$transaction->manager_l1_id] ?? 'Unknown' }}')" 
+                                                        onclick="showManagerInfo('Previous Approval L1 Manager', '{{ $managerL1Names[$transaction->manager_l1_id] ?? 'Unknown' }}')"
                                                         @elseif ($transaction->approval_status == 'Extend L1')
                                                         onclick="showManagerInfo('Next Approval L2 Manager', '{{ $managerL2Names[$transaction->manager_l2_id] ?? 'Unknown' }}')"
                                                     @elseif ($transaction->approval_status == 'Extend L2')
-                                                        onclick="showManagerInfo('Previous Approval L1 Manager', '{{ $managerL1Names[$transaction->manager_l1_id] ?? 'Unknown' }}')" 
+                                                        onclick="showManagerInfo('Previous Approval L1 Manager', '{{ $managerL1Names[$transaction->manager_l1_id] ?? 'Unknown' }}')"
                                                     @endif>
                                                     {{ $transaction->approval_status == 'Approved' ? 'Request Approved' : $transaction->approval_status }}
                                                 </span>

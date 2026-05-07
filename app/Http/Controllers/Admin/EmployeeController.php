@@ -18,6 +18,6 @@ class EmployeeController extends Controller
             'link' => $link,
             'employees' => $employees,
             'locations' => $locations,
-        ]);        
+        ]);
     }
 }

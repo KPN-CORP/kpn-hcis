@@ -96,6 +96,12 @@
                             value="{{ $hotel['total_hari'] ?? '' }}">
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-lg mb-2">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control form-control-sm bg-light bg-light" name="description_dalam_kota[]" id="description-dalam-kota-<?php echo $i; ?>"">{{ $hotel['description'] ?? '' }}</textarea>
+                    </div>
+                </div>
             </div>
         </div>
         <?php endfor; ?>

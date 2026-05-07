@@ -1168,6 +1168,7 @@ class ReimburseController extends Controller
         $model->tgl_keluar_htl = $req->tgl_keluar_htl;
         $model->total_hari = $req->totaldays;
         $model->created_by = $userId;
+        $model->description = $req->description;
         $model->save();
 
         Alert::success('Success');
@@ -1212,6 +1213,7 @@ class ReimburseController extends Controller
             $model->tgl_masuk_htl = $req->tgl_masuk_htl;
             $model->tgl_keluar_htl = $req->tgl_keluar_htl;
             $model->total_hari = $req->totaldays;
+            $model->description = $req->description;
             $model->save();
 
             Alert::success('Success');
