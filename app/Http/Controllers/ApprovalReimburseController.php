@@ -2046,6 +2046,7 @@ class ApprovalReimburseController extends Controller
                 $tglMasukHtl = [];
                 $tglKeluarHtl = [];
                 $totalHari = [];
+                $descriptionHtl = [];
 
                 // Collect details for each hotel with the same no_htl
                 $hotels = Hotel::where('no_htl', $noHtl)->get();
@@ -2056,6 +2057,7 @@ class ApprovalReimburseController extends Controller
                     $tglMasukHtl[] = $htl->tgl_masuk_htl;
                     $tglKeluarHtl[] = $htl->tgl_keluar_htl;
                     $totalHari[] = $htl->total_hari;
+                    $descriptionHtl[] = $htl->description;
                 }
 
                 // Send email with all hotel details
@@ -2068,6 +2070,7 @@ class ApprovalReimburseController extends Controller
                         'tglMasukHtl' => $tglMasukHtl,
                         'tglKeluarHtl' => $tglKeluarHtl,
                         'totalHari' => $totalHari,
+                        '$descriptionHtl' => $descriptionHtl,
                         'managerName' => $managerName,
                         'approvalLink' => $approvalLink,
                         'revisionLink' => $revisionLink,
