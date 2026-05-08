@@ -91,6 +91,7 @@
                                             'Check In' => date('d-m-Y', strtotime($hotel->tgl_masuk_htl)),
                                             'Check Out' => date('d-m-Y', strtotime($hotel->tgl_keluar_htl)),
                                             'Total Days' => $hotel->total_hari,
+                                            'Description' => $hotel->description,
                                         ];
                                     }),
                                 ) }}">

@@ -2826,6 +2826,7 @@ class ReimburseController extends Controller
                 "approval_status",
                 "user_id",
                 "no_sppd",
+                "description",
             )
             ->get();
 
@@ -3046,6 +3047,7 @@ class ReimburseController extends Controller
             "no_sppd" => $req->bisnis_numb,
             "contribution_level_code" => $req->contribution_level_code,
             "no_sppd_htl" => "-",
+            "description" => $req->description,
         ];
 
         $namaHtl = [];
@@ -3054,6 +3056,7 @@ class ReimburseController extends Controller
         $tglKeluarHtl = [];
         $totalHari = [];
         $noHtlList = [];
+        $descriptionHtl = [];
 
         foreach ($hotelData["nama_htl"] as $key => $value) {
             // Only process if required fields are filled
@@ -3082,6 +3085,7 @@ class ReimburseController extends Controller
                 $model->tgl_keluar_htl =
                     $hotelData["tgl_keluar_htl"][$key] ?? null;
                 $model->total_hari = $hotelData["total_hari"][$key] ?? null;
+                $model->description = $hotelData["description"][$key] ?? null;
                 $model->created_by = $userId;
                 $model->approval_status = $statusValue;
                 $model->hotel_only = "Y";
@@ -3102,6 +3106,7 @@ class ReimburseController extends Controller
                 $tglMasukHtl[] = $hotelData["tgl_masuk_htl"][$key];
                 $tglKeluarHtl[] = $hotelData["tgl_keluar_htl"][$key];
                 $totalHari[] = $hotelData["total_hari"][$key];
+                $descriptionHtl[] = $hotelData["description"][$key];
                 $noHtlList[] = $model->no_htl; // Collect each no_htl
             }
         }
@@ -3179,6 +3184,7 @@ class ReimburseController extends Controller
                                 "base64Image" => $base64Image,
                                 "textNotification" => $textNotification,
                                 "employeeName" => $employeeName,
+                                "descriptionHtl" => $descriptionHtl,
                             ]),
                         );
                 } catch (\Exception $e) {
@@ -3254,6 +3260,7 @@ class ReimburseController extends Controller
                 $tglMasukHtl = [];
                 $tglKeluarHtl = [];
                 $totalHari = [];
+                $descriptionHtl = [];
 
                 // Collect details for each hotel with the same no_htl
                 $hotels = Hotel::where("no_htl", $noHtl)->get();
@@ -3264,6 +3271,7 @@ class ReimburseController extends Controller
                     $tglMasukHtl[] = $htl->tgl_masuk_htl;
                     $tglKeluarHtl[] = $htl->tgl_keluar_htl;
                     $totalHari[] = $htl->total_hari;
+                    $descriptionHtl[] = $htl->description;
                 }
 
                 // Send email with all hotel details
@@ -3287,6 +3295,7 @@ class ReimburseController extends Controller
                                 "base64Image" => $base64Image,
                                 "textNotification" => $textNotification,
                                 "employeeName" => $employeeName,
+                                "descriptionHtl" => $descriptionHtl,
                             ]),
                         );
                 } catch (\Exception $e) {
@@ -3436,6 +3445,7 @@ class ReimburseController extends Controller
                 "tgl_masuk_htl" => $hotel->tgl_masuk_htl,
                 "tgl_keluar_htl" => $hotel->tgl_keluar_htl,
                 "total_hari" => $hotel->total_hari,
+                "description" => $hotel->description,
                 "more_htl" => $index < $hotelCount - 1 ? "Ya" : "Tidak",
             ];
         }
@@ -3528,6 +3538,7 @@ class ReimburseController extends Controller
         $tglMasukHtl = [];
         $tglKeluarHtl = [];
         $totalHari = [];
+        $descriptionHtl = [];
 
         // Loop through hotel data
         foreach ($req->nama_htl as $index => $value) {
@@ -3549,6 +3560,7 @@ class ReimburseController extends Controller
                     "tgl_masuk_htl" => $req->tgl_masuk_htl[$index],
                     "tgl_keluar_htl" => $req->tgl_keluar_htl[$index],
                     "total_hari" => $req->total_hari[$index],
+                    "description" => $req->description[$index],
                     "approval_status" => $statusValue,
                     "jns_dinas_htl" => $req->jns_dinas_htl,
                     "hotel_only" => "Y",
@@ -3590,6 +3602,7 @@ class ReimburseController extends Controller
                 $tglMasukHtl[] = $req->tgl_masuk_htl[$index];
                 $tglKeluarHtl[] = $req->tgl_keluar_htl[$index];
                 $totalHari[] = $req->total_hari[$index];
+                $descriptionHtl[] = $req->description[$index];
             }
         }
 
@@ -3656,6 +3669,7 @@ class ReimburseController extends Controller
                                 "base64Image" => $base64Image,
                                 "textNotification" => $textNotification,
                                 "employeeName" => $employeeName,
+                                "descriptionHtl" => $descriptionHtl,
                             ]),
                         );
                 } catch (\Exception $e) {
@@ -4030,6 +4044,7 @@ class ReimburseController extends Controller
                 "tgl_masuk_htl" => $hotel->tgl_masuk_htl,
                 "tgl_keluar_htl" => $hotel->tgl_keluar_htl,
                 "total_hari" => $hotel->total_hari,
+                "description" => $hotel->description,
                 "more_htl" => $index < $hotelCount - 1 ? "Ya" : "Tidak",
             ];
         }
@@ -4193,6 +4208,7 @@ class ReimburseController extends Controller
                 $tglMasukHtl = [];
                 $tglKeluarHtl = [];
                 $totalHari = [];
+                $descriptionHtl = [];
 
                 // Collect details for each hotel with the same no_htl
                 $hotels = Hotel::where("no_htl", $noHtl)->get();
@@ -4203,6 +4219,7 @@ class ReimburseController extends Controller
                     $tglMasukHtl[] = $htl->tgl_masuk_htl;
                     $tglKeluarHtl[] = $htl->tgl_keluar_htl;
                     $totalHari[] = $htl->total_hari;
+                    $descriptionHtl[] = $htl->description;
                 }
 
                 // Send email with all hotel details
@@ -4226,6 +4243,7 @@ class ReimburseController extends Controller
                                 "base64Image" => $base64Image,
                                 "textNotification" => $textNotification,
                                 "employeeName" => $employeeName,
+                                "descriptionHtl" => $descriptionHtl,
                             ]),
                         );
                 } catch (\Exception $e) {
@@ -4403,6 +4421,7 @@ class ReimburseController extends Controller
                 $tglMasukHtl = [];
                 $tglKeluarHtl = [];
                 $totalHari = [];
+                $descriptionHtl = [];
 
                 // Collect details for each hotel with the same no_htl
                 $hotels = Hotel::where("no_htl", $noHtl)->get();
@@ -4413,6 +4432,7 @@ class ReimburseController extends Controller
                     $tglMasukHtl[] = $htl->tgl_masuk_htl;
                     $tglKeluarHtl[] = $htl->tgl_keluar_htl;
                     $totalHari[] = $htl->total_hari;
+                    $descriptionHtl[] = $htl->description;
                 }
 
                 // Send email with all hotel details
@@ -4435,6 +4455,7 @@ class ReimburseController extends Controller
                                 "base64Image" => $base64Image,
                                 "textNotification" => $textNotification,
                                 "employeeName" => $employeeName,
+                                "descriptionHtl" => $descriptionHtl,
                             ]),
                         );
                 } catch (\Exception $e) {
@@ -4562,6 +4583,7 @@ class ReimburseController extends Controller
                     "manager_l2_id",
                     "booking_code",
                     "booking_price",
+                    "description"
                 )
                 ->get();
 
