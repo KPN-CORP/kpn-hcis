@@ -152,7 +152,7 @@
                                             <div class="row">
                                                 <div class="col-lg mb-2">
                                                     <label class="form-label">Description</label>
-                                                    <textarea class="form-control form-control-sm bg-light" name="description[]" id="description-<?php echo $i; ?>"></textarea>
+                                                    <textarea class="form-control form-control-sm" name="description[]" id="description-<?php echo $i; ?>"></textarea>
                                                 </div>
                                             </div>
                                             <div class="mt-2">
@@ -454,7 +454,7 @@
                         <div class="row">
                             <div class="col-lg mb-2">
                                 <label class="form-label">Description</label>
-                                <textarea class="form-control form-control-sm bg-light" id="description-${formNumber}" name="description[]"></textarea>
+                                <textarea class="form-control form-control-sm" id="description-${formNumber}" name="description[]"></textarea>
                             </div>
                         </div>
                         <div class="mt-2">

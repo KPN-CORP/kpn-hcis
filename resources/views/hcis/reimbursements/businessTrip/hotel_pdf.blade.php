@@ -151,7 +151,7 @@
             <tr>
                 <td class="label">Description</td>
                 <td class="colon">:</td>
-                <td class="value"><b>{{ $hotel->description ?? '-' }}</b></td>
+                <td class="value">{{ $hotel->description ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="label">Hotel Status</td>

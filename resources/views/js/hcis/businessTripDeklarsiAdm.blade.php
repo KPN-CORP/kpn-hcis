@@ -1762,7 +1762,7 @@ function LuarKotaHotelInit() {
                     <div class="row">
                         <div class="col-lg mb-2">
                             <label class="form-label">Description</label>
-                            <textarea class="form-control form-control-sm bg-light" id="description-${formNumber}" name="description[]"></textarea>
+                            <textarea class="form-control form-control-sm" id="description-${formNumber}" name="description[]"></textarea>
                         </div>
                     </div>
                     <div class="mt-2">
@@ -1993,7 +1993,7 @@ function DalamKotaHotelInit() {
                     <div class="row">
                         <div class="col-lg mb-2">
                             <label class="form-label">Description</label>
-                            <textarea class="form-control form-control-sm bg-light" id="description-dalam-kota-${formNumber}" name="description_dalam_kota[]"></textarea>
+                            <textarea class="form-control form-control-sm" id="description-dalam-kota-${formNumber}" name="description_dalam_kota[]"></textarea>
                         </div>
                     </div>
                     <div class="mt-2">

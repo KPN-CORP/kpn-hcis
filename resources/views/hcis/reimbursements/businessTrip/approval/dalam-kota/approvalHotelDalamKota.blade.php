@@ -99,7 +99,7 @@
                 <div class="row">
                     <div class="col-lg mb-2">
                         <label class="form-label">Description</label>
-                        <textarea class="form-control form-control-sm bg-light bg-light" name="description_dalam_kota[]" id="description-dalam-kota-<?php echo $i; ?>"">{{ $hotel['description'] ?? '' }}</textarea>
+                        <textarea class="form-control form-control-sm" name="description_dalam_kota[]" id="description-dalam-kota-<?php echo $i; ?>"">{{ $hotel['description'] ?? '' }}</textarea>
                     </div>
                 </div>
             </div>

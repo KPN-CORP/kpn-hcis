@@ -81,7 +81,7 @@
                                <div class="row mb-2">
                                    <div class="col-lg mb-2">
                                        <label class="form-label">Description</label>
-                                       <textarea class="form-control datepicker bg-light" name="description[]"></textarea>
+                                       <textarea class="form-control form-control-sm" name="description[]"></textarea>
                                    </div>
                                </div>
                                <?php if ($i < 5) : ?>
