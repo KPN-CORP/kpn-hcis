@@ -7,6 +7,7 @@ class ELogHistoryResponseDTO extends BaseDTO {
         public readonly string $status,
         public readonly string $no_receipt_doc,
         public readonly int $count,
+        public readonly array $data,
     ) {}
 
     public static function fromArray(array $response): self {
@@ -14,6 +15,7 @@ class ELogHistoryResponseDTO extends BaseDTO {
             status: $response['status'] ?? '',
             no_receipt_doc: $response['no_receipt_doc'] ?? '',
             count: (int) ($response['count'] ?? 0),
+            data: $response['data'] ?? [],
         );
     }
 }
