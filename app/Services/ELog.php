@@ -24,23 +24,31 @@ class ELogService {
 
         $httpClient = app(HttpClient::class);
 
-        $httpRes = $httpClient->postJSON("", $payload, [
-            "Authorization": "Bearer 123",
+        $httpRes = $httpClient->postJSON("/api/log-firstreceipt", $payload, [
+            "Authorization": "Bearer 123"
         ]);
         if (!$httpRes["status"]) {
             return [
                 'status' => false,
-                'message'  => "",
+                'message'  => "failed",
                 'data'    => null,
                 'error'   => $httpRes["error"],
             ];
         }
 
         $resData = ELogInsertFirstReceiptResponseDTO::fromArray($httpRes["data"]);
+        if (!$resData || $resData->status != "success") {
+            return [
+                'status' => false,
+                'message'  => "failed",
+                'data'    => $resData,
+                'error'   => null,
+            ];
+        }
 
         return [
             'status' => true,
-            'message'  => "",
+            'message'  => "success",
             'data'    => $resData,
             'error'   => null,
         ];

@@ -62,18 +62,21 @@ class HttpClient {
     }
 
     public function postJSON(string $url, array|object $payload = [], array $headers = []): array {
+        $headers['Content-Type'] = 'application/json';
         $response = $this->request('post', $url, $headers, $payload);
 
         return $this->formatResponse($response);
     }
 
     public function putJSON(string $url, array|object $payload = [], array $headers = []): array {
+        $headers['Content-Type'] = 'application/json';
         $response = $this->request('put', $url, $headers, $payload);
 
         return $this->formatResponse($response);
     }
 
     public function deleteJSON(string $url, array $headers = []): array {
+        $headers['Content-Type'] = 'application/json';
         $response = $this->request('delete', $url, $headers);
 
         return $this->formatResponse($response);
