@@ -19,4 +19,23 @@ abstract class BaseDTO {
 
         return $json;
     }
+
+    public static function fromArray(array $data): static {
+        $reflection = new ReflectionClass(static::class);
+
+        $constructor = $reflection->getConstructor();
+
+        if (!$constructor) {
+            return new static();
+        }
+
+        $params = [];
+
+        foreach ($constructor->getParameters() as $parameter) {
+            $name = $parameter->getName();
+            $params[$name] = $data[$name] ?? $parameter->getDefaultValue();
+        }
+
+        return new static(...$params);
+    }
 }
