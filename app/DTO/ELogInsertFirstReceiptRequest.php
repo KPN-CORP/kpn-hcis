@@ -8,7 +8,7 @@ class ELogInsertFirstReceiptRequestDTO extends BaseDTO {
         public string $invoice_code,
         public string $no_po,
         public string $vendor,
-        public string $amount,
+        public int $amount,
         public string $notes,
         public string $first_dept,
         public string $created_by,
