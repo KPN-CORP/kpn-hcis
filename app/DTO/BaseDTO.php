@@ -2,6 +2,8 @@
 
 namespace App\DTO;
 
+use ReflectionClass;
+
 abstract class BaseDTO {
     public function toArray(): array {
         return array_filter(

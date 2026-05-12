@@ -16,7 +16,7 @@ use App\Models\CATransaction;
 use App\Models\BusinessTrip;
 use App\Models\Hotel;
 use App\Models\Tiket;
-use App\Services\ELog as ELogService;
+use App\Services\ELogService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
@@ -1096,9 +1096,17 @@ class MedicalController extends Controller
                     ]);
                 }
 
+                $existingCoverageEmployee = null;
+                $medicalEmployeeData = $medicalEmployee
+                    ->where("medical_type", $medical_type)
+                    ->first();
+                if ($medicalEmployeeData && $medicalEmployeeData->employee) {
+                    $existingCoverageEmployee = $medicalEmployeeData->employee;
+                }
+
                 $eLogService = app(ELogService::class);
 
-                $eLogService->insertFirstReceipt($medicalData, $employeeData);
+                $eLogService->insertFirstReceipt($existingCoverage, $existingCoverageEmployee);
 
                 // $MDCNotificationLayer = Employee::where('employee_id', $employee_id)->pluck('email')->first();
                 // if ($MDCNotificationLayer) {

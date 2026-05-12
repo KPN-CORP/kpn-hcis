@@ -29,8 +29,8 @@ class ELogService {
 
     public function login() {
         $payload = new ELogLoginRequestDTO(
-            username => $this->apiLoginUsername,
-            password => $this->apiLoginPassword,
+            username: $this->apiLoginUsername,
+            password: $this->apiLoginPassword,
         );
 
         $httpClient = app(HttpClient::class);
@@ -69,16 +69,16 @@ class ELogService {
 
     public function insertFirstReceipt(HealthCoverageModel $medicalData, EmployeeModel $employeeData) {
         $payload = new ELogInsertFirstReceiptRequestDTO(
-            extsyscompanycode => $medicalData->contribution_level_code ?? "",
-            invoice_code => $medicalData->no_invoice ?? "",
-            no_po => $medicalData->no_medic ?? "",
-            vendor => $medicalData->employee_id ?? "",
-            amount => $medicalData->balance ?? 0,
-            notes => $medicalData->coverage_detail ?? "",
-            first_dept => "IT",
-            created_by => "ERPKPN",
-            inv_date => $medicalData->date ?? "",
-            trans_type => "MEDICAL",
+            extsyscompanycode: $medicalData->contribution_level_code ?? "",
+            invoice_code: $medicalData->no_invoice ?? "",
+            no_po: $medicalData->no_medic ?? "",
+            vendor: $medicalData->employee_id ?? "",
+            amount: $medicalData->balance ?? 0,
+            notes: $medicalData->coverage_detail ?? "",
+            first_dept: "IT",
+            created_by: "ERPKPN",
+            inv_date: $medicalData->date ?? "",
+            trans_type: "MEDICAL",
         );
 
         $accessToken = $this->getAccessToken();
@@ -86,7 +86,7 @@ class ELogService {
         $httpClient = app(HttpClient::class);
 
         $httpRes = $httpClient->postJSON($this->apiBaseUrl . "/log-firstreceipt", $payload, [
-            "Authorization": "Bearer " . $accessToken
+            "Authorization" => "Bearer " . $accessToken
         ]);
         if (!$httpRes["status"]) {
             return [
@@ -121,7 +121,7 @@ class ELogService {
         $httpClient = app(HttpClient::class);
 
         $httpRes = $httpClient->getJSON($this->apiBaseUrl . "/last-status", $payload, [
-            "Authorization": "Bearer " . $accessToken
+            "Authorization" => "Bearer " . $accessToken
         ]);
         if (!$httpRes["status"]) {
             return [
@@ -156,7 +156,7 @@ class ELogService {
         $httpClient = app(HttpClient::class);
 
         $httpRes = $httpClient->getJSON($this->apiBaseUrl . "/last-status?no_receipt_doc=" . $noReceiptDoc, $payload, [
-            "Authorization": "Bearer " . $accessToken
+            "Authorization" => "Bearer " . $accessToken
         ]);
         if (!$httpRes["status"]) {
             return [
@@ -191,7 +191,7 @@ class ELogService {
         $httpClient = app(HttpClient::class);
 
         $httpRes = $httpClient->getJSON($this->apiBaseUrl . "/history?no_receipt_doc=" . $noReceiptDoc, $payload, [
-            "Authorization": "Bearer " . $accessToken
+            "Authorization" => "Bearer " . $accessToken
         ]);
         if (!$httpRes["status"]) {
             return [
@@ -228,9 +228,9 @@ class ELogService {
 
         $loginRes = $this->login();
         if (!$loginRes || !$loginRes["status"] || !$loginRes["data"]) {
-            return ""
+            return "";
         }
 
-        return $loginRes["data"]->token
+        return $loginRes["data"]->token;
     }
 }

@@ -53,7 +53,7 @@ class HttpClient {
         return $payload ?? [];
     }
 
-    protected function formatResponse(Response $response): array {
+    protected function formatResponse(Response|null $response): array {
         if (!$response) {
             return [
                 'status' => false,
