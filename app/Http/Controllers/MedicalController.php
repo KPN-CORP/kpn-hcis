@@ -1096,17 +1096,13 @@ class MedicalController extends Controller
                     ]);
                 }
 
-                $existingCoverageEmployee = null;
                 $medicalEmployeeData = $medicalEmployee
                     ->where("medical_type", $medical_type)
                     ->first();
-                if ($medicalEmployeeData && $medicalEmployeeData->employee) {
-                    $existingCoverageEmployee = $medicalEmployeeData->employee;
-                }
 
                 $eLogService = app(ELogService::class);
 
-                $eLogService->insertFirstReceipt($existingCoverage, $existingCoverageEmployee);
+                $eLogService->insertFirstReceipt($existingCoverage, $medicalEmployeeData->employee ?? null);
 
                 // $MDCNotificationLayer = Employee::where('employee_id', $employee_id)->pluck('email')->first();
                 // if ($MDCNotificationLayer) {
