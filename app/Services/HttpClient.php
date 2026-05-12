@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class HttpClient {
     protected function request(
@@ -11,13 +12,31 @@ class HttpClient {
         array $headers = [],
         array|object $payload = []
     ) {
-        $payload = $this->normalizePayload($payload);
+        try {
+            $payload = $this->normalizePayload($payload);
 
-        $http = Http::timeout(30)
-            ->acceptJson()
-            ->withHeaders($headers);
+            $http = Http::connectTimeout(1)
+                ->timeout(1)
+                ->acceptJson()
+                ->withHeaders($headers);
 
-        return $http->{$method}($url, $payload);
+            $httpResp = $http->{$method}($url, $payload);
+
+            Log::info('HTTP Client Response', [
+                'url' => $url,
+                'status' => $httpResp->status(),
+                'body' => $httpResp->body(),
+            ]);
+
+            return $httpResp;
+        } catch (\Throwable $e) {
+            Log::error('HTTP Client Error', [
+                'url' => $url,
+                'message' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
     }
 
     protected function normalizePayload(array|object $payload): array {
@@ -34,7 +53,16 @@ class HttpClient {
         return $payload ?? [];
     }
 
-    protected function formatResponse(Response $response): array {
+    protected function formatResponse(Response|null $response): array {
+        if (!$response) {
+            return [
+                'status' => false,
+                'http_status' => 400,
+                'data' => [],
+                'error' => null,
+            ];
+        }
+
         $status = $response->status();
         $body = $response->json();
 
@@ -62,18 +90,21 @@ class HttpClient {
     }
 
     public function postJSON(string $url, array|object $payload = [], array $headers = []): array {
+        $headers['Content-Type'] = 'application/json';
         $response = $this->request('post', $url, $headers, $payload);
 
         return $this->formatResponse($response);
     }
 
     public function putJSON(string $url, array|object $payload = [], array $headers = []): array {
+        $headers['Content-Type'] = 'application/json';
         $response = $this->request('put', $url, $headers, $payload);
 
         return $this->formatResponse($response);
     }
 
     public function deleteJSON(string $url, array $headers = []): array {
+        $headers['Content-Type'] = 'application/json';
         $response = $this->request('delete', $url, $headers);
 
         return $this->formatResponse($response);
