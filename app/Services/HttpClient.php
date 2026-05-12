@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class HttpClient {
     protected function request(
@@ -11,13 +12,31 @@ class HttpClient {
         array $headers = [],
         array|object $payload = []
     ) {
-        $payload = $this->normalizePayload($payload);
+        try {
+            $payload = $this->normalizePayload($payload);
 
-        $http = Http::timeout(1)
-            ->acceptJson()
-            ->withHeaders($headers);
+            $http = Http::connectTimeout(1)
+                ->timeout(1)
+                ->acceptJson()
+                ->withHeaders($headers);
 
-        return $http->{$method}($url, $payload);
+            $httpResp = $http->{$method}($url, $payload);
+
+            Log::info('HTTP Client Response', [
+                'url' => $url,
+                'status' => $httpResp->status(),
+                'body' => $httpResp->body(),
+            ]);
+
+            return $httpResp;
+        } catch (\Throwable $e) {
+            Log::error('HTTP Client Error', [
+                'url' => $url,
+                'message' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
     }
 
     protected function normalizePayload(array|object $payload): array {
@@ -35,6 +54,15 @@ class HttpClient {
     }
 
     protected function formatResponse(Response $response): array {
+        if (!$response) {
+            return [
+                'status' => false,
+                'http_status' => 400,
+                'data' => [],
+                'error' => null,
+            ];
+        }
+
         $status = $response->status();
         $body = $response->json();
 
