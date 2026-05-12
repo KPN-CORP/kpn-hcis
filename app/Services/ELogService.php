@@ -75,11 +75,27 @@ class ELogService {
             vendor: $medicalData->employee_id ?? "",
             amount: $medicalData->balance ?? 0,
             notes: $medicalData->coverage_detail ?? "",
-            first_dept: "IT",
-            created_by: "ERPKPN",
+            first_dept: "",
+            created_by: "",
             inv_date: $medicalData->date ?? "",
             trans_type: "MEDICAL",
         );
+
+        if ($medicalData->approved_by) {
+            $payload->created_by = $medicalData->approved_by;
+        } else if ($medicalData->verif_by) {
+            $payload->created_by = $medicalData->verif_by;
+        }
+
+        if ($employeeData) {
+            if (strtolower($employeeData->group_company) == "downstream") {
+                $payload->first_dept = "HRD-DWS";
+            } else if (strtolower($employeeData->group_company) == "kpn corporation") {
+                $payload->first_dept = "HRD-CORP";
+            } else { // TODO: THIS IS FOR UPSTREAM, PLEASE CONFIRM THIS
+                $payload->first_dept = "HRD";
+            }
+        }
 
         $accessToken = $this->getAccessToken();
 
