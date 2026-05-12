@@ -36,4 +36,11 @@ return [
         'internal_url' => env('OCR_INTERNAL_URL'),
     ],
 
+    'elog' => [
+        'api_base_url' => env('ELOG_API_BASE_URL'),
+        'api_login_username' => env('ELOG_API_LOGIN_USERNAME'),
+        'api_login_password' => env('ELOG_API_LOGIN_PASSWORD'),
+        'api_access_token_key' => env('ELOG_API_ACCESS_TOKEN_KEY', 'elog_api_access_token'),
+    ],
+
 ];
