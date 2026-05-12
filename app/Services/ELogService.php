@@ -45,7 +45,7 @@ class ELogService {
             ];
         }
 
-        $resData = ELogLoginResponseDTO::fromArray($httpRes["data"]);
+        $resData = ELogLoginResponseDTO::fromArray($httpRes["data"] ?? []);
         if (!$resData || $resData->status != "success") {
             return [
                 'status' => false,
@@ -97,7 +97,7 @@ class ELogService {
             ];
         }
 
-        $resData = ELogInsertFirstReceiptResponseDTO::fromArray($httpRes["data"]);
+        $resData = ELogInsertFirstReceiptResponseDTO::fromArray($httpRes["data"] ?? []);
         if (!$resData || $resData->status != "success") {
             return [
                 'status' => false,
@@ -132,7 +132,7 @@ class ELogService {
             ];
         }
 
-        $resData = ELogLastStatusResponseDTO::fromArray($httpRes["data"]);
+        $resData = ELogLastStatusResponseDTO::fromArray($httpRes["data"] ?? []);
         if (!$resData || $resData->status != "success") {
             return [
                 'status' => false,
@@ -167,7 +167,7 @@ class ELogService {
             ];
         }
 
-        $resData = ELogLastStatusDetailResponseDTO::fromArray($httpRes["data"]);
+        $resData = ELogLastStatusDetailResponseDTO::fromArray($httpRes["data"] ?? []);
         if (!$resData || $resData->status != "success") {
             return [
                 'status' => false,
