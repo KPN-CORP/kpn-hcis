@@ -13,7 +13,7 @@ class HttpClient {
     ) {
         $payload = $this->normalizePayload($payload);
 
-        $http = Http::timeout(30)
+        $http = Http::timeout(1)
             ->acceptJson()
             ->withHeaders($headers);
 
