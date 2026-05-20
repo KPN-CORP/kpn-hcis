@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Client\Response;
 
 class HttpClient {
     protected function request(
@@ -14,6 +15,11 @@ class HttpClient {
     ) {
         try {
             $payload = $this->normalizePayload($payload);
+
+            Log::info('HTTP Client Request', [
+                'url' => $url,
+                'payload' => $payload,
+            ]);
 
             $http = Http::connectTimeout(1)
                 ->timeout(1)
