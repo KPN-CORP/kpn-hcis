@@ -56,7 +56,7 @@ class ELogService {
         }
 
         if ($resData && $resData->token) {
-            Cache::put($this->apiAccessTokenKey, $token, now()->addMinutes(55));
+            Cache::put($this->apiAccessTokenKey, $resData->token, now()->addMinutes(55));
         }
 
         return [
