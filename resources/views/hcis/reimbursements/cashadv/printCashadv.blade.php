@@ -273,6 +273,16 @@
                 </td>
             </tr>
             <tr>
+                <td>Meals</td>
+                <td>
+                    -
+                </td>
+                <td>
+                    <span style="float: left; margin-left:4px">Rp.</span>
+                    <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_meals'] ?? [], 'nominal')), 0, ',', '.') }}</span>
+                </td>
+            </tr>
+            <tr>
                 <td>Transport</td>
                 <td>
                     -
