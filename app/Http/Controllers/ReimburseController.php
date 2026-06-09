@@ -708,8 +708,18 @@ class ReimburseController extends Controller
         }
 
         $employee_data = Employee::where("id", $userId)->first();
-        $companies = Company::orderBy("contribution_level")->get();
-        $locations = Location::orderBy("area")->get();
+
+        $companies = null;
+        $locations = null;
+
+        if (strtolower($employee_data->group_company) == "property") {
+            $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
+            $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
+        } else {
+            $companies = Company::orderBy("contribution_level")->get();
+            $locations = Location::orderBy("area")->get();
+        }
+
         $perdiem = ListPerdiem::where("grade", $employee_data->job_level)
             ->where(
                 "bisnis_unit",
@@ -1353,8 +1363,18 @@ class ReimburseController extends Controller
         $link = "Cash Advanced";
 
         $employee_data = Employee::where("id", $userId)->first();
-        $companies = Company::orderBy("contribution_level")->get();
-        $locations = Location::orderBy("area")->get();
+
+        $companies = null;
+        $locations = null;
+
+        if (strtolower($employee_data->group_company) == "property") {
+            $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
+            $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
+        } else {
+            $companies = Company::orderBy("contribution_level")->get();
+            $locations = Location::orderBy("area")->get();
+        }
+
         // TODO: Cara get data perdiem antara Business Travel dan Reimbursement berbeda
         $perdiem = ListPerdiem::where("grade", $employee_data->job_level)
             ->where(
@@ -2910,8 +2930,18 @@ class ReimburseController extends Controller
         $link = "Add Hotel Data";
 
         $employee_data = Employee::where("id", $userId)->first();
-        $companies = Company::orderBy("contribution_level")->get();
-        $locations = Location::orderBy("area")->get();
+
+        $companies = null;
+        $locations = null;
+
+        if (strtolower($employee_data->group_company) == "property") {
+            $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
+            $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
+        } else {
+            $companies = Company::orderBy("contribution_level")->get();
+            $locations = Location::orderBy("area")->get();
+        }
+
         $perdiem = ListPerdiem::where("grade", $employee_data->job_level)
             ->where(
                 "bisnis_unit",
@@ -3405,8 +3435,18 @@ class ReimburseController extends Controller
 
         // Fetch additional data needed for the form
         $employee_data = Employee::where("id", $userId)->first();
-        $companies = Company::orderBy("contribution_level")->get();
-        $locations = Location::orderBy("area")->get();
+
+        $companies = null;
+        $locations = null;
+
+        if (strtolower($employee_data->group_company) == "property") {
+            $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
+            $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
+        } else {
+            $companies = Company::orderBy("contribution_level")->get();
+            $locations = Location::orderBy("area")->get();
+        }
+
         $perdiem = ListPerdiem::where("grade", $employee_data->job_level)
             ->where(
                 "bisnis_unit",
@@ -4909,8 +4949,18 @@ class ReimburseController extends Controller
         $link = "Add Ticket Data";
 
         $employee_data = Employee::where("id", $userId)->first();
-        $companies = Company::orderBy("contribution_level")->get();
-        $locations = Location::orderBy("area")->get();
+
+        $companies = null;
+        $locations = null;
+
+        if (strtolower($employee_data->group_company) == "property") {
+            $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
+            $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
+        } else {
+            $companies = Company::orderBy("contribution_level")->get();
+            $locations = Location::orderBy("area")->get();
+        }
+
         $perdiem = ListPerdiem::where("grade", $employee_data->job_level)
             ->where(
                 "bisnis_unit",
@@ -5481,8 +5531,18 @@ class ReimburseController extends Controller
 
         // Fetch additional data needed for the form
         $employee_data = Employee::where("id", $userId)->first();
-        $companies = Company::orderBy("contribution_level")->get();
-        $locations = Location::orderBy("area")->get();
+
+        $companies = null;
+        $locations = null;
+
+        if (strtolower($employee_data->group_company) == "property") {
+            $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
+            $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
+        } else {
+            $companies = Company::orderBy("contribution_level")->get();
+            $locations = Location::orderBy("area")->get();
+        }
+
         $employees = Employee::orderBy("ktp")->get();
         $perdiem = ListPerdiem::where("grade", $employee_data->job_level)
             ->where(

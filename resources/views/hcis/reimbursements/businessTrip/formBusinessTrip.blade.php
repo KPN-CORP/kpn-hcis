@@ -169,16 +169,6 @@
                                     Business Travel Needs
                                 </label>
                                 <div class="row">
-                                    <div class="col-md-2" id="div-ca-dalam-kota" style="display: none;">
-                                        <div class="form-check">
-                                            <input type="hidden" name="ca_dalam" id="caHiddenDalam" value="Tidak">
-                                            <input class="form-check-input" type="checkbox"
-                                            id="caCheckboxDalamKota" value="Ya" onchange="updateCAValue()">
-                                            <label class="form-check-label" for="caCheckboxDalamKota">
-                                                Cash Advanced
-                                            </label>
-                                        </div>
-                                    </div>
                                     <div class="col-md-2">
                                         <div class="form-check">
                                             <input type="hidden" name="hotel_dalam_kota" value="Tidak">
@@ -189,7 +179,6 @@
                                             </label>
                                         </div>
                                     </div>
-
                                     <div class="col-md-2">
                                         <div class="form-check">
                                             <input type="hidden" name="mess_dalam_kota" value="Tidak">
@@ -200,7 +189,6 @@
                                             </label>
                                         </div>
                                     </div>
-
                                     <div class="col-md-2">
                                         <div class="form-check">
                                             <input type="hidden" name="tiket_dalam_kota" value="Tidak">
@@ -211,7 +199,6 @@
                                             </label>
                                         </div>
                                     </div>
-
                                     <div class="col-md-2">
                                         <div class="form-check">
                                             <input type="hidden" name="taksi_dalam_kota" value="Tidak">
@@ -222,17 +209,20 @@
                                             </label>
                                         </div>
                                     </div>
+                                    <div class="col-md-2" id="div-ca-dalam-kota" style="display: none;">
+                                        <div class="form-check">
+                                            <input type="hidden" name="ca_dalam" id="caHiddenDalam" value="Tidak">
+                                            <input class="form-check-input" type="checkbox"
+                                            id="caCheckboxDalamKota" value="Ya" onchange="updateCAValue()">
+                                            <label class="form-check-label" for="caCheckboxDalamKota">
+                                                Cash Advanced
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col-md-12">
                                         <ul class="nav nav-tabs nav-pills mb-2" id="dalam-kota-pills-tab" role="tablist">
-                                            <li class="nav-item" role="presentation" id="nav-cashAdvanced-dalam-kota"
-                                                style="display: none;">
-                                                <button class="nav-link" id="pills-cashAdvanced-dalam-kota-tab"
-                                                    data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced-dalam-kota"
-                                                    type="button" role="tab"
-                                                    aria-controls="pills-cashAdvanced-dalam-kota" aria-selected="false">{{$allowance}}</button>
-                                            </li>
                                             <!-- Hotel Tab -->
                                             <li class="nav-item" role="presentation" id="nav-hotel-dalam-kota"
                                                 style="display: none;">
@@ -241,7 +231,6 @@
                                                     type="button" role="tab" aria-controls="pills-hotel-dalam-kota"
                                                     aria-selected="false">Hotel</button>
                                             </li>
-
                                             <li class="nav-item" role="presentation" id="nav-mess-dalam-kota"
                                                 style="display: none;">
                                                 <button class="nav-link" id="pills-mess-dalam-kota-tab"
@@ -257,7 +246,6 @@
                                                     type="button" role="tab" aria-controls="pills-ticket-dalam-kota"
                                                     aria-selected="false">Ticket</button>
                                             </li>
-
                                             <!-- Taxi Tab -->
                                             <li class="nav-item" role="presentation" id="nav-taksi-dalam-kota"
                                                 style="display: none;">
@@ -266,16 +254,18 @@
                                                     type="button" role="tab" aria-controls="pills-taksi-dalam-kota"
                                                     aria-selected="false">Taxi/Grab</button>
                                             </li>
+                                            <li class="nav-item" role="presentation" id="nav-cashAdvanced-dalam-kota"
+                                                style="display: none;">
+                                                <button class="nav-link" id="pills-cashAdvanced-dalam-kota-tab"
+                                                    data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced-dalam-kota"
+                                                    type="button" role="tab"
+                                                    aria-controls="pills-cashAdvanced-dalam-kota" aria-selected="false">{{$allowance}}</button>
+                                            </li>
                                         </ul>
 
 
                                         <div id="dalam-kota-pills-tabContent" class="tab-content">
                                             <!-- Hotel Content -->
-                                            <div class="tab-pane fade" id="pills-cashAdvanced-dalam-kota" role="tabpanel"
-                                                aria-labelledby="pills-cashAdvanced-dalam-kota-tab">
-                                                {{-- Perdiem content --}}
-                                                @include('hcis.reimbursements.businessTrip.form.cashadvancedForm.caPerdiem')
-                                            </div>
                                             <div class="tab-pane fade" id="pills-hotel-dalam-kota" role="tabpanel"
                                                 aria-labelledby="pills-hotel-dalam-kota-tab">
                                                 {{-- Hotel content --}}
@@ -287,7 +277,6 @@
                                                 {{-- mess content --}}
                                                 @include('hcis.reimbursements.businessTrip.form.dalam-kota.messDalamKota')
                                             </div>
-
                                             <!-- Ticket Content -->
                                             <div class="tab-pane fade" id="pills-ticket-dalam-kota" role="tabpanel"
                                                 aria-labelledby="pills-ticket-dalam-kota-tab">
@@ -299,6 +288,12 @@
                                                 aria-labelledby="pills-taksi-dalam-kota-tab">
                                                 {{-- Taxi content --}}
                                                 @include('hcis.reimbursements.businessTrip.form.dalam-kota.taxiDalamKota')
+                                            </div>
+
+                                            <div class="tab-pane fade" id="pills-cashAdvanced-dalam-kota" role="tabpanel"
+                                                aria-labelledby="pills-cashAdvanced-dalam-kota-tab">
+                                                {{-- Perdiem content --}}
+                                                @include('hcis.reimbursements.businessTrip.form.cashadvancedForm.caPerdiem')
                                             </div>
                                         </div>
 
@@ -315,6 +310,46 @@
                                             @endif
                                         </label>
                                         <div class="row">
+                                            <div class="col-md-2">
+                                                <div class="form-check">
+                                                    <input type="hidden" name="hotel" value="Tidak">
+                                                    <input class="form-check-input" type="checkbox" id="hotelCheckbox"
+                                                        name="hotel" value="Ya">
+                                                    <label class="form-check-label" for="hotelCheckbox">
+                                                        Hotel
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-check">
+                                                    <input type="hidden" name="mess" value="Tidak">
+                                                    <input class="form-check-input" type="checkbox" id="messCheckbox"
+                                                        name="mess" value="Ya">
+                                                    <label class="form-check-label" for="messCheckbox">
+                                                        Mess
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-check">
+                                                    <input type="hidden" name="tiket" value="Tidak">
+                                                    <input class="form-check-input" type="checkbox" id="ticketCheckbox"
+                                                        name="tiket" value="Ya">
+                                                    <label class="form-check-label" for="ticketCheckbox">
+                                                        Ticket
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-check">
+                                                    <input type="hidden" name="taksi" value="Tidak">
+                                                    <input class="form-check-input" type="checkbox" id="taksiCheckbox"
+                                                        name="taksi" value="Ya">
+                                                    <label class="form-check-label" for="taksiCheckbox">
+                                                        Taxi/Grab
+                                                    </label>
+                                                </div>
+                                            </div>
                                             <div class="col-md-2">
                                                 <div class="form-check">
                                                     <input type="hidden" name="ca" id="caHidden" value="Tidak">
@@ -335,49 +370,6 @@
                                                         Entertainment</label>
                                                 </div>
                                             </div>
-                                            <div class="col-md-2">
-                                                <div class="form-check">
-                                                    <input type="hidden" name="hotel" value="Tidak">
-                                                    <input class="form-check-input" type="checkbox" id="hotelCheckbox"
-                                                        name="hotel" value="Ya">
-                                                    <label class="form-check-label" for="hotelCheckbox">
-                                                        Hotel
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-2">
-                                                <div class="form-check">
-                                                    <input type="hidden" name="mess" value="Tidak">
-                                                    <input class="form-check-input" type="checkbox" id="messCheckbox"
-                                                        name="mess" value="Ya">
-                                                    <label class="form-check-label" for="messCheckbox">
-                                                        Mess
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-2">
-                                                <div class="form-check">
-                                                    <input type="hidden" name="tiket" value="Tidak">
-                                                    <input class="form-check-input" type="checkbox" id="ticketCheckbox"
-                                                        name="tiket" value="Ya">
-                                                    <label class="form-check-label" for="ticketCheckbox">
-                                                        Ticket
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-2">
-                                                <div class="form-check">
-                                                    <input type="hidden" name="taksi" value="Tidak">
-                                                    <input class="form-check-input" type="checkbox" id="taksiCheckbox"
-                                                        name="taksi" value="Ya">
-                                                    <label class="form-check-label" for="taksiCheckbox">
-                                                        Taxi/Grab
-                                                    </label>
-                                                </div>
-                                            </div>
                                         </div>
 
                                         <div class="row mt-3">
@@ -390,22 +382,6 @@
                                                         aria-controls="pills-perdiem"
                                                         aria-selected="false">{{ $allowance }}</button>
                                                 </li> --}}
-                                                    <li class="nav-item" role="presentation" id="nav-cashAdvanced"
-                                                        style="display: none;">
-                                                        <button class="nav-link" id="pills-cashAdvanced-tab"
-                                                            data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced"
-                                                            type="button" role="tab"
-                                                            aria-controls="pills-cashAdvanced" aria-selected="false">Cash
-                                                            Advanced</button>
-                                                    </li>
-                                                    <li class="nav-item" role="presentation"
-                                                        id="nav-cashAdvancedEntertain" style="display:none;">
-                                                        <button class="nav-link" id="pills-cashAdvancedEntertain-tab"
-                                                            data-bs-toggle="pill"
-                                                            data-bs-target="#pills-cashAdvancedEntertain" type="button"
-                                                            role="tab" aria-controls="pills-cashAdvancedEntertain"
-                                                            aria-selected="false">CA Entertainment</button>
-                                                    </li>
                                                     <li class="nav-item" role="presentation" id="nav-hotel"
                                                         style="display: none;">
                                                         <button class="nav-link" id="pills-hotel-tab"
@@ -434,9 +410,45 @@
                                                             type="button" role="tab" aria-controls="pills-taksi"
                                                             aria-selected="false">Taxi/Grab</button>
                                                     </li>
+                                                    <li class="nav-item" role="presentation" id="nav-cashAdvanced"
+                                                        style="display: none;">
+                                                        <button class="nav-link" id="pills-cashAdvanced-tab"
+                                                            data-bs-toggle="pill" data-bs-target="#pills-cashAdvanced"
+                                                            type="button" role="tab"
+                                                            aria-controls="pills-cashAdvanced" aria-selected="false">Cash
+                                                            Advanced</button>
+                                                    </li>
+                                                    <li class="nav-item" role="presentation"
+                                                        id="nav-cashAdvancedEntertain" style="display:none;">
+                                                        <button class="nav-link" id="pills-cashAdvancedEntertain-tab"
+                                                            data-bs-toggle="pill"
+                                                            data-bs-target="#pills-cashAdvancedEntertain" type="button"
+                                                            role="tab" aria-controls="pills-cashAdvancedEntertain"
+                                                            aria-selected="false">CA Entertainment</button>
+                                                    </li>
                                                 </ul>
 
                                                 <div class="tab-content" id="pills-tabContent">
+                                                    <div class="tab-pane fade" id="pills-hotel" role="tabpanel"
+                                                        aria-labelledby="pills-hotel-tab">
+                                                        {{-- Hotel content --}}
+                                                        @include('hcis.reimbursements.businessTrip.form.hotel')
+                                                    </div>
+                                                    <div class="tab-pane fade" id="pills-mess" role="tabpanel"
+                                                        aria-labelledby="pills-mess-tab">
+                                                        {{-- Mess content --}}
+                                                        @include('hcis.reimbursements.businessTrip.form.mess')
+                                                    </div>
+                                                    <div class="tab-pane fade" id="pills-ticket" role="tabpanel"
+                                                        aria-labelledby="pills-ticket-tab">
+                                                        {{-- Ticket content --}}
+                                                        @include('hcis.reimbursements.businessTrip.form.ticket')
+                                                    </div>
+                                                    <div class="tab-pane fade" id="pills-taksi" role="tabpanel"
+                                                        aria-labelledby="pills-taksi-tab">
+                                                        {{-- Taxi content --}}
+                                                        @include('hcis.reimbursements.businessTrip.form.taxi')
+                                                    </div>
                                                     <div class="tab-pane fade" id="pills-cashAdvanced" role="tabpanel"
                                                         aria-labelledby="pills-cashAdvanced-tab">
                                                         {{-- Cash Advanced content --}}
@@ -446,26 +458,6 @@
                                                         role="tabpanel" aria-labelledby="pills-cashAdvancedEntertain-tab">
                                                         {{-- Cash Advanced content --}}
                                                         @include('hcis.reimbursements.businessTrip.form.btEnt')
-                                                    </div>
-                                                    <div class="tab-pane fade" id="pills-ticket" role="tabpanel"
-                                                        aria-labelledby="pills-ticket-tab">
-                                                        {{-- Ticket content --}}
-                                                        @include('hcis.reimbursements.businessTrip.form.ticket')
-                                                    </div>
-                                                    <div class="tab-pane fade" id="pills-mess" role="tabpanel"
-                                                        aria-labelledby="pills-mess-tab">
-                                                        {{-- Mess content --}}
-                                                        @include('hcis.reimbursements.businessTrip.form.mess')
-                                                    </div>
-                                                    <div class="tab-pane fade" id="pills-hotel" role="tabpanel"
-                                                        aria-labelledby="pills-hotel-tab">
-                                                        {{-- Hotel content --}}
-                                                        @include('hcis.reimbursements.businessTrip.form.hotel')
-                                                    </div>
-                                                    <div class="tab-pane fade" id="pills-taksi" role="tabpanel"
-                                                        aria-labelledby="pills-taksi-tab">
-                                                        {{-- Taxi content --}}
-                                                        @include('hcis.reimbursements.businessTrip.form.taxi')
                                                     </div>
                                                 </div>
                                             </div>

@@ -487,8 +487,17 @@ class BusinessTripController extends Controller
         }
 
         // Retrieve locations and companies data for the dropdowns
-        $locations = Location::orderBy("area")->get();
-        $companies = Company::orderBy("contribution_level")->get();
+
+        $companies = null;
+        $locations = null;
+
+        if (strtolower($employee_data->group_company) == "property") {
+            $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
+            $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
+        } else {
+            $companies = Company::orderBy("contribution_level")->get();
+            $locations = Location::orderBy("area")->get();
+        }
 
         $holiday = master_holiday::pluck("tanggal_libur")->toArray();
 
@@ -5945,8 +5954,18 @@ class BusinessTripController extends Controller
     {
         $userId = Auth::id();
         $employee_data = Employee::where("id", $userId)->first();
-        $locations = Location::orderBy("area")->get();
-        $companies = Company::orderBy("contribution_level")->get();
+
+        $companies = null;
+        $locations = null;
+
+        if (strtolower($employee_data->group_company) == "property") {
+            $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
+            $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
+        } else {
+            $companies = Company::orderBy("contribution_level")->get();
+            $locations = Location::orderBy("area")->get();
+        }
+
         $employees = Employee::orderBy("ktp")->get();
         $no_sppds = CATransaction::where("user_id", $userId)
             ->where("approval_sett", "!=", "Done")
