@@ -54,6 +54,10 @@ class Tiket extends Model
     public function latestApprovalL1()
     {
         return $this->hasOne(TiketApproval::class, 'tkt_id', 'id')
+            ->with([
+                'adminEmployeeById',
+                'adminEmployeeByEmployeeId',
+            ])
             ->where('layer', 1)
             ->whereIn('approval_status', ['Pending L2', 'Approved'])
             ->latest('approved_at');
@@ -61,6 +65,10 @@ class Tiket extends Model
     public function latestApprovalL2()
     {
         return $this->hasOne(TiketApproval::class, 'tkt_id', 'id')
+            ->with([
+                'adminEmployeeById',
+                'adminEmployeeByEmployeeId',
+            ])
             ->where('layer', 2)
             ->where('approval_status', 'Approved')
             ->latest('approved_at');

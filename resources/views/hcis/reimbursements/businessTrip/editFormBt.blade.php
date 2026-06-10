@@ -178,10 +178,10 @@
                                         <option value="" selected disabled>-- Choose Type of Service --</option>
                                         <option value="dalam kota" {{ $n->jns_dinas == 'dalam kota' ? 'selected' : '' }}>
                                             Perjalanan Dinas
-                                            Jarak Dekat (PDJD)</option>
+                                            Jarak Dekat (PDJD) ({{ "< 125 km" }})</option>
                                         <option value="luar kota" {{ $n->jns_dinas == 'luar kota' ? 'selected' : '' }}>
                                             Perjalanan Dinas
-                                            Jarak Jauh (PDJJ)</option>
+                                            Jarak Jauh (PDJJ) (≥ 125 km)</option>
                                     </select>
                                 </div>
                             </div>

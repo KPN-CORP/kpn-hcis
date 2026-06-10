@@ -186,6 +186,13 @@
             <td class="colon">:</td>
             <td class="value"> {{ $mess->latestApprovalL1->approved_at ?? '-' }}</td>
         </tr>
+        @if (isset($mess->latestApprovalL1->by_admin) && strtolower($mess->latestApprovalL1->by_admin) == "t" && isset($mess->latestApprovalL1->admin_id) && !empty($mess->latestApprovalL1->admin_id) && isset($mess->latestApprovalL1->admin_employee) && isset($mess->latestApprovalL1->admin_employee->fullname) && !empty($mess->latestApprovalL1->admin_employee->fullname))
+            <tr>
+                <td class="label">On Behalf</td>
+                <td class="colon">:</td>
+                <td class="value"> {{ $mess->latestApprovalL1->admin_employee->fullname }} ({{ $mess->latestApprovalL1->admin_id }})</td>
+            </tr>
+        @endif
         <tr>
             <td class="label">Manager Name 2</td>
             <td class="colon">:</td>
@@ -196,6 +203,13 @@
             <td class="colon">:</td>
             <td class="value"> {{ $mess->latestApprovalL2->approved_at ?? '-' }}</td>
         </tr>
+        @if (isset($mess->latestApprovalL2->by_admin) && strtolower($mess->latestApprovalL2->by_admin) == "t" && isset($mess->latestApprovalL2->admin_id) && !empty($mess->latestApprovalL2->admin_id) && isset($mess->latestApprovalL2->admin_employee) && isset($mess->latestApprovalL2->admin_employee->fullname) && !empty($mess->latestApprovalL2->admin_employee->fullname))
+            <tr>
+                <td class="label">On Behalf</td>
+                <td class="colon">:</td>
+                <td class="value"> {{ $mess->latestApprovalL2->admin_employee->fullname }} ({{ $mess->latestApprovalL2->admin_id }})</td>
+            </tr>
+        @endif
     </table>
 </body>
 

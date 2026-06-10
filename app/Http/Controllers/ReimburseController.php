@@ -2160,7 +2160,7 @@ class ReimburseController extends Controller
                 ]);
             }
         ])->find($key);
-        $approval = ca_approval::with("employee")
+        $approval = ca_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
             ->where("ca_id", $key)
             ->where("approval_status", "!=", "Rejected")
             ->whereNull("deleted_at")
@@ -2204,7 +2204,7 @@ class ReimburseController extends Controller
             }
 
         ])->find($key);
-        $approval = ca_sett_approval::with("employee")
+        $approval = ca_sett_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
             ->where("ca_id", $key)
             ->where("approval_status", "<>", "Rejected")
             ->whereNull("deleted_at")

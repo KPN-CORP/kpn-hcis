@@ -545,6 +545,15 @@
                                 </td>
                             @endforeach
                         </tr>
+                        <tr>
+                            @foreach ($approval as $role)
+                                @if (isset($role->by_admin) && strtolower($role->by_admin) == "t" && isset($role->admin_id) && !empty($role->admin_id) && isset($role->admin_employee) && isset($role->admin_employee->fullname) && !empty($role->admin_employee->fullname))
+                                    <td>
+                                        {{ $role->admin_employee->fullname }}
+                                    </td>
+                                @endif
+                            @endforeach
+                        </tr>
                     </table>
                 </td>
             </tr>

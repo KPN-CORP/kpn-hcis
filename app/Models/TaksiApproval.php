@@ -29,4 +29,20 @@ class TaksiApproval extends Model
     {
         return $this->belongsTo(Taksi::class, 'id', 'vt_id');
     }
+
+    public function adminEmployeeById()
+    {
+        return $this->belongsTo(Employee::class, 'admin_id', 'id');
+    }
+
+    public function adminEmployeeByEmployeeId()
+    {
+        return $this->belongsTo(Employee::class, 'admin_id', 'employee_id');
+    }
+
+    public function getAdminEmployeeAttribute()
+    {
+        return $this->adminEmployeeById
+            ?? $this->adminEmployeeByEmployeeId;
+    }
 }

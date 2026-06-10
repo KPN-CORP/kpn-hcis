@@ -158,8 +158,8 @@
                                     <label for="jns_dinas" class="form-label">Type of Service</label>
                                     <select class="form-select form-select-sm" id="jns_dinas" name="jns_dinas" required>
                                         <option value="" selected disabled>-- Choose Type of Service --</option>
-                                        <option value="dalam kota">Perjalanan Dinas Jarak Dekat (PDJD)</option>
-                                        <option value="luar kota">Perjalanan Dinas Jarak Jauh (PDJJ)</option>
+                                        <option value="dalam kota">Perjalanan Dinas Jarak Dekat (PDJD) ({{ "< 125 km" }})</option>
+                                        <option value="luar kota">Perjalanan Dinas Jarak Jauh (PDJJ) (≥ 125 km)</option>
                                     </select>
                                 </div>
                             </div>

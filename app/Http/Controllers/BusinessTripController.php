@@ -4818,7 +4818,7 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $approval = ca_approval::with("employee")
+                                $approval = ca_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
                                     ->where("ca_id", $dnsCA->id)
                                     ->where("approval_status", "!=", "Rejected")
                                     ->whereNull("deleted_at")
@@ -4885,7 +4885,7 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $approval = ca_approval::with("employee")
+                                $approval = ca_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
                                     ->where("ca_id", $entrCA->id)
                                     ->where("approval_status", "!=", "Rejected")
                                     ->whereNull("deleted_at")
@@ -5119,7 +5119,7 @@ class BusinessTripController extends Controller
                                 //     $dnsCA->id,
                                 // )->max("created_at");
 
-                                $approval = ca_sett_approval::with("employee")
+                                $approval = ca_sett_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
                                     ->where("ca_id", $dnsCA->id)
                                     ->where("approval_status", "!=", "Rejected")
                                     // ->where("created_at", $latestCreatedAt)
@@ -5182,7 +5182,7 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $approval = ca_sett_approval::with("employee")
+                                $approval = ca_sett_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
                                     ->where("ca_id", $entrCA->id)
                                     ->where("approval_status", "!=", "Rejected")
                                     ->whereNull("deleted_at")
@@ -5430,7 +5430,7 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $approval = ca_approval::with("employee")
+                                $approval = ca_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
                                     ->where("ca_id", $dnsCA->id)
                                     ->where("approval_status", "!=", "Rejected")
                                     ->whereNull("deleted_at")
@@ -5497,7 +5497,7 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $approval = ca_approval::with("employee")
+                                $approval = ca_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
                                     ->where("ca_id", $entrCA->id)
                                     ->where("approval_status", "!=", "Rejected")
                                     ->whereNull("deleted_at")
@@ -5734,7 +5734,7 @@ class BusinessTripController extends Controller
                                 //     $latestCreatedAt,
                                 // )->format("Y-m-d H:i");
 
-                                $approval = ca_sett_approval::with("employee")
+                                $approval = ca_sett_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
                                     ->where("ca_id", $dnsCA->id)
                                     ->where("approval_status", "!=", "Rejected")
                                     // ->where(
@@ -5807,7 +5807,7 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $approval = ca_sett_approval::with("employee")
+                                $approval = ca_sett_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
                                     ->where("ca_id", $entrCA->id)
                                     ->where("approval_status", "!=", "Rejected")
                                     ->whereNull("deleted_at")
