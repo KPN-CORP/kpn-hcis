@@ -148,7 +148,7 @@
             <td class="colon">:</td>
             <td class="value">{{ $taksi->latestApprovalL1->approved_at ?? '-' }}</td>
         </tr>
-        @if (isset($taksi->latestApprovalL1->by_admin) && strtolower($taksi->latestApprovalL1->by_admin) == "t" && isset($taksi->latestApprovalL1->admin_id) && !empty($taksi->latestApprovalL1->admin_id) && isset($taksi->latestApprovalL1->admin_employee) && isset($taksi->latestApprovalL1->admin_employee->fullname) && !empty($taksi->latestApprovalL1->admin_employee->fullname))
+        @if (isset($taksi->latestApprovalL1->by_admin) && strtolower($taksi->latestApprovalL1->by_admin) == "t" && isset($taksi->latestApprovalL1->admin_id) && !empty($taksi->latestApprovalL1->admin_id) && isset($taksi->latestApprovalL1->admin_employee))
             <tr>
                 <td class="label">On Behalf</td>
                 <td class="colon">:</td>
@@ -167,7 +167,7 @@
             <td class="colon">:</td>
             <td class="value">{{ $taksi->latestApprovalL2->approved_at ?? '-' }}</td>
         </tr>
-        @if (isset($taksi->latestApprovalL2->by_admin) && strtolower($taksi->latestApprovalL2->by_admin) == "t" && isset($taksi->latestApprovalL2->admin_id) && !empty($taksi->latestApprovalL2->admin_id) && isset($taksi->latestApprovalL2->admin_employee) && isset($taksi->latestApprovalL2->admin_employee->fullname) && !empty($taksi->latestApprovalL2->admin_employee->fullname))
+        @if (isset($taksi->latestApprovalL2->by_admin) && strtolower($taksi->latestApprovalL2->by_admin) == "t" && isset($taksi->latestApprovalL2->admin_id) && !empty($taksi->latestApprovalL2->admin_id) && isset($taksi->latestApprovalL2->admin_employee))
             <tr>
                 <td class="label">On Behalf</td>
                 <td class="colon">:</td>

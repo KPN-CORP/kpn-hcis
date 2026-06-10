@@ -205,7 +205,7 @@
             <td class="colon">:</td>
             <td class="value"> {{ $sppd->latestApprovalL1->approved_at ?? '-' }}</td>
         </tr>
-        @if (isset($sppd->latestApprovalL1->by_admin) && strtolower($sppd->latestApprovalL1->by_admin) == "t" && isset($sppd->latestApprovalL1->admin_id) && !empty($sppd->latestApprovalL1->admin_id) && isset($sppd->latestApprovalL1->admin_employee) && isset($sppd->latestApprovalL1->admin_employee->fullname) && !empty($sppd->latestApprovalL1->admin_employee->fullname))
+        @if (isset($sppd->latestApprovalL1->by_admin) && strtolower($sppd->latestApprovalL1->by_admin) == "t" && isset($sppd->latestApprovalL1->admin_id) && !empty($sppd->latestApprovalL1->admin_id) && isset($sppd->latestApprovalL1->admin_employee))
             <tr>
                 <td class="label">On Behalf</td>
                 <td class="colon">:</td>
@@ -222,7 +222,7 @@
             <td class="colon">:</td>
             <td class="value"> {{ $sppd->latestApprovalL2->approved_at ?? '-' }}</td>
         </tr>
-        @if (isset($sppd->latestApprovalL2->by_admin) && strtolower($sppd->latestApprovalL2->by_admin) == "t" && isset($sppd->latestApprovalL2->admin_id) && !empty($sppd->latestApprovalL2->admin_id) && isset($sppd->latestApprovalL2->admin_employee) && isset($sppd->latestApprovalL2->admin_employee->fullname) && !empty($sppd->latestApprovalL2->admin_employee->fullname))
+        @if (isset($sppd->latestApprovalL2->by_admin) && strtolower($sppd->latestApprovalL2->by_admin) == "t" && isset($sppd->latestApprovalL2->admin_id) && !empty($sppd->latestApprovalL2->admin_id) && isset($sppd->latestApprovalL2->admin_employee))
             <tr>
                 <td class="label">On Behalf</td>
                 <td class="colon">:</td>

@@ -206,7 +206,7 @@
             <td class="colon">:</td>
             <td class="value"> {{ $hotel->latestApprovalL1->approved_at ?? '-' }}</td>
         </tr>
-        @if (isset($hotel->latestApprovalL1->by_admin) && strtolower($hotel->latestApprovalL1->by_admin) == "t" && isset($hotel->latestApprovalL1->admin_id) && !empty($hotel->latestApprovalL1->admin_id) && isset($hotel->latestApprovalL1->admin_employee) && isset($hotel->latestApprovalL1->admin_employee->fullname) && !empty($hotel->latestApprovalL1->admin_employee->fullname))
+        @if (isset($hotel->latestApprovalL1->by_admin) && strtolower($hotel->latestApprovalL1->by_admin) == "t" && isset($hotel->latestApprovalL1->admin_id) && !empty($hotel->latestApprovalL1->admin_id) && isset($hotel->latestApprovalL1->admin_employee))
             <tr>
                 <td class="label">On Behalf</td>
                 <td class="colon">:</td>
@@ -223,7 +223,7 @@
             <td class="colon">:</td>
             <td class="value"> {{ $hotel->latestApprovalL2->approved_at ?? '-' }}</td>
         </tr>
-        @if (isset($hotel->latestApprovalL2->by_admin) && strtolower($hotel->latestApprovalL2->by_admin) == "t" && isset($hotel->latestApprovalL2->admin_id) && !empty($hotel->latestApprovalL2->admin_id) && isset($hotel->latestApprovalL2->admin_employee) && isset($hotel->latestApprovalL2->admin_employee->fullname) && !empty($hotel->latestApprovalL2->admin_employee->fullname))
+        @if (isset($hotel->latestApprovalL2->by_admin) && strtolower($hotel->latestApprovalL2->by_admin) == "t" && isset($hotel->latestApprovalL2->admin_id) && !empty($hotel->latestApprovalL2->admin_id) && isset($hotel->latestApprovalL2->admin_employee))
             <tr>
                 <td class="label">On Behalf</td>
                 <td class="colon">:</td>
