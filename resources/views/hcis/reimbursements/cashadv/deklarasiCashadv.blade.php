@@ -1,4 +1,4 @@
-@extends('layouts_.vertical', ['page_title' => 'Cash Advanced'])
+@extends('layouts_.vertical', ['page_title' => 'Cash Advanced Declaration'])
 
 @section('css')
     <!-- Sertakan CSS Bootstrap jika diperlukan -->
