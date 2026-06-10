@@ -601,7 +601,9 @@
                             @foreach ($approval as $role)
                                 @if (isset($role->by_admin) && strtolower($role->by_admin) == "t" && isset($role->admin_id) && !empty($role->admin_id) && isset($role->admin_employee))
                                     <td>
-                                        Approved by: {{ $role->admin_employee->fullname }}\n({{ $role->admin_employee->employee_id }})
+                                        Approved by:
+                                        <br/>
+                                        {{ $role->admin_employee->fullname }} ({{ $role->admin_employee->employee_id }})
                                     </td>
                                 @endif
                             @endforeach
