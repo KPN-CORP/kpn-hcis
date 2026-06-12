@@ -103,7 +103,7 @@
                                             <td> {{ $employee_data->designation_name ?? '-' }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Cash Advance Type</th>
+                                            <th>Cash Advance Declaration Type</th>
                                             <td class="block">:</td>
                                             <td> Business Travel</td>
                                         </tr>
@@ -266,7 +266,7 @@
     <hr/>
                                             <div class="row">
                                                 <div class="col-md-6 mb-2">
-                                                    <label class="form-label">Cash Advanced Costs Requested</label>
+                                                    <label class="form-label">Cash Advanced Declaration Costs Requested</label>
                                                     <div class="input-group">
                                                         <div class="input-group-append">
                                                             <span class="input-group-text">Rp</span>

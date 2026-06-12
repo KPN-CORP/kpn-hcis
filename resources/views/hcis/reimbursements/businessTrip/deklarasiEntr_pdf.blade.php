@@ -210,10 +210,10 @@
     @if ($transactions->type_ca == 'dns')
         <table class="table-approve" style="width: 80%;">
             <tr>
-                <th colspan="5"><b>Detail Cash Advanced :</b></th>
+                <th colspan="5"><b>Detail Cash Advanced Declaration :</b></th>
             </tr>
             <tr class="head-row">
-                <td rowspan="2" style="text-align: center;">Types of Cash Advanced</td>
+                <td rowspan="2" style="text-align: center;">Types of Cash Advanced Declaration</td>
                 <td colspan="2">Plan</td>
                 <td colspan="2">Declaration</td>
             </tr>
@@ -380,10 +380,10 @@
         </table>
         <table class="table-approve" style="width: 80%;">
             <tr>
-                <th colspan="5"><b>Detail Cash Advanced :</b></th>
+                <th colspan="5"><b>Detail Cash Advanced Declaration :</b></th>
             </tr>
             <tr class="head-row">
-                <td rowspan="2" style="text-align: center;">Types of Cash Advanced</td>
+                <td rowspan="2" style="text-align: center;">Types of Cash Advanced Declaration</td>
                 <td colspan="2">Plan</td>
                 <td colspan="2">Declaration</td>
             </tr>
@@ -429,10 +429,10 @@
         @if ($transactions->approval_status == 'Rejected')
             <table class="table-approve" style="width: 80%;">
                 <tr>
-                    <th colspan="3"><b>Detail Cash Advanced :</b></th>
+                    <th colspan="3"><b>Detail Cash Advanced Declaration :</b></th>
                 </tr>
                 <tr class="head-row">
-                    <td rowspan="2" style="text-align: center;">Types of Cash Advanced</td>
+                    <td rowspan="2" style="text-align: center;">Types of Cash Advanced Declaration</td>
                     <td colspan="2">Declaration</td>
                 </tr>
                 <tr class="head-row">
@@ -461,10 +461,10 @@
         @else
             <table class="table-approve" style="width: 80%;">
                 <tr>
-                    <th colspan="5"><b>Detail Cash Advanced :</b></th>
+                    <th colspan="5"><b>Detail Cash Advanced Declaration :</b></th>
                 </tr>
                 <tr class="head-row">
-                    <td rowspan="2" style="text-align: center;">Types of Cash Advanced</td>
+                    <td rowspan="2" style="text-align: center;">Types of Cash Advanced Declaration</td>
                     <td colspan="2">Plan</td>
                     <td colspan="2">Declaration</td>
                 </tr>
@@ -617,7 +617,7 @@
     <div>
         @if ($transactions->approval_status != 'Rejected')
         @endif
-        <h2 style="text-align: center">Cash Advanced Attachment</h2>
+        <h2 style="text-align: center">Cash Advanced Declaration Attachment</h2>
         @if ($transactions->type_ca == 'dns')
             @if (isset($detailCA['detail_perdiem']) &&
                     count($detailCA['detail_perdiem']) > 0 &&
@@ -1219,7 +1219,7 @@
             <th colspan="2"><b>Total Attachment :</b></th>
         </tr>
         <tr class="head-row">
-            <td class="label" style="width:70%; text-align:right">Total Cash Advanced</td>
+            <td class="label" style="width:70%; text-align:right">Total Cash Advanced Declaration</td>
             <td>
                 <span style="float: left; margin-left:4px">Rp.</span>
                 <span style="float: right;">{{ number_format($transactions->total_ca, 0, ',', '.') }}</span>

@@ -112,7 +112,7 @@
                                     <td >{{ \Carbon\Carbon::parse($transactions->declare_estimate)->format('d-M-y') }}</td>
                                 </tr>
                                 <tr>
-                                    <th >Cash Advanced Type</th>
+                                    <th >Cash Advanced Declaration Type</th>
                                     <td >:</td>
                                     <td >
                                         @if ($transactions->type_ca == 'dns')
@@ -323,7 +323,7 @@
 
                         </div>
                         <div class="col-md-4 mb-2">
-                            <label class="form-label">Total Cash Advanced</label>
+                            <label class="form-label">Total Cash Advanced Declaration</label>
                             <div class="input-group">
                                 <div class="input-group-append">
                                     <span class="input-group-text">Rp</span>
