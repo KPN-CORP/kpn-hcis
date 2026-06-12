@@ -2244,7 +2244,7 @@ class ReimburseController extends Controller
     {
         $userId = Auth::id();
         $parentLink = "Reimbursement";
-        $link = "Cash Advanced Declaration Approval";
+        $link = "Cash Advanced Declaration";
 
         $employee_data = Employee::where("id", $userId)->first();
         $companies = Company::orderBy("contribution_level")->get();
