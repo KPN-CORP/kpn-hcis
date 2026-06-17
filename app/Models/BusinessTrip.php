@@ -134,6 +134,7 @@ class BusinessTrip extends Model
         'manager_l2_id',
         'deleted_at',
         'update_db',
+        'no_declaration'
 
     ];
 

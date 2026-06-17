@@ -13517,6 +13517,45 @@ class BusinessTripController extends Controller
         return $newNoCa;
     }
 
+    private function generateNoDeclaration()
+    {
+        $currentYear = date("Y");
+        $currentMonth = date("n");
+        $romanMonth = $this->getRomanMonth($currentMonth);
+
+        $lastTransaction = BusinessTrip::whereYear("created_at", $currentYear)
+            ->where("no_declaration", "LIKE", "%/$currentYear")
+            ->orderByRaw(
+                "CAST(SUBSTRING_INDEX(no_declaration, '/', 1) AS UNSIGNED) DESC",
+            )
+            ->withTrashed()
+            ->first();
+
+        if (
+            $lastTransaction &&
+            preg_match(
+                "/(\d{1,5})\/DEC-SPPD\/([IVX]+)\/\d{4}/",
+                $lastTransaction->no_declaration,
+                $matches,
+            )
+        ) {
+            $lastNumber = intval($matches[1]);
+        } else {
+            $lastNumber = 0;
+        }
+
+        $newNumber = $lastNumber + 1;
+
+        $formattedNumber =
+            $newNumber < 1000
+                ? str_pad($newNumber, 3, "0", STR_PAD_LEFT)
+                : $newNumber;
+
+        $newNoDeclaration = "$formattedNumber/DEC-SPPD/$romanMonth/$currentYear";
+
+        return $newNoDeclaration;
+    }
+
     private function findDepartmentHead($employee)
     {
         $priority = ApprovalPriority::where(
