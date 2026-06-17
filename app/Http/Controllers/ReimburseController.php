@@ -1388,7 +1388,7 @@ class ReimburseController extends Controller
 
         $formattedNumber =
             $newNumber < 1000
-                ? str_pad($newNumber, 3, "0", STR_PAD_LEFT)
+                ? str_pad($newNumber, 4, "0", STR_PAD_LEFT)
                 : $newNumber;
 
         $newNoDeclaration = "$formattedNumber/DEC-CA/$romanMonth/$currentYear";
@@ -2824,7 +2824,7 @@ class ReimburseController extends Controller
         $model->declaration_at = Carbon::now();
 
         if (empty($model->no_declaration)) {
-            $model->declaration_at = $this->generateNoDeclaration();
+            $model->no_declaration = $this->generateNoDeclaration();
         }
 
         $model->save();
