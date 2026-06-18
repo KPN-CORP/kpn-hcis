@@ -2090,6 +2090,13 @@ class BusinessTripController extends Controller
         $userId = Auth::id();
         $employee = Employee::where("id", $userId)->first();
         $isRestricted = ($employee->job_level < 8);
+        $oldNoDeclaration = $n->no_declaration;
+        $newNoDeclaration = $this->generateNoDeclaration();
+        $noDeclaration = $newNoDeclaration;
+
+        if (!empty($oldNoDeclaration)) {
+            $noDeclaration = $oldNoDeclaration;
+        }
 
         $deptHeadManager = $this->findDepartmentHead($employee);
 
@@ -2160,6 +2167,8 @@ class BusinessTripController extends Controller
             }
         }
 
+        // GO
+
         if ($caRecords->isEmpty()) {
             if ($entrTab == false && $request->totalca > 0) {
                 // Create a new CA transaction if it doesn't exist
@@ -2168,6 +2177,7 @@ class BusinessTripController extends Controller
 
                 $entId = $ent->id = (string) Str::uuid();
                 $ent->no_ca = $this->generateNoCa();
+                $ent->no_declaration = $noDeclaration;
                 $ent->no_sppd = $oldNoSppd;
                 $ent->unit = $request->divisi;
                 $ent->contribution_level_code = $request->bb_perusahaan;
@@ -2363,6 +2373,7 @@ class BusinessTripController extends Controller
 
                 $caId = $ca->id = (string) Str::uuid();
                 $ca->no_ca = $this->generateNoCa();
+                $ca->no_declaration = $noDeclaration;
                 $ca->no_sppd = $oldNoSppd;
                 $ca->unit = $request->divisi;
                 $ca->contribution_level_code = $request->bb_perusahaan;
@@ -2659,6 +2670,9 @@ class BusinessTripController extends Controller
                 $ent->save();
             }
         }
+
+        // GO
+
         if ($caRecords) {
             foreach ($caRecords as $ca) {
                 // Assign or update values to $ca model
@@ -2667,6 +2681,10 @@ class BusinessTripController extends Controller
                     $ca->no_sppd = $oldNoSppd;
                     $ca->user_id = $userId;
                     $caId = $ca->id;
+
+                    if (empty($ca->no_declaration)) {
+                        $ca->no_declaration = $noDeclaration;
+                    }
 
                     // Update approval_status based on the status value from the request
                     if ($statusValue === "Declaration L1") {
@@ -2921,6 +2939,10 @@ class BusinessTripController extends Controller
                     $ca->user_id = $userId;
                     $caId = $ca->id;
 
+                    if (empty($ca->no_declaration)) {
+                        $ca->no_declaration = $noDeclaration;
+                    }
+
                     // Update approval_status based on the status value from the request
                     if ($statusValue === "Declaration L1") {
                         $ca->approval_sett = "Pending";
@@ -3123,6 +3145,10 @@ class BusinessTripController extends Controller
                     );
                     $ca->total_cost =
                         -1 * (int) str_replace(".", "", $ca->total_real);
+
+                    if (empty($ca->no_declaration)) {
+                        $ca->no_declaration = $noDeclaration;
+                    }
 
                     // dd($ca->total_real, $ca->total_cost);
 
@@ -3335,6 +3361,10 @@ class BusinessTripController extends Controller
                     );
                     $ca->total_cost =
                         -1 * (int) str_replace(".", "", $ca->total_real);
+
+                    if (empty($ca->no_declaration)) {
+                        $ca->no_declaration = $noDeclaration;
+                    }
 
                     // dd($ca->total_real, $ca->total_cost);
 
@@ -3622,6 +3652,7 @@ class BusinessTripController extends Controller
         }
         // Update the status field in the BusinessTrip record
         $n->update([
+            "no_declaration" => $noDeclaration,
             "status" => $statusValue,
         ]);
         // Only proceed with approval process if not 'Declaration Draft'
