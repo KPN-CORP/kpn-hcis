@@ -115,7 +115,7 @@
         <img src="{{ public_path('images/kop.jpg') }}" alt="Kop Surat">
     </div>
     <h5 class="center">Form Declaration</h5>
-    <h5 class="center">{{ $transactions->no_sppd }} - (No. {{ $transactions->no_ca }})</h5>
+    <h5 class="center">{{ $transactions->no_sppd }} - (No. {{ $transactions->no_declaration ?: $transactions->no_ca }})</h5>
 
     <table>
         <tr>
@@ -162,7 +162,12 @@
 
     <table>
         <tr>
-            <td colspan="3"><b>CA Submission Details:</b></td>
+            <td colspan="3"><b>CA Declaration Submission Details:</b></td>
+        </tr>
+        <tr>
+            <td class="label">No CA</td>
+            <td class="colon">:</td>
+            <td class="value">{{ $transactions->no_ca }}</td>
         </tr>
         <tr>
             <td class="label">Costing Company</td>
@@ -1264,9 +1269,9 @@
     <footer>
         <script type="text/php">
             if (isset($pdf)) {
-                $x = 360;
+                $x = {{ !empty($transactions->no_declaration) ? 310 : 360 }};
                 $y = 810;
-                $text = "Page {PAGE_NUM} of {PAGE_COUNT} Declaration Cash Advanced No. {{ $transactions->no_ca }}";
+                $text = "Page {PAGE_NUM} of {PAGE_COUNT} Declaration Cash Advanced No. {{ $transactions->no_declaration ?: $transactions->no_ca }}";
                 $font = null;
                 $size = 8;
                 $color = array(0, 0, 0);
