@@ -115,7 +115,7 @@
         <img src="{{ public_path('images/kop.jpg') }}" alt="Kop Surat">
     </div>
     <h5 class="center">Form Declaration Cash Advanced</h5>
-    <h5 class="center">No. {{ $transactions->no_declaration || $transactions->no_ca }}</h5>
+    <h5 class="center">No. {{ $transactions->no_declaration ?: $transactions->no_ca }}</h5>
 
     <table>
         <tr>
@@ -1226,7 +1226,7 @@
             if (isset($pdf)) {
                 $x = 360;
                 $y = 810;
-                $text = "Page {PAGE_NUM} of {PAGE_COUNT} Declaration Cash Advanced No. {{ $transactions->no_declaration || $transactions->no_ca }}";
+                $text = "Page {PAGE_NUM} of {PAGE_COUNT} Declaration Cash Advanced No. {{ $transactions->no_declaration ?: $transactions->no_ca }}";
                 $font = null;
                 $size = 8;
                 $color = array(0, 0, 0);
