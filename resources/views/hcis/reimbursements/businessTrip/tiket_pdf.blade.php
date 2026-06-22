@@ -240,7 +240,7 @@
             <tr>
                 <td class="label">On Behalf</td>
                 <td class="colon">:</td>
-                <td class="value"> {{ $ticket->latestApprovalL1->admin_employee->fullname }} ({{ $ticket->latestApprovalL1->admin_id }})</td>
+                <td class="value"> {{ $ticket->latestApprovalL1->admin_employee->fullname }}</td>
             </tr>
         @endif
         <tr>
@@ -257,7 +257,7 @@
             <tr>
                 <td class="label">On Behalf</td>
                 <td class="colon">:</td>
-                <td class="value"> {{ $ticket->latestApprovalL2->admin_employee->fullname }} ({{ $ticket->latestApprovalL2->admin_id }})</td>
+                <td class="value"> {{ $ticket->latestApprovalL2->admin_employee->fullname }}</td>
             </tr>
         @endif
     </table>

@@ -214,7 +214,7 @@
             <tr>
                 <td class="label">On Behalf</td>
                 <td class="colon">:</td>
-                <td class="value"> {{ $hotel->latestApprovalL1->admin_employee->fullname }} ({{ $hotel->latestApprovalL1->admin_id }})</td>
+                <td class="value"> {{ $hotel->latestApprovalL1->admin_employee->fullname }}</td>
             </tr>
         @endif
         @if ($hotel->manager_l2_id == null)
@@ -242,7 +242,7 @@
             <tr>
                 <td class="label">On Behalf</td>
                 <td class="colon">:</td>
-                <td class="value"> {{ $hotel->latestApprovalL2->admin_employee->fullname }} ({{ $hotel->latestApprovalL2->admin_id }})</td>
+                <td class="value"> {{ $hotel->latestApprovalL2->admin_employee->fullname }}</td>
             </tr>
         @endif
     </table>

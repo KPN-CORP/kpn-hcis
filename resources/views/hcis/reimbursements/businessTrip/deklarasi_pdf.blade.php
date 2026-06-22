@@ -666,7 +666,7 @@
                                     <td>
                                         Approved by:
                                         <br/>
-                                        {{ $role->admin_employee->fullname }} ({{ $role->admin_employee->employee_id }})
+                                        {{ $role->admin_employee->fullname }}
                                     </td>
                                 @endif
                             @endforeach
