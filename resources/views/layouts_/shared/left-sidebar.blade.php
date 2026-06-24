@@ -80,23 +80,63 @@
         <i class="ri-close-fill align-middle"></i>
     </div>
 
+
+
     <div class="h-100" id="leftside-menu-container" data-simplebar>
         <ul class="side-nav">
             <li class="side-nav-title">Menu</li>
 
-            <li class="side-nav-item {{ request()->routeIs('reimbursements') ? 'active' : '' }}">
-                <a href="{{ route('reimbursements') }}" aria-controls="sidebarEmail" class="side-nav-link">
-                    <i class="ri-refund-2-line"></i>
-                    <span> Reimbursement </span>
-                </a>
-            </li>
+            @if (auth()->check())
+            {{-- @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property"))) --}}
+                <li class="side-nav-item {{ request()->routeIs('cashAdvance') ? 'active' : '' }}">
+                    <a href="{{ route('cashAdvance') }}" aria-controls="sidebarEmail" class="side-nav-link">
+                        <i class="ri-refund-2-line"></i>
+                        <span> Cash Advance </span>
+                    </a>
+                </li>
 
-            <li class="side-nav-item {{ request()->routeIs('travel') ? 'active' : '' }}">
-                <a href="{{ route('travel') }}" aria-controls="sidebarEmail" class="side-nav-link">
-                    <i class="ri-plane-line"></i>
-                    <span> Travel </span>
-                </a>
-            </li>
+                <li class="side-nav-item {{ request()->routeIs('reimbursements') ? 'active' : '' }}">
+                    <a href="{{ route('reimbursements') }}" aria-controls="sidebarEmail" class="side-nav-link">
+                        <i class="ri-refund-2-line"></i>
+                        <span> Reimbursement </span>
+                    </a>
+                </li>
+
+                <li class="side-nav-item {{ request()->routeIs('travel') ? 'active' : '' }}">
+                    <a href="{{ route('travel') }}" aria-controls="sidebarEmail" class="side-nav-link">
+                        <i class="ri-refund-2-line"></i>
+                        <span> Travel </span>
+                    </a>
+                </li>
+
+                <li class="side-nav-item {{ request()->routeIs('taskBox') ? 'active' : '' }}">
+                    <a href="{{ route('taskBox') }}" aria-controls="sidebarEmail" class="side-nav-link">
+                        <i class="ri-refund-2-line"></i>
+                        <span> Task Box </span>
+                    </a>
+                </li>
+
+                <li class="side-nav-item {{ request()->routeIs('adminMenu') ? 'active' : '' }}">
+                    <a href="{{ route('adminMenu') }}" aria-controls="sidebarEmail" class="side-nav-link">
+                        <i class="ri-refund-2-line"></i>
+                        <span> Admin Menu </span>
+                    </a>
+                </li>
+            @else
+                <li class="side-nav-item {{ request()->routeIs('reimbursements') ? 'active' : '' }}">
+                    <a href="{{ route('reimbursements') }}" aria-controls="sidebarEmail" class="side-nav-link">
+                        <i class="ri-refund-2-line"></i>
+                        <span> Reimbursement </span>
+                    </a>
+                </li>
+
+                <li class="side-nav-item {{ request()->routeIs('travel') ? 'active' : '' }}">
+                    <a href="{{ route('travel') }}" aria-controls="sidebarEmail" class="side-nav-link">
+                        <i class="ri-plane-line"></i>
+                        <span> Travel </span>
+                    </a>
+                </li>
+            @endif
 
             @if(auth()->check())
             @can('viewdesignation')
