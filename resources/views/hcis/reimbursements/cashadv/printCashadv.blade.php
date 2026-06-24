@@ -273,6 +273,16 @@
                 </td>
             </tr>
             <tr>
+                <td>Meals</td>
+                <td>
+                    -
+                </td>
+                <td>
+                    <span style="float: left; margin-left:4px">Rp.</span>
+                    <span style="float: right;">{{ number_format(array_sum(array_column($detailCA['detail_meals'] ?? [], 'nominal')), 0, ',', '.') }}</span>
+                </td>
+            </tr>
+            <tr>
                 <td>Transport</td>
                 <td>
                     -
@@ -459,6 +469,17 @@
                                 <td style="text-align:center;">
                                     {{ $role->approved_at ? \Carbon\Carbon::parse($role->approved_at) : 'Date : ' }}
                                 </td>
+                            @endforeach
+                        </tr>
+                        <tr>
+                            @foreach ($approval as $role)
+                                @if (isset($role->by_admin) && strtolower($role->by_admin) == "t" && isset($role->admin_id) && !empty($role->admin_id) && isset($role->admin_employee))
+                                    <td>
+                                        Approved by:
+                                        <br/>
+                                        {{ $role->admin_employee->fullname }}
+                                    </td>
+                                @endif
                             @endforeach
                         </tr>
                     </table>

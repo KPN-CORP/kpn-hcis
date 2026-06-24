@@ -487,8 +487,17 @@ class BusinessTripController extends Controller
         }
 
         // Retrieve locations and companies data for the dropdowns
-        $locations = Location::orderBy("area")->get();
-        $companies = Company::orderBy("contribution_level")->get();
+
+        $companies = null;
+        $locations = null;
+
+        if (strtolower($employee_data->group_company) == "property") {
+            $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
+            $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
+        } else {
+            $companies = Company::orderBy("contribution_level")->get();
+            $locations = Location::orderBy("area")->get();
+        }
 
         $holiday = master_holiday::pluck("tanggal_libur")->toArray();
 
@@ -2081,6 +2090,13 @@ class BusinessTripController extends Controller
         $userId = Auth::id();
         $employee = Employee::where("id", $userId)->first();
         $isRestricted = ($employee->job_level < 8);
+        $oldNoDeclaration = $n->no_declaration;
+        $newNoDeclaration = $this->generateNoDeclaration();
+        $noDeclaration = $newNoDeclaration;
+
+        if (!empty($oldNoDeclaration)) {
+            $noDeclaration = $oldNoDeclaration;
+        }
 
         $deptHeadManager = $this->findDepartmentHead($employee);
 
@@ -2151,6 +2167,8 @@ class BusinessTripController extends Controller
             }
         }
 
+        // GO
+
         if ($caRecords->isEmpty()) {
             if ($entrTab == false && $request->totalca > 0) {
                 // Create a new CA transaction if it doesn't exist
@@ -2159,6 +2177,7 @@ class BusinessTripController extends Controller
 
                 $entId = $ent->id = (string) Str::uuid();
                 $ent->no_ca = $this->generateNoCa();
+                $ent->no_declaration = $noDeclaration;
                 $ent->no_sppd = $oldNoSppd;
                 $ent->unit = $request->divisi;
                 $ent->contribution_level_code = $request->bb_perusahaan;
@@ -2354,6 +2373,7 @@ class BusinessTripController extends Controller
 
                 $caId = $ca->id = (string) Str::uuid();
                 $ca->no_ca = $this->generateNoCa();
+                $ca->no_declaration = $noDeclaration;
                 $ca->no_sppd = $oldNoSppd;
                 $ca->unit = $request->divisi;
                 $ca->contribution_level_code = $request->bb_perusahaan;
@@ -2650,6 +2670,9 @@ class BusinessTripController extends Controller
                 $ent->save();
             }
         }
+
+        // GO
+
         if ($caRecords) {
             foreach ($caRecords as $ca) {
                 // Assign or update values to $ca model
@@ -2658,6 +2681,10 @@ class BusinessTripController extends Controller
                     $ca->no_sppd = $oldNoSppd;
                     $ca->user_id = $userId;
                     $caId = $ca->id;
+
+                    if (empty($ca->no_declaration)) {
+                        $ca->no_declaration = $noDeclaration;
+                    }
 
                     // Update approval_status based on the status value from the request
                     if ($statusValue === "Declaration L1") {
@@ -2912,6 +2939,10 @@ class BusinessTripController extends Controller
                     $ca->user_id = $userId;
                     $caId = $ca->id;
 
+                    if (empty($ca->no_declaration)) {
+                        $ca->no_declaration = $noDeclaration;
+                    }
+
                     // Update approval_status based on the status value from the request
                     if ($statusValue === "Declaration L1") {
                         $ca->approval_sett = "Pending";
@@ -3114,6 +3145,10 @@ class BusinessTripController extends Controller
                     );
                     $ca->total_cost =
                         -1 * (int) str_replace(".", "", $ca->total_real);
+
+                    if (empty($ca->no_declaration)) {
+                        $ca->no_declaration = $noDeclaration;
+                    }
 
                     // dd($ca->total_real, $ca->total_cost);
 
@@ -3326,6 +3361,10 @@ class BusinessTripController extends Controller
                     );
                     $ca->total_cost =
                         -1 * (int) str_replace(".", "", $ca->total_real);
+
+                    if (empty($ca->no_declaration)) {
+                        $ca->no_declaration = $noDeclaration;
+                    }
 
                     // dd($ca->total_real, $ca->total_cost);
 
@@ -3613,6 +3652,7 @@ class BusinessTripController extends Controller
         }
         // Update the status field in the BusinessTrip record
         $n->update([
+            "no_declaration" => $noDeclaration,
             "status" => $statusValue,
         ]);
         // Only proceed with approval process if not 'Declaration Draft'
@@ -4809,7 +4849,7 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $approval = ca_approval::with("employee")
+                                $approval = ca_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
                                     ->where("ca_id", $dnsCA->id)
                                     ->where("approval_status", "!=", "Rejected")
                                     ->whereNull("deleted_at")
@@ -4876,7 +4916,7 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $approval = ca_approval::with("employee")
+                                $approval = ca_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
                                     ->where("ca_id", $entrCA->id)
                                     ->where("approval_status", "!=", "Rejected")
                                     ->whereNull("deleted_at")
@@ -5110,7 +5150,7 @@ class BusinessTripController extends Controller
                                 //     $dnsCA->id,
                                 // )->max("created_at");
 
-                                $approval = ca_sett_approval::with("employee")
+                                $approval = ca_sett_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
                                     ->where("ca_id", $dnsCA->id)
                                     ->where("approval_status", "!=", "Rejected")
                                     // ->where("created_at", $latestCreatedAt)
@@ -5173,7 +5213,7 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $approval = ca_sett_approval::with("employee")
+                                $approval = ca_sett_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
                                     ->where("ca_id", $entrCA->id)
                                     ->where("approval_status", "!=", "Rejected")
                                     ->whereNull("deleted_at")
@@ -5421,7 +5461,7 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $approval = ca_approval::with("employee")
+                                $approval = ca_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
                                     ->where("ca_id", $dnsCA->id)
                                     ->where("approval_status", "!=", "Rejected")
                                     ->whereNull("deleted_at")
@@ -5488,7 +5528,7 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $approval = ca_approval::with("employee")
+                                $approval = ca_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
                                     ->where("ca_id", $entrCA->id)
                                     ->where("approval_status", "!=", "Rejected")
                                     ->whereNull("deleted_at")
@@ -5725,7 +5765,7 @@ class BusinessTripController extends Controller
                                 //     $latestCreatedAt,
                                 // )->format("Y-m-d H:i");
 
-                                $approval = ca_sett_approval::with("employee")
+                                $approval = ca_sett_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
                                     ->where("ca_id", $dnsCA->id)
                                     ->where("approval_status", "!=", "Rejected")
                                     // ->where(
@@ -5798,7 +5838,7 @@ class BusinessTripController extends Controller
                                     ? "Perdiem"
                                     : "Allowance";
 
-                                $approval = ca_sett_approval::with("employee")
+                                $approval = ca_sett_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
                                     ->where("ca_id", $entrCA->id)
                                     ->where("approval_status", "!=", "Rejected")
                                     ->whereNull("deleted_at")
@@ -5945,8 +5985,18 @@ class BusinessTripController extends Controller
     {
         $userId = Auth::id();
         $employee_data = Employee::where("id", $userId)->first();
-        $locations = Location::orderBy("area")->get();
-        $companies = Company::orderBy("contribution_level")->get();
+
+        $companies = null;
+        $locations = null;
+
+        if (strtolower($employee_data->group_company) == "property") {
+            $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
+            $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
+        } else {
+            $companies = Company::orderBy("contribution_level")->get();
+            $locations = Location::orderBy("area")->get();
+        }
+
         $employees = Employee::orderBy("ktp")->get();
         $no_sppds = CATransaction::where("user_id", $userId)
             ->where("approval_sett", "!=", "Done")
@@ -13496,6 +13546,45 @@ class BusinessTripController extends Controller
         $newNumber = str_pad($lastNumber + 1, 6, "0", STR_PAD_LEFT);
         $newNoCa = "$prefix$currentYearShort$newNumber";
         return $newNoCa;
+    }
+
+    private function generateNoDeclaration()
+    {
+        $currentYear = date("Y");
+        $currentMonth = date("n");
+        $romanMonth = $this->getRomanMonth($currentMonth);
+
+        $lastTransaction = BusinessTrip::whereYear("created_at", $currentYear)
+            ->where("no_declaration", "LIKE", "%/$currentYear")
+            ->orderByRaw(
+                "CAST(SUBSTRING_INDEX(no_declaration, '/', 1) AS UNSIGNED) DESC",
+            )
+            ->withTrashed()
+            ->first();
+
+        if (
+            $lastTransaction &&
+            preg_match(
+                "/(\d{1,5})\/DEC-SPPD\/([IVX]+)\/\d{4}/",
+                $lastTransaction->no_declaration,
+                $matches,
+            )
+        ) {
+            $lastNumber = intval($matches[1]);
+        } else {
+            $lastNumber = 0;
+        }
+
+        $newNumber = $lastNumber + 1;
+
+        $formattedNumber =
+            $newNumber < 1000
+                ? str_pad($newNumber, 4, "0", STR_PAD_LEFT)
+                : $newNumber;
+
+        $newNoDeclaration = "$formattedNumber/DEC-SPPD/$romanMonth/$currentYear";
+
+        return $newNoDeclaration;
     }
 
     private function findDepartmentHead($employee)

@@ -236,6 +236,13 @@
             <td class="colon">:</td>
             <td class="value"> {{ $ticket->latestApprovalL1->approved_at ?? '-' }}</td>
         </tr>
+        @if (isset($ticket->latestApprovalL1->by_admin) && strtolower($ticket->latestApprovalL1->by_admin) == "t" && isset($ticket->latestApprovalL1->admin_id) && !empty($ticket->latestApprovalL1->admin_id) && isset($ticket->latestApprovalL1->admin_employee))
+            <tr>
+                <td class="label">On Behalf</td>
+                <td class="colon">:</td>
+                <td class="value"> {{ $ticket->latestApprovalL1->admin_employee->fullname }}</td>
+            </tr>
+        @endif
         <tr>
             <td class="label">Manager Name 2</td>
             <td class="colon">:</td>
@@ -246,6 +253,13 @@
             <td class="colon">:</td>
             <td class="value"> {{ $ticket->latestApprovalL2->approved_at ?? '-' }}</td>
         </tr>
+        @if (isset($ticket->latestApprovalL2->by_admin) && strtolower($ticket->latestApprovalL2->by_admin) == "t" && isset($ticket->latestApprovalL2->admin_id) && !empty($ticket->latestApprovalL2->admin_id) && isset($ticket->latestApprovalL2->admin_employee))
+            <tr>
+                <td class="label">On Behalf</td>
+                <td class="colon">:</td>
+                <td class="value"> {{ $ticket->latestApprovalL2->admin_employee->fullname }}</td>
+            </tr>
+        @endif
     </table>
 
 </body>

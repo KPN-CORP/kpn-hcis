@@ -83,4 +83,20 @@ class ca_sett_approval extends Model
     {
         return $this->belongsTo(CATransaction::class, 'ca_id', 'id');
     }
+
+    public function adminEmployeeById()
+    {
+        return $this->belongsTo(Employee::class, 'admin_id', 'id');
+    }
+
+    public function adminEmployeeByEmployeeId()
+    {
+        return $this->belongsTo(Employee::class, 'admin_id', 'employee_id');
+    }
+
+    public function getAdminEmployeeAttribute()
+    {
+        return $this->adminEmployeeById
+            ?? $this->adminEmployeeByEmployeeId;
+    }
 }

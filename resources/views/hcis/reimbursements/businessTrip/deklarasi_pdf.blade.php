@@ -115,7 +115,7 @@
         <img src="{{ public_path('images/kop.jpg') }}" alt="Kop Surat">
     </div>
     <h5 class="center">Form Declaration</h5>
-    <h5 class="center">{{ $transactions->no_sppd }} - (No. {{ $transactions->no_ca }})</h5>
+    <h5 class="center">{{ $transactions->no_sppd }} - (No. {{ $transactions->no_declaration ?: $transactions->no_ca }})</h5>
 
     <table>
         <tr>
@@ -162,7 +162,12 @@
 
     <table>
         <tr>
-            <td colspan="3"><b>CA Submission Details:</b></td>
+            <td colspan="3"><b>CA Declaration Submission Details:</b></td>
+        </tr>
+        <tr>
+            <td class="label">No CA</td>
+            <td class="colon">:</td>
+            <td class="value">{{ $transactions->no_ca }}</td>
         </tr>
         <tr>
             <td class="label">Costing Company</td>
@@ -212,10 +217,10 @@
         @if ($transactions->approval_status == 'Rejected')
             <table class="table-approve" style="width: 80%;">
                 <tr>
-                    <th colspan="3"><b>Detail Cash Advanced :</b></th>
+                    <th colspan="3"><b>Detail Cash Advanced Declaration :</b></th>
                 </tr>
                 <tr class="head-row">
-                    <td style="text-align: center;">Types of Cash Advanced</td>
+                    <td style="text-align: center;">Types of Cash Advanced Declaration</td>
                     <td>Total Days</td>
                     <td>Amount</td>
                 </tr>
@@ -306,10 +311,10 @@
         @else
             <table class="table-approve" style="width: 80%;">
                 <tr>
-                    <th colspan="5"><b>Detail Cash Advanced :</b></th>
+                    <th colspan="5"><b>Detail Cash Advanced Declaration :</b></th>
                 </tr>
                 <tr class="head-row">
-                    <td rowspan="2" style="text-align: center;">Types of Cash Advanced</td>
+                    <td rowspan="2" style="text-align: center;">Types of Cash Advanced Declaration</td>
                     <td colspan="2">Plan</td>
                     <td colspan="2">Declaration</td>
                 </tr>
@@ -482,10 +487,10 @@
     @elseif ($transactions->type_ca == 'ndns')
         <table class="table-approve" style="width: 80%;">
             <tr>
-                <th colspan="5"><b>Detail Cash Advanced :</b></th>
+                <th colspan="5"><b>Detail Cash Advanced Declaration :</b></th>
             </tr>
             <tr class="head-row">
-                <td rowspan="2" style="text-align: center;">Types of Cash Advanced</td>
+                <td rowspan="2" style="text-align: center;">Types of Cash Advanced Declaration</td>
                 <td colspan="2">Plan</td>
                 <td colspan="2">Declaration</td>
             </tr>
@@ -530,10 +535,10 @@
     @elseif ($transactions->type_ca == 'entr')
         <table class="table-approve" style="width: 80%;">
             <tr>
-                <th colspan="5"><b>Detail Cash Advanced :</b></th>
+                <th colspan="5"><b>Detail Cash Advanced Declaration :</b></th>
             </tr>
             <tr class="head-row">
-                <td rowspan="2" style="text-align: center;">Types of Cash Advanced</td>
+                <td rowspan="2" style="text-align: center;">Types of Cash Advanced Declaration</td>
                 <td colspan="2">Plan</td>
                 <td colspan="2">Declaration</td>
             </tr>
@@ -660,6 +665,17 @@
                                 </td>
                             @endforeach
                         </tr>
+                        <tr>
+                            @foreach ($approval as $role)
+                                @if (isset($role->by_admin) && strtolower($role->by_admin) == "t" && isset($role->admin_id) && !empty($role->admin_id) && isset($role->admin_employee))
+                                    <td>
+                                        Approved by:
+                                        <br/>
+                                        {{ $role->admin_employee->fullname }}
+                                    </td>
+                                @endif
+                            @endforeach
+                        </tr>
                     </table>
                 </td>
             </tr>
@@ -667,7 +683,7 @@
     </div>
 
     <div>
-        <h2 style="text-align: center">Cash Advanced Attachment</h2>
+        <h2 style="text-align: center">Cash Advanced Declaration Attachment</h2>
         @if ($transactions->type_ca == 'dns')
             @if ($transactions->approval_status != 'Rejected')
                 @if (isset($detailCA['detail_perdiem']) &&
@@ -1348,7 +1364,7 @@
             <th colspan="2"><b>Total Attachment :</b></th>
         </tr>
         <tr class="head-row">
-            <td class="label" style="width:70%; text-align:right">Total Cash Advanced</td>
+            <td class="label" style="width:70%; text-align:right">Total Cash Advanced Declaration</td>
             <td>
                 <span style="float: left; margin-left:4px">Rp.</span>
                 <span style="float: right;">{{ number_format($transactions->total_ca, 0, ',', '.') }}</span>
@@ -1393,9 +1409,9 @@
     <footer>
         <script type="text/php">
             if (isset($pdf)) {
-                $x = 360;
+                $x = {{ !empty($transactions->no_declaration) ? 310 : 360 }};
                 $y = 810;
-                $text = "Page {PAGE_NUM} of {PAGE_COUNT} Declaration Cash Advanced No. {{ $transactions->no_ca }}";
+                $text = "Page {PAGE_NUM} of {PAGE_COUNT} Declaration Cash Advanced No. {{ $transactions->no_declaration ?: $transactions->no_ca }}";
                 $font = null;
                 $size = 8;
                 $color = array(0, 0, 0);

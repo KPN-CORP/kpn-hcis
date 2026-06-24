@@ -708,8 +708,18 @@ class ReimburseController extends Controller
         }
 
         $employee_data = Employee::where("id", $userId)->first();
-        $companies = Company::orderBy("contribution_level")->get();
-        $locations = Location::orderBy("area")->get();
+
+        $companies = null;
+        $locations = null;
+
+        if (strtolower($employee_data->group_company) == "property") {
+            $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
+            $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
+        } else {
+            $companies = Company::orderBy("contribution_level")->get();
+            $locations = Location::orderBy("area")->get();
+        }
+
         $perdiem = ListPerdiem::where("grade", $employee_data->job_level)
             ->where(
                 "bisnis_unit",
@@ -1346,6 +1356,46 @@ class ReimburseController extends Controller
                 "Transaction successfully added waiting for Approval.",
             );
     }
+
+    private function generateNoDeclaration()
+    {
+        $currentYear = date("Y");
+        $currentMonth = date("n");
+        $romanMonth = $this->getRomanMonth($currentMonth);
+
+        $lastTransaction = CATransaction::whereYear("created_at", $currentYear)
+            ->where("no_declaration", "LIKE", "%/$currentYear")
+            ->orderByRaw(
+                "CAST(SUBSTRING_INDEX(no_declaration, '/', 1) AS UNSIGNED) DESC",
+            )
+            ->withTrashed()
+            ->first();
+
+        if (
+            $lastTransaction &&
+            preg_match(
+                "/(\d{1,5})\/DEC-CA\/([IVX]+)\/\d{4}/",
+                $lastTransaction->no_declaration,
+                $matches,
+            )
+        ) {
+            $lastNumber = intval($matches[1]);
+        } else {
+            $lastNumber = 0;
+        }
+
+        $newNumber = $lastNumber + 1;
+
+        $formattedNumber =
+            $newNumber < 1000
+                ? str_pad($newNumber, 4, "0", STR_PAD_LEFT)
+                : $newNumber;
+
+        $newNoDeclaration = "$formattedNumber/DEC-CA/$romanMonth/$currentYear";
+
+        return $newNoDeclaration;
+    }
+
     function cashadvancedEdit($key)
     {
         $userId = Auth::id();
@@ -1353,8 +1403,18 @@ class ReimburseController extends Controller
         $link = "Cash Advanced";
 
         $employee_data = Employee::where("id", $userId)->first();
-        $companies = Company::orderBy("contribution_level")->get();
-        $locations = Location::orderBy("area")->get();
+
+        $companies = null;
+        $locations = null;
+
+        if (strtolower($employee_data->group_company) == "property") {
+            $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
+            $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
+        } else {
+            $companies = Company::orderBy("contribution_level")->get();
+            $locations = Location::orderBy("area")->get();
+        }
+
         // TODO: Cara get data perdiem antara Business Travel dan Reimbursement berbeda
         $perdiem = ListPerdiem::where("grade", $employee_data->job_level)
             ->where(
@@ -2140,7 +2200,7 @@ class ReimburseController extends Controller
                 ]);
             }
         ])->find($key);
-        $approval = ca_approval::with("employee")
+        $approval = ca_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
             ->where("ca_id", $key)
             ->where("approval_status", "!=", "Rejected")
             ->whereNull("deleted_at")
@@ -2184,7 +2244,7 @@ class ReimburseController extends Controller
             }
 
         ])->find($key);
-        $approval = ca_sett_approval::with("employee")
+        $approval = ca_sett_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
             ->where("ca_id", $key)
             ->where("approval_status", "<>", "Rejected")
             ->whereNull("deleted_at")
@@ -2224,7 +2284,7 @@ class ReimburseController extends Controller
     {
         $userId = Auth::id();
         $parentLink = "Reimbursement";
-        $link = "Cash Advanced Approval";
+        $link = "Cash Advanced Declaration";
 
         $employee_data = Employee::where("id", $userId)->first();
         $companies = Company::orderBy("contribution_level")->get();
@@ -2762,6 +2822,11 @@ class ReimburseController extends Controller
         }
         $model->sett_id = $nextApproval->employee_id;
         $model->declaration_at = Carbon::now();
+
+        if (empty($model->no_declaration)) {
+            $model->no_declaration = $this->generateNoDeclaration();
+        }
+
         $model->save();
 
         return redirect()
@@ -2910,8 +2975,18 @@ class ReimburseController extends Controller
         $link = "Add Hotel Data";
 
         $employee_data = Employee::where("id", $userId)->first();
-        $companies = Company::orderBy("contribution_level")->get();
-        $locations = Location::orderBy("area")->get();
+
+        $companies = null;
+        $locations = null;
+
+        if (strtolower($employee_data->group_company) == "property") {
+            $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
+            $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
+        } else {
+            $companies = Company::orderBy("contribution_level")->get();
+            $locations = Location::orderBy("area")->get();
+        }
+
         $perdiem = ListPerdiem::where("grade", $employee_data->job_level)
             ->where(
                 "bisnis_unit",
@@ -3405,8 +3480,18 @@ class ReimburseController extends Controller
 
         // Fetch additional data needed for the form
         $employee_data = Employee::where("id", $userId)->first();
-        $companies = Company::orderBy("contribution_level")->get();
-        $locations = Location::orderBy("area")->get();
+
+        $companies = null;
+        $locations = null;
+
+        if (strtolower($employee_data->group_company) == "property") {
+            $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
+            $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
+        } else {
+            $companies = Company::orderBy("contribution_level")->get();
+            $locations = Location::orderBy("area")->get();
+        }
+
         $perdiem = ListPerdiem::where("grade", $employee_data->job_level)
             ->where(
                 "bisnis_unit",
@@ -4909,8 +4994,18 @@ class ReimburseController extends Controller
         $link = "Add Ticket Data";
 
         $employee_data = Employee::where("id", $userId)->first();
-        $companies = Company::orderBy("contribution_level")->get();
-        $locations = Location::orderBy("area")->get();
+
+        $companies = null;
+        $locations = null;
+
+        if (strtolower($employee_data->group_company) == "property") {
+            $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
+            $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
+        } else {
+            $companies = Company::orderBy("contribution_level")->get();
+            $locations = Location::orderBy("area")->get();
+        }
+
         $perdiem = ListPerdiem::where("grade", $employee_data->job_level)
             ->where(
                 "bisnis_unit",
@@ -5481,8 +5576,18 @@ class ReimburseController extends Controller
 
         // Fetch additional data needed for the form
         $employee_data = Employee::where("id", $userId)->first();
-        $companies = Company::orderBy("contribution_level")->get();
-        $locations = Location::orderBy("area")->get();
+
+        $companies = null;
+        $locations = null;
+
+        if (strtolower($employee_data->group_company) == "property") {
+            $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
+            $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
+        } else {
+            $companies = Company::orderBy("contribution_level")->get();
+            $locations = Location::orderBy("area")->get();
+        }
+
         $employees = Employee::orderBy("ktp")->get();
         $perdiem = ListPerdiem::where("grade", $employee_data->job_level)
             ->where(
