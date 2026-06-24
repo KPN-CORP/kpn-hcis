@@ -44,6 +44,9 @@ use App\Http\Controllers\ApiEmployeeController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\DocumentGeneratorController;
 use App\Http\Controllers\ParkingController;
+use App\Http\Controllers\CAController;
+use App\Http\Controllers\TaskBoxController;
+use App\Http\Controllers\AdminMenuController;
 use App\Models\Designation;
 use Faker\Provider\Medical;
 use Illuminate\Support\Facades\Route;
@@ -336,6 +339,18 @@ Route::middleware("auth")->group(function () {
     Route::get("/travel", [ReimburseController::class, "travel"])->name(
         "travel",
     );
+    Route::get("/cash-advance", [
+        CAController::class,
+        "cashAdvance",
+    ])->name("cashAdvance");
+    Route::get("/task-box", [
+        TaskBoxController::class,
+        "taskBox",
+    ])->name("taskBox");
+    Route::get("/admin-menu", [
+        AdminMenuController::class,
+        "adminMenu",
+    ])->name("adminMenu");
 
     Route::get("/generator", [
         DocumentGeneratorController::class,
