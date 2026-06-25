@@ -87,6 +87,7 @@
             <li class="side-nav-title">Menu</li>
 
             @if (auth()->check())
+            # TODO UNCOMMENT BELLOW
             {{-- @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property"))) --}}
                 <li class="side-nav-item {{ request()->routeIs('cashAdvance') ? 'active' : '' }}">
                     <a href="{{ route('cashAdvance') }}" aria-controls="sidebarEmail" class="side-nav-link">
