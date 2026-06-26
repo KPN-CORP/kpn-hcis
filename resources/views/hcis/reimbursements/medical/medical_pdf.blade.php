@@ -204,26 +204,26 @@
 
     <table class="table-approve" style="width: 80%;">
         <tr class="head-row">
-            <td rowspan="2" style="text-align: center;">Medical Type</td>
-            <td rowspan="2" style="text-align: center;">Opening Balance Medical Plafond</td>
-            <td rowspan="2" style="text-align: center;">Total Current Medical Claim</td>
-            <td rowspan="2" style="text-align: center;">Closing Balance Medical Plafond</td>
+            <td colspan="2" style="text-align: center;">Medical Type</td>
+            <td colspan="2" style="text-align: center;">Opening Balance Medical Plafond</td>
+            <td colspan="2" style="text-align: center;">Total Current Medical Claim</td>
+            <td colspan="2" style="text-align: center;">Closing Balance Medical Plafond</td>
         </tr>
 
         @foreach ($medical_details as $medical_detail)
             <tr>
-                <td class="label">{{ $medical_detail->type }}</td>
+                <td class="label">{{ $medical_detail["type"] }}</td>
                 <td>
-                    <span>Rp.</span>
-                    <span style="float: right;">{{ $medical_detail->formatted_opening_balance_plafond }}</span>
+                    <span style="float: left; margin-left:4px">Rp.</span>
+                    <span style="float: right;">{{ $medical_detail["formatted_opening_balance_plafond"] }}</span>
                 </td>
                 <td>
-                    <span>Rp.</span>
-                    <span style="float: right;">{{ $medical_detail->formatted_total_current_claim }}</span>
+                    <span style="float: left; margin-left:4px">Rp.</span>
+                    <span style="float: right;">{{ $medical_detail["formatted_total_current_claim"] }}</span>
                 </td>
                 <td>
-                    <span>Rp.</span>
-                    <span style="float: right;">{{ $medical_detail->formatted_closing_balance_plafond }}</span>
+                    <span style="float: left; margin-left:4px">Rp.</span>
+                    <span style="float: right;">{{ $medical_detail["formatted_closing_balance_plafond"] }}</span>
                 </td>
             </tr>
         @endforeach
