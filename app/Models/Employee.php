@@ -192,4 +192,8 @@ class Employee extends Model
     {
         return $this->hasMany(Dependents::class, 'employee_id', 'employee_id');
     }
+    public function designationData()
+    {
+        return $this->belongsTo(Designation::class, 'job_code', 'designation_code');
+    }
 }

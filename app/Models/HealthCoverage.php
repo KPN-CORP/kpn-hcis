@@ -56,4 +56,9 @@ class HealthCoverage extends Model
     {
         return $this->belongsTo(Employee::class, 'approved_by', 'employee_id');
     }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'contribution_level_code', 'contribution_level_code');
+    }
 }

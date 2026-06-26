@@ -16,6 +16,7 @@ use App\Models\CATransaction;
 use App\Models\BusinessTrip;
 use App\Models\Hotel;
 use App\Models\Tiket;
+use App\Models\MedicalType;
 // use App\Models\ELogFirstReceipt;
 // use App\Helpers\ELog as ELogHelper;
 use Illuminate\Support\Facades\DB;
@@ -33,6 +34,7 @@ use App\Exports\MedicalDetailExport;
 use App\Mail\MedicalNotification;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\ConnectionException;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class MedicalController extends Controller
 {
@@ -877,6 +879,83 @@ class MedicalController extends Controller
         return redirect()
             ->route("medical")
             ->with("success", "Medical Draft Deleted");
+    }
+
+    public function medicalDownload($id)
+    {
+        $medical_data = HealthCoverage::with("company")->findOrFail($id);
+        $medical_no = $medical_data->no_medic;
+        $medical_costing_company = $medical_data->company ? $medical_data->company->contribution_level . " (" . $medical_data->contribution_level_code . ")" : "-";
+        $medical_cost_center = "-";
+        $medical_submit_date = $medical_data->created_at;
+        $medical_formatted_submit_date = Carbon::parse($medical_submit_date)->format('d-M-y');
+        $medical_claim_date = $medical_data->date;
+        $medical_formatted_claim_date = Carbon::parse($medical_claim_date)->format('d-M-y');
+        $medical_periode = $medical_data->period;
+        $medical_patient_name = $medical_data->patient_name;
+
+        $employee_data = Employee::where("employee_id", $medical_data->employee_id)->first();
+        $employee_id = $employee_data->employee_id;
+        $employee_name = $employee_data->fullname;
+        $employee_email = $employee_data->email;
+        $employee_account_detail = $employee_data->bank_name . " - " . $employee_data->bank_account_number . " - " . $employee_data->bank_account_name;
+        $employee_dept = $employee_data->unit;
+        $employee_pt_or_location = $employee_data->contribution_level_code . " / " . $employee_data->office_area;
+
+        $medical_details = [
+            [
+                "type" => "Medical Type",
+                "formatted_opening_balance_plafond" => "0",
+                "formatted_total_current_claim" => "0",
+                "formatted_closing_balance_plafond" => "0"
+            ],
+            [
+                "type" => "Medical Type",
+                "formatted_opening_balance_plafond" => "0",
+                "formatted_total_current_claim" => "0",
+                "formatted_closing_balance_plafond" => "0"
+            ]
+        ];
+        $medical_approvals = [
+            "labels" => ["Label", "Label"],
+            "statuses" => ["approved", "pending"],
+            "role_names" => ["Role", "Role"],
+            "employee_names" => ["Employee Name", "Employee Name"],
+            "dates" => ["2026-06-26 10:00:00", "2026-06-26 10:00:00"],
+        ];
+
+        // $medical_types = MedicalType::where("active", "T")->pluck('name');
+        // $medical_plan = HealthPlan::orderBy("period", "desc")
+        //     ->where("employee_id", $employee_id)
+        //     ->where("period", $medical_data->period)
+        //     ->get();
+
+        $pdf = PDF::loadView(
+            "hcis.reimbursements.medical.medical_pdf",
+            [
+                "medical_no" => $medical_no,
+                "medical_costing_company" => $medical_costing_company,
+                "medical_cost_center" => $medical_cost_center,
+                "medical_submit_date" => $medical_submit_date,
+                "medical_formatted_submit_date" => $medical_formatted_submit_date,
+                "medical_claim_date" => $medical_claim_date,
+                "medical_formatted_claim_date" => $medical_formatted_claim_date,
+                "medical_periode" => $medical_periode,
+                "medical_patient_name" => $medical_patient_name,
+                "medical_details" => $medical_details,
+                "medical_approvals" => $medical_approvals,
+                "employee_id" => $employee_id,
+                "employee_name" => $employee_name,
+                "employee_email" => $employee_email,
+                "employee_account_detail" => $employee_account_detail,
+                "employee_dept" => $employee_dept,
+                "employee_pt_or_location" => $employee_pt_or_location,
+            ],
+        )
+            ->setPaper("a4", "potrait")
+            ->set_option("enable_php", true);
+
+        return $pdf->stream("Medical Claim " . $medical_no . ".pdf");
     }
 
     public function medicalAdminTable()
