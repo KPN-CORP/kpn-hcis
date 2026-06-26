@@ -162,7 +162,7 @@
             <td class="label">Costing Company</td>
             <td class="colon">:</td>
             <td class="value">
-                {{ $medical_costing_company }})
+                {{ $medical_costing_company }}
             </td>
         </tr>
         <tr>
@@ -204,29 +204,63 @@
 
     <table class="table-approve" style="width: 80%;">
         <tr class="head-row">
-            <td colspan="2" style="text-align: center;">Medical Type</td>
-            <td colspan="2" style="text-align: center;">Opening Balance Medical Plafond</td>
-            <td colspan="2" style="text-align: center;">Total Current Medical Claim</td>
-            <td colspan="2" style="text-align: center;">Closing Balance Medical Plafond</td>
+            <th style="text-align: center;">Medical Type</td>
+            <th style="text-align: center;">Opening Balance Medical Plafond</td>
+            <th style="text-align: center;">Total Current Medical Claim</td>
+            <th style="text-align: center;">Closing Balance Medical Plafond</td>
         </tr>
 
         @foreach ($medical_details as $medical_detail)
             <tr>
                 <td class="label">{{ $medical_detail["type"] }}</td>
                 <td>
-                    <span style="float: left; margin-left:4px">Rp.</span>
-                    <span style="float: right;">{{ $medical_detail["formatted_opening_balance_plafond"] }}</span>
+                    @if (empty($medical_detail["formatted_opening_balance_plafond"]))
+                        <span> - </span>
+                    @else
+                        <span>Rp.</span>
+                        <span>{{ $medical_detail["formatted_opening_balance_plafond"] }}</span>
+                    @endif
                 </td>
                 <td>
-                    <span style="float: left; margin-left:4px">Rp.</span>
-                    <span style="float: right;">{{ $medical_detail["formatted_total_current_claim"] }}</span>
+                    @if (empty($medical_detail["formatted_total_current_claim"]))
+                        <span> - </span>
+                    @else
+                        <span>Rp.</span>
+                        <span>{{ $medical_detail["formatted_total_current_claim"] }}</span>
+                    @endif
                 </td>
                 <td>
-                    <span style="float: left; margin-left:4px">Rp.</span>
-                    <span style="float: right;">{{ $medical_detail["formatted_closing_balance_plafond"] }}</span>
+                    @if (empty($medical_detail["formatted_closing_balance_plafond"]))
+                        <span> - </span>
+                    @else
+                        <span>Rp.</span>
+                        <span>{{ $medical_detail["formatted_closing_balance_plafond"] }}</span>
+                    @endif
                 </td>
             </tr>
         @endforeach
+
+        <tr>
+            <td class="label">Total</td>
+            @if (empty($medical_formatted_opening_balance_plafond))
+                <span> - </span>
+            @else
+                <span>Rp.</span>
+                <span>{{ $medical_formatted_opening_balance_plafond }}</span>
+            @endif
+            @if (empty($medical_formatted_total_current_claim))
+                <span> - </span>
+            @else
+                <span>Rp.</span>
+                <span>{{ $medical_formatted_total_current_claim }}</span>
+            @endif
+            @if (empty($medical_formatted_closing_balance_plafond))
+                <span> - </span>
+            @else
+                <span>Rp.</span>
+                <span>{{ $medical_formatted_closing_balance_plafond }}</span>
+            @endif
+        </tr>
     </table>
 
     <div style="page-break-after:always;">
@@ -298,7 +332,7 @@
     <footer>
         <script type="text/php">
             if (isset($pdf)) {
-                $x = 360;
+                $x = 400;
                 $y = 810;
                 $text = "Page {PAGE_NUM} of {PAGE_COUNT} Medical Claim No. {{ $medical_no }}";
                 $font = null;

@@ -883,7 +883,7 @@ class MedicalController extends Controller
 
     public function medicalDownload($id)
     {
-        $medical_data = HealthCoverage::with("company")->findOrFail($id);
+        $medical_data = HealthCoverage::with(["company", "employee_verified", "employee_approved"])->findOrFail($id);
         $medical_no = $medical_data->no_medic;
         $medical_costing_company = $medical_data->company ? $medical_data->company->contribution_level . " (" . $medical_data->contribution_level_code . ")" : "-";
         $medical_cost_center = "-";
@@ -902,33 +902,83 @@ class MedicalController extends Controller
         $employee_dept = $employee_data->unit;
         $employee_pt_or_location = $employee_data->contribution_level_code . " / " . $employee_data->office_area;
 
-        $medical_details = [
-            [
-                "type" => "Medical Type",
-                "formatted_opening_balance_plafond" => "0",
-                "formatted_total_current_claim" => "0",
-                "formatted_closing_balance_plafond" => "0"
-            ],
-            [
-                "type" => "Medical Type",
-                "formatted_opening_balance_plafond" => "0",
-                "formatted_total_current_claim" => "0",
-                "formatted_closing_balance_plafond" => "0"
-            ]
-        ];
+        $medical_details = [];
         $medical_approvals = [
-            "labels" => ["Label", "Label"],
-            "statuses" => ["approved", "pending"],
-            "role_names" => ["Role", "Role"],
-            "employee_names" => ["Employee Name", "Employee Name"],
-            "dates" => ["2026-06-26 10:00:00", "2026-06-26 10:00:00"],
+            "labels" => [],
+            "statuses" => [],
+            "role_names" => [],
+            "employee_names" => [],
+            "dates" => [],
         ];
 
-        // $medical_types = MedicalType::where("active", "T")->pluck('name');
-        // $medical_plan = HealthPlan::orderBy("period", "desc")
-        //     ->where("employee_id", $employee_id)
-        //     ->where("period", $medical_data->period)
-        //     ->get();
+        $medical_types = MedicalType::where("active", "T")->pluck('name');
+        $medical_plans = HealthPlan::orderBy("period", "desc")
+            ->where("employee_id", $employee_id)
+            ->where("period", $medical_periode)
+            ->get()
+            ->groupBy('medical_type');
+
+        $medical_opening_balance_plafond = 0;
+        $medical_total_current_claim = 0;
+        $medical_closing_balance_plafond = 0;
+
+        foreach ($medical_types as $medical_type) {
+            if (strtolower($medical_type) == strtolower($medical_data->medical_type)) {
+                $medical_balance = $medical_data->balance_verif && !empty($medical_data->balance_verif) ? $medical_data->balance_verif : $medical_data->balance;
+                $medical_plan = $medical_plans[$medical_type];
+                $medical_plafond_balance = $medical_plan[0]->balance;
+                $medical_closing_plafond_balance = $medical_plafond_balance - $medical_balance;
+                $medical_opening_balance_plafond += $medical_plafond_balance;
+                $medical_total_current_claim += $medical_balance;
+                $medical_closing_balance_plafond += $medical_closing_plafond_balance;
+
+                $medical_details[] = [
+                    "type" => $medical_type,
+                    "formatted_opening_balance_plafond" => number_format($medical_plafond_balance, 0, ',', '.'),
+                    "formatted_total_current_claim" => number_format($medical_balance, 0, ',', '.'),
+                    "formatted_closing_balance_plafond" => number_format($medical_closing_plafond_balance, 0, ',', '.')
+                ];
+            } else {
+                $medical_details[] = [
+                    "type" => $medical_type,
+                    "formatted_opening_balance_plafond" => "",
+                    "formatted_total_current_claim" => "",
+                    "formatted_closing_balance_plafond" => ""
+                ];
+            }
+        }
+
+        if ($medical_data->employee_verified) {
+            $medical_approvals["labels"][] = "Verified";
+            $medical_approvals["statuses"][] = "approved";
+            $medical_approvals["role_names"][] = "GA Staff";
+            $medical_approvals["employee_names"][] = $medical_data->employee_verified->fullname;
+            $medical_approvals["dates"][] = $medical_data->verif_at;
+        } else {
+            $medical_approvals["labels"][] = "Verified";
+            $medical_approvals["statuses"][] = "";
+            $medical_approvals["role_names"][] = "GA Staff";
+            $medical_approvals["employee_names"][] = "";
+            $medical_approvals["dates"][] = "";
+        }
+
+        if ($medical_data->employee_approved) {
+            $medical_approvals["labels"][] = "Approved";
+            $medical_approvals["statuses"][] = "approved";
+            $medical_approvals["role_names"][] = "HC Director";
+            $medical_approvals["employee_names"][] = $medical_data->employee_approved->fullname;
+            $medical_approvals["dates"][] = $medical_data->approved_at;
+        } else {
+            $medical_approvals["labels"][] = "Approved";
+            $medical_approvals["statuses"][] = "";
+            $medical_approvals["role_names"][] = "HC Director";
+            $medical_approvals["employee_names"][] = "";
+            $medical_approvals["dates"][] = "";
+        }
+
+        $medical_formatted_opening_balance_plafond = number_format($medical_opening_balance_plafond, 0, ',', '.');
+        $medical_formatted_total_current_claim = number_format($medical_total_current_claim, 0, ',', '.');
+        $medical_formatted_closing_balance_plafond = number_format($medical_closing_balance_plafond, 0, ',', '.');
 
         $pdf = PDF::loadView(
             "hcis.reimbursements.medical.medical_pdf",
@@ -944,6 +994,9 @@ class MedicalController extends Controller
                 "medical_patient_name" => $medical_patient_name,
                 "medical_details" => $medical_details,
                 "medical_approvals" => $medical_approvals,
+                "medical_formatted_opening_balance_plafond" => $medical_formatted_opening_balance_plafond,
+                "medical_formatted_total_current_claim" => $medical_formatted_total_current_claim,
+                "medical_formatted_closing_balance_plafond" => $medical_formatted_closing_balance_plafond,
                 "employee_id" => $employee_id,
                 "employee_name" => $employee_name,
                 "employee_email" => $employee_email,

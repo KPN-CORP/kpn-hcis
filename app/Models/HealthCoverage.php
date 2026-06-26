@@ -61,4 +61,14 @@ class HealthCoverage extends Model
     {
         return $this->belongsTo(Company::class, 'contribution_level_code', 'contribution_level_code');
     }
+
+    public function employee_verified()
+    {
+        return $this->belongsTo(Employee::class, 'verif_by', 'employee_id');
+    }
+
+    public function employee_approved()
+    {
+        return $this->belongsTo(Employee::class, 'approved_by', 'employee_id');
+    }
 }
