@@ -242,24 +242,30 @@
 
         <tr>
             <td class="label">Total</td>
-            @if (empty($medical_formatted_opening_balance_plafond))
-                <span> - </span>
-            @else
-                <span>Rp.</span>
-                <span>{{ $medical_formatted_opening_balance_plafond }}</span>
-            @endif
-            @if (empty($medical_formatted_total_current_claim))
-                <span> - </span>
-            @else
-                <span>Rp.</span>
-                <span>{{ $medical_formatted_total_current_claim }}</span>
-            @endif
-            @if (empty($medical_formatted_closing_balance_plafond))
-                <span> - </span>
-            @else
-                <span>Rp.</span>
-                <span>{{ $medical_formatted_closing_balance_plafond }}</span>
-            @endif
+            <td>
+                @if (empty($medical_formatted_opening_balance_plafond))
+                    <span> - </span>
+                @else
+                    <span>Rp.</span>
+                    <span>{{ $medical_formatted_opening_balance_plafond }}</span>
+                @endif
+            </td>
+            <td>
+                @if (empty($medical_formatted_total_current_claim))
+                    <span> - </span>
+                @else
+                    <span>Rp.</span>
+                    <span>{{ $medical_formatted_total_current_claim }}</span>
+                @endif
+            </td>
+            <td>
+                @if (empty($medical_formatted_closing_balance_plafond))
+                    <span> - </span>
+                @else
+                    <span>Rp.</span>
+                    <span>{{ $medical_formatted_closing_balance_plafond }}</span>
+                @endif
+            </td>
         </tr>
     </table>
 
