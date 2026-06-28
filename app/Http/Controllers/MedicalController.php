@@ -17,6 +17,7 @@ use App\Models\BusinessTrip;
 use App\Models\Hotel;
 use App\Models\Tiket;
 use App\Models\MedicalType;
+use App\Models\MedicalHospital;
 // use App\Models\ELogFirstReceipt;
 // use App\Helpers\ELog as ELogHelper;
 use Illuminate\Support\Facades\DB;
@@ -501,6 +502,9 @@ class MedicalController extends Controller
         $diseases = MasterDisease::orderBy("id", "asc")
             ->where("active", "T")
             ->get();
+
+        $medical_hospitals = MedicalHospital::where("is_active", 1)->pluck("hospital_name");
+
         $parentLink = "Medical";
         $link = "Add Medical Coverage Usage";
 
@@ -518,6 +522,7 @@ class MedicalController extends Controller
                 "isMarried",
                 "isProbation",
                 "hasScalling",
+                "medical_hospitals"
             ),
         );
     }
@@ -687,6 +692,8 @@ class MedicalController extends Controller
             ->where("active", "T")
             ->get();
 
+        $medical_hospitals = MedicalHospital::where("is_active", 1)->pluck("hospital_name");
+
         $parentLink = "Medical";
         $link = "Edit Medical Coverage Usage";
 
@@ -708,6 +715,7 @@ class MedicalController extends Controller
                 "hasGlasses",
                 "selected_patient",
                 "isMarried",
+                "medical_hospitals"
             ),
         );
     }
