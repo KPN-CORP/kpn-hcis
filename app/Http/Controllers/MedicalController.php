@@ -115,6 +115,7 @@ class MedicalController extends Controller
                 "verif_by",
                 "balance_verif",
                 "approved_by",
+                "doc_status"
             )
             ->orderBy("latest_created_at", "desc")
             ->get();
