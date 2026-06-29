@@ -663,7 +663,7 @@
                         $('#documentReceivedWrapper').removeClass('text-secondary');
                         $('#documentReceivedLoading').addClass('d-none');
                         $('#submit-button').prop('disabled', false);
-                        $('#documentReceivedAtText').text(response.data.doc_received_at);
+                        $('#documentReceivedAtText').text('(' + response.data.doc_received_at + ')');
                     },
                     error: function () {
                         $('#document_received_toggle').prop('disabled', false);
