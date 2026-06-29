@@ -1088,6 +1088,7 @@ class MedicalController extends Controller
                 'SUM(CASE WHEN medical_type = "Glasses" THEN balance ELSE 0 END) as glasses_total',
             ),
             "status",
+            "doc_status"
         )
             ->where("status", "!=", "Draft")
             ->whereNull("verif_by")
@@ -1100,6 +1101,7 @@ class MedicalController extends Controller
                 "patient_name",
                 "disease",
                 "status",
+                "doc_status"
             )
             ->orderBy("created_at", "desc")
             ->get();
