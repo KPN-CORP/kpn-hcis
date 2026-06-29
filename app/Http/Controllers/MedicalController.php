@@ -2714,6 +2714,7 @@ class MedicalController extends Controller
                     'SUM(CASE WHEN mdc_transactions.medical_type = "Glasses" THEN mdc_transactions.balance ELSE 0 END) as glasses_total',
                 ),
                 "mdc_transactions.status",
+                "mdc_transactions.doc_status",
                 DB::raw(
                     "MAX(mdc_transactions.created_at) as latest_created_at",
                 ),
@@ -2733,6 +2734,7 @@ class MedicalController extends Controller
                 "mdc_transactions.patient_name",
                 "mdc_transactions.disease",
                 "mdc_transactions.status",
+                "mdc_transactions.doc_status",
                 "mdc_transactions.employee_id",
             )
             ->orderBy("latest_created_at", "desc")
