@@ -644,6 +644,7 @@
                 $(this).prop('disabled', true);
                 $('#documentReceivedWrapper').addClass('text-secondary');
                 $('#documentReceivedLoading').removeClass('d-none');
+                $('#submit-button').prop('disabled', true);
 
                 $.ajax({
                     url: '/medical/admin/form-update/update/document-received-toggle/{{ $medic->usage_id }}',
@@ -655,11 +656,13 @@
                         $('#document_received_toggle').prop('disabled', false);
                         $('#documentReceivedWrapper').removeClass('text-secondary');
                         $('#documentReceivedLoading').addClass('d-none');
+                        $('#submit-button').prop('disabled', false);
                     },
                     error: function () {
                         $('#document_received_toggle').prop('disabled', false);
                         $('#documentReceivedWrapper').removeClass('text-secondary');
                         $('#documentReceivedLoading').addClass('d-none');
+                        $('#submit-button').prop('disabled', false);
                     }
                 });
             });
