@@ -86,6 +86,7 @@ class MedicalController extends Controller
             "verif_by",
             "balance_verif",
             "approved_by",
+            "doc_status",
             DB::raw(
                 'SUM(CASE WHEN medical_type = "Maternity" THEN balance ELSE 0 END) as maternity_total',
             ),
