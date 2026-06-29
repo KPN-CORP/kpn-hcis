@@ -164,11 +164,13 @@
         <tr>
             <td colspan="3"><b>CA Declaration Submission Details:</b></td>
         </tr>
-        <tr>
-            <td class="label">No CA</td>
-            <td class="colon">:</td>
-            <td class="value">{{ $transactions->no_ca }}</td>
-        </tr>
+        @if (!empty($transactions->no_declaration))
+            <tr>
+                <td class="label">No CA</td>
+                <td class="colon">:</td>
+                <td class="value">{{ $transactions->no_ca }}</td>
+            </tr>
+        @endif
         <tr>
             <td class="label">Costing Company</td>
             <td class="colon">:</td>
@@ -602,17 +604,19 @@
                                 </td>
                             @endforeach
                         </tr>
-                        <tr>
-                            @foreach ($approval as $role)
-                                @if (isset($role->by_admin) && strtolower($role->by_admin) == "t" && isset($role->admin_id) && !empty($role->admin_id) && isset($role->admin_employee))
-                                    <td>
-                                        Approved by:
-                                        <br/>
-                                        {{ $role->admin_employee->fullname }}
-                                    </td>
-                                @endif
-                            @endforeach
-                        </tr>
+                        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                            <tr>
+                                @foreach ($approval as $role)
+                                    @if (isset($role->by_admin) && strtolower($role->by_admin) == "t" && isset($role->admin_id) && !empty($role->admin_id) && isset($role->admin_employee))
+                                        <td>
+                                            Approved by:
+                                            <br/>
+                                            {{ $role->admin_employee->fullname }}
+                                        </td>
+                                    @endif
+                                @endforeach
+                            </tr>
+                        @endif
                     </table>
                 </td>
             </tr>
