@@ -35,6 +35,67 @@
                         <form id="medicForm" action="/medical/form-update/update/{{ $medic->usage_id }}" method="POST"
                             enctype="multipart/form-data">
                             @csrf
+
+                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <table width="100%" class="">
+                                            <tr>
+                                                <td width="40%"><strong>Remaining Plafond</strong></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <table width="100%" class="">
+                                            <tr>
+                                                <td width="40%"><strong>Inpatient</strong></td>
+                                                <td class="block">:</td>
+                                                @if (isset($formattedBalanceData["Inpatient"]) && isset($formattedBalanceData["Inpatient"][$balancePeriod]))
+                                                    <td> RP. {{ $formattedBalanceData["Inpatient"][$balancePeriod] }} </td>
+                                                @else
+                                                    <td> - </td>
+                                                @endif
+                                            </tr>
+                                            <tr>
+                                                <td width="40%"><strong>Outpatient</strong></td>
+                                                <td class="block">:</td>
+                                                @if (isset($formattedBalanceData["Outpatient"]) && isset($formattedBalanceData["Outpatient"][$balancePeriod]))
+                                                    <td> RP. {{ $formattedBalanceData["Outpatient"][$balancePeriod] }} </td>
+                                                @else
+                                                    <td> - </td>
+                                                @endif
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <table width="100%" class="">
+                                            <tr>
+                                                <td width="40%"><strong>Maternity</strong></td>
+                                                <td class="block">:</td>
+                                                @if (isset($formattedBalanceData["Maternity"]) && isset($formattedBalanceData["Maternity"][$balancePeriod]))
+                                                    <td> RP. {{ $formattedBalanceData["Maternity"][$balancePeriod] }} </td>
+                                                @else
+                                                    <td> - </td>
+                                                @endif
+                                            </tr>
+                                            <tr>
+                                                <td width="40%"><strong>Glasses</strong></td>
+                                                <td class="block">:</td>
+                                                @if (isset($formattedBalanceData["Glasses"]) && isset($formattedBalanceData["Glasses"][$balancePeriod]))
+                                                    <td> RP. {{ $formattedBalanceData["Glasses"][$balancePeriod] }} </td>
+                                                @else
+                                                    <td> - </td>
+                                                @endif
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <br/>
+                                <br/>
+                            @endif
+
                             @method('PUT')
                             <div class="row mb-2">
                                 <div class="col-md-4 mb-2">
@@ -55,12 +116,59 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-4 mb-2">
-                                    <label for="nama" class="form-label">Hospital Name</label>
-                                    <input type="text" class="form-control form-control-sm" id="hospital_name"
-                                        name="hospital_name" placeholder="ex: RS. Murni Teguh"
-                                        value="{{ $medic->hospital_name }}" required>
-                                </div>
+
+                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                                    @php
+                                        $isOtherHospital = !in_array($medic->hospital_name, $medical_hospitals->toArray());
+                                    @endphp
+
+                                    <div class="col-md-4 mb-2">
+                                        <label for="hospital_name" class="form-label">Hospital/Clinic</label>
+                                        <select class="form-select form-select-sm select2"
+                                                name="hospital_name"
+                                                id="hospital_name"
+                                                onchange="MDHospitalToggleOthers()"
+                                                required>
+
+                                            <option value="">--- Choose Hospital/Clinic ---</option>
+
+                                            @foreach ($medical_hospitals as $medical_hospital)
+                                                <option value="{{ $medical_hospital }}"
+                                                    {{ $medic->hospital_name == $medical_hospital ? 'selected' : '' }}>
+                                                    {{ $medical_hospital }}
+                                                </option>
+                                            @endforeach
+
+                                            <option value="Others" {{ $isOtherHospital ? 'selected' : '' }}>
+                                                Others
+                                            </option>
+                                        </select>
+                                        <br/>
+                                        <div class="row">
+                                            <div class="">
+                                                <input
+                                                    type="text"
+                                                    id="others_hospital_name"
+                                                    name="others_hospital_name"
+                                                    class="form-control form-control-sm"
+                                                    placeholder="ex: RS. Murni Teguh"
+                                                    value="{{ $isOtherHospital ? $medic->hospital_name : '' }}"
+                                                    style="{{ $isOtherHospital ? '' : 'display:none;' }}">
+                                            </div>
+                                            <div class="col-md-12 mt-2">
+                                                <label id="reason-label" style="display: none;" for="" class="form-label">Reason</label>
+                                                <textarea class="form-control form-control-sm" id="reason" style="display: none;" name="reason" rows="3" value="{{ $medic->reason ? $medic->reason : '' }}" placeholder="Please add a reason ..."></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="col-md-4 mb-2">
+                                        <label for="nama" class="form-label">Hospital Name</label>
+                                        <input type="text" class="form-control form-control-sm" id="hospital_name"
+                                            name="hospital_name" placeholder="ex: RS. Murni Teguh"
+                                            value="{{ $medic->hospital_name }}" required>
+                                    </div>
+                                @endif
 
                                 <div class="col-md-4 mb-2">
                                     <label for="disease" class="form-label">Disease</label>
@@ -136,7 +244,7 @@
                                 <!-- Preview untuk file lama -->
                                 <div id="existing-files-label" style="margin-bottom: 10px; font-weight: bold;">
                                     @if ($medic->medical_proof)
-                                        
+
                                         Document on Draft:
 
                                     @endif
@@ -145,14 +253,14 @@
                                     @if ($medic->medical_proof)
                                         @php
                                             $medicalProof = $medic->medical_proof;
-                                        
+
                                             // Jika null, inisialisasi sebagai array kosong
                                             if (is_null($medicalProof)) {
                                                 $existingFiles = [];
                                             } else {
                                                 // Coba decode JSON
                                                 $decoded = json_decode($medicalProof, true);
-                                        
+
                                                 if (json_last_error() === JSON_ERROR_NONE) {
                                                     // Jika decoding berhasil, gunakan hasilnya
                                                     $existingFiles = $decoded;
@@ -161,7 +269,7 @@
                                                     $existingFiles = [$medicalProof];
                                                 }
                                             }
-                                        
+
                                             // Debug hasil akhir
                                         @endphp
 
@@ -216,7 +324,7 @@
         function generateBalanceDisplay(selectedTypes, selectedYear) {
             var balanceContainer = $("#balanceContainer");
             balanceContainer.empty(); // Clear previous balances
-    
+
             if (selectedTypes && selectedTypes.length > 0) {
                 selectedTypes.forEach(function (type) {
                     // Fetch balance based on type and year
@@ -236,7 +344,7 @@
                 });
             }
         }
-    
+
         // Function to handle changes in medical type and date
         function handleInputChange() {
             var selectedDate = $("#date").val();
@@ -244,36 +352,36 @@
                 ? new Date(selectedDate).getFullYear()
                 : null;
             var selectedTypes = $("#medical_type").val();
-    
+
             if (selectedYear && selectedTypes) {
                 generateBalanceDisplay(selectedTypes, selectedYear);
             }
         }
-    
+
         // Attach change event listeners to the medical type dropdown and date input
         $("#medical_type, #date").on("change", handleInputChange);
-    
+
         // Initial load handling
         handleInputChange();
-    
+
         // Utility function to format numbers as currency
         function formatCurrency(value) {
             return new Intl.NumberFormat("id-ID").format(value); // Format number as currency
         }
     });
-    
+
     //Medical Form JS
     $(document).ready(function () {
         var typeToNameMap = {};
         medicalTypeData.forEach(function (type) {
             typeToNameMap[type.medical_type] = type.name;
         });
-    
+
         // Function to generate dynamic forms based on selected types
         function generateDynamicForms(selectedTypes) {
             var dynamicForms = $("#dynamicForms");
             dynamicForms.empty();
-    
+
             if (selectedTypes && selectedTypes.length > 0) {
                 selectedTypes.forEach(function (type) {
                     var balanceValue = balanceMapping[type] || ""; // Get the balance from mapping or set to empty
@@ -289,18 +397,18 @@
                 `;
                     dynamicForms.append(formGroup);
                 });
-    
+
                 // Re-initialize currency formatting for new inputs
                 initCurrencyFormatting();
             }
         }
-    
+
         // Event listener for the medical type dropdown
         $("#medical_type").on("change", function () {
             var selectedTypes = $(this).val();
             generateDynamicForms(selectedTypes);
         });
-    
+
         function initCurrencyFormatting() {
             $(".currency-input")
                 .off("input")
@@ -309,7 +417,7 @@
                     $(this).val(formatCurrency(value));
                 });
         }
-    
+
         function formatCurrency(value) {
             // Remove non-digit characters and parse as integer
             var numericValue =
@@ -317,15 +425,15 @@
             // Format the number
             return new Intl.NumberFormat("id-ID").format(numericValue);
         }
-    
+
         // Initialize currency formatting
         initCurrencyFormatting();
-    
+
         // Step to initialize the dynamic forms on page load with selected values
         var initialSelectedTypes = $("#medical_type").val();
         generateDynamicForms(initialSelectedTypes); // Call this function to set initial forms
     });
-    
+
     // This function is kept outside for global access if needed
     function formatCurrency(input) {
         if (typeof input === "object" && input.value !== undefined) {
@@ -341,7 +449,7 @@
             return (parseInt(value, 10) || 0).toLocaleString("id-ID");
         }
     }
-    
+
     // Ambil tanggal hari ini
     const today = new Date();
 
@@ -734,30 +842,30 @@
                 files.forEach(file => {
                     const fileExtension = file.name.split('.').pop().toLowerCase();
                     if (file.size > 2 * 1024 * 1024) {
-                        Swal.fire({  
-                            icon: 'error',  
-                            title: 'File Size Exceeded',  
-                            text: `File "${file.name}" exceeds the 2MB size limit.`,  
-                        });  
-                        return;  
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'File Size Exceeded',
+                            text: `File "${file.name}" exceeds the 2MB size limit.`,
+                        });
+                        return;
                     }
                     if (!['jpg', 'jpeg', 'png', 'gif', 'pdf'].includes(fileExtension)) {
-                        Swal.fire({  
-                            icon: 'error',  
-                            title: 'Unsupported File Type',  
-                            text: `File type "${fileExtension}" not supported.`,  
-                        });  
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Unsupported File Type',
+                            text: `File type "${fileExtension}" not supported.`,
+                        });
                         return;
                     }
                     if (!selectedFiles.some(existingFile => existingFile.name === file.name)) {
                         if (totalFiles < 10) {
                             selectedFiles.push(file);
                         } else {
-                            Swal.fire({  
-                                icon: 'error',  
-                                title: 'File Limit Exceeded',  
-                                text: 'You can upload a maximum of 10 files.',  
-                            });  
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'File Limit Exceeded',
+                                text: 'You can upload a maximum of 10 files.',
+                            });
                         }
                     }
                 });
@@ -772,4 +880,35 @@
 
 
     </script>
+
+    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+        <script>
+            function MDHospitalToggleOthers() {
+                var hospitalNameElem = document.getElementById("hospital_name");
+                var othersHospitalNameElem = document.getElementById("others_hospital_name");
+                var reasonElem = document.getElementById("reason");
+                var reasonLabelElem = document.getElementById("reason-label");
+
+                if (hospitalNameElem.value === "Others") {
+                    othersHospitalNameElem.style.display = "block";
+                    othersHospitalNameElem.required = true;
+                    reasonElem.style.display = "block";
+                    reasonElem.required = true;
+                    reasonLabelElem.style.display = "block";
+                } else {
+                    othersHospitalNameElem.style.display = "none";
+                    othersHospitalNameElem.required = false;
+                    othersHospitalNameElem.value = "";
+                    reasonElem.style.display = "none";
+                    reasonElem.required = false;
+                    reasonElem.value = "";
+                    reasonLabelElem.style.display = "none";
+                }
+            }
+
+            $(document).ready(function () {
+                MDHospitalToggleOthers();
+            });
+        </script>
+    @endif
 @endsection

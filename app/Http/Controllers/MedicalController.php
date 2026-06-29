@@ -488,10 +488,13 @@ class MedicalController extends Controller
             // ->where('period', $currentYear)
             ->get();
         $balanceData = [];
+        $formattedBalanceData = [];
         foreach ($medicalBalances as $balance) {
             // Assuming `medical_type` is a property of `HealthPlan`
             $balanceData[$balance->medical_type][$balance->period] =
                 $balance->balance;
+            $formattedBalanceData[$balance->medical_type][$balance->period] =
+                number_format($balance->balance, 0, ',', '.');
         }
         // dd($balanceData);
 
@@ -504,6 +507,7 @@ class MedicalController extends Controller
             ->get();
 
         $medical_hospitals = MedicalHospital::where("is_active", 1)->pluck("hospital_name");
+        $balancePeriod = $balance->period;
 
         $parentLink = "Medical";
         $link = "Add Medical Coverage Usage";
@@ -522,7 +526,9 @@ class MedicalController extends Controller
                 "isMarried",
                 "isProbation",
                 "hasScalling",
-                "medical_hospitals"
+                "medical_hospitals",
+                "balancePeriod",
+                "formattedBalanceData"
             ),
         );
     }
@@ -606,13 +612,19 @@ class MedicalController extends Controller
                 continue;
             }
 
+            $hospital_name = $request->hospital_name;
+
+            if (!empty($request->others_hospital_name)) {
+                $hospital_name = $request->others_hospital_name;
+            }
+
             $healthCoverage = HealthCoverage::create([
                 "usage_id" => (string) Str::uuid(),
                 "employee_id" => $employee_id,
                 "contribution_level_code" => $contribution_level_code,
                 "no_medic" => $no_medic,
                 "no_invoice" => $request->no_invoice,
-                "hospital_name" => $request->hospital_name,
+                "hospital_name" => $hospital_name,
                 "patient_name" => $request->patient_name,
                 "disease" => $request->disease,
                 "date" => $date,
@@ -624,6 +636,7 @@ class MedicalController extends Controller
                 "balance_uncoverage" => 0,
                 "status" => $statusValue,
                 "medical_proof" => $medical_proof_path,
+                "reason" => $request->reason
             ]);
             // dd($employee_id);
 
@@ -664,10 +677,13 @@ class MedicalController extends Controller
             // ->where('period', $currentYear)
             ->get();
         $balanceData = [];
+        $formattedBalanceData = [];
         foreach ($medicalBalances as $balance) {
             // Assuming `medical_type` is a property of `HealthPlan`
             $balanceData[$balance->medical_type][$balance->period] =
                 $balance->balance;
+            $formattedBalanceData[$balance->medical_type][$balance->period] =
+                number_format($balance->balance, 0, ',', '.');
         }
         // dd($balanceData);
 
@@ -693,6 +709,7 @@ class MedicalController extends Controller
             ->get();
 
         $medical_hospitals = MedicalHospital::where("is_active", 1)->pluck("hospital_name");
+        $balancePeriod = $balance->period;
 
         $parentLink = "Medical";
         $link = "Edit Medical Coverage Usage";
@@ -715,7 +732,9 @@ class MedicalController extends Controller
                 "hasGlasses",
                 "selected_patient",
                 "isMarried",
-                "medical_hospitals"
+                "medical_hospitals",
+                "balancePeriod",
+                "formattedBalanceData"
             ),
         );
     }
@@ -807,10 +826,16 @@ class MedicalController extends Controller
             $no_medic,
         )->get();
 
+        $hospital_name = $request->hospital_name;
+
+        if (!empty($request->others_hospital_name)) {
+            $hospital_name = $request->others_hospital_name;
+        }
+
         // Update common fields for all records with the same no_medic
         $commonUpdateData = [
             "no_invoice" => $request->no_invoice,
-            "hospital_name" => $request->hospital_name,
+            "hospital_name" => $hospital_name,
             "patient_name" => $request->patient_name,
             "disease" => $request->disease,
             "date" => $date,
@@ -824,6 +849,7 @@ class MedicalController extends Controller
             "reject_info" => null,
             "rejected_at" => null,
             "rejected_by" => null,
+            "reason" => $request->reason
         ];
 
         HealthCoverage::where("no_medic", $no_medic)->update($commonUpdateData);
