@@ -212,6 +212,11 @@
 
                                 <label class="form-check-label" for="document_received_toggle">
                                     <span id="documentReceivedText">Document Received</span>
+                                    <span id="documentReceivedAtText">
+                                        @if (!empty($medic->doc_received_at))
+                                            ({{ $medic->doc_received_at }})
+                                        @endif
+                                    </span>
                                     <span id="documentReceivedLoading"
                                             class="spinner-border spinner-border-sm ms-2 d-none"
                                             role="status"></span>
@@ -652,11 +657,12 @@
                     data: {
                         _token: '{{ csrf_token() }}',
                     },
-                    success: function () {
+                    success: function (response) {
                         $('#document_received_toggle').prop('disabled', false);
                         $('#documentReceivedWrapper').removeClass('text-secondary');
                         $('#documentReceivedLoading').addClass('d-none');
                         $('#submit-button').prop('disabled', false);
+                        $('#documentReceivedAtText').text(response.doc_received_at);
                     },
                     error: function () {
                         $('#document_received_toggle').prop('disabled', false);
