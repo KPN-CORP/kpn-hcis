@@ -1340,12 +1340,18 @@ class MedicalController extends Controller
             $docStatus = "Document Pending";
         }
 
+        $formattedDocReceivedAt = null;
+
         if ($docStatus == "Document Received") {
             $existingMedical->update([
                 "doc_status" => $docStatus,
                 "doc_status_previous" => $docStatusPrevious,
                 "doc_received_at" => Carbon::now()
             ]);
+
+            $formattedDocReceivedAt = $existingMedical->doc_received_at
+                ->setTimezone('Asia/Jakarta')
+                ->format('Y-m-d H:i:s');
         } else if ($docStatus == "Document Pending") {
             $existingMedical->update([
                 "doc_status" => $docStatus,
@@ -1359,7 +1365,7 @@ class MedicalController extends Controller
             'message' => 'Medical verification data successfully updated.',
             'data' => [
                 'doc_status' => $docStatus,
-                'doc_received_at' => $existingMedical->doc_received_at,
+                'doc_received_at' => $formattedDocReceivedAt,
             ]
         ]);
     }
