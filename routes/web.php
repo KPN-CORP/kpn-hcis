@@ -887,6 +887,10 @@ Route::middleware("auth")->group(function () {
             MedicalController::class,
             "medicalAdminUpdate",
         ])->name("medical-admin-form.put");
+        Route::put("/medical/admin/form-update/update/document-received-toggle/{id}", [
+            MedicalController::class,
+            "medicalAdminUpdateDocumentReceivedToggle",
+        ])->name("medical-admin-form-document-received-toggle.put");
         Route::delete("/medical/admin/delete/{id}", [
             MedicalController::class,
             "medicalAdminDelete",

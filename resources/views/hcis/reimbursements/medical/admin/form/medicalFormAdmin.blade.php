@@ -121,7 +121,7 @@
                                     <!-- Preview untuk file lama -->
                                     <div id="existing-files-label" style="margin-bottom: 10px; font-weight: bold;">
                                         @if ($transactions->medical_proof)
-                                            
+
                                             Document on Draft:
                                         @endif
                                     </div>
@@ -550,30 +550,30 @@
                 files.forEach(file => {
                     const fileExtension = file.name.split('.').pop().toLowerCase();
                     if (file.size > 2 * 1024 * 1024) {
-                        Swal.fire({  
-                            icon: 'error',  
-                            title: 'File Size Exceeded',  
-                            text: `File "${file.name}" exceeds the 2MB size limit.`,  
-                        });  
-                        return;  
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'File Size Exceeded',
+                            text: `File "${file.name}" exceeds the 2MB size limit.`,
+                        });
+                        return;
                     }
                     if (!['jpg', 'jpeg', 'png', 'gif', 'pdf'].includes(fileExtension)) {
-                        Swal.fire({  
-                            icon: 'error',  
-                            title: 'Unsupported File Type',  
-                            text: `File type "${fileExtension}" not supported.`,  
-                        });  
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Unsupported File Type',
+                            text: `File type "${fileExtension}" not supported.`,
+                        });
                         return;
                     }
                     if (!selectedFiles.some(existingFile => existingFile.name === file.name)) {
                         if (totalFiles < 10) {
                             selectedFiles.push(file);
                         } else {
-                            Swal.fire({  
-                                icon: 'error',  
-                                title: 'File Limit Exceeded',  
-                                text: 'You can upload a maximum of 10 files.',  
-                            });  
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'File Limit Exceeded',
+                                text: 'You can upload a maximum of 10 files.',
+                            });
                         }
                     }
                 });
