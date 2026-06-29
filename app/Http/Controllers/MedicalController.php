@@ -546,6 +546,12 @@ class MedicalController extends Controller
         $statusValue = $request->has("action_draft") ? "Draft" : "Pending";
         $employee_data = Employee::where("id", $userId)->first();
 
+        $docStatusValue = "Document Pending";
+
+        if ($statusValue == "Draft") {
+            $docStatusValue = "Draft";
+        }
+
         if ($request->has("removed_medical_proof")) {
             $removedFiles = json_decode($request->removed_medical_proof, true);
             $existingFiles = $request->existing_medical_proof
@@ -636,7 +642,9 @@ class MedicalController extends Controller
                 "balance_uncoverage" => 0,
                 "status" => $statusValue,
                 "medical_proof" => $medical_proof_path,
-                "reason" => $request->reason
+                "reason" => $request->reason,
+                "doc_status" => $docStatusValue,
+                "doc_status_previous" => $docStatusValue
             ]);
             // dd($employee_id);
 
@@ -756,6 +764,12 @@ class MedicalController extends Controller
         // Handle status value
         $statusValue = $request->has("action_draft") ? "Draft" : "Pending";
 
+        $docStatusValue = "Document Pending";
+
+        if ($statusValue == "Draft") {
+            $docStatusValue = "Draft";
+        }
+
         // Handle medical proof file upload
         $employee_data = Employee::where("id", $userId)->first();
 
@@ -849,7 +863,9 @@ class MedicalController extends Controller
             "reject_info" => null,
             "rejected_at" => null,
             "rejected_by" => null,
-            "reason" => $request->reason
+            "reason" => $request->reason,
+            "doc_status" => $docStatusValue,
+            "doc_status_previous" => $docStatusValue
         ];
 
         HealthCoverage::where("no_medic", $no_medic)->update($commonUpdateData);
@@ -1287,6 +1303,58 @@ class MedicalController extends Controller
                 "success",
                 "Medical verification data successfully updated.",
             );
+    }
+
+    public function medicalAdminUpdateDocumentReceivedToggle($id)
+    {
+        $employee_id = Auth::user()->employee_id;
+        $existingMedical = HealthCoverage::where("usage_id", $id)->first();
+
+        if (!$existingMedical) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Medical record not found.'
+            ], 404);
+        }
+
+        $docStatus = $existingMedical->doc_status;
+        $docStatusPrevious = $existingMedical->doc_status_previous;
+
+        if (empty($docStatus) || $docStatus == "Pending" || $docStatus == "Document Pending" ||
+        $docStatus == "Draft" || $docStatus == "Revise" || $docStatus == "Rejected") {
+            $docStatusPrevious = $docStatus;
+            $docStatus = "Document Received";
+
+            if (empty($docStatus)) {
+                $docStatusPrevious = "Document Pending";
+            }
+        } else if ($docStatus == "Document Received") {
+            $docStatusPrevious = $docStatus;
+            $docStatus = "Document Pending";
+        }
+
+        if ($docStatus == "Document Received") {
+            $existingMedical->update([
+                "doc_status" => $docStatus,
+                "doc_status_previous" => $docStatusPrevious,
+                "doc_received_at" => Carbon::now()
+            ]);
+        } else if ($docStatus == "Document Pending") {
+            $existingMedical->update([
+                "doc_status" => $docStatus,
+                "doc_status_previous" => $docStatusPrevious,
+                "doc_received_at" => null
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Medical verification data successfully updated.',
+            'data' => [
+                'doc_status' => $docStatus,
+                'doc_received_at' => $existingMedical->doc_received_at,
+            ]
+        ]);
     }
 
     public function medicalAdminDelete($id)
