@@ -824,6 +824,10 @@ Route::middleware("auth")->group(function () {
         MedicalController::class,
         "medicalForm",
     ])->name("export.medical");
+    Route::get("/medical/download/{id}", [
+        MedicalController::class,
+        "medicalDownload",
+    ])->name("medical.download");
 
     //Medical Admin
     Route::middleware(["permission:report_hcis_md"])->group(function () {

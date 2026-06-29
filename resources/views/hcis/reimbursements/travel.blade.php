@@ -55,6 +55,17 @@
 
     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-xl-5 g-3">
 
+        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) != "property")))
+            <div class="col">
+                <a href="{{ route('businessTrip.approval') }}" class="text-decoration-none">
+                    <div class="menu-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                        <img src="{{ asset('images/menu/approval.png') }}" alt="Approval" class="menu-icon mb-3">
+                        <span class="menu-text">Approval</span>
+                    </div>
+                </a>
+            </div>
+        @endif
+
         <div class="col">
             <a href="{{ route('businessTrip') }}" class="text-decoration-none">
                 <div class="menu-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
@@ -94,6 +105,66 @@
         @endif
 
     </div>
+
+    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) != "property")))
+        @if (auth()->check() && (auth()->user()->can('report_hcis_bt') || auth()->user()->can('report_hcis_ht') || auth()->user()->can('report_hcis_tkt') || auth()->user()->can('report_hcis_htl')))
+            <div class="admin-panel w-100">
+
+                <div class="admin-panel-title">
+                    <i class="ri-shield-user-line fs-4"></i>
+                    Menu Admin
+                </div>
+
+                <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-xl-5 g-3">
+
+                    @can('report_hcis_bt')
+                    <div class="col">
+                        <a href="{{ route('businessTrip.admin') }}" class="text-decoration-none">
+                            <div class="admin-inner-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                                <img src="/images/menu/report.png" alt="Report" class="menu-icon mb-3">
+                                <span class="menu-text">Business Travel<br>(Admin)</span>
+                            </div>
+                        </a>
+                    </div>
+                    @endcan
+
+                    @can('report_hcis_ht')
+                    <div class="col">
+                        <a href="{{ route('home-trip.admin') }}" class="text-decoration-none">
+                            <div class="admin-inner-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                                <img src="{{ asset('images/menu/report.png') }}" alt="Report" class="menu-icon mb-3 rounded-circle">
+                                <span class="menu-text">Home Trip<br>(Admin)</span>
+                            </div>
+                        </a>
+                    </div>
+                    @endcan
+
+                    @can('report_hcis_tkt')
+                    <div class="col">
+                        <a href="{{ route('ticket.admin') }}" class="text-decoration-none">
+                            <div class="admin-inner-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                                <img src="{{ asset('images/menu/report.png') }}" alt="Report" class="menu-icon mb-3">
+                                <span class="menu-text">Ticket<br>(Admin)</span>
+                            </div>
+                        </a>
+                    </div>
+                    @endcan
+
+                    @can('report_hcis_htl')
+                    <div class="col">
+                        <a href="{{ route('hotel.admin') }}" class="text-decoration-none">
+                            <div class="admin-inner-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                                <img src="{{ asset('images/menu/report.png') }}" alt="Report" class="menu-icon mb-3">
+                                <span class="menu-text">Hotel<br>(Admin)</span>
+                            </div>
+                        </a>
+                    </div>
+                    @endcan
+
+                </div>
+            </div>
+        @endif
+    @endif
 
 </div>
 @endsection

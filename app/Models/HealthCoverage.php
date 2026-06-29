@@ -45,6 +45,7 @@ class HealthCoverage extends Model
         'medical_proof',
         'submission_type',
         'deleted_at',
+        'reason'
     ];
 
     public function employee()
@@ -53,6 +54,21 @@ class HealthCoverage extends Model
     }
 
     public function employee_approve()
+    {
+        return $this->belongsTo(Employee::class, 'approved_by', 'employee_id');
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'contribution_level_code', 'contribution_level_code');
+    }
+
+    public function employee_verified()
+    {
+        return $this->belongsTo(Employee::class, 'verif_by', 'employee_id');
+    }
+
+    public function employee_approved()
     {
         return $this->belongsTo(Employee::class, 'approved_by', 'employee_id');
     }
