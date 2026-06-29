@@ -55,6 +55,28 @@
 
     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-xl-5 g-3">
 
+        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) != "property")))
+            <div class="col">
+                <a href="{{ route('businessTrip.approval') }}" class="text-decoration-none">
+                    <div class="menu-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                        <img src="{{ asset('images/menu/approval.png') }}" alt="Approval" class="menu-icon mb-3">
+                        <span class="menu-text">Approval</span>
+                    </div>
+                </a>
+            </div>
+
+            @if($access_ca=='Y')
+            <div class="col">
+                <a href="{{ route('cashadvanced') }}" class="text-decoration-none">
+                    <div class="menu-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                        <img src="{{ asset('images/menu/cashadv.png') }}" alt="Cash Advanced" class="menu-icon mb-3">
+                        <span class="menu-text">Cash Advanced</span>
+                    </div>
+                </a>
+            </div>
+            @endif
+        @endif
+
         <div class="col">
             <a href="{{ route('medical') }}" class="text-decoration-none">
                 <div class="menu-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
@@ -112,6 +134,48 @@
             </a>
         </div> --}}
     </div>
+
+    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) != "property")))
+        @if (auth()->check() && (auth()->user()->can('reportca_hcis') || auth()->user()->can('report_hcis_md')))
+            <div class="admin-panel w-100">
+
+                <div class="admin-panel-title">
+                    <i class="ri-shield-user-line fs-4"></i>
+                    Menu Admin
+                </div>
+
+                <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-xl-5 g-3">
+
+                    @if (auth()->check() && $access_ca=='Y')
+                        @can('reportca_hcis')
+                        <div class="col">
+                            <a href="{{ route('cashadvanced.admin') }}" class="text-decoration-none">
+                                <div class="admin-inner-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                                    <img src="{{ asset('images/menu/report.png') }}" alt="Report" class="menu-icon mb-3">
+                                    <span class="menu-text">Cash Advanced<br>(Admin)</span>
+                                </div>
+                            </a>
+                        </div>
+                        @endcan
+                    @endif
+
+                    @if (auth()->check())
+                        @can('report_hcis_md')
+                        <div class="col">
+                            <a href="{{ route('medical.admin') }}" class="text-decoration-none">
+                                <div class="admin-inner-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
+                                    <img src="{{ asset('images/menu/report.png') }}" alt="Report" class="menu-icon mb-3">
+                                    <span class="menu-text">Medical<br>(Admin)</span>
+                                </div>
+                            </a>
+                        </div>
+                        @endcan
+                    @endif
+
+                </div>
+            </div>
+        @endif
+    @endif
 
 </div>
 @endsection

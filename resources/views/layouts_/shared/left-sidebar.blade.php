@@ -86,8 +86,7 @@
         <ul class="side-nav">
             <li class="side-nav-title">Menu</li>
 
-            @if (auth()->check())
-            {{-- @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property"))) --}}
+            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
                 <li class="side-nav-item {{ request()->routeIs('cashAdvance') ? 'active' : '' }}">
                     <a href="{{ route('cashAdvance') }}" aria-controls="sidebarEmail" class="side-nav-link">
                         <i class="ri-refund-2-line"></i>

@@ -2177,7 +2177,11 @@ class BusinessTripController extends Controller
 
                 $entId = $ent->id = (string) Str::uuid();
                 $ent->no_ca = $this->generateNoCa();
-                $ent->no_declaration = $noDeclaration;
+
+                if (strtolower($employee_data->group_company) == "property") {
+                    $ent->no_declaration = $noDeclaration;
+                }
+
                 $ent->no_sppd = $oldNoSppd;
                 $ent->unit = $request->divisi;
                 $ent->contribution_level_code = $request->bb_perusahaan;
@@ -2373,7 +2377,11 @@ class BusinessTripController extends Controller
 
                 $caId = $ca->id = (string) Str::uuid();
                 $ca->no_ca = $this->generateNoCa();
-                $ca->no_declaration = $noDeclaration;
+
+                if (strtolower($employee_data->group_company) == "property") {
+                    $ca->no_declaration = $noDeclaration;
+                }
+
                 $ca->no_sppd = $oldNoSppd;
                 $ca->unit = $request->divisi;
                 $ca->contribution_level_code = $request->bb_perusahaan;
@@ -2682,8 +2690,10 @@ class BusinessTripController extends Controller
                     $ca->user_id = $userId;
                     $caId = $ca->id;
 
-                    if (empty($ca->no_declaration)) {
-                        $ca->no_declaration = $noDeclaration;
+                    if (strtolower($employee_data->group_company) == "property") {
+                        if (empty($ca->no_declaration)) {
+                            $ca->no_declaration = $noDeclaration;
+                        }
                     }
 
                     // Update approval_status based on the status value from the request
@@ -2939,8 +2949,10 @@ class BusinessTripController extends Controller
                     $ca->user_id = $userId;
                     $caId = $ca->id;
 
-                    if (empty($ca->no_declaration)) {
-                        $ca->no_declaration = $noDeclaration;
+                    if (strtolower($employee_data->group_company) == "property") {
+                        if (empty($ca->no_declaration)) {
+                            $ca->no_declaration = $noDeclaration;
+                        }
                     }
 
                     // Update approval_status based on the status value from the request
@@ -3146,8 +3158,10 @@ class BusinessTripController extends Controller
                     $ca->total_cost =
                         -1 * (int) str_replace(".", "", $ca->total_real);
 
-                    if (empty($ca->no_declaration)) {
-                        $ca->no_declaration = $noDeclaration;
+                    if (strtolower($employee_data->group_company) == "property") {
+                        if (empty($ca->no_declaration)) {
+                            $ca->no_declaration = $noDeclaration;
+                        }
                     }
 
                     // dd($ca->total_real, $ca->total_cost);
@@ -3362,8 +3376,10 @@ class BusinessTripController extends Controller
                     $ca->total_cost =
                         -1 * (int) str_replace(".", "", $ca->total_real);
 
-                    if (empty($ca->no_declaration)) {
-                        $ca->no_declaration = $noDeclaration;
+                    if (strtolower($employee_data->group_company) == "property") {
+                        if (empty($ca->no_declaration)) {
+                            $ca->no_declaration = $noDeclaration;
+                        }
                     }
 
                     // dd($ca->total_real, $ca->total_cost);
@@ -3651,10 +3667,17 @@ class BusinessTripController extends Controller
             }
         }
         // Update the status field in the BusinessTrip record
-        $n->update([
-            "no_declaration" => $noDeclaration,
-            "status" => $statusValue,
-        ]);
+        if (strtolower($employee_data->group_company) == "property") {
+            $n->update([
+                "no_declaration" => $noDeclaration,
+                "status" => $statusValue,
+            ]);
+        } else {
+            $n->update([
+                "status" => $statusValue,
+            ]);
+        }
+
         // Only proceed with approval process if not 'Declaration Draft'
         if ($statusValue !== "Declaration Draft") {
             $cek_director_id = Employee::select([

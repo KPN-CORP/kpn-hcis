@@ -2823,8 +2823,10 @@ class ReimburseController extends Controller
         $model->sett_id = $nextApproval->employee_id;
         $model->declaration_at = Carbon::now();
 
-        if (empty($model->no_declaration)) {
-            $model->no_declaration = $this->generateNoDeclaration();
+        if (strtolower($employee_data->group_company) == "property") {
+            if (empty($model->no_declaration)) {
+                $model->no_declaration = $this->generateNoDeclaration();
+            }
         }
 
         $model->save();

@@ -34,6 +34,67 @@
                     <div class="card-body">
                         <form id="medicForm" action="/medical/form-add/post" method="POST" enctype="multipart/form-data">
                             @csrf
+
+                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <table width="100%" class="">
+                                            <tr>
+                                                <td width="40%"><strong>Remaining Plafond</strong></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <table width="100%" class="">
+                                            <tr>
+                                                <td width="40%"><strong>Inpatient</strong></td>
+                                                <td class="block">:</td>
+                                                @if (isset($formattedBalanceData["Inpatient"]) && isset($formattedBalanceData["Inpatient"][$balancePeriod]))
+                                                    <td> RP. {{ $formattedBalanceData["Inpatient"][$balancePeriod] }} </td>
+                                                @else
+                                                    <td> - </td>
+                                                @endif
+                                            </tr>
+                                            <tr>
+                                                <td width="40%"><strong>Outpatient</strong></td>
+                                                <td class="block">:</td>
+                                                @if (isset($formattedBalanceData["Outpatient"]) && isset($formattedBalanceData["Outpatient"][$balancePeriod]))
+                                                    <td> RP. {{ $formattedBalanceData["Outpatient"][$balancePeriod] }} </td>
+                                                @else
+                                                    <td> - </td>
+                                                @endif
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <table width="100%" class="">
+                                            <tr>
+                                                <td width="40%"><strong>Maternity</strong></td>
+                                                <td class="block">:</td>
+                                                @if (isset($formattedBalanceData["Maternity"]) && isset($formattedBalanceData["Maternity"][$balancePeriod]))
+                                                    <td> RP. {{ $formattedBalanceData["Maternity"][$balancePeriod] }} </td>
+                                                @else
+                                                    <td> - </td>
+                                                @endif
+                                            </tr>
+                                            <tr>
+                                                <td width="40%"><strong>Glasses</strong></td>
+                                                <td class="block">:</td>
+                                                @if (isset($formattedBalanceData["Glasses"]) && isset($formattedBalanceData["Glasses"][$balancePeriod]))
+                                                    <td> RP. {{ $formattedBalanceData["Glasses"][$balancePeriod] }} </td>
+                                                @else
+                                                    <td> - </td>
+                                                @endif
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <br/>
+                                <br/>
+                            @endif
+
                             <div class="row mb-2">
                                 <div class="col-md-4 mb-2">
                                     <label for="patient_name" class="form-label">Patient Name</label>
@@ -52,11 +113,40 @@
                                         @endif
                                     </select>
                                 </div>
-                                <div class="col-md-4 mb-2">
-                                    <label for="nama" class="form-label">Hospital/Clinic Name</label>
-                                    <input type="text" class="form-control form-control-sm" id="hospital_name"
-                                        name="hospital_name" placeholder="ex: RS. Murni Teguh" required>
-                                </div>
+
+                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                                    <div class="col-md-4 mb-2">
+                                        <label for="hospital_name" class="form-label">Hospital/Clinic</label>
+                                        <select class="form-select form-select-sm select2" name="hospital_name" id="hospital_name"
+                                            onchange="MDHospitalToggleOthers()" required>
+                                            <option value="">--- Choose Hospital/Clinic ---</option>
+                                            @foreach ($medical_hospitals as $medical_hospital)
+                                                <option value="{{ $medical_hospital }}">
+                                                    {{ $medical_hospital }}
+                                                </option>
+                                            @endforeach
+                                            <option value="Others">Others</option>
+                                        </select>
+                                        <br>
+                                        <div class="row">
+                                            <div class="">
+                                                <input type="text" name="others_hospital_name" id="others_hospital_name"
+                                                class="form-control form-control-sm" placeholder="ex: RS. Murni Teguh"
+                                                value="" style="display: none;">
+                                            </div>
+                                            <div class="col-md-12 mt-2">
+                                                <label id="reason-label" style="display: none;" for="" class="form-label">Reason</label>
+                                                <textarea class="form-control form-control-sm" id="reason" style="display: none;" name="reason" rows="3" placeholder="Please add a reason ..."></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="col-md-4 mb-2">
+                                        <label for="nama" class="form-label">Hospital/Clinic Name</label>
+                                        <input type="text" class="form-control form-control-sm" id="hospital_name"
+                                            name="hospital_name" placeholder="ex: RS. Murni Teguh" required>
+                                    </div>
+                                @endif
 
                                 <div class="col-md-4 mb-2">
                                     <label for="disease" class="form-label">Disease</label>
@@ -707,4 +797,29 @@
 
 
     </script>
+
+    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+        <script>
+            function MDHospitalToggleOthers() {
+                var hospitalNameElem = document.getElementById("hospital_name");
+                var othersHospitalNameElem = document.getElementById("others_hospital_name");
+                var reasonElem = document.getElementById("reason");
+                var reasonLabelElem = document.getElementById("reason-label");
+
+                if (hospitalNameElem.value === "Others") {
+                    othersHospitalNameElem.style.display = "block";
+                    reasonElem.style.display = "block";
+                    reasonElem.required = true;
+                    reasonLabelElem.style.display = "block";
+                } else {
+                    othersHospitalNameElem.style.display = "none";
+                    othersHospitalNameElem.value = "";
+                    reasonElem.style.display = "none";
+                    reasonElem.value = "";
+                    reasonElem.required = false;
+                    reasonLabelElem.style.display = "none";
+                }
+            }
+        </script>
+    @endif
 @endsection
