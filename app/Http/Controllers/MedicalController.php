@@ -1266,11 +1266,26 @@ class MedicalController extends Controller
                     ? (int) str_replace(".", "", $bpjs_costs[$medical_type])
                     : 0;
 
+                $docReceivedBy = $existingCoverage->doc_received_by;
+                $docReceivedAt = $existingCoverage->doc_received_at;
+
+                if (empty($docReceivedBy)) {
+                    $docReceivedBy = $employee_id;
+                }
+
+                if (empty($docReceivedAt)) {
+                    $docReceivedAt = Carbon::now();
+                }
+
                 $existingCoverage->update([
                     "balance_verif" => $verif_cost,
                     "verif_by" => $employee_id,
                     "verif_at" => Carbon::now(),
                     "status" => "Pending",
+                    "doc_status" => "Claim Verified",
+                    "doc_status_previous" => "Document Received",
+                    "doc_received_by" => $docReceivedBy,
+                    "doc_received_at" => $docReceivedAt,
                     "balance_bpjs" => $bpjs_cost,
                 ]);
                 if ($medical_plan->balance < $verif_cost) {
@@ -1346,6 +1361,7 @@ class MedicalController extends Controller
             $existingMedical->update([
                 "doc_status" => $docStatus,
                 "doc_status_previous" => $docStatusPrevious,
+                "doc_received_by" => $employee_id,
                 "doc_received_at" => Carbon::now()
             ]);
 
@@ -1356,6 +1372,7 @@ class MedicalController extends Controller
             $existingMedical->update([
                 "doc_status" => $docStatus,
                 "doc_status_previous" => $docStatusPrevious,
+                "doc_received_by" => null,
                 "doc_received_at" => null
             ]);
         }
