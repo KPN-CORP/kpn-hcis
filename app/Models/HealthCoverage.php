@@ -48,6 +48,7 @@ class HealthCoverage extends Model
         'reason',
         'doc_status',
         'doc_status_previous',
+        'doc_received_by',
         'doc_received_at'
     ];
 
