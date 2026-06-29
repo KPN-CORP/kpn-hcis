@@ -650,6 +650,7 @@
                 $('#documentReceivedWrapper').addClass('text-secondary');
                 $('#documentReceivedLoading').removeClass('d-none');
                 $('#submit-button').prop('disabled', true);
+                $('#documentReceivedAtText').text('');
 
                 $.ajax({
                     url: '/medical/admin/form-update/update/document-received-toggle/{{ $medic->usage_id }}',
@@ -662,7 +663,7 @@
                         $('#documentReceivedWrapper').removeClass('text-secondary');
                         $('#documentReceivedLoading').addClass('d-none');
                         $('#submit-button').prop('disabled', false);
-                        $('#documentReceivedAtText').text(response.doc_received_at);
+                        $('#documentReceivedAtText').text(response.data.doc_received_at);
                     },
                     error: function () {
                         $('#document_received_toggle').prop('disabled', false);
