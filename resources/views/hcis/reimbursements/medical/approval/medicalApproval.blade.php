@@ -94,7 +94,13 @@
                                         @foreach ($master_medical as $master_medicals)
                                             <th class="text-center">{{ $master_medicals->name }}</th>
                                         @endforeach
-                                        <th data-priority="1">Status</th>
+
+                                        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                                            <th data-priority="1">Progress</th>
+                                        @else
+                                            <th data-priority="1">Status</th>
+                                        @endif
+
                                         <th data-priority="2">Action</th>
                                     </tr>
 
@@ -123,27 +129,64 @@
                                                     {{ 'Rp. ' . number_format($item->$balance_verif_field, 0, ',', '.') }}
                                                 </td>
                                             @endforeach
-                                            <td style="align-content: center; text-align: center">
-                                                @php
-                                                    $badgeClass = match ($item->status) {
-                                                        'Pending' => 'bg-warning',
-                                                        'Done' => 'bg-success',
-                                                        'Rejected' => 'bg-danger',
-                                                        'Draft' => 'bg-secondary',
-                                                        default => 'bg-light',
-                                                    };
-                                                @endphp
-                                                <span class="badge rounded-pill {{ $badgeClass }} text-center"
-                                                    style="font-size: 12px; padding: 0.5rem 1rem;">
-                                                    {{ $item->status }}
-                                                </span>
-                                            </td>
+
+                                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                                                <td style="align-content: center; text-align: center">
+                                                    @php
+                                                        $status = $item->status;
+
+                                                        if (!empty($item->doc_status)) {
+                                                          $status = $item->doc_status;
+                                                        }
+
+                                                        $badgeClass = match ($status) {
+                                                            'Pending' => 'bg-warning',
+                                                            'Document Pending' => 'bg-warning',
+                                                            'Document Received' => 'bg-warning',
+                                                            'Claim Verified' => 'bg-warning',
+                                                            'Reimbursement Approved' => 'bg-success',
+                                                            'Processing Payment' => 'bg-success',
+                                                            'Revise' => 'bg-warning',
+                                                            'Done' => 'bg-success',
+                                                            'Paid' => 'bg-success',
+                                                            'Rejected' => 'bg-danger',
+                                                            'Draft' => 'bg-secondary',
+                                                            default => 'bg-light',
+                                                        };
+                                                    @endphp
+                                                    <span class="badge rounded-pill {{ $badgeClass }} text-center"
+                                                        style="font-size: 12px; padding: 0.5rem 1rem; cursor: pointer;">
+                                                        {{ $status }}
+                                                    </span>
+                                                </td>
+                                            @else
+                                                <td style="align-content: center; text-align: center">
+                                                    @php
+                                                        $badgeClass = match ($item->status) {
+                                                            'Pending' => 'bg-warning',
+                                                            'Done' => 'bg-success',
+                                                            'Rejected' => 'bg-danger',
+                                                            'Draft' => 'bg-secondary',
+                                                            default => 'bg-light',
+                                                        };
+                                                    @endphp
+                                                    <span class="badge rounded-pill {{ $badgeClass }} text-center"
+                                                        style="font-size: 12px; padding: 0.5rem 1rem;">
+                                                        {{ $item->status }}
+                                                    </span>
+                                                </td>
+                                            @endif
+
                                             <td style="text-align: center; vertical-align: middle;">
                                                 <a class="btn btn-primary rounded-pill"
                                                     href="{{ route('medical-approval-form.edit', ['id' => $item->usage_id]) }}"
                                                     style="font-size: 0.75rem; padding: 0.25rem 0.5rem;">
                                                     Act
                                                 </a>
+
+                                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                                                    <a href="{{ route('medical.download', $item->usage_id) }}" target="_blank" class="btn btn-outline-info" title="Print"><i class="bi bi-file-earmark-arrow-down"></i></a>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach

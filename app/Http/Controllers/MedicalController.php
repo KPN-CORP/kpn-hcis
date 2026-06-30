@@ -1518,6 +1518,7 @@ class MedicalController extends Controller
                         'SUM(CASE WHEN mdc_transactions.medical_type = "Glasses" THEN mdc_transactions.balance_verif ELSE 0 END) as glasses_balance_verif',
                     ),
                     "mdc_transactions.status",
+                    "mdc_transactions.doc_status",
                     "mdc_transactions.created_at",
                     "e.fullname",
                 )
@@ -1533,6 +1534,7 @@ class MedicalController extends Controller
                     "mdc_transactions.patient_name",
                     "mdc_transactions.disease",
                     "mdc_transactions.status",
+                    "mdc_transactions.doc_status",
                     "mdc_transactions.created_at",
                     "e.fullname",
                 )
@@ -1763,6 +1765,8 @@ class MedicalController extends Controller
                 // Update the health coverage record to reflect rejection
                 $coverage->update([
                     "status" => $statusValue,
+                    "doc_status" => $statusValue,
+                    "doc_status_previous" => $coverage->doc_status,
                     "reject_info" => $rejectInfo,
                     "rejected_by" => $employee_id,
                     "rejected_at" => now(),
@@ -1805,6 +1809,8 @@ class MedicalController extends Controller
                 // Update the medical record to mark it as done and store verification info
                 $coverage->update([
                     "status" => $statusValue,
+                    "doc_status" => "Reimbursement Approved",
+                    "doc_status_previous" => $coverage->doc_status,
                     "approved_by" => $employee_id,
                     "approved_at" => now(),
                 ]);
