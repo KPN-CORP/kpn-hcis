@@ -87,6 +87,7 @@ class MedicalController extends Controller
             "verif_by",
             "balance_verif",
             "approved_by",
+            "doc_status",
             DB::raw(
                 'SUM(CASE WHEN medical_type = "Maternity" THEN balance ELSE 0 END) as maternity_total',
             ),
@@ -114,6 +115,7 @@ class MedicalController extends Controller
                 "verif_by",
                 "balance_verif",
                 "approved_by",
+                "doc_status"
             )
             ->orderBy("latest_created_at", "desc")
             ->get();
@@ -547,6 +549,12 @@ class MedicalController extends Controller
         $statusValue = $request->has("action_draft") ? "Draft" : "Pending";
         $employee_data = Employee::where("id", $userId)->first();
 
+        $docStatusValue = "Document Pending";
+
+        if ($statusValue == "Draft") {
+            $docStatusValue = "Draft";
+        }
+
         if ($request->has("removed_medical_proof")) {
             $removedFiles = json_decode($request->removed_medical_proof, true);
             $existingFiles = $request->existing_medical_proof
@@ -637,7 +645,9 @@ class MedicalController extends Controller
                 "balance_uncoverage" => 0,
                 "status" => $statusValue,
                 "medical_proof" => $medical_proof_path,
-                "reason" => $request->reason
+                "reason" => $request->reason,
+                "doc_status" => $docStatusValue,
+                "doc_status_previous" => $docStatusValue
             ]);
             // dd($employee_id);
 
@@ -757,6 +767,12 @@ class MedicalController extends Controller
         // Handle status value
         $statusValue = $request->has("action_draft") ? "Draft" : "Pending";
 
+        $docStatusValue = "Document Pending";
+
+        if ($statusValue == "Draft") {
+            $docStatusValue = "Draft";
+        }
+
         // Handle medical proof file upload
         $employee_data = Employee::where("id", $userId)->first();
 
@@ -850,7 +866,9 @@ class MedicalController extends Controller
             "reject_info" => null,
             "rejected_at" => null,
             "rejected_by" => null,
-            "reason" => $request->reason
+            "reason" => $request->reason,
+            "doc_status" => $docStatusValue,
+            "doc_status_previous" => $docStatusValue
         ];
 
         HealthCoverage::where("no_medic", $no_medic)->update($commonUpdateData);
@@ -1071,6 +1089,7 @@ class MedicalController extends Controller
                 'SUM(CASE WHEN medical_type = "Glasses" THEN balance ELSE 0 END) as glasses_total',
             ),
             "status",
+            "doc_status"
         )
             ->where("status", "!=", "Draft")
             ->whereNull("verif_by")
@@ -1083,6 +1102,7 @@ class MedicalController extends Controller
                 "patient_name",
                 "disease",
                 "status",
+                "doc_status"
             )
             ->orderBy("created_at", "desc")
             ->get();
@@ -1246,11 +1266,26 @@ class MedicalController extends Controller
                     ? (int) str_replace(".", "", $bpjs_costs[$medical_type])
                     : 0;
 
+                $docReceivedBy = $existingCoverage->doc_received_by;
+                $docReceivedAt = $existingCoverage->doc_received_at;
+
+                if (empty($docReceivedBy)) {
+                    $docReceivedBy = $employee_id;
+                }
+
+                if (empty($docReceivedAt)) {
+                    $docReceivedAt = Carbon::now();
+                }
+
                 $existingCoverage->update([
                     "balance_verif" => $verif_cost,
                     "verif_by" => $employee_id,
                     "verif_at" => Carbon::now(),
                     "status" => "Pending",
+                    "doc_status" => "Claim Verified",
+                    "doc_status_previous" => "Document Received",
+                    "doc_received_by" => $docReceivedBy,
+                    "doc_received_at" => $docReceivedAt,
                     "balance_bpjs" => $bpjs_cost,
                 ]);
                 if ($medical_plan->balance < $verif_cost) {
@@ -1290,6 +1325,66 @@ class MedicalController extends Controller
                 "success",
                 "Medical verification data successfully updated.",
             );
+    }
+
+    public function medicalAdminUpdateDocumentReceivedToggle($id)
+    {
+        $employee_id = Auth::user()->employee_id;
+        $existingMedical = HealthCoverage::where("usage_id", $id)->first();
+
+        if (!$existingMedical) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Medical record not found.'
+            ], 404);
+        }
+
+        $docStatus = $existingMedical->doc_status;
+        $docStatusPrevious = $existingMedical->doc_status_previous;
+
+        if (empty($docStatus) || $docStatus == "Pending" || $docStatus == "Document Pending" ||
+        $docStatus == "Draft" || $docStatus == "Revise" || $docStatus == "Rejected") {
+            $docStatusPrevious = $docStatus;
+            $docStatus = "Document Received";
+
+            if (empty($docStatus)) {
+                $docStatusPrevious = "Document Pending";
+            }
+        } else if ($docStatus == "Document Received") {
+            $docStatusPrevious = $docStatus;
+            $docStatus = "Document Pending";
+        }
+
+        $formattedDocReceivedAt = null;
+
+        if ($docStatus == "Document Received") {
+            $existingMedical->update([
+                "doc_status" => $docStatus,
+                "doc_status_previous" => $docStatusPrevious,
+                "doc_received_by" => $employee_id,
+                "doc_received_at" => Carbon::now()
+            ]);
+
+            $formattedDocReceivedAt = $existingMedical->doc_received_at
+                ->setTimezone('Asia/Jakarta')
+                ->format('Y-m-d H:i:s');
+        } else if ($docStatus == "Document Pending") {
+            $existingMedical->update([
+                "doc_status" => $docStatus,
+                "doc_status_previous" => $docStatusPrevious,
+                "doc_received_by" => null,
+                "doc_received_at" => null
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Medical verification data successfully updated.',
+            'data' => [
+                'doc_status' => $docStatus,
+                'doc_received_at' => $formattedDocReceivedAt,
+            ]
+        ]);
     }
 
     public function medicalAdminDelete($id)
@@ -1426,6 +1521,7 @@ class MedicalController extends Controller
                         'SUM(CASE WHEN mdc_transactions.medical_type = "Glasses" THEN mdc_transactions.balance_verif ELSE 0 END) as glasses_balance_verif',
                     ),
                     "mdc_transactions.status",
+                    "mdc_transactions.doc_status",
                     "mdc_transactions.created_at",
                     "e.fullname",
                 )
@@ -1441,6 +1537,7 @@ class MedicalController extends Controller
                     "mdc_transactions.patient_name",
                     "mdc_transactions.disease",
                     "mdc_transactions.status",
+                    "mdc_transactions.doc_status",
                     "mdc_transactions.created_at",
                     "e.fullname",
                 )
@@ -1671,6 +1768,8 @@ class MedicalController extends Controller
                 // Update the health coverage record to reflect rejection
                 $coverage->update([
                     "status" => $statusValue,
+                    "doc_status" => $statusValue,
+                    "doc_status_previous" => $coverage->doc_status,
                     "reject_info" => $rejectInfo,
                     "rejected_by" => $employee_id,
                     "rejected_at" => now(),
@@ -1713,6 +1812,8 @@ class MedicalController extends Controller
                 // Update the medical record to mark it as done and store verification info
                 $coverage->update([
                     "status" => $statusValue,
+                    "doc_status" => "Reimbursement Approved",
+                    "doc_status_previous" => $coverage->doc_status,
                     "approved_by" => $employee_id,
                     "approved_at" => now(),
                 ]);
@@ -2645,6 +2746,7 @@ class MedicalController extends Controller
                     'SUM(CASE WHEN mdc_transactions.medical_type = "Glasses" THEN mdc_transactions.balance ELSE 0 END) as glasses_total',
                 ),
                 "mdc_transactions.status",
+                "mdc_transactions.doc_status",
                 DB::raw(
                     "MAX(mdc_transactions.created_at) as latest_created_at",
                 ),
@@ -2664,6 +2766,7 @@ class MedicalController extends Controller
                 "mdc_transactions.patient_name",
                 "mdc_transactions.disease",
                 "mdc_transactions.status",
+                "mdc_transactions.doc_status",
                 "mdc_transactions.employee_id",
             )
             ->orderBy("latest_created_at", "desc")
