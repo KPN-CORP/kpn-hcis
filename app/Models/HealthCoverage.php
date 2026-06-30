@@ -49,7 +49,9 @@ class HealthCoverage extends Model
         'doc_status',
         'doc_status_previous',
         'doc_received_by',
-        'doc_received_at'
+        'doc_received_at',
+        'is_revise',
+        'revise_info'
     ];
 
     public function employee()

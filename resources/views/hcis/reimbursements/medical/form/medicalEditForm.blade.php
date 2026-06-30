@@ -101,6 +101,9 @@
                                 <div class="col-md-4 mb-2">
                                     <label for="patient_name" class="form-label">Patient Name</label>
                                     <select class="form-select form-select-sm select2" id="patient_name" name="patient_name"
+                                        @if ($medic->is_revise)
+                                            disabled
+                                        @endif
                                         required>
                                         <option value="" disabled {{ !isset($selected_patient) ? 'selected' : '' }}>
                                             --- Choose Patient ---</option>
@@ -128,6 +131,9 @@
                                                 name="hospital_name"
                                                 id="hospital_name"
                                                 onchange="MDHospitalToggleOthers()"
+                                                @if ($medic->is_revise)
+                                                    disabled
+                                                @endif
                                                 required>
 
                                             <option value="">--- Choose Hospital/Clinic ---</option>
@@ -153,11 +159,19 @@
                                                     class="form-control form-control-sm"
                                                     placeholder="ex: RS. Murni Teguh"
                                                     value="{{ $isOtherHospital ? $medic->hospital_name : '' }}"
-                                                    style="{{ $isOtherHospital ? '' : 'display:none;' }}">
+                                                    style="{{ $isOtherHospital ? '' : 'display:none;' }}"
+                                                    @if ($medic->is_revise)
+                                                        disabled
+                                                    @endif
+                                                    >
                                             </div>
                                             <div class="col-md-12 mt-2">
                                                 <label id="reason-label" style="display: none;" for="" class="form-label">Reason</label>
-                                                <textarea class="form-control form-control-sm" id="reason" style="display: none;" name="reason" rows="3" value="{{ $medic->reason ? $medic->reason : '' }}" placeholder="Please add a reason ..."></textarea>
+                                                <textarea class="form-control form-control-sm" id="reason" style="display: none;" name="reason" rows="3" value="{{ $medic->reason ? $medic->reason : '' }}" placeholder="Please add a reason ..."
+                                                    @if ($medic->is_revise)
+                                                        disabled
+                                                    @endif
+                                                ></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -166,14 +180,20 @@
                                         <label for="nama" class="form-label">Hospital Name</label>
                                         <input type="text" class="form-control form-control-sm" id="hospital_name"
                                             name="hospital_name" placeholder="ex: RS. Murni Teguh"
-                                            value="{{ $medic->hospital_name }}" required>
+                                            value="{{ $medic->hospital_name }}" required
+                                            @if ($medic->is_revise)
+                                                disabled
+                                            @endif>
                                     </div>
                                 @endif
 
                                 <div class="col-md-4 mb-2">
                                     <label for="disease" class="form-label">Disease</label>
                                     <select class="form-select form-select-sm select2" id="disease" name="disease"
-                                        required>
+                                        required
+                                        @if ($medic->is_revise)
+                                            disabled
+                                        @endif>
                                         <option value="" disabled selected>--- Choose Disease ---</option>
                                         @foreach ($diseases as $disease)
                                             <option value="{{ $disease->disease_name }}"
@@ -190,19 +210,28 @@
                                     <label for="keperluan" class="form-label">No. Invoice</label>
                                     <input type="text" class="form-control form-control-sm" id="no_invoice"
                                         name="no_invoice" rows="3" placeholder="Please add your invoice number ..."
-                                        value="{{ $medic->no_invoice }}" required></input>
+                                        value="{{ $medic->no_invoice }}" required
+                                        @if ($medic->is_revise)
+                                            disabled
+                                        @endif></input>
                                 </div>
                                 <div class="col-md-6 mb-1">
                                     <label for="medical_date" class="form-label">Medical Date</label>
                                     <input type="date" class="form-control form-control-sm" id="date" name="date"
-                                        value="{{ $medic->date }}" required>
+                                        value="{{ $medic->date }}" required
+                                        @if ($medic->is_revise)
+                                            disabled
+                                        @endif>
                                 </div>
                             </div>
                             <div class="row mb-2">
                                 <div class="col-md-12">
                                     <label for="medical_type" class="form-label">Medical Type</label>
                                     <select class="form-select form-select-sm select2" id="medical_type"
-                                        name="medical_type[]" multiple required>
+                                        name="medical_type[]" multiple required
+                                        @if ($medic->is_revise)
+                                            disabled
+                                        @endif>
                                         {{-- <option value="" selected>--- Choose Medical Type ---</option> --}}
                                         @foreach ($medical_type as $type)
                                             @if (!$hasGlasses || $type->name !== 'Glasses')
@@ -228,9 +257,26 @@
                                 <div class="col-md-12 mt-2">
                                     <label for="" class="form-label">Detail Information</label>
                                     <textarea class="form-control form-control-sm" id="coverage_detail" name="coverage_detail" rows="3"
-                                        placeholder="Please add more detail of disease ..." required>{{ $medic->coverage_detail }}</textarea>
+                                        placeholder="Please add more detail of disease ..." required
+                                        @if ($medic->is_revise)
+                                            disabled
+                                        @endif>{{ $medic->coverage_detail }}</textarea>
                                 </div>
                             </div>
+
+                            @if ($medic->is_revise)
+                                <div class="row mb-2">
+                                    <div class="col-md-12 mt-2">
+                                        <label for="" class="form-label">Revise Information</label>
+                                        <textarea class="form-control form-control-sm" id="coverage_detail" name="coverage_detail" rows="3"
+                                            placeholder="" required
+                                            @if ($medic->is_revise)
+                                                disabled
+                                            @endif>{{ $medic->revise_info }}</textarea>
+                                    </div>
+                                </div>
+                            @endif
+
                             @php
                                 use Illuminate\Support\Facades\Storage;
                             @endphp
@@ -304,9 +350,11 @@
                             <input type="hidden" name="status" value="Pending" id="status">
 
                             <div class="d-flex justify-content-end mt-4">
-                                <button type="submit" class="btn btn-outline-primary rounded-pill me-2 draft-button"
-                                    name="action_draft" id="save-draft" value="Draft" id="save-draft">Save as
-                                    Draft</button>
+                                @if (!$medic->is_revise)
+                                    <button type="submit" class="btn btn-outline-primary rounded-pill me-2 draft-button"
+                                        name="action_draft" id="save-draft" value="Draft" id="save-draft">Save as
+                                        Draft</button>
+                                @endif
                                 <button type="submit" class="btn btn-primary rounded-pill submit-button"
                                     name="action_submit" value="Pending" id="submit-btn">Submit</button>
                             </div>
@@ -391,7 +439,10 @@
                         <label for="${type}" class="form-label">${type} Claim</label>
                         <div class="input-group">
                             <span class="input-group-text">Rp</span>
-                            <input type="text" class="form-control currency-input" id="${type}" name="medical_costs[${type}]" placeholder="0" value="${formattedValue}" required>
+                            <input type="text" class="form-control currency-input" id="${type}" name="medical_costs[${type}]" placeholder="0" value="${formattedValue}" required
+                            @if ($medic->is_revise)
+                                disabled
+                            @endif>
                         </div>
                     </div>
                 `;

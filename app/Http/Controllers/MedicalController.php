@@ -101,6 +101,7 @@ class MedicalController extends Controller
             ),
             "status",
             DB::raw("MAX(created_at) as latest_created_at"),
+            "is_revise"
         )
             ->where("employee_id", $employee_id)
             ->groupBy(
@@ -114,7 +115,8 @@ class MedicalController extends Controller
                 "verif_by",
                 "balance_verif",
                 "approved_by",
-                "doc_status"
+                "doc_status",
+                "is_revise"
             )
             ->orderBy("latest_created_at", "desc")
             ->get();
@@ -772,6 +774,10 @@ class MedicalController extends Controller
             $docStatusValue = "Draft";
         }
 
+        if ($existingMedical->is_revise && $existingMedical->doc_status_previous) {
+            $docStatusValue = $existingMedical->doc_status_previous;
+        }
+
         // Handle medical proof file upload
         $employee_data = Employee::where("id", $userId)->first();
 
@@ -862,13 +868,27 @@ class MedicalController extends Controller
             "created_by" => $employee_id,
             "balance_verif" => null,
             "verif_by" => null,
+            "verif_at" => null,
             "reject_info" => null,
             "rejected_at" => null,
             "rejected_by" => null,
+            "is_revise" => false,
+            "revise_info" => null,
             "reason" => $request->reason,
             "doc_status" => $docStatusValue,
             "doc_status_previous" => $docStatusValue
         ];
+
+        if ($existingMedical->is_revise && $existingMedical->doc_status_previous) {
+            $commonUpdateData = [
+                "medical_proof" =>
+                    $medical_proof_path ?? $existingMedical->medical_proof,
+                "is_revise" => false,
+                "revise_info" => null,
+                "doc_status" => $docStatusValue,
+                "doc_status_previous" => $docStatusValue
+            ];
+        }
 
         HealthCoverage::where("no_medic", $no_medic)->update($commonUpdateData);
 
@@ -905,16 +925,21 @@ class MedicalController extends Controller
                         "reject_info" => null,
                         "rejected_at" => null,
                         "rejected_by" => null,
+                        "is_revise" => false,
+                        "revise_info" => null,
                     ]),
                 );
             }
         }
         // Remove any coverages that are no longer present in the update
-        $existingCoverages
-            ->whereNotIn("medical_type", array_keys($medical_costs))
-            ->each(function ($coverage) {
-                $coverage->delete();
-            });
+
+        if (!$existingMedical->is_revise) {
+            $existingCoverages
+                ->whereNotIn("medical_type", array_keys($medical_costs))
+                ->each(function ($coverage) {
+                    $coverage->delete();
+                });
+        }
 
         return redirect()
             ->route("medical")
@@ -1286,6 +1311,8 @@ class MedicalController extends Controller
                     "doc_received_by" => $docReceivedBy,
                     "doc_received_at" => $docReceivedAt,
                     "balance_bpjs" => $bpjs_cost,
+                    "is_revise" => false,
+                    "revise_info" => null,
                 ]);
                 if ($medical_plan->balance < $verif_cost) {
                     $old_balance_total =
@@ -1315,6 +1342,114 @@ class MedicalController extends Controller
                 );
             }
         }
+
+        return redirect()
+            ->route("medical.confirmation")
+            ->with(
+                "success",
+                "Medical verification data successfully updated.",
+            );
+    }
+
+    public function medicalAdminUpdateRevise(Request $request, $id)
+    {
+        $existingMedical = HealthCoverage::where("usage_id", $id)->first();
+
+        if (!$existingMedical) {
+            return redirect()
+                ->route("medical.admin")
+                ->with("error", "Medical record not found.");
+        }
+
+        $docStatus = "Pending";
+        $docStatusPrevious = $existingMedical->doc_status;
+
+        if ($docStatusPrevious == "Pending") {
+            $existingMedical->update([
+                "doc_status" => $docStatus,
+                "is_revise" => true,
+                "revise_info" => $request->revise_info,
+            ]);
+        } else {
+            $existingMedical->update([
+                "doc_status" => $docStatus,
+                "doc_status_previous" => $docStatusPrevious,
+                "is_revise" => true,
+                "revise_info" => $request->revise_info,
+            ]);
+        }
+
+        return redirect()
+            ->route("medical.confirmation")
+            ->with(
+                "success",
+                "Medical verification data successfully updated.",
+            );
+    }
+
+    public function medicalApprovalUpdateRevise(Request $request, $id)
+    {
+        $existingMedical = HealthCoverage::where("usage_id", $id)->first();
+
+        if (!$existingMedical) {
+            return redirect()
+                ->route("medical.approval")
+                ->with("error", "Medical record not found.");
+        }
+
+        $docStatus = "Pending";
+        $docStatusPrevious = $existingMedical->doc_status;
+
+        if ($docStatusPrevious == "Pending") {
+            $existingMedical->update([
+                "doc_status" => $docStatus,
+                "is_revise" => true,
+                "revise_info" => $request->revise_info,
+            ]);
+        } else {
+            $existingMedical->update([
+                "doc_status" => $docStatus,
+                "doc_status_previous" => $docStatusPrevious,
+                "is_revise" => true,
+                "revise_info" => $request->revise_info,
+            ]);
+        }
+
+        return redirect()
+            ->route("medical.approval")
+            ->with(
+                "success",
+                "Medical verification data successfully updated.",
+            );
+    }
+
+    public function medicalAdminUpdateReject(Request $request, $id)
+    {
+        $employee_id = Auth::user()->employee_id;
+        $existingMedical = HealthCoverage::where("usage_id", $id)->first();
+
+        if (!$existingMedical) {
+            return redirect()
+                ->route("medical.admin")
+                ->with("error", "Medical record not found.");
+        }
+
+        $status = "Rejected";
+        $docStatus = "Rejected";
+        $docStatusPrevious = $existingMedical->doc_status;
+
+        $formattedDocReceivedAt = null;
+
+        $existingMedical->update([
+            "status" => $status,
+            "doc_status" => $docStatus,
+            "doc_status_previous" => $docStatusPrevious,
+            "is_revise" => false,
+            "revise_info" => null,
+            "reject_info" => $request->reject_info,
+            "rejected_by" => $employee_id,
+            "rejected_at" => now(),
+        ]);
 
         return redirect()
             ->route("medical.confirmation")
@@ -1359,7 +1494,9 @@ class MedicalController extends Controller
                 "doc_status" => $docStatus,
                 "doc_status_previous" => $docStatusPrevious,
                 "doc_received_by" => $employee_id,
-                "doc_received_at" => Carbon::now()
+                "doc_received_at" => Carbon::now(),
+                "is_revise" => false,
+                "revise_info" => null,
             ]);
 
             $formattedDocReceivedAt = $existingMedical->doc_received_at
@@ -1370,7 +1507,9 @@ class MedicalController extends Controller
                 "doc_status" => $docStatus,
                 "doc_status_previous" => $docStatusPrevious,
                 "doc_received_by" => null,
-                "doc_received_at" => null
+                "doc_received_at" => null,
+                "is_revise" => false,
+                "revise_info" => null,
             ]);
         }
 
@@ -1770,6 +1909,8 @@ class MedicalController extends Controller
                     "reject_info" => $rejectInfo,
                     "rejected_by" => $employee_id,
                     "rejected_at" => now(),
+                    "is_revise" => false,
+                    "revise_info" => null,
                 ]);
             }
 
@@ -1813,6 +1954,8 @@ class MedicalController extends Controller
                     "doc_status_previous" => $coverage->doc_status,
                     "approved_by" => $employee_id,
                     "approved_at" => now(),
+                    "is_revise" => false,
+                    "revise_info" => null,
                 ]);
             }
 
@@ -2558,6 +2701,12 @@ class MedicalController extends Controller
 
         $statusValue = $request->has("action_draft") ? "Draft" : "Pending";
 
+        $docStatusValue = "Claim Verified";
+
+        if ($statusValue == "Draft") {
+            $docStatusValue = "Draft";
+        }
+
         $contribution_level_code = Employee::where("employee_id", $employee_id)
             ->pluck("contribution_level_code")
             ->first();
@@ -2643,6 +2792,11 @@ class MedicalController extends Controller
                 "created_by" => Auth::user()->employee_id,
                 "verif_by" => Auth::user()->employee_id,
                 "status" => $statusValue,
+                "doc_status" => $docStatusValue,
+                "doc_status_previous" => $docStatusValue,
+                "doc_received_by" => Auth::user()->employee_id,
+                "doc_received_at" => Carbon::now(),
+                "verif_at" => Carbon::now(),
                 "medical_proof" => $medical_proof_path,
             ]);
         }
