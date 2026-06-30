@@ -166,7 +166,7 @@
                                 {{-- <button type="submit" class="btn btn-outline-primary rounded-pill me-2 draft-button"
                                     name="action_draft" id="save-draft" value="Draft" id="save-draft">Save as
                                     Draft</button> --}}
-                                <button type="submit" class="btn btn-primary rounded-pill submit-button"
+                                <button id="submit-button" type="submit" class="btn btn-primary rounded-pill submit-button"
                                     name="action_submit" value="Pending" id="submit-btn">Submit</button>
                             </div>
                         </form>
