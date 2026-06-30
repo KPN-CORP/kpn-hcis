@@ -961,7 +961,15 @@ class MedicalController extends Controller
     public function medicalDownload($id)
     {
         $medical_data = HealthCoverage::with(["company", "employee_verified", "employee_approved", "employee_received"])->findOrFail($id);
-        $medical_datas = HealthCoverage::with(["company", "employee_verified", "employee_approved", "employee_received"])->where("no_medic", $medical_data->no_medic)->get();
+        $medical_datas = HealthCoverage::with([
+            "company",
+            "employee_verified",
+            "employee_approved",
+            "employee_received"
+        ])
+        ->where("no_medic", $medical_data->no_medic)
+        ->get()
+        ->keyBy('medical_type');
         $medical_no = $medical_data->no_medic;
         $medical_costing_company = $medical_data->company ? $medical_data->company->contribution_level . " (" . $medical_data->contribution_level_code . ")" : "-";
         $medical_cost_center = "-";
@@ -1004,7 +1012,7 @@ class MedicalController extends Controller
         $medical_closing_balance_plafond = 0;
 
         foreach ($medical_types as $medical_type) {
-            $md = $medical_datas[$medical_type];
+            $md = $medical_datas[$medical_type] ?? null;
 
             if ($md && strtolower($medical_type) == strtolower($md->medical_type)) {
                 $medical_balance = $md->balance_verif && !empty($md->balance_verif) ? $md->balance_verif : $md->balance;
