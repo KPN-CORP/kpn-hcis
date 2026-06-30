@@ -78,4 +78,9 @@ class HealthCoverage extends Model
     {
         return $this->belongsTo(Employee::class, 'approved_by', 'employee_id');
     }
+
+    public function employee_received()
+    {
+        return $this->belongsTo(Employee::class, 'doc_received_by', 'employee_id');
+    }
 }

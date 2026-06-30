@@ -960,7 +960,7 @@ class MedicalController extends Controller
 
     public function medicalDownload($id)
     {
-        $medical_data = HealthCoverage::with(["company", "employee_verified", "employee_approved"])->findOrFail($id);
+        $medical_data = HealthCoverage::with(["company", "employee_verified", "employee_approved", "employee_received"])->findOrFail($id);
         $medical_no = $medical_data->no_medic;
         $medical_costing_company = $medical_data->company ? $medical_data->company->contribution_level . " (" . $medical_data->contribution_level_code . ")" : "-";
         $medical_cost_center = "-";
@@ -970,6 +970,9 @@ class MedicalController extends Controller
         $medical_formatted_claim_date = Carbon::parse($medical_claim_date)->format('d-M-y');
         $medical_periode = $medical_data->period;
         $medical_patient_name = $medical_data->patient_name;
+        $medical_hospital_name = $medical_data->hospital_name;
+        $medical_reason = $medical_data->reason ? $medical_data->reason : "-";
+        $medical_coverage_detail = $medical_data->coverage_detail;
 
         $employee_data = Employee::where("employee_id", $medical_data->employee_id)->first();
         $employee_id = $employee_data->employee_id;
@@ -1025,6 +1028,28 @@ class MedicalController extends Controller
             }
         }
 
+        if ($medical_data->employee_received) {
+            $medical_approvals["labels"][] = "Received";
+            $medical_approvals["statuses"][] = "approved";
+            $medical_approvals["role_names"][] = "HC Officer";
+            $medical_approvals["employee_names"][] = $medical_data->employee_received->fullname;
+            $medical_approvals["dates"][] = $medical_data->doc_received_at;
+        } else {
+            if (strtolower($employee_data->group_company) == "property") {
+                $medical_approvals["labels"][] = "Received";
+                $medical_approvals["statuses"][] = "";
+                $medical_approvals["role_names"][] = "HC Officer";
+                $medical_approvals["employee_names"][] = "Megiyanti Matande";
+                $medical_approvals["dates"][] = "";
+            } else {
+                $medical_approvals["labels"][] = "Received";
+                $medical_approvals["statuses"][] = "";
+                $medical_approvals["role_names"][] = "HC Officer";
+                $medical_approvals["employee_names"][] = "";
+                $medical_approvals["dates"][] = "";
+            }
+        }
+
         if ($medical_data->employee_verified) {
             $medical_approvals["labels"][] = "Verified";
             $medical_approvals["statuses"][] = "approved";
@@ -1032,11 +1057,19 @@ class MedicalController extends Controller
             $medical_approvals["employee_names"][] = $medical_data->employee_verified->fullname;
             $medical_approvals["dates"][] = $medical_data->verif_at;
         } else {
-            $medical_approvals["labels"][] = "Verified";
-            $medical_approvals["statuses"][] = "";
-            $medical_approvals["role_names"][] = "GA Staff";
-            $medical_approvals["employee_names"][] = "";
-            $medical_approvals["dates"][] = "";
+            if (strtolower($employee_data->group_company) == "property") {
+                $medical_approvals["labels"][] = "Verified";
+                $medical_approvals["statuses"][] = "";
+                $medical_approvals["role_names"][] = "GA Staff";
+                $medical_approvals["employee_names"][] = "Megiyanti Matande";
+                $medical_approvals["dates"][] = "";
+            } else {
+                $medical_approvals["labels"][] = "Verified";
+                $medical_approvals["statuses"][] = "";
+                $medical_approvals["role_names"][] = "GA Staff";
+                $medical_approvals["employee_names"][] = "";
+                $medical_approvals["dates"][] = "";
+            }
         }
 
         if ($medical_data->employee_approved) {
@@ -1046,11 +1079,19 @@ class MedicalController extends Controller
             $medical_approvals["employee_names"][] = $medical_data->employee_approved->fullname;
             $medical_approvals["dates"][] = $medical_data->approved_at;
         } else {
-            $medical_approvals["labels"][] = "Approved";
-            $medical_approvals["statuses"][] = "";
-            $medical_approvals["role_names"][] = "HC Director";
-            $medical_approvals["employee_names"][] = "";
-            $medical_approvals["dates"][] = "";
+            if (strtolower($employee_data->group_company) == "property") {
+                $medical_approvals["labels"][] = "Approved";
+                $medical_approvals["statuses"][] = "";
+                $medical_approvals["role_names"][] = "HC Director";
+                $medical_approvals["employee_names"][] = "Anggelina";
+                $medical_approvals["dates"][] = "";
+            } else {
+                $medical_approvals["labels"][] = "Approved";
+                $medical_approvals["statuses"][] = "";
+                $medical_approvals["role_names"][] = "HC Director";
+                $medical_approvals["employee_names"][] = "";
+                $medical_approvals["dates"][] = "";
+            }
         }
 
         $medical_formatted_opening_balance_plafond = number_format($medical_opening_balance_plafond, 0, ',', '.');
@@ -1074,6 +1115,9 @@ class MedicalController extends Controller
                 "medical_formatted_opening_balance_plafond" => $medical_formatted_opening_balance_plafond,
                 "medical_formatted_total_current_claim" => $medical_formatted_total_current_claim,
                 "medical_formatted_closing_balance_plafond" => $medical_formatted_closing_balance_plafond,
+                "medical_hospital_name" => $medical_hospital_name,
+                "medical_reason" => $medical_reason,
+                "medical_coverage_detail" => $medical_coverage_detail,
                 "employee_id" => $employee_id,
                 "employee_name" => $employee_name,
                 "employee_email" => $employee_email,
