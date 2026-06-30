@@ -887,6 +887,14 @@ Route::middleware("auth")->group(function () {
             MedicalController::class,
             "medicalAdminUpdate",
         ])->name("medical-admin-form.put");
+        Route::put("/medical/admin/form-update/update/revise/{id}", [
+            MedicalController::class,
+            "medicalAdminUpdateRevise",
+        ])->name("medical-admin-update-revise.put");
+        Route::put("/medical/admin/form-update/update/reject/{id}", [
+            MedicalController::class,
+            "medicalAdminUpdateReject",
+        ])->name("medical-admin-update-reject.put");
         Route::put("/medical/admin/form-update/update/document-received-toggle/{id}", [
             MedicalController::class,
             "medicalAdminUpdateDocumentReceivedToggle",
@@ -926,6 +934,10 @@ Route::middleware("auth")->group(function () {
         MedicalController::class,
         "medicalApprovalUpdate",
     ])->name("medical-approval-form.put");
+    Route::put("/medical/approval/form-approval/update/revise/{id}", [
+        MedicalController::class,
+        "medicalApprovalUpdateRevise",
+    ])->name("medical-approval-form-revise.put");
 
     //Taksi Form
     Route::get("/taksi", [TaksiController::class, "taksi"])->name("taksi");

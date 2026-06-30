@@ -224,6 +224,12 @@
                             @endif
 
                             <div class="d-flex justify-content-end mt-4">
+                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                                    <button id="revise-button" type="button" class="btn btn-warning rounded-pill revise-button" style="margin-right: 10px"
+                                        name="action_submit" value="Revise" data-bs-toggle="modal" data-bs-target="#reviseReasonModal">Revise</button>
+                                    <button id="reject-button" type="button" class="btn btn-outline-danger rounded-pill reject-button" style="margin-right: 10px"
+                                        name="action_submit" value="Rejected" data-bs-toggle="modal" data-bs-target="#rejectReasonModal">Reject</button>
+                                @endif
                                 <button id="submit-button" type="submit" class="btn btn-primary rounded-pill submit-button"
                                     name="action_submit" value="Pending" id="submit-btn">Submit</button>
                             </div>
@@ -233,6 +239,82 @@
             </div>
         </div>
     </div>
+
+    <!-- Revise Reason Modal -->
+    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+        <div class="modal fade" id="reviseReasonModal" tabindex="-1" aria-labelledby="reviseReasonModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header bg-light border-bottom-0">
+                        <h5 class="modal-title" id="reviseReasonModalLabel" style="color: #333; font-weight: 600;">Revise
+                            Reason</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <form id="reviseReasonForm" method="POST"
+                            action="/medical/admin/form-update/update/revise/{{ $medic->usage_id }}">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="status_approval" value="Revise">
+
+                            <div class="mb-3">
+                                <label for="revise_info" class="form-label" style="color: #555; font-weight: 500;">Please
+                                    provide a reason for revise:</label>
+                                <textarea class="form-control border-2" name="revise_info" id="revise_info" rows="4" required
+                                    style="resize: vertical; min-height: 100px;"></textarea>
+                            </div>
+
+                            <div class="d-flex justify-content-end mt-4">
+                                <button type="button" class="btn btn-outline-primary rounded-pill me-2"
+                                    data-bs-dismiss="modal" style="min-width: 100px;">Cancel</button>
+                                <button type="submit" class="btn btn-primary rounded-pill"
+                                    style="min-width: 100px;">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Rejection Reason Modal -->
+    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+        <div class="modal fade" id="rejectReasonModal" tabindex="-1" aria-labelledby="rejectReasonModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header bg-light border-bottom-0">
+                        <h5 class="modal-title" id="rejectReasonModalLabel" style="color: #333; font-weight: 600;">Rejection
+                            Reason</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <form id="rejectReasonForm" method="POST"
+                            action="/medical/admin/form-update/update/reject/{{ $medic->usage_id }}">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="status_approval" value="Rejected">
+
+                            <div class="mb-3">
+                                <label for="reject_info" class="form-label" style="color: #555; font-weight: 500;">Please
+                                    provide a reason for rejection:</label>
+                                <textarea class="form-control border-2" name="reject_info" id="reject_info" rows="4" required
+                                    style="resize: vertical; min-height: 100px;"></textarea>
+                            </div>
+
+                            <div class="d-flex justify-content-end mt-4">
+                                <button type="button" class="btn btn-outline-primary rounded-pill me-2"
+                                    data-bs-dismiss="modal" style="min-width: 100px;">Cancel</button>
+                                <button type="submit" class="btn btn-primary rounded-pill"
+                                    style="min-width: 100px;">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     {{-- <script src="{{ asset('/js/medical/medical-edit.js') }}"></script> --}}
     <script>

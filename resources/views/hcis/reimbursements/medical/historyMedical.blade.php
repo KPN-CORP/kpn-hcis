@@ -139,6 +139,15 @@
                               </form>
                           @endif
                           @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                              @if ($item->is_revise)
+                                  <form method="GET" action="/medical/form-update/{{ $item->usage_id }}"
+                                      style="display: inline-block;">
+                                      <button type="submit" class="btn btn-outline-warning rounded-pill my-1"
+                                          data-toggle="tooltip" title="Edit">
+                                          <i class="bi bi-pencil-square"></i>
+                                      </button>
+                                  </form>
+                              @endif
                               <a href="{{ route('medical.download', $item->usage_id) }}" target="_blank" class="btn btn-outline-info" title="Print"><i class="bi bi-file-earmark-arrow-down"></i></a>
                           @endif
                       </td>
