@@ -166,13 +166,6 @@
             </td>
         </tr>
         <tr>
-            <td class="label">Cost Center</td>
-            <td class="colon">:</td>
-            <td class="value">
-                {{ $medical_cost_center }}
-            </td>
-        </tr>
-        <tr>
             <td class="label">Submit Date</td>
             <td class="colon">:</td>
             <td class="value">
@@ -198,6 +191,27 @@
             <td class="colon">:</td>
             <td class="value">
                 {{ $medical_patient_name }}
+            </td>
+        </tr>
+        <tr>
+            <td class="label">Hospital Name</td>
+            <td class="colon">:</td>
+            <td class="value">
+                {{ $medical_hospital_name }}
+            </td>
+        </tr>
+        <tr>
+            <td class="label">Reason</td>
+            <td class="colon">:</td>
+            <td class="value">
+                {{ $medical_reason }}
+            </td>
+        </tr>
+        <tr>
+            <td class="label">Detail Information</td>
+            <td class="colon">:</td>
+            <td class="value">
+                {{ $medical_coverage_detail }}
             </td>
         </tr>
     </table>
