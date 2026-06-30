@@ -88,7 +88,7 @@
 
             @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
                 <li class="side-nav-item {{ request()->routeIs('cashAdvance') ? 'active' : '' }}">
-                    <a href="{{ route('cashAdvance') }}" aria-controls="sidebarEmail" class="side-nav-link">
+                    <a href="{{ route('cashadvanced') }}" aria-controls="sidebarEmail" class="side-nav-link">
                         <i class="ri-refund-2-line"></i>
                         <span> Cash Advance </span>
                     </a>
@@ -109,7 +109,7 @@
                 </li>
 
                 <li class="side-nav-item {{ request()->routeIs('taskBox') ? 'active' : '' }}">
-                    <a href="{{ route('taskBox') }}" aria-controls="sidebarEmail" class="side-nav-link">
+                    <a href="{{ route('businessTrip.approval') }}" aria-controls="sidebarEmail" class="side-nav-link">
                         <i class="ri-refund-2-line"></i>
                         <span> Task Box </span>
                     </a>

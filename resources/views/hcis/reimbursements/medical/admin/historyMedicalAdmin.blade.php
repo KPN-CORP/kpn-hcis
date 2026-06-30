@@ -102,6 +102,10 @@
                                       'Draft' => 'bg-secondary',
                                       default => 'bg-light',
                                   };
+
+                                  if ($item->is_revise) {
+                                    $status .= " (Revise)";
+                                  }
                               @endphp
                               <span class="badge rounded-pill {{ $badgeClass }} text-center"
                                   style="font-size: 12px; padding: 0.5rem 1rem; cursor: pointer;">
