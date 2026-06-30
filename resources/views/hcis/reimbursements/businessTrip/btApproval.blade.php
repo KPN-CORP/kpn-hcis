@@ -66,23 +66,33 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Breadcrumb Navigation -->
-            <div class="col-md-6 mt-3">
-                <div class="page-title-box d-flex align-items-center">
-                    <ol class="breadcrumb mb-0" style="display: flex; align-items: center; padding-left: 0;">
-                        <li class="breadcrumb-item" style="font-size: 25px; display: flex; align-items: center;">
-                            <a href="/reimbursements" style="text-decoration: none;" class="text-primary">
-                                <i class="bi bi-arrow-left"></i>
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item">
-                            {{ $parentLink }}
-                        </li>
-                        <li class="breadcrumb-item">
-                            {{ $link }}
-                        </li>
-                    </ol>
+            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                <div class="col-md-6 mt-3">
+                    <div class="page-title-box d-flex align-items-center">
+                        <ol class="breadcrumb mb-0" style="display: flex; align-items: center; padding-left: 0;">
+                            <h3>Task Box</h3>
+                        </ol>
+                    </div>
                 </div>
-            </div>
+            @else
+                <div class="col-md-6 mt-3">
+                    <div class="page-title-box d-flex align-items-center">
+                        <ol class="breadcrumb mb-0" style="display: flex; align-items: center; padding-left: 0;">
+                            <li class="breadcrumb-item" style="font-size: 25px; display: flex; align-items: center;">
+                                <a href="/reimbursements" style="text-decoration: none;" class="text-primary">
+                                    <i class="bi bi-arrow-left"></i>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                {{ $parentLink }}
+                            </li>
+                            <li class="breadcrumb-item">
+                                {{ $link }}
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            @endif
         </div>
         @include('hcis.reimbursements.approval.navigation.navigationAll')
     </div>

@@ -165,6 +165,19 @@ class ReimburseController extends Controller
     public function cashadvanced()
     {
         $userId = Auth::id();
+        if (
+            $userId == "23886" ||
+            $userId == "23892" ||
+            $userId == "23893" ||
+            $userId == "25678" ||
+            $userId == "25725" ||
+            $userId == "25734" ||
+            ($userId = "12345")
+        ) {
+            $access_ca = "Y";
+        } else {
+            $access_ca = "N";
+        }
         $parentLink = "Reimbursement";
         $link = "Cash Advanced";
         $today = Carbon::today();
@@ -223,6 +236,7 @@ class ReimburseController extends Controller
             "parentLink" => $parentLink,
             "userId" => $userId,
             "ca_transactions" => $ca_transactions,
+            "access_ca" => $access_ca,
             // 'fullnames' => $fullnames, // Pass fullnames ke view
         ]);
     }

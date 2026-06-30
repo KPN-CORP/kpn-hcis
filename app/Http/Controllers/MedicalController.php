@@ -1054,20 +1054,20 @@ class MedicalController extends Controller
         if ($medical_data->employee_verified) {
             $medical_approvals["labels"][] = "Verified";
             $medical_approvals["statuses"][] = "approved";
-            $medical_approvals["role_names"][] = "GA Staff";
+            $medical_approvals["role_names"][] = "HC Officer";
             $medical_approvals["employee_names"][] = $medical_data->employee_verified->fullname;
             $medical_approvals["dates"][] = $medical_data->verif_at;
         } else {
             if (strtolower($employee_data->group_company) == "property") {
                 $medical_approvals["labels"][] = "Verified";
                 $medical_approvals["statuses"][] = "";
-                $medical_approvals["role_names"][] = "GA Staff";
+                $medical_approvals["role_names"][] = "HC Officer";
                 $medical_approvals["employee_names"][] = "Megiyanti Matande";
                 $medical_approvals["dates"][] = "";
             } else {
                 $medical_approvals["labels"][] = "Verified";
                 $medical_approvals["statuses"][] = "";
-                $medical_approvals["role_names"][] = "GA Staff";
+                $medical_approvals["role_names"][] = "HC Officer";
                 $medical_approvals["employee_names"][] = "";
                 $medical_approvals["dates"][] = "";
             }
@@ -1705,6 +1705,7 @@ class MedicalController extends Controller
                     ),
                     "mdc_transactions.status",
                     "mdc_transactions.doc_status",
+                    "mdc_transactions.is_revise",
                     "mdc_transactions.created_at",
                     "e.fullname",
                 )
@@ -1721,6 +1722,7 @@ class MedicalController extends Controller
                     "mdc_transactions.disease",
                     "mdc_transactions.status",
                     "mdc_transactions.doc_status",
+                    "mdc_transactions.is_revise",
                     "mdc_transactions.created_at",
                     "e.fullname",
                 )
@@ -2945,6 +2947,7 @@ class MedicalController extends Controller
                 ),
                 "mdc_transactions.status",
                 "mdc_transactions.doc_status",
+                "mdc_transactions.is_revise",
                 DB::raw(
                     "MAX(mdc_transactions.created_at) as latest_created_at",
                 ),
@@ -2965,6 +2968,7 @@ class MedicalController extends Controller
                 "mdc_transactions.disease",
                 "mdc_transactions.status",
                 "mdc_transactions.doc_status",
+                "mdc_transactions.is_revise",
                 "mdc_transactions.employee_id",
             )
             ->orderBy("latest_created_at", "desc")
