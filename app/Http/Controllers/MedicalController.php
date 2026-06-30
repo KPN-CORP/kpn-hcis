@@ -1702,6 +1702,7 @@ class MedicalController extends Controller
                     ),
                     "mdc_transactions.status",
                     "mdc_transactions.doc_status",
+                    "mdc_transactions.is_revise",
                     "mdc_transactions.created_at",
                     "e.fullname",
                 )
@@ -1718,6 +1719,7 @@ class MedicalController extends Controller
                     "mdc_transactions.disease",
                     "mdc_transactions.status",
                     "mdc_transactions.doc_status",
+                    "mdc_transactions.is_revise",
                     "mdc_transactions.created_at",
                     "e.fullname",
                 )
@@ -2942,6 +2944,7 @@ class MedicalController extends Controller
                 ),
                 "mdc_transactions.status",
                 "mdc_transactions.doc_status",
+                "mdc_transactions.is_revise",
                 DB::raw(
                     "MAX(mdc_transactions.created_at) as latest_created_at",
                 ),
@@ -2962,6 +2965,7 @@ class MedicalController extends Controller
                 "mdc_transactions.disease",
                 "mdc_transactions.status",
                 "mdc_transactions.doc_status",
+                "mdc_transactions.is_revise",
                 "mdc_transactions.employee_id",
             )
             ->orderBy("latest_created_at", "desc")

@@ -64,23 +64,33 @@
         <!-- Page Heading -->
         <div class="row">
             <!-- Breadcrumb Navigation -->
-            <div class="col-md-6 mt-3">
-                <div class="page-title-box d-flex align-items-center">
-                    <ol class="breadcrumb mb-0" style="display: flex; align-items: center; padding-left: 0;">
-                        <li class="breadcrumb-item" style="font-size: 32px; display: flex; align-items: center;">
-                            <a href="/reimbursements" style="text-decoration: none;" class="text-primary">
-                                <i class="bi bi-arrow-left"></i>
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item">
-                            {{ $parentLink }}
-                        </li>
-                        <li class="breadcrumb-item">
-                            {{ $link }}
-                        </li>
-                    </ol>
+            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                <div class="col-md-6 mt-3">
+                    <div class="page-title-box d-flex align-items-center">
+                        <ol class="breadcrumb mb-0" style="display: flex; align-items: center; padding-left: 0;">
+                            <h3>Cash Advanced</h3>
+                        </ol>
+                    </div>
                 </div>
-            </div>
+            @else
+                <div class="col-md-6 mt-3">
+                    <div class="page-title-box d-flex align-items-center">
+                        <ol class="breadcrumb mb-0" style="display: flex; align-items: center; padding-left: 0;">
+                            <li class="breadcrumb-item" style="font-size: 32px; display: flex; align-items: center;">
+                                <a href="/reimbursements" style="text-decoration: none;" class="text-primary">
+                                    <i class="bi bi-arrow-left"></i>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                {{ $parentLink }}
+                            </li>
+                            <li class="breadcrumb-item">
+                                {{ $link }}
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            @endif
 
             <!-- Add Data Button -->
             <div class="col-md-6 mt-4 text-end">
@@ -104,8 +114,16 @@
             <div class="col-md-12">
                 <div class="card shadow mb-4">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h3 class="card-title">{{ $link }}</h3>
+                        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                            <div class="d-flex justify-content-between align-items-center mb-3" style="margin-bottom: -55px !important">
+                        @else
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                        @endif
+                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                                <h3 class="card-title">&nbsp;</h3>
+                            @else
+                                <h3 class="card-title">{{ $link }}</h3>
+                            @endif
                             <div class="input-group" style="width: 30%;">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text bg-white border-dark-subtle"><i class="ri-search-line"></i></span>
