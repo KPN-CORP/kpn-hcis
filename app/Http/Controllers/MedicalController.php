@@ -962,6 +962,15 @@ class MedicalController extends Controller
     public function medicalDownload($id)
     {
         $medical_data = HealthCoverage::with(["company", "employee_verified", "employee_approved", "employee_received"])->findOrFail($id);
+        $medical_datas = HealthCoverage::with([
+            "company",
+            "employee_verified",
+            "employee_approved",
+            "employee_received"
+        ])
+        ->where("no_medic", $medical_data->no_medic)
+        ->get()
+        ->keyBy('medical_type');
         $medical_no = $medical_data->no_medic;
         $medical_costing_company = $medical_data->company ? $medical_data->company->contribution_level . " (" . $medical_data->contribution_level_code . ")" : "-";
         $medical_cost_center = "-";
@@ -1004,8 +1013,10 @@ class MedicalController extends Controller
         $medical_closing_balance_plafond = 0;
 
         foreach ($medical_types as $medical_type) {
-            if (strtolower($medical_type) == strtolower($medical_data->medical_type)) {
-                $medical_balance = $medical_data->balance_verif && !empty($medical_data->balance_verif) ? $medical_data->balance_verif : $medical_data->balance;
+            $md = $medical_datas[$medical_type] ?? null;
+
+            if ($md && strtolower($medical_type) == strtolower($md->medical_type)) {
+                $medical_balance = $md->balance_verif && !empty($md->balance_verif) ? $md->balance_verif : $md->balance;
                 $medical_plan = $medical_plans[$medical_type];
                 $medical_plafond_balance = $medical_plan[0]->balance;
                 $medical_closing_plafond_balance = $medical_plafond_balance - $medical_balance;
@@ -1158,7 +1169,8 @@ class MedicalController extends Controller
                 'SUM(CASE WHEN medical_type = "Glasses" THEN balance ELSE 0 END) as glasses_total',
             ),
             "status",
-            "doc_status"
+            "doc_status",
+            "is_revise"
         )
             ->where("status", "!=", "Draft")
             ->whereNull("verif_by")
@@ -1171,7 +1183,8 @@ class MedicalController extends Controller
                 "patient_name",
                 "disease",
                 "status",
-                "doc_status"
+                "doc_status",
+                "is_revise"
             )
             ->orderBy("created_at", "desc")
             ->get();
@@ -1408,22 +1421,26 @@ class MedicalController extends Controller
                 ->with("error", "Medical record not found.");
         }
 
+        $existingMedicals = HealthCoverage::where("no_medic", $existingMedical->no_medic)->get();
+
         $docStatus = "Pending";
         $docStatusPrevious = $existingMedical->doc_status;
 
-        if ($docStatusPrevious == "Pending") {
-            $existingMedical->update([
-                "doc_status" => $docStatus,
-                "is_revise" => true,
-                "revise_info" => $request->revise_info,
-            ]);
-        } else {
-            $existingMedical->update([
-                "doc_status" => $docStatus,
-                "doc_status_previous" => $docStatusPrevious,
-                "is_revise" => true,
-                "revise_info" => $request->revise_info,
-            ]);
+        foreach ($existingMedicals as $emd) {
+            if ($docStatusPrevious == "Pending") {
+                $emd->update([
+                    "doc_status" => $docStatus,
+                    "is_revise" => true,
+                    "revise_info" => $request->revise_info,
+                ]);
+            } else {
+                $emd->update([
+                    "doc_status" => $docStatus,
+                    "doc_status_previous" => $docStatusPrevious,
+                    "is_revise" => true,
+                    "revise_info" => $request->revise_info,
+                ]);
+            }
         }
 
         return redirect()
@@ -1444,22 +1461,26 @@ class MedicalController extends Controller
                 ->with("error", "Medical record not found.");
         }
 
+        $existingMedicals = HealthCoverage::where("no_medic", $existingMedical->no_medic)->get();
+
         $docStatus = "Pending";
         $docStatusPrevious = $existingMedical->doc_status;
 
-        if ($docStatusPrevious == "Pending") {
-            $existingMedical->update([
-                "doc_status" => $docStatus,
-                "is_revise" => true,
-                "revise_info" => $request->revise_info,
-            ]);
-        } else {
-            $existingMedical->update([
-                "doc_status" => $docStatus,
-                "doc_status_previous" => $docStatusPrevious,
-                "is_revise" => true,
-                "revise_info" => $request->revise_info,
-            ]);
+        foreach ($existingMedicals as $emd) {
+            if ($docStatusPrevious == "Pending") {
+                $emd->update([
+                    "doc_status" => $docStatus,
+                    "is_revise" => true,
+                    "revise_info" => $request->revise_info,
+                ]);
+            } else {
+                $emd->update([
+                    "doc_status" => $docStatus,
+                    "doc_status_previous" => $docStatusPrevious,
+                    "is_revise" => true,
+                    "revise_info" => $request->revise_info,
+                ]);
+            }
         }
 
         return redirect()
@@ -1481,22 +1502,26 @@ class MedicalController extends Controller
                 ->with("error", "Medical record not found.");
         }
 
+        $existingMedicals = HealthCoverage::where("no_medic", $existingMedical->no_medic)->get();
+
         $status = "Rejected";
         $docStatus = "Rejected";
         $docStatusPrevious = $existingMedical->doc_status;
 
         $formattedDocReceivedAt = null;
 
-        $existingMedical->update([
-            "status" => $status,
-            "doc_status" => $docStatus,
-            "doc_status_previous" => $docStatusPrevious,
-            "is_revise" => false,
-            "revise_info" => null,
-            "reject_info" => $request->reject_info,
-            "rejected_by" => $employee_id,
-            "rejected_at" => now(),
-        ]);
+        foreach ($existingMedicals as $emd) {
+            $emd->update([
+                "status" => $status,
+                "doc_status" => $docStatus,
+                "doc_status_previous" => $docStatusPrevious,
+                "is_revise" => false,
+                "revise_info" => null,
+                "reject_info" => $request->reject_info,
+                "rejected_by" => $employee_id,
+                "rejected_at" => now(),
+            ]);
+        }
 
         return redirect()
             ->route("medical.confirmation")
@@ -1518,6 +1543,8 @@ class MedicalController extends Controller
             ], 404);
         }
 
+        $existingMedicals = HealthCoverage::where("no_medic", $existingMedical->no_medic)->get();
+
         $docStatus = $existingMedical->doc_status;
         $docStatusPrevious = $existingMedical->doc_status_previous;
 
@@ -1536,28 +1563,30 @@ class MedicalController extends Controller
 
         $formattedDocReceivedAt = null;
 
-        if ($docStatus == "Document Received") {
-            $existingMedical->update([
-                "doc_status" => $docStatus,
-                "doc_status_previous" => $docStatusPrevious,
-                "doc_received_by" => $employee_id,
-                "doc_received_at" => Carbon::now(),
-                "is_revise" => false,
-                "revise_info" => null,
-            ]);
+        foreach ($existingMedicals as $emd) {
+            if ($docStatus == "Document Received") {
+                $emd->update([
+                    "doc_status" => $docStatus,
+                    "doc_status_previous" => $docStatusPrevious,
+                    "doc_received_by" => $employee_id,
+                    "doc_received_at" => Carbon::now(),
+                    "is_revise" => false,
+                    "revise_info" => null,
+                ]);
 
-            $formattedDocReceivedAt = $existingMedical->doc_received_at
-                ->setTimezone('Asia/Jakarta')
-                ->format('Y-m-d H:i:s');
-        } else if ($docStatus == "Document Pending") {
-            $existingMedical->update([
-                "doc_status" => $docStatus,
-                "doc_status_previous" => $docStatusPrevious,
-                "doc_received_by" => null,
-                "doc_received_at" => null,
-                "is_revise" => false,
-                "revise_info" => null,
-            ]);
+                $formattedDocReceivedAt = $emd->doc_received_at
+                    ->setTimezone('Asia/Jakarta')
+                    ->format('Y-m-d H:i:s');
+            } else if ($docStatus == "Document Pending") {
+                $emd->update([
+                    "doc_status" => $docStatus,
+                    "doc_status_previous" => $docStatusPrevious,
+                    "doc_received_by" => null,
+                    "doc_received_at" => null,
+                    "is_revise" => false,
+                    "revise_info" => null,
+                ]);
+            }
         }
 
         return response()->json([
