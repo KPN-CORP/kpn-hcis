@@ -36,12 +36,13 @@ class ca_transaction extends Model
         'approval_sett',
         'approval_extend',
         'paid_date',
-        'ca_status'
+        'ca_status',
+        'no_declaration'
     ];
 
     public function getRouteKey()
     {
         return encrypt($this->getKey());
     }
-    
+
 }

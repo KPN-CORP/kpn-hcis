@@ -127,7 +127,7 @@
                                             <!-- Preview untuk file lama -->
                                             <div id="existing-files-label" style="margin-bottom: 10px; font-weight: bold;">
                                                 @if ($medic->medical_proof)
-                                                    
+
                                                     Attachment:
                                                 @endif
                                             </div>
@@ -154,7 +154,7 @@
 
                                                         // Debug hasil akhir
                                                     @endphp
-            
+
                                                     @foreach ($existingFiles as $file)
                                                         @php $extension = pathinfo($file, PATHINFO_EXTENSION); @endphp
                                                         <div class="file-preview" data-file="{{ $file }}" style="position: relative; display: inline-block; margin: 10px;">
@@ -248,7 +248,7 @@
 
     <!--<script src="{{ asset('/js/medical/medical-approval.js') }}"></script>-->
     <script>
-        
+
         //medical table
         $("#example").DataTable({
             responsive: {

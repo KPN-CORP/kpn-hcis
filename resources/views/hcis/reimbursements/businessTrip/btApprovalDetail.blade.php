@@ -361,6 +361,54 @@
                                         <div class="row">
                                             <div class="col-md-2">
                                                 <div class="form-check">
+                                                    <input type="hidden" name="hotel" value="Tidak">
+                                                    <input class="form-check-input" type="checkbox" id="hotelCheckbox"
+                                                        name="hotel" value="Ya"
+                                                        <?= $n->jns_dinas === 'luar kota' && $n->hotel == 'Ya' ? 'checked' : '' ?>
+                                                        disabled>
+                                                    <label class="form-check-label" for="hotelCheckbox">
+                                                        Hotel
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-check">
+                                                    <input type="hidden" name="mess" value="Tidak">
+                                                    <input class="form-check-input" type="checkbox" id="messCheckbox"
+                                                        name="mess" value="Ya"
+                                                        <?= $n->jns_dinas === 'luar kota' && $n->mess == 'Ya' ? 'checked' : '' ?>
+                                                        disabled>
+                                                    <label class="form-check-label" for="messCheckbox">
+                                                        Mess
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-check">
+                                                    <input type="hidden" name="tiket" value="Tidak">
+                                                    <input class="form-check-input" type="checkbox" id="ticketCheckbox"
+                                                        name="tiket" value="Ya"
+                                                        <?= $n->jns_dinas === 'luar kota' && $n->tiket == 'Ya' ? 'checked' : '' ?>
+                                                        disabled>
+                                                    <label class="form-check-label" for="ticketCheckbox">
+                                                        Ticket
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-check">
+                                                    <input type="hidden" name="taksi" value="Tidak">
+                                                    <input class="form-check-input" type="checkbox" id="taksiCheckbox"
+                                                        name="taksi" value="Ya"
+                                                        <?= $n->jns_dinas === 'luar kota' && $n->taksi == 'Ya' ? 'checked' : '' ?>
+                                                        disabled>
+                                                    <label class="form-check-label" for="taksiCheckbox">
+                                                        Taxi/Grab
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-check">
                                                     <input class="form-check-input" type="checkbox"
                                                         id="cashAdvancedCheckbox" value="Ya"
                                                         onchange="updateCAValue()" @checked($showCashAdvanced) disabled>
@@ -379,64 +427,39 @@
                                                         Entertain</label>
                                                 </div>
                                             </div>
-
-                                            <div class="col-md-2">
-                                                <div class="form-check">
-                                                    <input type="hidden" name="hotel" value="Tidak">
-                                                    <input class="form-check-input" type="checkbox" id="hotelCheckbox"
-                                                        name="hotel" value="Ya"
-                                                        <?= $n->jns_dinas === 'luar kota' && $n->hotel == 'Ya' ? 'checked' : '' ?>
-                                                        disabled>
-                                                    <label class="form-check-label" for="hotelCheckbox">
-                                                        Hotel
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-2">
-                                                <div class="form-check">
-                                                    <input type="hidden" name="mess" value="Tidak">
-                                                    <input class="form-check-input" type="checkbox" id="messCheckbox"
-                                                        name="mess" value="Ya"
-                                                        <?= $n->jns_dinas === 'luar kota' && $n->mess == 'Ya' ? 'checked' : '' ?>
-                                                        disabled>
-                                                    <label class="form-check-label" for="messCheckbox">
-                                                        Mess
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-2">
-                                                <div class="form-check">
-                                                    <input type="hidden" name="tiket" value="Tidak">
-                                                    <input class="form-check-input" type="checkbox" id="ticketCheckbox"
-                                                        name="tiket" value="Ya"
-                                                        <?= $n->jns_dinas === 'luar kota' && $n->tiket == 'Ya' ? 'checked' : '' ?>
-                                                        disabled>
-                                                    <label class="form-check-label" for="ticketCheckbox">
-                                                        Ticket
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-2">
-                                                <div class="form-check">
-                                                    <input type="hidden" name="taksi" value="Tidak">
-                                                    <input class="form-check-input" type="checkbox" id="taksiCheckbox"
-                                                        name="taksi" value="Ya"
-                                                        <?= $n->jns_dinas === 'luar kota' && $n->taksi == 'Ya' ? 'checked' : '' ?>
-                                                        disabled>
-                                                    <label class="form-check-label" for="taksiCheckbox">
-                                                        Taxi/Grab
-                                                    </label>
-                                                </div>
-                                            </div>
                                         </div>
 
                                         <div class="row mt-3">
                                             <div class="col-md-12">
                                                 <ul class="nav nav-tabs nav-pills mb-2" id="pills-tab" role="tablist">
-
+                                                    <li class="nav-item" role="presentation" id="nav-hotel"
+                                                        style="display: <?= $n->jns_dinas === 'luar kota' && $n->hotel == 'Ya' ? 'block' : 'none' ?>;">
+                                                        <button class="nav-link" id="pills-hotel-tab"
+                                                            data-bs-toggle="pill" data-bs-target="#pills-hotel"
+                                                            type="button" role="tab" aria-controls="pills-hotel"
+                                                            aria-selected="false">Hotel</button>
+                                                    </li>
+                                                    <li class="nav-item" role="presentation" id="nav-mess"
+                                                        style="display: <?= $n->jns_dinas === 'luar kota' && $n->mess == 'Ya' ? 'block' : 'none' ?>;">
+                                                        <button class="nav-link" id="pills-mess-tab"
+                                                            data-bs-toggle="pill" data-bs-target="#pills-mess"
+                                                            type="button" role="tab" aria-controls="pills-mess"
+                                                            aria-selected="false">Mess</button>
+                                                    </li>
+                                                    <li class="nav-item" role="presentation" id="nav-ticket"
+                                                        style="display: <?= $n->jns_dinas === 'luar kota' && $n->tiket == 'Ya' ? 'block' : 'none' ?>;">
+                                                        <button class="nav-link" id="pills-ticket-tab"
+                                                            data-bs-toggle="pill" data-bs-target="#pills-ticket"
+                                                            type="button" role="tab" aria-controls="pills-ticket"
+                                                            aria-selected="false">Ticket</button>
+                                                    </li>
+                                                    <li class="nav-item" role="presentation" id="nav-taksi"
+                                                        style="display: <?= $n->jns_dinas === 'luar kota' && $n->taksi == 'Ya' ? 'block' : 'none' ?>;">
+                                                        <button class="nav-link" id="pills-taksi-tab"
+                                                            data-bs-toggle="pill" data-bs-target="#pills-taksi"
+                                                            type="button" role="tab" aria-controls="pills-taksi"
+                                                            aria-selected="false">Taxi/Grab</button>
+                                                    </li>
                                                     <li class="nav-item" role="presentation" id="nav-cashAdvanced"
                                                         style="display: {{ $showCashAdvanced ? 'block' : 'none' }};">
                                                         <button class="nav-link" id="pills-cashAdvanced-tab"
@@ -455,49 +478,9 @@
                                                             aria-selected="false">CA
                                                             Entertain</button>
                                                     </li>
-                                                    <li class="nav-item" role="presentation" id="nav-hotel"
-                                                        style="display: <?= $n->jns_dinas === 'luar kota' && $n->hotel == 'Ya' ? 'block' : 'none' ?>;">
-                                                        <button class="nav-link" id="pills-hotel-tab"
-                                                            data-bs-toggle="pill" data-bs-target="#pills-hotel"
-                                                            type="button" role="tab" aria-controls="pills-hotel"
-                                                            aria-selected="false">Hotel</button>
-                                                    </li>
-                                                    <!-- Mess Tab -->
-                                                    <li class="nav-item" role="presentation" id="nav-mess"
-                                                        style="display: <?= $n->jns_dinas === 'luar kota' && $n->mess == 'Ya' ? 'block' : 'none' ?>;">
-                                                        <button class="nav-link" id="pills-mess-tab"
-                                                            data-bs-toggle="pill" data-bs-target="#pills-mess"
-                                                            type="button" role="tab" aria-controls="pills-mess"
-                                                            aria-selected="false">Mess</button>
-                                                    </li>
-                                                    <li class="nav-item" role="presentation" id="nav-ticket"
-                                                        style="display: <?= $n->jns_dinas === 'luar kota' && $n->tiket == 'Ya' ? 'block' : 'none' ?>;">
-                                                        <button class="nav-link" id="pills-ticket-tab"
-                                                            data-bs-toggle="pill" data-bs-target="#pills-ticket"
-                                                            type="button" role="tab" aria-controls="pills-ticket"
-                                                            aria-selected="false">Ticket</button>
-                                                    </li>
-
-                                                    <li class="nav-item" role="presentation" id="nav-taksi"
-                                                        style="display: <?= $n->jns_dinas === 'luar kota' && $n->taksi == 'Ya' ? 'block' : 'none' ?>;">
-                                                        <button class="nav-link" id="pills-taksi-tab"
-                                                            data-bs-toggle="pill" data-bs-target="#pills-taksi"
-                                                            type="button" role="tab" aria-controls="pills-taksi"
-                                                            aria-selected="false">Taxi/Grab</button>
-                                                    </li>
                                                 </ul>
 
                                                 <div class="tab-content" id="pills-tabContent">
-                                                    <div class="tab-pane fade" id="pills-cashAdvanced" role="tabpanel"
-                                                        aria-labelledby="pills-cashAdvanced-tab">
-                                                        {{-- Cash Advanced content --}}
-                                                        @include('hcis.reimbursements.businessTrip.approval.btCaApproval')
-                                                    </div>
-                                                    <div class="tab-pane fade" id="pills-cashAdvancedEntertain"
-                                                        role="tabpanel" aria-labelledby="pills-cashAdvancedEntertain-tab">
-                                                        {{-- Cash Advanced content --}}
-                                                        @include('hcis.reimbursements.businessTrip.approval.btEntApproval')
-                                                    </div>
                                                     <div class="tab-pane fade" id="pills-hotel" role="tabpanel"
                                                         aria-labelledby="pills-hotel-tab">
                                                         {{-- Hotel content --}}
@@ -513,11 +496,20 @@
                                                         {{-- Ticket content --}}
                                                         @include('hcis.reimbursements.businessTrip.approval.approvalTicket')
                                                     </div>
-
                                                     <div class="tab-pane fade" id="pills-taksi" role="tabpanel"
                                                         aria-labelledby="pills-taksi-tab">
                                                         {{-- Taxi content --}}
                                                         @include('hcis.reimbursements.businessTrip.approval.approvalTaxi')
+                                                    </div>
+                                                    <div class="tab-pane fade" id="pills-cashAdvanced" role="tabpanel"
+                                                        aria-labelledby="pills-cashAdvanced-tab">
+                                                        {{-- Cash Advanced content --}}
+                                                        @include('hcis.reimbursements.businessTrip.approval.btCaApproval')
+                                                    </div>
+                                                    <div class="tab-pane fade" id="pills-cashAdvancedEntertain"
+                                                        role="tabpanel" aria-labelledby="pills-cashAdvancedEntertain-tab">
+                                                        {{-- Cash Advanced content --}}
+                                                        @include('hcis.reimbursements.businessTrip.approval.btEntApproval')
                                                     </div>
                                                 </div>
                                             </div>

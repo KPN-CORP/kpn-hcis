@@ -236,6 +236,15 @@
             <td class="colon">:</td>
             <td class="value"> {{ $ticket->latestApprovalL1->approved_at ?? '-' }}</td>
         </tr>
+        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+            @if (isset($ticket->latestApprovalL1->by_admin) && strtolower($ticket->latestApprovalL1->by_admin) == "t" && isset($ticket->latestApprovalL1->admin_id) && !empty($ticket->latestApprovalL1->admin_id) && isset($ticket->latestApprovalL1->admin_employee))
+                <tr>
+                    <td class="label">On Behalf</td>
+                    <td class="colon">:</td>
+                    <td class="value"> {{ $ticket->latestApprovalL1->admin_employee->fullname }}</td>
+                </tr>
+            @endif
+        @endif
         <tr>
             <td class="label">Manager Name 2</td>
             <td class="colon">:</td>
@@ -246,6 +255,15 @@
             <td class="colon">:</td>
             <td class="value"> {{ $ticket->latestApprovalL2->approved_at ?? '-' }}</td>
         </tr>
+        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+            @if (isset($ticket->latestApprovalL2->by_admin) && strtolower($ticket->latestApprovalL2->by_admin) == "t" && isset($ticket->latestApprovalL2->admin_id) && !empty($ticket->latestApprovalL2->admin_id) && isset($ticket->latestApprovalL2->admin_employee))
+                <tr>
+                    <td class="label">On Behalf</td>
+                    <td class="colon">:</td>
+                    <td class="value"> {{ $ticket->latestApprovalL2->admin_employee->fullname }}</td>
+                </tr>
+            @endif
+        @endif
     </table>
 
 </body>

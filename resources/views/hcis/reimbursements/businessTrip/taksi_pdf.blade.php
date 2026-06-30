@@ -148,8 +148,16 @@
             <td class="colon">:</td>
             <td class="value">{{ $taksi->latestApprovalL1->approved_at ?? '-' }}</td>
         </tr>
+        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+            @if (isset($taksi->latestApprovalL1->by_admin) && strtolower($taksi->latestApprovalL1->by_admin) == "t" && isset($taksi->latestApprovalL1->admin_id) && !empty($taksi->latestApprovalL1->admin_id) && isset($taksi->latestApprovalL1->admin_employee))
+                <tr>
+                    <td class="label">On Behalf</td>
+                    <td class="colon">:</td>
+                    <td class="value"> {{ $taksi->latestApprovalL1->admin_employee->fullname }}</td>
+                </tr>
+            @endif
+        @endif
     </table>
-
     <table>
         <tr>
             <td class="label">Manager Name 2</td>
@@ -161,6 +169,15 @@
             <td class="colon">:</td>
             <td class="value">{{ $taksi->latestApprovalL2->approved_at ?? '-' }}</td>
         </tr>
+        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+            @if (isset($taksi->latestApprovalL2->by_admin) && strtolower($taksi->latestApprovalL2->by_admin) == "t" && isset($taksi->latestApprovalL2->admin_id) && !empty($taksi->latestApprovalL2->admin_id) && isset($taksi->latestApprovalL2->admin_employee))
+                <tr>
+                    <td class="label">On Behalf</td>
+                    <td class="colon">:</td>
+                    <td class="value"> {{ $taksi->latestApprovalL2->admin_employee->fullname }}</td>
+                </tr>
+            @endif
+        @endif
     </table>
 </body>
 

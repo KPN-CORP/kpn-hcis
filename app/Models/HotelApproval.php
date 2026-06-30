@@ -38,4 +38,20 @@ class HotelApproval extends Model
     {
         return $this->belongsTo(Employee::class, 'employee_id', 'employee_id');
     }
+
+    public function adminEmployeeById()
+    {
+        return $this->belongsTo(Employee::class, 'admin_id', 'id');
+    }
+
+    public function adminEmployeeByEmployeeId()
+    {
+        return $this->belongsTo(Employee::class, 'admin_id', 'employee_id');
+    }
+
+    public function getAdminEmployeeAttribute()
+    {
+        return $this->adminEmployeeById
+            ?? $this->adminEmployeeByEmployeeId;
+    }
 }

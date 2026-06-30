@@ -17,8 +17,14 @@
                   @foreach ($master_medical as $master_medicals)
                       <th class="text-center">{{ $master_medicals->name }}</th>
                   @endforeach
-                  <th data-priority="2">Status</th>
-                  <th data-priority="3">Paid Status</th>
+
+                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                    <th data-priority="2">Progress</th>
+                @else
+                    <th data-priority="2">Status</th>
+                    <th data-priority="3">Paid Status</th>
+                @endif
+
                   <th data-priority="4">Action</th>
               </tr>
 
@@ -46,29 +52,62 @@
                               {{ 'Rp. ' . number_format($item->$medical_type, 0, ',', '.') }}
                           </td>
                       @endforeach
-                      <td style="align-content: center; text-align: center">
-                          @php
-                              $badgeClass = match ($item->status) {
-                                  'Pending' => 'bg-warning',
-                                  'Done' => 'bg-success',
-                                  'Rejected' => 'bg-danger',
-                                  'Draft' => 'bg-secondary',
-                                  default => 'bg-light',
-                              };
-                          @endphp
-                          <span class="badge rounded-pill {{ $badgeClass }} text-center"
-                                style="font-size: 12px; padding: 0.5rem 1rem; cursor: pointer;"
-                                @if ($item->status == 'Rejected' && isset($rejectMedic[$item->no_medic])) onclick="showRejectInfo('{{ $item->no_medic }}')"
-                                    title="Click to see rejection reason"
-                                @elseif ($item->status == 'Done')
-                                    title="{{ 'Approved GA by - '.$item->approved_by_fullname.' ' }}"
-                                @else
-                                    title="{{ $item->verif_by == null && $item->balance_verif == null ? 'Waiting for Admin GA to confirmation' : 'Pending GA - '.implode(', ', $gaFullname->toArray()).' ' }}"
-                                @endif>
-                                {{ $item->status }}
-                          </span>
-                      </td>
-                      <td class="text-center">{{ $item->paid_date ?? '-' }}</td>
+
+                      @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                          <td style="align-content: center; text-align: center">
+                              @php
+                                  $status = $item->status;
+
+                                  if (!empty($item->doc_status)) {
+                                    $status = $item->doc_status;
+                                  }
+
+                                  $badgeClass = match ($status) {
+                                      'Pending' => 'bg-warning',
+                                      'Document Pending' => 'bg-warning',
+                                      'Document Received' => 'bg-warning',
+                                      'Claim Verified' => 'bg-warning',
+                                      'Reimbursement Approved' => 'bg-success',
+                                      'Processing Payment' => 'bg-success',
+                                      'Revise' => 'bg-warning',
+                                      'Done' => 'bg-success',
+                                      'Paid' => 'bg-success',
+                                      'Rejected' => 'bg-danger',
+                                      'Draft' => 'bg-secondary',
+                                      default => 'bg-light',
+                                  };
+                              @endphp
+                              <span class="badge rounded-pill {{ $badgeClass }} text-center"
+                                      style="font-size: 12px; padding: 0.5rem 1rem; cursor: pointer;">
+                                      {{ $status }}
+                              </span>
+                          </td>
+                      @else
+                        <td style="align-content: center; text-align: center">
+                            @php
+                                $badgeClass = match ($item->status) {
+                                    'Pending' => 'bg-warning',
+                                    'Done' => 'bg-success',
+                                    'Rejected' => 'bg-danger',
+                                    'Draft' => 'bg-secondary',
+                                    default => 'bg-light',
+                                };
+                            @endphp
+                            <span class="badge rounded-pill {{ $badgeClass }} text-center"
+                                    style="font-size: 12px; padding: 0.5rem 1rem; cursor: pointer;"
+                                    @if ($item->status == 'Rejected' && isset($rejectMedic[$item->no_medic])) onclick="showRejectInfo('{{ $item->no_medic }}')"
+                                        title="Click to see rejection reason"
+                                    @elseif ($item->status == 'Done')
+                                        title="{{ 'Approved GA by - '.$item->approved_by_fullname.' ' }}"
+                                    @else
+                                        title="{{ $item->verif_by == null && $item->balance_verif == null ? 'Waiting for Admin GA to confirmation' : 'Pending GA - '.implode(', ', $gaFullname->toArray()).' ' }}"
+                                    @endif>
+                                    {{ $item->status }}
+                            </span>
+                        </td>
+                        <td class="text-center">{{ $item->paid_date ?? '-' }}</td>
+                      @endif
+
                       <td class="text-center">
                           @if ($item->status == 'Draft')
                               <form method="GET" action="/medical/form-update/{{ $item->usage_id }}"
@@ -98,6 +137,9 @@
                                       <i class="bi bi-pencil-square"></i>
                                   </button>
                               </form>
+                          @endif
+                          @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                              <a href="{{ route('medical.download', $item->usage_id) }}" target="_blank" class="btn btn-outline-info" title="Print"><i class="bi bi-file-earmark-arrow-down"></i></a>
                           @endif
                       </td>
                   </tr>

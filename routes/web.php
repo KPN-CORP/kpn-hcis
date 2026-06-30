@@ -44,6 +44,9 @@ use App\Http\Controllers\ApiEmployeeController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\DocumentGeneratorController;
 use App\Http\Controllers\ParkingController;
+use App\Http\Controllers\CAController;
+use App\Http\Controllers\TaskBoxController;
+use App\Http\Controllers\AdminMenuController;
 use App\Models\Designation;
 use Faker\Provider\Medical;
 use Illuminate\Support\Facades\Route;
@@ -336,6 +339,18 @@ Route::middleware("auth")->group(function () {
     Route::get("/travel", [ReimburseController::class, "travel"])->name(
         "travel",
     );
+    Route::get("/cash-advance", [
+        CAController::class,
+        "cashAdvance",
+    ])->name("cashAdvance");
+    Route::get("/task-box", [
+        TaskBoxController::class,
+        "taskBox",
+    ])->name("taskBox");
+    Route::get("/admin-menu", [
+        AdminMenuController::class,
+        "adminMenu",
+    ])->name("adminMenu");
 
     Route::get("/generator", [
         DocumentGeneratorController::class,
@@ -809,6 +824,10 @@ Route::middleware("auth")->group(function () {
         MedicalController::class,
         "medicalForm",
     ])->name("export.medical");
+    Route::get("/medical/download/{id}", [
+        MedicalController::class,
+        "medicalDownload",
+    ])->name("medical.download");
 
     //Medical Admin
     Route::middleware(["permission:report_hcis_md"])->group(function () {
@@ -868,6 +887,10 @@ Route::middleware("auth")->group(function () {
             MedicalController::class,
             "medicalAdminUpdate",
         ])->name("medical-admin-form.put");
+        Route::put("/medical/admin/form-update/update/document-received-toggle/{id}", [
+            MedicalController::class,
+            "medicalAdminUpdateDocumentReceivedToggle",
+        ])->name("medical-admin-form-document-received-toggle.put");
         Route::delete("/medical/admin/delete/{id}", [
             MedicalController::class,
             "medicalAdminDelete",

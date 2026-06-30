@@ -50,6 +50,10 @@ class BusinessTrip extends Model
     public function latestApprovalL1()
     {
         return $this->hasOne(BTApproval::class, 'bt_id', 'id')
+            ->with([
+                'adminEmployeeById',
+                'adminEmployeeByEmployeeId',
+            ])
             ->where('layer', 1)
             ->whereIn('approval_status', ['Pending L2', 'Approved'])
             ->latest('approved_at')
@@ -59,12 +63,16 @@ class BusinessTrip extends Model
    public function latestApprovalL2()
     {
         return $this->hasOne(BTApproval::class, 'bt_id', 'id')
+            ->with([
+                'adminEmployeeById',
+                'adminEmployeeByEmployeeId',
+            ])
             ->where('layer', 2)
             ->where('approval_status', 'Approved')
             ->latest('approved_at')
             ->with('manager2');
     }
-    
+
     // BusinessTrip.php
     public function latestApprovalDecL1()
     {
@@ -83,7 +91,7 @@ class BusinessTrip extends Model
             ->latest('approved_at')
             ->with('manager2');
     }
-    
+
     protected $keyType = 'string';
     public $incrementing = false;
 
@@ -126,6 +134,7 @@ class BusinessTrip extends Model
         'manager_l2_id',
         'deleted_at',
         'update_db',
+        'no_declaration'
 
     ];
 

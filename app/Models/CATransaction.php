@@ -36,6 +36,7 @@ class CATransaction extends Model
         'caonly',
         'ca_note',
         'by_admin',
+        'no_declaration'
     ];
     protected $table = 'ca_transactions';
 

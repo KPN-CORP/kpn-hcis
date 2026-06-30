@@ -16,6 +16,8 @@ use App\Models\CATransaction;
 use App\Models\BusinessTrip;
 use App\Models\Hotel;
 use App\Models\Tiket;
+use App\Models\MedicalType;
+use App\Models\MedicalHospital;
 // use App\Models\ELogFirstReceipt;
 // use App\Helpers\ELog as ELogHelper;
 use Illuminate\Support\Facades\DB;
@@ -33,6 +35,7 @@ use App\Exports\MedicalDetailExport;
 use App\Mail\MedicalNotification;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\ConnectionException;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class MedicalController extends Controller
 {
@@ -83,6 +86,7 @@ class MedicalController extends Controller
             "verif_by",
             "balance_verif",
             "approved_by",
+            "doc_status",
             DB::raw(
                 'SUM(CASE WHEN medical_type = "Maternity" THEN balance ELSE 0 END) as maternity_total',
             ),
@@ -110,6 +114,7 @@ class MedicalController extends Controller
                 "verif_by",
                 "balance_verif",
                 "approved_by",
+                "doc_status"
             )
             ->orderBy("latest_created_at", "desc")
             ->get();
@@ -485,10 +490,13 @@ class MedicalController extends Controller
             // ->where('period', $currentYear)
             ->get();
         $balanceData = [];
+        $formattedBalanceData = [];
         foreach ($medicalBalances as $balance) {
             // Assuming `medical_type` is a property of `HealthPlan`
             $balanceData[$balance->medical_type][$balance->period] =
                 $balance->balance;
+            $formattedBalanceData[$balance->medical_type][$balance->period] =
+                number_format($balance->balance, 0, ',', '.');
         }
         // dd($balanceData);
 
@@ -499,6 +507,10 @@ class MedicalController extends Controller
         $diseases = MasterDisease::orderBy("id", "asc")
             ->where("active", "T")
             ->get();
+
+        $medical_hospitals = MedicalHospital::where("is_active", 1)->pluck("hospital_name");
+        $balancePeriod = $balance->period;
+
         $parentLink = "Medical";
         $link = "Add Medical Coverage Usage";
 
@@ -516,6 +528,9 @@ class MedicalController extends Controller
                 "isMarried",
                 "isProbation",
                 "hasScalling",
+                "medical_hospitals",
+                "balancePeriod",
+                "formattedBalanceData"
             ),
         );
     }
@@ -532,6 +547,12 @@ class MedicalController extends Controller
 
         $statusValue = $request->has("action_draft") ? "Draft" : "Pending";
         $employee_data = Employee::where("id", $userId)->first();
+
+        $docStatusValue = "Document Pending";
+
+        if ($statusValue == "Draft") {
+            $docStatusValue = "Draft";
+        }
 
         if ($request->has("removed_medical_proof")) {
             $removedFiles = json_decode($request->removed_medical_proof, true);
@@ -599,13 +620,19 @@ class MedicalController extends Controller
                 continue;
             }
 
+            $hospital_name = $request->hospital_name;
+
+            if (!empty($request->others_hospital_name)) {
+                $hospital_name = $request->others_hospital_name;
+            }
+
             $healthCoverage = HealthCoverage::create([
                 "usage_id" => (string) Str::uuid(),
                 "employee_id" => $employee_id,
                 "contribution_level_code" => $contribution_level_code,
                 "no_medic" => $no_medic,
                 "no_invoice" => $request->no_invoice,
-                "hospital_name" => $request->hospital_name,
+                "hospital_name" => $hospital_name,
                 "patient_name" => $request->patient_name,
                 "disease" => $request->disease,
                 "date" => $date,
@@ -617,6 +644,9 @@ class MedicalController extends Controller
                 "balance_uncoverage" => 0,
                 "status" => $statusValue,
                 "medical_proof" => $medical_proof_path,
+                "reason" => $request->reason,
+                "doc_status" => $docStatusValue,
+                "doc_status_previous" => $docStatusValue
             ]);
             // dd($employee_id);
 
@@ -657,10 +687,13 @@ class MedicalController extends Controller
             // ->where('period', $currentYear)
             ->get();
         $balanceData = [];
+        $formattedBalanceData = [];
         foreach ($medicalBalances as $balance) {
             // Assuming `medical_type` is a property of `HealthPlan`
             $balanceData[$balance->medical_type][$balance->period] =
                 $balance->balance;
+            $formattedBalanceData[$balance->medical_type][$balance->period] =
+                number_format($balance->balance, 0, ',', '.');
         }
         // dd($balanceData);
 
@@ -685,6 +718,9 @@ class MedicalController extends Controller
             ->where("active", "T")
             ->get();
 
+        $medical_hospitals = MedicalHospital::where("is_active", 1)->pluck("hospital_name");
+        $balancePeriod = $balance->period;
+
         $parentLink = "Medical";
         $link = "Edit Medical Coverage Usage";
 
@@ -706,6 +742,9 @@ class MedicalController extends Controller
                 "hasGlasses",
                 "selected_patient",
                 "isMarried",
+                "medical_hospitals",
+                "balancePeriod",
+                "formattedBalanceData"
             ),
         );
     }
@@ -726,6 +765,12 @@ class MedicalController extends Controller
 
         // Handle status value
         $statusValue = $request->has("action_draft") ? "Draft" : "Pending";
+
+        $docStatusValue = "Document Pending";
+
+        if ($statusValue == "Draft") {
+            $docStatusValue = "Draft";
+        }
 
         // Handle medical proof file upload
         $employee_data = Employee::where("id", $userId)->first();
@@ -797,10 +842,16 @@ class MedicalController extends Controller
             $no_medic,
         )->get();
 
+        $hospital_name = $request->hospital_name;
+
+        if (!empty($request->others_hospital_name)) {
+            $hospital_name = $request->others_hospital_name;
+        }
+
         // Update common fields for all records with the same no_medic
         $commonUpdateData = [
             "no_invoice" => $request->no_invoice,
-            "hospital_name" => $request->hospital_name,
+            "hospital_name" => $hospital_name,
             "patient_name" => $request->patient_name,
             "disease" => $request->disease,
             "date" => $date,
@@ -814,6 +865,9 @@ class MedicalController extends Controller
             "reject_info" => null,
             "rejected_at" => null,
             "rejected_by" => null,
+            "reason" => $request->reason,
+            "doc_status" => $docStatusValue,
+            "doc_status_previous" => $docStatusValue
         ];
 
         HealthCoverage::where("no_medic", $no_medic)->update($commonUpdateData);
@@ -879,6 +933,136 @@ class MedicalController extends Controller
             ->with("success", "Medical Draft Deleted");
     }
 
+    public function medicalDownload($id)
+    {
+        $medical_data = HealthCoverage::with(["company", "employee_verified", "employee_approved"])->findOrFail($id);
+        $medical_no = $medical_data->no_medic;
+        $medical_costing_company = $medical_data->company ? $medical_data->company->contribution_level . " (" . $medical_data->contribution_level_code . ")" : "-";
+        $medical_cost_center = "-";
+        $medical_submit_date = $medical_data->created_at;
+        $medical_formatted_submit_date = Carbon::parse($medical_submit_date)->format('d-M-y');
+        $medical_claim_date = $medical_data->date;
+        $medical_formatted_claim_date = Carbon::parse($medical_claim_date)->format('d-M-y');
+        $medical_periode = $medical_data->period;
+        $medical_patient_name = $medical_data->patient_name;
+
+        $employee_data = Employee::where("employee_id", $medical_data->employee_id)->first();
+        $employee_id = $employee_data->employee_id;
+        $employee_name = $employee_data->fullname;
+        $employee_email = $employee_data->email;
+        $employee_account_detail = $employee_data->bank_name . " - " . $employee_data->bank_account_number . " - " . $employee_data->bank_account_name;
+        $employee_dept = $employee_data->unit;
+        $employee_pt_or_location = $employee_data->contribution_level_code . " / " . $employee_data->office_area;
+
+        $medical_details = [];
+        $medical_approvals = [
+            "labels" => [],
+            "statuses" => [],
+            "role_names" => [],
+            "employee_names" => [],
+            "dates" => [],
+        ];
+
+        $medical_types = MedicalType::where("active", "T")->pluck('name');
+        $medical_plans = HealthPlan::orderBy("period", "desc")
+            ->where("employee_id", $employee_id)
+            ->where("period", $medical_periode)
+            ->get()
+            ->groupBy('medical_type');
+
+        $medical_opening_balance_plafond = 0;
+        $medical_total_current_claim = 0;
+        $medical_closing_balance_plafond = 0;
+
+        foreach ($medical_types as $medical_type) {
+            if (strtolower($medical_type) == strtolower($medical_data->medical_type)) {
+                $medical_balance = $medical_data->balance_verif && !empty($medical_data->balance_verif) ? $medical_data->balance_verif : $medical_data->balance;
+                $medical_plan = $medical_plans[$medical_type];
+                $medical_plafond_balance = $medical_plan[0]->balance;
+                $medical_closing_plafond_balance = $medical_plafond_balance - $medical_balance;
+                $medical_opening_balance_plafond += $medical_plafond_balance;
+                $medical_total_current_claim += $medical_balance;
+                $medical_closing_balance_plafond += $medical_closing_plafond_balance;
+
+                $medical_details[] = [
+                    "type" => $medical_type,
+                    "formatted_opening_balance_plafond" => number_format($medical_plafond_balance, 0, ',', '.'),
+                    "formatted_total_current_claim" => number_format($medical_balance, 0, ',', '.'),
+                    "formatted_closing_balance_plafond" => number_format($medical_closing_plafond_balance, 0, ',', '.')
+                ];
+            } else {
+                $medical_details[] = [
+                    "type" => $medical_type,
+                    "formatted_opening_balance_plafond" => "",
+                    "formatted_total_current_claim" => "",
+                    "formatted_closing_balance_plafond" => ""
+                ];
+            }
+        }
+
+        if ($medical_data->employee_verified) {
+            $medical_approvals["labels"][] = "Verified";
+            $medical_approvals["statuses"][] = "approved";
+            $medical_approvals["role_names"][] = "GA Staff";
+            $medical_approvals["employee_names"][] = $medical_data->employee_verified->fullname;
+            $medical_approvals["dates"][] = $medical_data->verif_at;
+        } else {
+            $medical_approvals["labels"][] = "Verified";
+            $medical_approvals["statuses"][] = "";
+            $medical_approvals["role_names"][] = "GA Staff";
+            $medical_approvals["employee_names"][] = "";
+            $medical_approvals["dates"][] = "";
+        }
+
+        if ($medical_data->employee_approved) {
+            $medical_approvals["labels"][] = "Approved";
+            $medical_approvals["statuses"][] = "approved";
+            $medical_approvals["role_names"][] = "HC Director";
+            $medical_approvals["employee_names"][] = $medical_data->employee_approved->fullname;
+            $medical_approvals["dates"][] = $medical_data->approved_at;
+        } else {
+            $medical_approvals["labels"][] = "Approved";
+            $medical_approvals["statuses"][] = "";
+            $medical_approvals["role_names"][] = "HC Director";
+            $medical_approvals["employee_names"][] = "";
+            $medical_approvals["dates"][] = "";
+        }
+
+        $medical_formatted_opening_balance_plafond = number_format($medical_opening_balance_plafond, 0, ',', '.');
+        $medical_formatted_total_current_claim = number_format($medical_total_current_claim, 0, ',', '.');
+        $medical_formatted_closing_balance_plafond = number_format($medical_closing_balance_plafond, 0, ',', '.');
+
+        $pdf = PDF::loadView(
+            "hcis.reimbursements.medical.medical_pdf",
+            [
+                "medical_no" => $medical_no,
+                "medical_costing_company" => $medical_costing_company,
+                "medical_cost_center" => $medical_cost_center,
+                "medical_submit_date" => $medical_submit_date,
+                "medical_formatted_submit_date" => $medical_formatted_submit_date,
+                "medical_claim_date" => $medical_claim_date,
+                "medical_formatted_claim_date" => $medical_formatted_claim_date,
+                "medical_periode" => $medical_periode,
+                "medical_patient_name" => $medical_patient_name,
+                "medical_details" => $medical_details,
+                "medical_approvals" => $medical_approvals,
+                "medical_formatted_opening_balance_plafond" => $medical_formatted_opening_balance_plafond,
+                "medical_formatted_total_current_claim" => $medical_formatted_total_current_claim,
+                "medical_formatted_closing_balance_plafond" => $medical_formatted_closing_balance_plafond,
+                "employee_id" => $employee_id,
+                "employee_name" => $employee_name,
+                "employee_email" => $employee_email,
+                "employee_account_detail" => $employee_account_detail,
+                "employee_dept" => $employee_dept,
+                "employee_pt_or_location" => $employee_pt_or_location,
+            ],
+        )
+            ->setPaper("a4", "potrait")
+            ->set_option("enable_php", true);
+
+        return $pdf->stream("Medical Claim " . $medical_no . ".pdf");
+    }
+
     public function medicalAdminTable()
     {
         // Fetch all dependents, no longer filtered by employee_id
@@ -904,6 +1088,7 @@ class MedicalController extends Controller
                 'SUM(CASE WHEN medical_type = "Glasses" THEN balance ELSE 0 END) as glasses_total',
             ),
             "status",
+            "doc_status"
         )
             ->where("status", "!=", "Draft")
             ->whereNull("verif_by")
@@ -916,6 +1101,7 @@ class MedicalController extends Controller
                 "patient_name",
                 "disease",
                 "status",
+                "doc_status"
             )
             ->orderBy("created_at", "desc")
             ->get();
@@ -1079,11 +1265,26 @@ class MedicalController extends Controller
                     ? (int) str_replace(".", "", $bpjs_costs[$medical_type])
                     : 0;
 
+                $docReceivedBy = $existingCoverage->doc_received_by;
+                $docReceivedAt = $existingCoverage->doc_received_at;
+
+                if (empty($docReceivedBy)) {
+                    $docReceivedBy = $employee_id;
+                }
+
+                if (empty($docReceivedAt)) {
+                    $docReceivedAt = Carbon::now();
+                }
+
                 $existingCoverage->update([
                     "balance_verif" => $verif_cost,
                     "verif_by" => $employee_id,
                     "verif_at" => Carbon::now(),
                     "status" => "Pending",
+                    "doc_status" => "Claim Verified",
+                    "doc_status_previous" => "Document Received",
+                    "doc_received_by" => $docReceivedBy,
+                    "doc_received_at" => $docReceivedAt,
                     "balance_bpjs" => $bpjs_cost,
                 ]);
                 if ($medical_plan->balance < $verif_cost) {
@@ -1121,6 +1322,66 @@ class MedicalController extends Controller
                 "success",
                 "Medical verification data successfully updated.",
             );
+    }
+
+    public function medicalAdminUpdateDocumentReceivedToggle($id)
+    {
+        $employee_id = Auth::user()->employee_id;
+        $existingMedical = HealthCoverage::where("usage_id", $id)->first();
+
+        if (!$existingMedical) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Medical record not found.'
+            ], 404);
+        }
+
+        $docStatus = $existingMedical->doc_status;
+        $docStatusPrevious = $existingMedical->doc_status_previous;
+
+        if (empty($docStatus) || $docStatus == "Pending" || $docStatus == "Document Pending" ||
+        $docStatus == "Draft" || $docStatus == "Revise" || $docStatus == "Rejected") {
+            $docStatusPrevious = $docStatus;
+            $docStatus = "Document Received";
+
+            if (empty($docStatus)) {
+                $docStatusPrevious = "Document Pending";
+            }
+        } else if ($docStatus == "Document Received") {
+            $docStatusPrevious = $docStatus;
+            $docStatus = "Document Pending";
+        }
+
+        $formattedDocReceivedAt = null;
+
+        if ($docStatus == "Document Received") {
+            $existingMedical->update([
+                "doc_status" => $docStatus,
+                "doc_status_previous" => $docStatusPrevious,
+                "doc_received_by" => $employee_id,
+                "doc_received_at" => Carbon::now()
+            ]);
+
+            $formattedDocReceivedAt = $existingMedical->doc_received_at
+                ->setTimezone('Asia/Jakarta')
+                ->format('Y-m-d H:i:s');
+        } else if ($docStatus == "Document Pending") {
+            $existingMedical->update([
+                "doc_status" => $docStatus,
+                "doc_status_previous" => $docStatusPrevious,
+                "doc_received_by" => null,
+                "doc_received_at" => null
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Medical verification data successfully updated.',
+            'data' => [
+                'doc_status' => $docStatus,
+                'doc_received_at' => $formattedDocReceivedAt,
+            ]
+        ]);
     }
 
     public function medicalAdminDelete($id)
@@ -1257,6 +1518,7 @@ class MedicalController extends Controller
                         'SUM(CASE WHEN mdc_transactions.medical_type = "Glasses" THEN mdc_transactions.balance_verif ELSE 0 END) as glasses_balance_verif',
                     ),
                     "mdc_transactions.status",
+                    "mdc_transactions.doc_status",
                     "mdc_transactions.created_at",
                     "e.fullname",
                 )
@@ -1272,6 +1534,7 @@ class MedicalController extends Controller
                     "mdc_transactions.patient_name",
                     "mdc_transactions.disease",
                     "mdc_transactions.status",
+                    "mdc_transactions.doc_status",
                     "mdc_transactions.created_at",
                     "e.fullname",
                 )
@@ -1502,6 +1765,8 @@ class MedicalController extends Controller
                 // Update the health coverage record to reflect rejection
                 $coverage->update([
                     "status" => $statusValue,
+                    "doc_status" => $statusValue,
+                    "doc_status_previous" => $coverage->doc_status,
                     "reject_info" => $rejectInfo,
                     "rejected_by" => $employee_id,
                     "rejected_at" => now(),
@@ -1544,6 +1809,8 @@ class MedicalController extends Controller
                 // Update the medical record to mark it as done and store verification info
                 $coverage->update([
                     "status" => $statusValue,
+                    "doc_status" => "Reimbursement Approved",
+                    "doc_status_previous" => $coverage->doc_status,
                     "approved_by" => $employee_id,
                     "approved_at" => now(),
                 ]);
@@ -2476,6 +2743,7 @@ class MedicalController extends Controller
                     'SUM(CASE WHEN mdc_transactions.medical_type = "Glasses" THEN mdc_transactions.balance ELSE 0 END) as glasses_total',
                 ),
                 "mdc_transactions.status",
+                "mdc_transactions.doc_status",
                 DB::raw(
                     "MAX(mdc_transactions.created_at) as latest_created_at",
                 ),
@@ -2495,6 +2763,7 @@ class MedicalController extends Controller
                 "mdc_transactions.patient_name",
                 "mdc_transactions.disease",
                 "mdc_transactions.status",
+                "mdc_transactions.doc_status",
                 "mdc_transactions.employee_id",
             )
             ->orderBy("latest_created_at", "desc")

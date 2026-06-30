@@ -65,6 +65,10 @@ class Mess extends Model
     public function latestApprovalL1()
     {
         return $this->hasOne(MessApproval::class, 'mess_id', 'id')
+            ->with([
+                'adminEmployeeById',
+                'adminEmployeeByEmployeeId',
+            ])
             ->where('layer', 1)
             ->where('approval_status', 'Pending L2')
             ->latest('approved_at');
@@ -72,6 +76,10 @@ class Mess extends Model
     public function latestApprovalL2()
     {
         return $this->hasOne(MessApproval::class, 'mess_id', 'id')
+            ->with([
+                'adminEmployeeById',
+                'adminEmployeeByEmployeeId',
+            ])
             ->where('layer', 2)
             ->where('approval_status', 'Approved')
             ->latest('approved_at');

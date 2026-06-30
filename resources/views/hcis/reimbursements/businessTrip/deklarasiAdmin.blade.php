@@ -1,4 +1,4 @@
-@extends('layouts_.vertical', ['page_title' => 'Business Travel'])
+@extends('layouts_.vertical', ['page_title' => 'Business Travel Declaration'])
 
 @section('css')
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -103,7 +103,7 @@
                                             <td> {{ $employee_data->designation_name ?? '-' }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Cash Advance Type</th>
+                                            <th>Cash Advance Declaration Type</th>
                                             <td class="block">:</td>
                                             <td> Business Travel</td>
                                         </tr>
@@ -210,7 +210,7 @@
                                                 <div class="row">
                                                     <!-- Cash Advanced Costs Requested -->
                                                     <div class="col-md-6 mb-2">
-                                                        <label class="form-label">Cash Advanced Costs Requested</label>
+                                                        <label class="form-label">Cash Advanced Declaration Costs Requested</label>
                                                         <div class="input-group">
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text">Rp</span>
