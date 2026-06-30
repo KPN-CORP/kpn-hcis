@@ -162,11 +162,48 @@
                             </div>
                             <input type="hidden" name="status" value="Pending L1" id="status">
 
+                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                                <br/>
+                                <br/>
+
+                                @php
+                                    $isChecked = False;
+
+                                    if (!empty($medic->doc_status)) {
+                                        $isChecked = match ($medic->doc_status) {
+                                            'Pending' => False,
+                                            'Document Pending' => False,
+                                            'Revise' => False,
+                                            'Rejected' => False,
+                                            'Draft' => False,
+                                            default => True,
+                                        };
+                                    }
+                                @endphp
+
+                                <input class="form-check-input"
+                                    type="checkbox"
+                                    id="document_received_toggle"
+                                    value="Document Received" {{ $isChecked ? 'checked' : ''}}>
+
+                                <label class="form-check-label" for="document_received_toggle">
+                                    <span id="documentReceivedText">Document Received</span>
+                                    <span id="documentReceivedAtText">
+                                        @if (!empty($medic->doc_received_at))
+                                            ({{ $medic->doc_received_at }})
+                                        @endif
+                                    </span>
+                                    <span id="documentReceivedLoading"
+                                            class="spinner-border spinner-border-sm ms-2 d-none"
+                                            role="status"></span>
+                                </label>
+                            @endif
+
                             <div class="d-flex justify-content-end mt-4">
                                 {{-- <button type="submit" class="btn btn-outline-primary rounded-pill me-2 draft-button"
                                     name="action_draft" id="save-draft" value="Draft" id="save-draft">Save as
                                     Draft</button> --}}
-                                <button type="submit" class="btn btn-primary rounded-pill submit-button"
+                                <button id="submit-button" type="submit" class="btn btn-primary rounded-pill submit-button"
                                     name="action_submit" value="Pending" id="submit-btn">Submit</button>
                             </div>
                         </form>
@@ -588,4 +625,42 @@
 
 
     </script>
+
+    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+        <script>
+            $('#document_received_toggle').change(function () {
+                $(this).prop('disabled', true);
+                $('#documentReceivedWrapper').addClass('text-secondary');
+                $('#documentReceivedLoading').removeClass('d-none');
+                $('#submit-button').prop('disabled', true);
+                $('#documentReceivedAtText').text('');
+
+                $.ajax({
+                    url: '/medical/admin/form-update/update/document-received-toggle/{{ $medic->usage_id }}',
+                    type: 'PUT',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                    },
+                    success: function (response) {
+                        $('#document_received_toggle').prop('disabled', false);
+                        $('#documentReceivedWrapper').removeClass('text-secondary');
+                        $('#documentReceivedLoading').addClass('d-none');
+                        $('#submit-button').prop('disabled', false);
+
+                        if (response.data.doc_received_at) {
+                            $('#documentReceivedAtText').text('(' + response.data.doc_received_at + ')');
+                        } else {
+                            $('#documentReceivedAtText').text('');
+                        }
+                    },
+                    error: function () {
+                        $('#document_received_toggle').prop('disabled', false);
+                        $('#documentReceivedWrapper').removeClass('text-secondary');
+                        $('#documentReceivedLoading').addClass('d-none');
+                        $('#submit-button').prop('disabled', false);
+                    }
+                });
+            });
+        </script>
+    @endif
 @endsection
