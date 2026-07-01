@@ -112,7 +112,10 @@
                     </a>
                 </li>
 
-                <li class="side-nav-title mt-2">Report</li>
+                @if (auth()->check() && (auth()->user()->can('reportca_hcis') || auth()->user()->can('report_hcis_md') || auth()->user()->can('report_hcis_bt') || auth()->user()->can('report_hcis_ht') || auth()->user()->can('report_hcis_tkt') || auth()->user()->can('report_hcis_htl')))
+                    <li class="side-nav-title mt-2">Report</li>
+                @endif
+
                 @if (auth()->check() && (auth()->user()->can('reportca_hcis') || auth()->user()->can('report_hcis_md')))
                     @can('reportca_hcis')
                         <li class="side-nav-item">
