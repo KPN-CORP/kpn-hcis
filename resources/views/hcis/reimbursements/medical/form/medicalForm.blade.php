@@ -800,6 +800,28 @@
 
     @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
         <script>
+            $(document).ready(function () {
+                $('#hospital_name').select2({
+                    width: '100%',
+                    theme: 'bootstrap-5',
+                    matcher: function (params, data) {
+                        if ($.trim(params.term) === '') {
+                            return data;
+                        }
+
+                        if (data.text === 'Others') {
+                            return data;
+                        }
+
+                        if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
+                            return data;
+                        }
+
+                        return null;
+                    }
+                });
+            });
+
             function MDHospitalToggleOthers() {
                 var hospitalNameElem = document.getElementById("hospital_name");
                 var othersHospitalNameElem = document.getElementById("others_hospital_name");
