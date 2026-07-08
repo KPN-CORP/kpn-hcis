@@ -16,20 +16,45 @@
                                             placeholder="ex: 3521XXXXXXXXXXXX">
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">From</label>
-                                    <div class="input-group">
-                                        <input class="form-control bg-white" name="dari_tkt[]" type="text"
-                                            placeholder="ex. Yogyakarta (YIA)">
+                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                                    <div class="col-md-4 mb-2">
+                                        <label for="dari_tkt" class="form-label">From</label>
+                                        <select class="form-select form-select-sm select2" name="dari_tkt[]" id="dari_tkt" required>
+                                            <option value="">--- Choose Location ---</option>
+                                            @foreach ($transport_hubs as $transport_hub)
+                                                <option value="{{ $transport_hub }}">
+                                                    {{ $transport_hub }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">To</label>
-                                    <div class="input-group">
-                                        <input class="form-control bg-white" name="ke_tkt[]" type="text"
-                                            placeholder="ex. Jakarta (CGK)">
+                                    <div class="col-md-4 mb-2">
+                                        <label for="ke_tkt" class="form-label">To</label>
+                                        <select class="form-select form-select-sm select2" name="ke_tkt[]" id="ke_tkt" required>
+                                            <option value="">--- Choose Location ---</option>
+                                            @foreach ($transport_hubs as $transport_hub)
+                                                <option value="{{ $transport_hub }}">
+                                                    {{ $transport_hub }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </div>
-                                </div>
+                                @else
+                                    <div class="col-md-4">
+                                        <label class="form-label">From</label>
+                                        <div class="input-group">
+                                            <input class="form-control bg-white" name="dari_tkt[]" type="text"
+                                                placeholder="ex. Yogyakarta (YIA)">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">To</label>
+                                        <div class="input-group">
+                                            <input class="form-control bg-white" name="ke_tkt[]" type="text"
+                                                placeholder="ex. Jakarta (CGK)">
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                             <div class="row mb-2">
                                 <div class="col-md-8">

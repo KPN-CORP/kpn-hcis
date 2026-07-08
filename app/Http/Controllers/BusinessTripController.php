@@ -26,6 +26,7 @@ use App\Models\HealthCoverage;
 use App\Models\ApprovalPriority;
 use App\Models\ApprovalSetting;
 use App\Models\master_holiday;
+use App\Models\TransportHub;
 use Carbon\Carbon;
 use Excel;
 use Illuminate\Support\Facades\DB;
@@ -500,6 +501,13 @@ class BusinessTripController extends Controller
         }
 
         $holiday = master_holiday::pluck("tanggal_libur")->toArray();
+        $transportHubs = TransportHub::where("is_active", true);
+
+        if (strtolower($employee_data->group_company) == "downstream") {
+            $transportHubs = $transportHubs->where("group_company", "Downstream");
+        }
+
+        $transportHubs = $transportHubs->pluck("name");
 
         return view("hcis.reimbursements.businessTrip.editFormBt", [
             "n" => $n,
@@ -527,6 +535,7 @@ class BusinessTripController extends Controller
             "isDisabled" => $isDisabled,
             "revisiInfo" => $revisiInfo,
             "holiday" => $holiday,
+            "transport_hubs" => $transportHubs,
         ]);
     }
 
@@ -6074,6 +6083,13 @@ class BusinessTripController extends Controller
         }
 
         $holiday = master_holiday::pluck("tanggal_libur")->toArray();
+        $transportHubs = TransportHub::where("is_active", true);
+
+        if (strtolower($employee_data->group_company) == "downstream") {
+            $transportHubs = $transportHubs->where("group_company", "Downstream");
+        }
+
+        $transportHubs = $transportHubs->pluck("name");
 
         $parentLink = "Business Travel";
         $link = "Business Travel Request";
@@ -6093,6 +6109,7 @@ class BusinessTripController extends Controller
             "group_company" => $employee_data->group_company,
             "isDisabled" => $isDisabled,
             "holiday" => $holiday,
+            "transport_hubs" =>$transportHubs
         ]);
     }
 
