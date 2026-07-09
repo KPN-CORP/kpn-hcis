@@ -17,6 +17,7 @@ use App\Models\Employee;
 use App\Models\MatrixApproval;
 use App\Models\ListPerdiem;
 use App\Models\HealthCoverage;
+use App\Models\TransportHub;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Str;
@@ -5040,6 +5041,14 @@ class ReimburseController extends Controller
             ->get();
         // $no_sppds = ca_transaction::where('user_id', $userId)->where('approval_sett', '!=', 'Done')->get();
 
+        $transportHubs = TransportHub::where("is_active", true);
+
+        if (strtolower($employee_data->group_company) == "downstream") {
+            $transportHubs = $transportHubs->where("group_company", "Downstream");
+        }
+
+        $transportHubs = $transportHubs->pluck("name");
+
         return view("hcis.reimbursements.ticket.formTicket", [
             "link" => $link,
             "parentLink" => $parentLink,
@@ -5050,6 +5059,7 @@ class ReimburseController extends Controller
             "perdiem" => $perdiem,
             "no_sppds" => $no_sppds,
             "employees" => $employees,
+            "transport_hubs" => $transportHubs,
         ]);
     }
     public function ticketSubmit(Request $req)
@@ -5653,6 +5663,14 @@ class ReimburseController extends Controller
             ];
         }
 
+        $transportHubs = TransportHub::where("is_active", true);
+
+        if (strtolower($employee_data->group_company) == "downstream") {
+            $transportHubs = $transportHubs->where("group_company", "Downstream");
+        }
+
+        $transportHubs = $transportHubs->pluck("name");
+
         // Return the view with the necessary data
         return view("hcis.reimbursements.ticket.editTicket", [
             "link" => $link,
@@ -5668,6 +5686,7 @@ class ReimburseController extends Controller
             "ticketData" => $ticketData,
             "employees" => $employees,
             "revisiInfo" => $revisiInfo,
+            "transport_hubs" => $transportHubs,
         ]);
     }
 
@@ -6340,6 +6359,14 @@ class ReimburseController extends Controller
             ];
         }
 
+        $transportHubs = TransportHub::where("is_active", true);
+
+        if (strtolower($employee_data->group_company) == "downstream") {
+            $transportHubs = $transportHubs->where("group_company", "Downstream");
+        }
+
+        $transportHubs = $transportHubs->pluck("name");
+
         // Return the view with the necessary data
         return view("hcis.reimbursements.ticket.ticketApprovalDetail", [
             "link" => $link,
@@ -6355,6 +6382,7 @@ class ReimburseController extends Controller
             "ticketData" => $ticketData,
             "ticketOwnerEmployee" => $ticketOwnerEmployee,
             "ticketCount" => $ticketCount,
+            "transport_hubs" => $transportHubs
         ]);
     }
 

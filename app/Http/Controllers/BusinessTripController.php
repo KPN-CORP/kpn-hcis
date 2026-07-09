@@ -9136,6 +9136,13 @@ class BusinessTripController extends Controller
         // dd($taksi->toArray());
 
         $holiday = master_holiday::pluck("tanggal_libur")->toArray();
+        $transportHubs = TransportHub::where("is_active", true);
+
+        if (strtolower($employee_data->group_company) == "downstream") {
+            $transportHubs = $transportHubs->where("group_company", "Downstream");
+        }
+
+        $transportHubs = $transportHubs->pluck("name");
 
         $parentLink = "Business Travel Approval";
         $link = "Approval Details";
@@ -9165,6 +9172,7 @@ class BusinessTripController extends Controller
             "job_level_number" => $job_level_number,
             "messData" => $messData,
             "holiday" => $holiday,
+            "transport_hubs" => $transportHubs
         ]);
     }
 
