@@ -1518,7 +1518,7 @@
                                 <br>
                                 <div class="row">
                                     <div class="">
-                                        <input type="text" name="others_dari_tkt" id="others_dari_tkt"
+                                        <input type="text" name="others_dari_tkt[]" id="others_dari_tkt"
                                         class="form-control form-control-sm" placeholder="ex: Yogyakarta (YIA)"
                                         value="" style="display: none;">
                                     </div>
@@ -1538,7 +1538,7 @@
                                 <br>
                                 <div class="row">
                                     <div class="">
-                                        <input type="text" name="others_ke_tkt" id="others_ke_tkt"
+                                        <input type="text" name="others_ke_tkt[]" id="others_ke_tkt"
                                         class="form-control form-control-sm" placeholder="ex: Jakarta (CGK)"
                                         value="" style="display: none;">
                                     </div>
@@ -1979,7 +1979,7 @@
                                 <br>
                                 <div class="row">
                                     <div class="">
-                                        <input type="text" name="others_dari_tkt_dalam_kota" id="others_dari_tkt_dalam_kota"
+                                        <input type="text" name="others_dari_tkt_dalam_kota[]" id="others_dari_tkt_dalam_kota"
                                         class="form-control form-control-sm" placeholder="ex: Yogyakarta (YIA)"
                                         value="" style="display: none;">
                                     </div>
@@ -1999,7 +1999,7 @@
                                 <br>
                                 <div class="row">
                                     <div class="">
-                                        <input type="text" name="others_ke_tkt_dalam_kota" id="others_ke_tkt_dalam_kota"
+                                        <input type="text" name="others_ke_tkt_dalam_kota[]" id="others_ke_tkt_dalam_kota"
                                         class="form-control form-control-sm" placeholder="ex: Jakarta (CGK)"
                                         value="" style="display: none;">
                                     </div>

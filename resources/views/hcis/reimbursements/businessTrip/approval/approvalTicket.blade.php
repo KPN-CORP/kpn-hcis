@@ -57,7 +57,7 @@
                                     <input
                                         type="text"
                                         id="others_dari_tkt"
-                                        name="others_dari_tkt"
+                                        name="others_dari_tkt[]"
                                         class="form-control form-control-sm"
                                         placeholder="ex: Yogyakarta (YIA)"
                                         value="{{ $isOtherFrom ? $ticket['dari_tkt'] : '' }}"
@@ -88,7 +88,7 @@
                                     <input
                                         type="text"
                                         id="others_ke_tkt"
-                                        name="others_ke_tkt"
+                                        name="others_ke_tkt[]"
                                         class="form-control form-control-sm"
                                         placeholder="ex: Jakarta (CGK)"
                                         value="{{ $isOtherTo ? $ticket['ke_tkt'] : '' }}"
