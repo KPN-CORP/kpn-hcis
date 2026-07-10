@@ -927,6 +927,8 @@ class BusinessTripController extends Controller
                     "jenis_tkt" => $request->jenis_tkt_dalam_kota,
                     "type_tkt" => $request->type_tkt_dalam_kota,
                     "ket_tkt" => $request->ket_tkt_dalam_kota,
+                    "others_dari_tkt" => $request->others_dari_tkt_dalam_kota,
+                    "others_ke_tkt" => $request->others_ke_tkt_dalam_kota,
                 ];
             } else {
                 $ticketFields = [
@@ -940,6 +942,8 @@ class BusinessTripController extends Controller
                     "jenis_tkt" => $request->jenis_tkt,
                     "type_tkt" => $request->type_tkt,
                     "ket_tkt" => $request->ket_tkt,
+                    "others_dari_tkt" => $request->others_dari_tkt,
+                    "others_ke_tkt" => $request->others_ke_tkt,
                 ];
             }
 
@@ -991,6 +995,14 @@ class BusinessTripController extends Controller
                     $ticketData["np_tkt"] = $employee_data->fullname ?? null;
                     $ticketData["tlp_tkt"] =
                         $employee_data->personal_mobile_number ?? null;
+
+                    if (!empty($ticketFields["others_dari_tkt"][$key])) {
+                        $ticketData["dari_tkt"] = $ticketFields["others_dari_tkt"][$key];
+                    }
+
+                    if (!empty($ticketFields["others_ke_tkt"][$key])) {
+                        $ticketData["ke_tkt"] = $ticketFields["others_ke_tkt"][$key];
+                    }
 
                     if (isset($existingTickets[$value])) {
                         // Update existing ticket
@@ -6347,6 +6359,8 @@ class BusinessTripController extends Controller
                     "type_tkt" => $request->type_tkt_dalam_kota,
                     "ket_tkt" => $request->ket_tkt_dalam_kota,
                     "approval_status" => $statusValue,
+                    "others_dari_tkt" => $request->others_dari_tkt_dalam_kota,
+                    "others_ke_tkt" => $request->others_ke_tkt_dalam_kota,
                 ];
             } else {
                 $ticketData = [
@@ -6362,6 +6376,8 @@ class BusinessTripController extends Controller
                     "ket_tkt" => $request->ket_tkt,
                     "approval_status" => $statusValue,
                     "jns_dinas_tkt" => "Dinas",
+                    "others_dari_tkt" => $request->others_dari_tkt,
+                    "others_ke_tkt" => $request->others_ke_tkt,
                 ];
             }
 
@@ -6407,20 +6423,12 @@ class BusinessTripController extends Controller
                         $isJobLevel->count() == 1 ? "-" : $managerL2;
                     $tiket->jns_dinas_tkt = "Dinas";
 
-                    if (!empty($request->others_dari_tkt)) {
-                        $tiket->dari_tkt = $request->others_dari_tkt;
+                    if (!empty($ticketData["others_dari_tkt"][$key])) {
+                        $tiket->dari_tkt = $ticketData["others_dari_tkt"][$key];
                     }
 
-                    if (!empty($request->others_dari_tkt_dalam_kota)) {
-                        $tiket->dari_tkt = $request->others_dari_tkt_dalam_kota;
-                    }
-
-                    if (!empty($request->others_ke_tkt)) {
-                        $tiket->ke_tkt = $request->others_ke_tkt;
-                    }
-
-                    if (!empty($request->others_ke_tkt_dalam_kota)) {
-                        $tiket->ke_tkt = $request->others_ke_tkt_dalam_kota;
+                    if (!empty($ticketData["others_ke_tkt"][$key])) {
+                        $tiket->ke_tkt = $ticketData["others_ke_tkt"][$key];
                     }
 
                     $tiket->save();

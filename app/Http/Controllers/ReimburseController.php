@@ -5207,6 +5207,8 @@ class ReimburseController extends Controller
             "ket_tkt" => $req->ket_tkt,
             "approval_status" => $statusValue,
             "tkt_only" => "Y",
+            "others_dari_tkt" => $req->others_dari_tkt,
+            "others_ke_tkt" => $req->others_ke_tkt,
         ];
 
         $noKtp = [];
@@ -5259,6 +5261,15 @@ class ReimburseController extends Controller
                 $tiket->approval_status = $statusValue;
                 $tiket->jns_dinas_tkt = $req->jns_dinas_tkt;
                 $tiket->tkt_only = "Y";
+
+                if (!empty($ticketData["others_dari_tkt"][$key])) {
+                    $tiket->dari_tkt = $ticketData["others_dari_tkt"][$key];
+                }
+
+                if (!empty($ticketData["others_ke_tkt"][$key])) {
+                    $tiket->ke_tkt = $ticketData["others_ke_tkt"][$key];
+                }
+
                 // dd($req->all());
                 $tiket->save();
 
@@ -5272,6 +5283,14 @@ class ReimburseController extends Controller
                 $noTktList[] = $tiket->no_tkt;
                 $tglPlgTkt[] = $ticketData["tgl_plg_tkt"][$key];
                 $jamPlgTkt[] = $ticketData["jam_plg_tkt"][$key];
+
+                if (!empty($ticketData["others_dari_tkt"][$key])) {
+                    $dariTkt[] = $ticketData["others_dari_tkt"][$key];
+                }
+
+                if (!empty($ticketData["others_ke_tkt"][$key])) {
+                    $keTkt[] = $ticketData["others_ke_tkt"][$key];
+                }
             }
         }
 
@@ -5786,7 +5805,20 @@ class ReimburseController extends Controller
                     "approval_status" => $statusValue,
                     "jns_dinas_tkt" => $req->jns_dinas_tkt,
                     "tkt_only" => "Y",
+                    "others_dari_tkt" => $req->others_dari_tkt[$key] ?? null,
+                    "others_ke_tkt" => $req->others_ke_tkt[$key] ?? null,
                 ];
+
+                if (!empty($ticketData["others_dari_tkt"][$key])) {
+                    $ticketData["dari_tkt"] = $ticketData["others_dari_tkt"];
+                }
+
+                if (!empty($ticketData["others_ke_tkt"][$key])) {
+                    $ticketData["ke_tkt"] = $ticketData["others_ke_tkt"];
+                }
+
+                unset($ticketData["others_dari_tkt"]);
+                unset($ticketData["others_ke_tkt"]);
 
                 // dd($ticketData);
 
