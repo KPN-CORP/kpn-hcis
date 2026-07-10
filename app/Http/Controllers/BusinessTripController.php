@@ -6407,6 +6407,22 @@ class BusinessTripController extends Controller
                         $isJobLevel->count() == 1 ? "-" : $managerL2;
                     $tiket->jns_dinas_tkt = "Dinas";
 
+                    if (!empty($request->others_dari_tkt)) {
+                        $tiket->dari_tkt = $request->others_dari_tkt;
+                    }
+
+                    if (!empty($request->others_dari_tkt_dalam_kota)) {
+                        $tiket->dari_tkt = $request->others_dari_tkt_dalam_kota;
+                    }
+
+                    if (!empty($request->others_ke_tkt)) {
+                        $tiket->ke_tkt = $request->others_ke_tkt;
+                    }
+
+                    if (!empty($request->others_ke_tkt_dalam_kota)) {
+                        $tiket->ke_tkt = $request->others_ke_tkt_dalam_kota;
+                    }
+
                     $tiket->save();
                 }
             }
