@@ -26,7 +26,7 @@
                         @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
                             <div class="col-md-4 mb-2">
                                 <label for="dari_tkt" class="form-label">From</label>
-                                <select class="form-select form-select-sm select2" name="dari_tkt[]" id="dari_tkt" required>
+                                <select class="form-select form-select-sm select2" name="dari_tkt[]" id="dari_tkt" onchange="DariTiketToggleOthers()" required>
                                     <option value="">--- Choose Location ---</option>
                                     @foreach ($transport_hubs as $transport_hub)
                                         <option value="{{ $transport_hub }}">
@@ -46,7 +46,7 @@
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label for="ke_tkt" class="form-label">To</label>
-                                <select class="form-select form-select-sm select2" name="ke_tkt[]" id="ke_tkt" required>
+                                <select class="form-select form-select-sm select2" name="ke_tkt[]" id="ke_tkt" onchange="KeTiketToggleOthers()" required>
                                     <option value="">--- Choose Location ---</option>
                                     @foreach ($transport_hubs as $transport_hub)
                                         <option value="{{ $transport_hub }}">
