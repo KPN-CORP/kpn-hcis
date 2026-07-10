@@ -997,10 +997,6 @@ function LuarKotaTicketInit() {
                                <option value="">Please Select</option>
                             </select>
                         </div>
-
-
-
-
                         @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
                             <div class="col-md-4 mb-2">
                                 <label for="dari_tkt" class="form-label">From</label>
@@ -1011,7 +1007,16 @@ function LuarKotaTicketInit() {
                                             {{ $transport_hub }}
                                         </option>
                                     @endforeach
+                                    <option value="Others">Others</option>
                                 </select>
+                                <br>
+                                <div class="row">
+                                    <div class="">
+                                        <input type="text" name="others_dari_tkt" id="others_dari_tkt"
+                                        class="form-control form-control-sm" placeholder="ex: Yogyakarta (YIA)"
+                                        value="" style="display: none;">
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label for="ke_tkt" class="form-label">To</label>
@@ -1022,7 +1027,16 @@ function LuarKotaTicketInit() {
                                             {{ $transport_hub }}
                                         </option>
                                     @endforeach
+                                    <option value="Others">Others</option>
                                 </select>
+                                <br>
+                                <div class="row">
+                                    <div class="">
+                                        <input type="text" name="others_ke_tkt" id="others_ke_tkt"
+                                        class="form-control form-control-sm" placeholder="ex: Jakarta (CGK)"
+                                        value="" style="display: none;">
+                                    </div>
+                                </div>
                             </div>
                         @else
                             <div class="col-md-4 mb-2">
@@ -1456,7 +1470,16 @@ function DalamKotaTicketInit() {
                                             {{ $transport_hub }}
                                         </option>
                                     @endforeach
+                                    <option value="Others">Others</option>
                                 </select>
+                                <br>
+                                <div class="row">
+                                    <div class="">
+                                        <input type="text" name="others_dari_tkt_dalam_kota" id="others_dari_tkt_dalam_kota"
+                                        class="form-control form-control-sm" placeholder="ex: Yogyakarta (YIA)"
+                                        value="" style="display: none;">
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label for="ke_tkt_dalam_kota" class="form-label">To</label>
@@ -1467,7 +1490,16 @@ function DalamKotaTicketInit() {
                                             {{ $transport_hub }}
                                         </option>
                                     @endforeach
+                                    <option value="Others">Others</option>
                                 </select>
+                                <br>
+                                <div class="row">
+                                    <div class="">
+                                        <input type="text" name="others_ke_tkt_dalam_kota" id="others_ke_tkt_dalam_kota"
+                                        class="form-control form-control-sm" placeholder="ex: Jakarta (CGK)"
+                                        value="" style="display: none;">
+                                    </div>
+                                </div>
                             </div>
                         @else
                             <div class="col-md-4 mb-2">

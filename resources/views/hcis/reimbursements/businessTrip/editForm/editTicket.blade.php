@@ -32,6 +32,10 @@
                         </select>
                     </div>
                     @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                        @php
+                            $isOtherFrom = !in_array($ticket['dari_tkt'], $transport_hubs->toArray());
+                            $isOtherTo = !in_array($ticket['ke_tkt'], $transport_hubs->toArray());
+                        @endphp
                         <div class="col-md-4 mb-2">
                             <label for="dari_tkt" class="form-label">From</label>
                             <select class="form-select form-select-sm select2" name="dari_tkt[]" id="dari_tkt" required>
@@ -43,7 +47,24 @@
                                         {{ $transport_hub }}
                                     </option>
                                 @endforeach
+                                <option value="Others" {{ $isOtherFrom ? 'selected' : '' }}>
+                                    Others
+                                </option>
                             </select>
+                            <br/>
+                            <div class="row">
+                                <div class="">
+                                    <input
+                                        type="text"
+                                        id="others_dari_tkt"
+                                        name="others_dari_tkt"
+                                        class="form-control form-control-sm"
+                                        placeholder="ex: Yogyakarta (YIA)"
+                                        value="{{ $isOtherFrom ? $ticket['dari_tkt'] : '' }}"
+                                        style="{{ $isOtherFrom ? '' : 'display:none;' }}"
+                                        >
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-4 mb-2">
                             <label for="ke_tkt" class="form-label">To</label>
@@ -56,7 +77,24 @@
                                         {{ $transport_hub }}
                                     </option>
                                 @endforeach
+                                <option value="Others" {{ $isOtherTo ? 'selected' : '' }}>
+                                    Others
+                                </option>
                             </select>
+                            <br/>
+                            <div class="row">
+                                <div class="">
+                                    <input
+                                        type="text"
+                                        id="others_ke_tkt"
+                                        name="others_ke_tkt"
+                                        class="form-control form-control-sm"
+                                        placeholder="ex: Jakarta (CGK)"
+                                        value="{{ $isOtherTo ? $ticket['ke_tkt'] : '' }}"
+                                        style="{{ $isOtherTo ? '' : 'display:none;' }}"
+                                        >
+                                </div>
+                            </div>
                         </div>
                     @else
                         <div class="col-md-4 mb-2">
