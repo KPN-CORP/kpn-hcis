@@ -17,6 +17,7 @@ use App\Models\Employee;
 use App\Models\MatrixApproval;
 use App\Models\ListPerdiem;
 use App\Models\HealthCoverage;
+use App\Models\TransportHub;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Str;
@@ -5027,6 +5028,14 @@ class ReimburseController extends Controller
             ->get();
         // $no_sppds = ca_transaction::where('user_id', $userId)->where('approval_sett', '!=', 'Done')->get();
 
+        $transportHubs = TransportHub::where("is_active", true);
+
+        if (strtolower($employee_data->group_company) == "downstream") {
+            $transportHubs = $transportHubs->where("group_company", "Downstream");
+        }
+
+        $transportHubs = $transportHubs->pluck("name");
+
         return view("hcis.reimbursements.ticket.formTicket", [
             "link" => $link,
             "parentLink" => $parentLink,
@@ -5037,6 +5046,7 @@ class ReimburseController extends Controller
             "perdiem" => $perdiem,
             "no_sppds" => $no_sppds,
             "employees" => $employees,
+            "transport_hubs" => $transportHubs,
         ]);
     }
     public function ticketSubmit(Request $req)
@@ -5184,6 +5194,8 @@ class ReimburseController extends Controller
             "ket_tkt" => $req->ket_tkt,
             "approval_status" => $statusValue,
             "tkt_only" => "Y",
+            "others_dari_tkt" => $req->others_dari_tkt,
+            "others_ke_tkt" => $req->others_ke_tkt,
         ];
 
         $noKtp = [];
@@ -5236,6 +5248,15 @@ class ReimburseController extends Controller
                 $tiket->approval_status = $statusValue;
                 $tiket->jns_dinas_tkt = $req->jns_dinas_tkt;
                 $tiket->tkt_only = "Y";
+
+                if (!empty($ticketData["others_dari_tkt"][$key])) {
+                    $tiket->dari_tkt = $ticketData["others_dari_tkt"][$key];
+                }
+
+                if (!empty($ticketData["others_ke_tkt"][$key])) {
+                    $tiket->ke_tkt = $ticketData["others_ke_tkt"][$key];
+                }
+
                 // dd($req->all());
                 $tiket->save();
 
@@ -5249,6 +5270,14 @@ class ReimburseController extends Controller
                 $noTktList[] = $tiket->no_tkt;
                 $tglPlgTkt[] = $ticketData["tgl_plg_tkt"][$key];
                 $jamPlgTkt[] = $ticketData["jam_plg_tkt"][$key];
+
+                if (!empty($ticketData["others_dari_tkt"][$key])) {
+                    $dariTkt[] = $ticketData["others_dari_tkt"][$key];
+                }
+
+                if (!empty($ticketData["others_ke_tkt"][$key])) {
+                    $keTkt[] = $ticketData["others_ke_tkt"][$key];
+                }
             }
         }
 
@@ -5640,6 +5669,14 @@ class ReimburseController extends Controller
             ];
         }
 
+        $transportHubs = TransportHub::where("is_active", true);
+
+        if (strtolower($employee_data->group_company) == "downstream") {
+            $transportHubs = $transportHubs->where("group_company", "Downstream");
+        }
+
+        $transportHubs = $transportHubs->pluck("name");
+
         // Return the view with the necessary data
         return view("hcis.reimbursements.ticket.editTicket", [
             "link" => $link,
@@ -5655,6 +5692,7 @@ class ReimburseController extends Controller
             "ticketData" => $ticketData,
             "employees" => $employees,
             "revisiInfo" => $revisiInfo,
+            "transport_hubs" => $transportHubs,
         ]);
     }
 
@@ -5754,7 +5792,20 @@ class ReimburseController extends Controller
                     "approval_status" => $statusValue,
                     "jns_dinas_tkt" => $req->jns_dinas_tkt,
                     "tkt_only" => "Y",
+                    "others_dari_tkt" => $req->others_dari_tkt[$key] ?? null,
+                    "others_ke_tkt" => $req->others_ke_tkt[$key] ?? null,
                 ];
+
+                if (!empty($ticketData["others_dari_tkt"][$key])) {
+                    $ticketData["dari_tkt"] = $ticketData["others_dari_tkt"];
+                }
+
+                if (!empty($ticketData["others_ke_tkt"][$key])) {
+                    $ticketData["ke_tkt"] = $ticketData["others_ke_tkt"];
+                }
+
+                unset($ticketData["others_dari_tkt"]);
+                unset($ticketData["others_ke_tkt"]);
 
                 // dd($ticketData);
 
@@ -6327,6 +6378,14 @@ class ReimburseController extends Controller
             ];
         }
 
+        $transportHubs = TransportHub::where("is_active", true);
+
+        if (strtolower($employee_data->group_company) == "downstream") {
+            $transportHubs = $transportHubs->where("group_company", "Downstream");
+        }
+
+        $transportHubs = $transportHubs->pluck("name");
+
         // Return the view with the necessary data
         return view("hcis.reimbursements.ticket.ticketApprovalDetail", [
             "link" => $link,
@@ -6342,6 +6401,7 @@ class ReimburseController extends Controller
             "ticketData" => $ticketData,
             "ticketOwnerEmployee" => $ticketOwnerEmployee,
             "ticketCount" => $ticketCount,
+            "transport_hubs" => $transportHubs
         ]);
     }
 
