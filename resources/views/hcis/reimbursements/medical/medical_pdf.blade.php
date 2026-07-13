@@ -255,29 +255,29 @@
         @endforeach
 
         <tr>
-            <td class="label">Total</td>
+            <td class="label"><b>Total</b></td>
             <td>
                 @if (empty($medical_formatted_opening_balance_plafond))
                     <span> - </span>
                 @else
-                    <span>Rp.</span>
-                    <span>{{ $medical_formatted_opening_balance_plafond }}</span>
+                    <span><b>Rp.</b></span>
+                    <span><b>{{ $medical_formatted_opening_balance_plafond }}</b></span>
                 @endif
             </td>
             <td>
                 @if (empty($medical_formatted_total_current_claim))
                     <span> - </span>
                 @else
-                    <span>Rp.</span>
-                    <span>{{ $medical_formatted_total_current_claim }}</span>
+                    <span><b>Rp.</b></span>
+                    <span><b>{{ $medical_formatted_total_current_claim }}</b></span>
                 @endif
             </td>
             <td>
                 @if (empty($medical_formatted_closing_balance_plafond))
                     <span> - </span>
                 @else
-                    <span>Rp.</span>
-                    <span>{{ $medical_formatted_closing_balance_plafond }}</span>
+                    <span><b>Rp.</b></span>
+                    <span><b>{{ $medical_formatted_closing_balance_plafond }}</b></span>
                 @endif
             </td>
         </tr>
