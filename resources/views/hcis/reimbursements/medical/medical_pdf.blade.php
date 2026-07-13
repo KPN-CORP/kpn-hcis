@@ -335,12 +335,20 @@
                         </tr>
                         <tr>
                             @foreach ($medical_approvals["employee_names"] as $medical_approval_employee_name)
-                                <td>{{ $medical_approval_employee_name }}</td>
+                                @if (!empty($medical_approval_employee_name))
+                                    <td>{{ $medical_approval_employee_name }}</td>
+                                @else
+                                    <td>&nbsp;</td>
+                                @endif
                             @endforeach
                         </tr>
                         <tr>
                             @foreach ($medical_approvals["dates"] as $medical_approval_date)
-                                <td>{{ $medical_approval_date }}</td>
+                                @if (!empty($medical_approval_date))
+                                    <td>{{ $medical_approval_date }}</td>
+                                @else
+                                    <td>&nbsp;</td>
+                                @endif
                             @endforeach
                         </tr>
                     </table>
