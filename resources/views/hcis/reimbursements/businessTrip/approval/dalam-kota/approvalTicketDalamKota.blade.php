@@ -32,20 +32,89 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-4 mb-2">
-                        <label class="form-label">From</label>
-                        <div class="input-group">
-                            <input class="form-control form-control-sm bg-light" name="dari_tkt_dalam_kota[]" type="text"
-                                placeholder="ex. Yogyakarta (YIA)" value="{{ $ticket['dari_tkt'] ?? '' }}" readonly>
+                    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                        @php
+                            $isOtherFrom = !in_array($ticket['dari_tkt'], $transport_hubs->toArray());
+                            $isOtherTo = !in_array($ticket['ke_tkt'], $transport_hubs->toArray());
+                        @endphp
+                        <div class="col-md-4 mb-2">
+                            <label for="dari_tkt_dalam_kota" class="form-label">From</label>
+                            <select class="form-select form-select-sm select2" name="dari_tkt_dalam_kota[]" id="dari_tkt_dalam_kota" required disabled>
+                                <option value="">--- Choose Location ---</option>
+                                @foreach ($transport_hubs as $transport_hub)
+                                    <option value="{{ $transport_hub }}"
+                                    {{ $transport_hub == $ticket['dari_tkt'] ? 'selected' : '' }}
+                                    >
+                                        {{ $transport_hub }}
+                                    </option>
+                                @endforeach
+                                <option value="Others" {{ $isOtherFrom ? 'selected' : '' }}>
+                                    Others
+                                </option>
+                            </select>
+                            <br/>
+                            <div class="row">
+                                <div class="">
+                                    <input
+                                        type="text"
+                                        id="others_dari_tkt_dalam_kota"
+                                        name="others_dari_tkt_dalam_kota[]"
+                                        class="form-control form-control-sm"
+                                        placeholder="ex: Yogyakarta (YIA)"
+                                        value="{{ $isOtherFrom ? $ticket['dari_tkt'] : '' }}"
+                                        style="{{ $isOtherFrom ? '' : 'display:none;' }}"
+                                        disabled
+                                        >
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4 mb-2">
-                        <label class="form-label">To</label>
-                        <div class="input-group">
-                            <input class="form-control form-control-sm bg-light" name="ke_tkt_dalam_kota[]" type="text"
-                                placeholder="ex. Jakarta (CGK)" value="{{ $ticket['ke_tkt'] ?? '' }}" readonly>
+                        <div class="col-md-4 mb-2">
+                            <label for="ke_tkt_dalam_kota" class="form-label">To</label>
+                            <select class="form-select form-select-sm select2" name="ke_tkt_dalam_kota[]" id="ke_tkt_dalam_kota" required disabled>
+                                <option value="">--- Choose Location ---</option>
+                                @foreach ($transport_hubs as $transport_hub)
+                                    <option value="{{ $transport_hub }}"
+                                    {{ $transport_hub == $ticket['ke_tkt'] ? 'selected' : '' }}
+                                    >
+                                        {{ $transport_hub }}
+                                    </option>
+                                @endforeach
+                                <option value="Others" {{ $isOtherTo ? 'selected' : '' }}>
+                                    Others
+                                </option>
+                            </select>
+                            <br/>
+                            <div class="row">
+                                <div class="">
+                                    <input
+                                        type="text"
+                                        id="others_ke_tkt_dalam_kota"
+                                        name="others_ke_tkt_dalam_kota[]"
+                                        class="form-control form-control-sm"
+                                        placeholder="ex: Jakarta (CGK)"
+                                        value="{{ $isOtherTo ? $ticket['ke_tkt'] : '' }}"
+                                        style="{{ $isOtherTo ? '' : 'display:none;' }}"
+                                        disabled
+                                        >
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    @else
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">From</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-sm bg-light" name="dari_tkt_dalam_kota[]" type="text"
+                                    placeholder="ex. Yogyakarta (YIA)" value="{{ $ticket['dari_tkt'] ?? '' }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">To</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-sm bg-light" name="ke_tkt_dalam_kota[]" type="text"
+                                    placeholder="ex. Jakarta (CGK)" value="{{ $ticket['ke_tkt'] ?? '' }}" readonly>
+                            </div>
+                        </div>
+                    @endif
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-2">
