@@ -45,7 +45,7 @@
                         </div>
                         <div class="col-md-4 mb-2">
                             <label for="ke_tkt_dalam_kota" class="form-label">To</label>
-                            <select class="form-select form-select-sm select2" name="ke_tkt_dalam_kota[]" id="ke_tkt_dalam_kota" onchange="ToTiketDalamKotaToggleOthers()" required>
+                            <select class="form-select form-select-sm select2" name="ke_tkt_dalam_kota[]" id="ke_tkt_dalam_kota" onchange="KeTiketDalamKotaToggleOthers()" required>
                                 <option value="">--- Choose Location ---</option>
                                 @foreach ($transport_hubs as $transport_hub)
                                     <option value="{{ $transport_hub }}">
