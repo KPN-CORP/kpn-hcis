@@ -170,20 +170,20 @@
                     <div class="row">
                         <div class="declare-request" style="display: flex;">
                             <div class="col-md-7 mb-3 text-center">
-                                <label for="export-request" class="col-form-label">Export PDF Request:</label>
+                                <label for="export-request" class="col-form-label">Export CA:</label>
                             </div>
                             <div class="col-md-5 mb-3 text-center">
-                                <a href="{{ route('cashadvanced.download', ':id') }}" id="downloadLink" target="_blank" class="btn btn-outline-primary" title="Download PDF">
+                                <a href="{{ route('cashadvanced.download', ':id') }}" id="downloadLink" target="_blank" class="btn btn-outline-primary" title="Download CA">
                                     <i class="bi bi-file-earmark-arrow-down"></i>
                                 </a>
                             </div>
                         </div>
                         <div class="declare-section" style="display: none;">
                             <div class="col-md-7 mb-3 text-center">
-                                <label for="export-deklarasi" class="col-form-label">Export PDF Deklarasi:</label>
+                                <label for="export-deklarasi" class="col-form-label">Export CA Deklarasi:</label>
                             </div>
                             <div class="col-md-5 mb-3 text-center">
-                                <a href="{{ route('cashadvanced.downloadDeclare', ':id') }}" id="declareLink" target="_blank" class="btn btn-outline-primary" title="Download PDF Deklarasi">
+                                <a href="{{ route('cashadvanced.downloadDeclare', ':id') }}" id="declareLink" target="_blank" class="btn btn-outline-primary" title="Download CA Deklarasi">
                                     <i class="bi bi-file-earmark-arrow-down"></i>
                                 </a>
                             </div>
