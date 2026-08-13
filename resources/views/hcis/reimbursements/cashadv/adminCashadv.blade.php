@@ -237,6 +237,7 @@
                                         <th>Request</th>
                                         <th>Declaration</th>
                                         <th>Status CA</th>
+                                        <th>Attachment</th>
                                         <th>Actions</th>
                                         <th>Export</th>
                                         <th>Delete</th>
@@ -286,6 +287,13 @@
                                                 ($ca_transaction->ca_status == 'On Progress' ? 'secondary' : 'default')) }}" title="{{$ca_transaction->paid_date}}">
                                                     {{ $ca_transaction->ca_status }}
                                                 </p>
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-outline-info" data-bs-toggle="modal"  data-bs-target="#viewAttachmentModal"
+                                                    data-id="{{ $ca_transaction->id }}"
+                                                    title="View Attachment">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
                                             </td>
                                             <!-- Button Action -->
                                             <td class="text-left">
