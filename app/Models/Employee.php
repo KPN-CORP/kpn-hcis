@@ -59,7 +59,8 @@ class Employee extends Model
         'bank_name',
         'bank_account_number',
         'bank_account_name',
-        'direct_reportee_employee_id'
+        'direct_reportees_employee_id',
+        'old_employee_id_(rehired)'
     ];
 
     protected $keyType = 'string';
