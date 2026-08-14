@@ -166,6 +166,46 @@ class HomeTripController extends Controller
                     session()->flash('refresh', true);
                 }
             }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Handle existing employees before Home Trip feature was introduced
+            |--------------------------------------------------------------------------
+            */
+
+            $homeTripFeatureStartDate = '2025-01-01';
+
+            $firstEligibleDate = (clone $joiningDate)->modify('+1 year');
+
+            if (
+                $firstEligibleDate < date_create($homeTripFeatureStartDate)
+                && date('Y-m-d') >= $homeTripFeatureStartDate
+            ) {
+                $dependents = Dependents::where('employee_id', $employee->employee_id)->get();
+                $totalFamilyMembers = $dependents->count() + 1;
+
+                $quota = $totalFamilyMembers * 2;
+
+                $existingHomeTrip = HomeTrip::where('employee_id', $employee->employee_id)
+                    ->where('period', $currentYear)
+                    ->where('relation_type', 'Employee')
+                    ->first();
+
+                if (!$existingHomeTrip) {
+                    $homeTrip = new HomeTrip();
+                    $homeTrip->id = Str::uuid();
+                    $homeTrip->employee_id = $employee->employee_id;
+                    $homeTrip->name = $employee->fullname;
+                    $homeTrip->relation_type = 'Employee';
+                    $homeTrip->quota = $quota;
+                    $homeTrip->last_generate = $homeTripFeatureStartDate;
+                    $homeTrip->period = $currentYear;
+                    $homeTrip->created_by = $userId;
+                    $homeTrip->save();
+
+                    session()->flash('refresh', true);
+                }
+            }
         }
 
         return view('hcis.reimbursements.homeTrip.homeTrip', compact(
