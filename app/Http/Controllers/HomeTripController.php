@@ -181,10 +181,13 @@ class HomeTripController extends Controller
                 ->where('relation_type', 'Employee')
                 ->exists();
 
+            $isProbation = $employee->employee_type == 'Probation';
+
             if (
                 $firstEligibleDate < date_create($homeTripFeatureStartDate)
                 && date('Y-m-d') >= $homeTripFeatureStartDate
                 && !$hasEverHadHomeTrip
+                && !$isProbation
             ) {
                 $dependents = Dependents::where('employee_id', $employee->employee_id)->get();
                 $totalFamilyMembers = $dependents->count() + 1;
