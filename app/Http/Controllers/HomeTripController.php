@@ -173,40 +173,40 @@ class HomeTripController extends Controller
             |--------------------------------------------------------------------------
             */
 
-            $homeTripFeatureStartDate = '2025-01-01';
+            // $homeTripFeatureStartDate = '2025-01-01';
 
-            $firstEligibleDate = (clone $joiningDate)->modify('+1 year');
+            // $firstEligibleDate = (clone $joiningDate)->modify('+1 year');
 
-            $hasEverHadHomeTrip = HomeTrip::where('employee_id', $employee->employee_id)
-                ->where('relation_type', 'Employee')
-                ->exists();
+            // $hasEverHadHomeTrip = HomeTrip::where('employee_id', $employee->employee_id)
+            //     ->where('relation_type', 'Employee')
+            //     ->exists();
 
-            $isProbation = $employee->employee_type == 'Probation';
+            // $isProbation = $employee->employee_type == 'Probation';
 
-            if (
-                $firstEligibleDate < date_create($homeTripFeatureStartDate)
-                && date('Y-m-d') >= $homeTripFeatureStartDate
-                && !$hasEverHadHomeTrip
-                && !$isProbation
-            ) {
-                $dependents = Dependents::where('employee_id', $employee->employee_id)->get();
-                $totalFamilyMembers = $dependents->count() + 1;
+            // if (
+            //     $firstEligibleDate < date_create($homeTripFeatureStartDate)
+            //     && date('Y-m-d') >= $homeTripFeatureStartDate
+            //     && !$hasEverHadHomeTrip
+            //     && !$isProbation
+            // ) {
+            //     $dependents = Dependents::where('employee_id', $employee->employee_id)->get();
+            //     $totalFamilyMembers = $dependents->count() + 1;
 
-                $quota = $totalFamilyMembers * 2;
+            //     $quota = $totalFamilyMembers * 2;
 
-                $homeTrip = new HomeTrip();
-                $homeTrip->id = Str::uuid();
-                $homeTrip->employee_id = $employee->employee_id;
-                $homeTrip->name = $employee->fullname;
-                $homeTrip->relation_type = 'Employee';
-                $homeTrip->quota = $quota;
-                $homeTrip->last_generate = $homeTripFeatureStartDate;
-                $homeTrip->period = $currentYear;
-                $homeTrip->created_by = $userId;
-                $homeTrip->save();
+            //     $homeTrip = new HomeTrip();
+            //     $homeTrip->id = Str::uuid();
+            //     $homeTrip->employee_id = $employee->employee_id;
+            //     $homeTrip->name = $employee->fullname;
+            //     $homeTrip->relation_type = 'Employee';
+            //     $homeTrip->quota = $quota;
+            //     $homeTrip->last_generate = $homeTripFeatureStartDate;
+            //     $homeTrip->period = $currentYear;
+            //     $homeTrip->created_by = $userId;
+            //     $homeTrip->save();
 
-                session()->flash('refresh', true);
-            }
+            //     session()->flash('refresh', true);
+            // }
         }
 
         return view('hcis.reimbursements.homeTrip.homeTrip', compact(
