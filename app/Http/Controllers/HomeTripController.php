@@ -177,34 +177,32 @@ class HomeTripController extends Controller
 
             $firstEligibleDate = (clone $joiningDate)->modify('+1 year');
 
+            $hasEverHadHomeTrip = HomeTrip::where('employee_id', $employee->employee_id)
+                ->where('relation_type', 'Employee')
+                ->exists();
+
             if (
                 $firstEligibleDate < date_create($homeTripFeatureStartDate)
                 && date('Y-m-d') >= $homeTripFeatureStartDate
+                && !$hasEverHadHomeTrip
             ) {
                 $dependents = Dependents::where('employee_id', $employee->employee_id)->get();
                 $totalFamilyMembers = $dependents->count() + 1;
 
                 $quota = $totalFamilyMembers * 2;
 
-                $existingHomeTrip = HomeTrip::where('employee_id', $employee->employee_id)
-                    ->where('period', $currentYear)
-                    ->where('relation_type', 'Employee')
-                    ->first();
+                $homeTrip = new HomeTrip();
+                $homeTrip->id = Str::uuid();
+                $homeTrip->employee_id = $employee->employee_id;
+                $homeTrip->name = $employee->fullname;
+                $homeTrip->relation_type = 'Employee';
+                $homeTrip->quota = $quota;
+                $homeTrip->last_generate = $homeTripFeatureStartDate;
+                $homeTrip->period = $currentYear;
+                $homeTrip->created_by = $userId;
+                $homeTrip->save();
 
-                if (!$existingHomeTrip) {
-                    $homeTrip = new HomeTrip();
-                    $homeTrip->id = Str::uuid();
-                    $homeTrip->employee_id = $employee->employee_id;
-                    $homeTrip->name = $employee->fullname;
-                    $homeTrip->relation_type = 'Employee';
-                    $homeTrip->quota = $quota;
-                    $homeTrip->last_generate = $homeTripFeatureStartDate;
-                    $homeTrip->period = $currentYear;
-                    $homeTrip->created_by = $userId;
-                    $homeTrip->save();
-
-                    session()->flash('refresh', true);
-                }
+                session()->flash('refresh', true);
             }
         }
 
