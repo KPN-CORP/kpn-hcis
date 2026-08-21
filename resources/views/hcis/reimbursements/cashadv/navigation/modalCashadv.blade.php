@@ -419,6 +419,51 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="viewAttachmentModal" tabindex="-1"
+        aria-labelledby="viewAttachmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewAttachmentModalLabel">
+                        Cash Advanced Attachment
+                    </h5>
+                    <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="transaction_id" id="transaction_id">
+                    <div class="attachment-section mb-4">
+                        <h5 class="mb-3">
+                            <i class="bi bi-file-earmark-image me-1"></i>
+                            CA
+                        </h5>
+                        <div id="caAttachments" class="row g-3">
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="attachment-section mt-4">
+                        <h5 class="mb-3">
+                            <i class="bi bi-file-earmark-image me-1"></i>
+                            CA Deklarasi
+                        </h5>
+                        <div id="caDeclarationAttachments" class="row g-3">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endif
 
 {{-- Success --}}
@@ -2778,5 +2823,51 @@
             form.setAttribute("action", action.replace(":id", transactionId));
         });
     });
+</script>
+@endif
+
+@if (request()->routeIs('cashadvanced.admin'))
+<script>
+    function renderAttachments(containerId, attachments) {
+        const container = document.getElementById(containerId);
+
+        container.innerHTML = '';
+
+        if (!attachments || attachments.length === 0) {
+            container.innerHTML = `
+                <div class="col-12">
+                    <div class="text-muted text-center py-4">
+                        <i class="bi bi-image fs-3 d-block mb-2"></i>
+                        No attachment
+                    </div>
+                </div>
+            `;
+
+            return;
+        }
+
+        attachments.forEach(function (attachment) {
+            const html = `
+                <div class="col-md-4 col-sm-6 attachment-item">
+                    <a href="${attachment.url}"
+                        target="_blank"
+                        class="attachment-preview"
+                        title="Open ${attachment.name ?? 'attachment'}">
+                        <img src="${attachment.url}"
+                            alt="${attachment.name ?? 'Attachment'}">
+                        <div class="attachment-overlay">
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </div>
+                    </a>
+                    <div class="attachment-name"
+                        title="${attachment.name ?? ''}">
+                        ${attachment.name ?? 'Attachment'}
+                    </div>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', html);
+        });
+    }
 </script>
 @endif
