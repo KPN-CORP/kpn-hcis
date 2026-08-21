@@ -404,7 +404,7 @@ Route::middleware("auth")->group(function () {
     ])->name("cashadvanced.delete");
     Route::get("/cashadvanced/download/{id}", [
         ReimburseController::class,
-        "cashadvancedDownload",
+        "cashadvancedDownloadZip",
     ])->name("cashadvanced.download");
 
     // My Cash Advanced
@@ -464,7 +464,7 @@ Route::middleware("auth")->group(function () {
     ])->name("cashadvanced.declare");
     Route::get("/cashadvanced/deklarasi/download/{id}", [
         ReimburseController::class,
-        "cashadvancedDownloadDeklarasi",
+        "cashadvancedDeklarasiDownloadZip",
     ])->name("cashadvanced.downloadDeclare");
 
     // My Cash Advanced Done

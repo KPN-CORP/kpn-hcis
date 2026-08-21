@@ -7,6 +7,7 @@ use App\Models\ca_transaction;
 use App\Models\CAApproval;
 use App\Models\Hotel;
 use Exception;
+use ZipArchive;
 use Illuminate\Http\Request;
 use App\Models\Company;
 use App\Models\Designation;
@@ -45,6 +46,7 @@ use App\Mail\CashAdvancedNotification;
 use App\Mail\HotelNotification;
 use App\Mail\TicketNotification;
 use App\Mail\HomeTripNotification;
+use App\Helpers\Attachment as AttachmentHelper;
 
 class ReimburseController extends Controller
 {
@@ -2279,6 +2281,152 @@ class ReimburseController extends Controller
             ->set_option("enable_php", true);
 
         return $pdf->stream("Cash Advanced " . $key . ".pdf");
+    }
+
+    function cashadvancedDownloadZip($key)
+    {
+        $userId = Auth::id();
+        $parentLink = "Reimbursement";
+        $link = "Cash Advanced";
+
+        $employee_data = Employee::where("id", $userId)->first();
+        $companies = Company::orderBy("contribution_level")->get();
+        $locations = Location::orderBy("area")->get();
+        $perdiem = ListPerdiem::where("grade", $employee_data->job_level)
+            ->where(
+                "bisnis_unit",
+                "like",
+                "%" . $employee_data->group_company . "%",
+            )
+            ->first();
+        $no_sppds = CATransaction::where("user_id", $userId)
+            ->where("approval_sett", "!=", "Done")
+            ->get();
+        $transactions = CATransaction::with([
+            'employee' => function ($query) {
+                $query->with([
+                    'location',
+                ]);
+            }
+        ])->find($key);
+        $approval = ca_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
+            ->where("ca_id", $key)
+            ->where("approval_status", "!=", "Rejected")
+            ->whereNull("deleted_at")
+            ->orderBy("layer", "asc")
+            ->get();
+
+        $zip = new ZipArchive();
+        $zipFileName = "Cash Advanced" . ($transactions->no_ca ? " - " . $transactions->no_ca : "") . ".zip";
+        $zipFilePath = storage_path("app/public/" . $zipFileName);
+
+        if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+            $pdf = PDF::loadView(
+                "hcis.reimbursements.cashadv.printCashadv",
+                [
+                    "link" => $link,
+                    "parentLink" => $parentLink,
+                    "userId" => $userId,
+                    "companies" => $companies,
+                    "locations" => $locations,
+                    "employee_data" => $employee_data,
+                    "perdiem" => $perdiem,
+                    "no_sppds" => $no_sppds,
+                    "transactions" => $transactions,
+                    "approval" => $approval,
+                ],
+            )->setPaper("a4", "potrait")->set_option("enable_php", true);
+            $pdfContent = $pdf->output();
+            $zip->addFromString(
+                "Cash Advanced " . $key . ".pdf",
+                $pdfContent,
+            );
+
+            $attachmentPaths = AttachmentHelper::resolve_paths($transactions->prove_declare);
+
+            foreach ($attachmentPaths as $attachmentPath) {
+                $zip->addFile($attachmentPath, "lampiran/" . basename($attachmentPath));
+            }
+
+            $zip->close();
+        }
+
+        return response()
+            ->download($zipFilePath)
+            ->deleteFileAfterSend(true);
+    }
+
+    function cashadvancedDeklarasiDownloadZip($key)
+    {
+        $userId = Auth::id();
+        $parentLink = "Reimbursement";
+        $link = "Cash Advanced";
+
+        $employee_data = Employee::where("id", $userId)->first();
+        $companies = Company::orderBy("contribution_level")->get();
+        $locations = Location::orderBy("area")->get();
+        $transactions = CATransaction::with([
+            "companies",
+            'employee' => function ($query) {
+                $query->with([
+                    'location',
+                ]);
+            }
+        ])->find($key);
+        $approval = ca_sett_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
+            ->where("ca_id", $key)
+            ->where("approval_status", "<>", "Rejected")
+            ->whereNull("deleted_at")
+            ->orderBy("layer", "asc")
+            ->get();
+        if (
+            $employee_data->group_company == "Plantations" ||
+            $employee_data->group_company == "KPN Plantations"
+        ) {
+            $allowance = "Perdiem";
+        } else {
+            $allowance = "Allowance";
+        }
+
+        $zip = new ZipArchive();
+        $zipFileName = "Cash Advanced Deklarasi" . ($transactions->no_ca ? " - " . $transactions->no_ca : "") . ".zip";
+        $zipFilePath = storage_path("app/public/" . $zipFileName);
+
+        if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+            $pdf = PDF::loadView(
+                "hcis.reimbursements.cashadv.printDeklarasiCashadv",
+                [
+                    "link" => $link,
+                    "parentLink" => $parentLink,
+                    "allowance" => $allowance,
+                    "userId" => $userId,
+                    "companies" => $companies,
+                    "locations" => $locations,
+                    "employee_data" => $employee_data,
+                    "transactions" => $transactions,
+                    "approval" => $approval,
+                ],
+            )
+                ->setPaper("a4", "potrait")
+                ->set_option("enable_php", true);
+            $pdfContent = $pdf->output();
+            $zip->addFromString(
+                "Cash Advanced Deklarasi " . $key . ".pdf",
+                $pdfContent,
+            );
+
+            $attachmentPaths = AttachmentHelper::resolve_paths($transactions->prove_declare);
+
+            foreach ($attachmentPaths as $attachmentPath) {
+                $zip->addFile($attachmentPath, "lampiran/" . basename($attachmentPath));
+            }
+
+            $zip->close();
+        }
+
+        return response()
+            ->download($zipFilePath)
+            ->deleteFileAfterSend(true);
     }
 
     public function cashadvancedDeklarasi($key)
