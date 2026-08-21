@@ -482,6 +482,8 @@ class MedicalController extends Controller
             HealthCoverage::where("employee_id", $employee_id)
                 ->where("period", $currentYear)
                 ->where("medical_type", "Glasses")
+                ->where("status", "!=", "Draft")
+                ->whereNull("deleted_at")
                 ->count() >= 1;
         // dd($isProbation);
 
@@ -686,6 +688,8 @@ class MedicalController extends Controller
             HealthCoverage::where("employee_id", $employee_id)
                 ->where("period", $currentYear)
                 ->where("medical_type", "Glasses")
+                ->where("status", "!=", "Draft")
+                ->whereNull("deleted_at")
                 ->count() >= 1;
 
         $medicalBalances = HealthPlan::where("employee_id", $employee_id)
