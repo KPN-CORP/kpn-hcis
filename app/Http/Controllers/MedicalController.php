@@ -1059,11 +1059,11 @@ class MedicalController extends Controller
                 $medical_approvals["employee_names"][] = "Megiyanti Matande";
                 $medical_approvals["dates"][] = "";
             } else {
-                $medical_approvals["labels"][] = "Received";
-                $medical_approvals["statuses"][] = "";
-                $medical_approvals["role_names"][] = "HC Officer";
-                $medical_approvals["employee_names"][] = "";
-                $medical_approvals["dates"][] = "";
+                // $medical_approvals["labels"][] = "Received";
+                // $medical_approvals["statuses"][] = "";
+                // $medical_approvals["role_names"][] = "HC Officer";
+                // $medical_approvals["employee_names"][] = "";
+                // $medical_approvals["dates"][] = "";
             }
         }
 
