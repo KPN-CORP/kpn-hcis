@@ -7702,6 +7702,35 @@ class ReimburseController extends Controller
         return redirect()->back()->with("success", "Tickets has been deleted");
     }
 
+    public function getAttachments($id) {
+        try {
+            $transaction = CATransaction::where("id", $id)->first();
+            if (!$transaction) {
+                return response()->json([
+                    'ca_attachments' => null
+                ], 500);
+            }
+
+            $attachmentPaths = AttachmentHelper::resolve_paths($transaction->prove_declare);
+            $caAttachments = [];
+
+            foreach ($attachmentPaths as $attachmentPath) {
+                $caAttachments[] = [
+                    "url" => $attachmentPath,
+                    "name" => basename($attachmentPath)
+                ];
+            }
+
+            return response()->json([
+                'ca_attachments' => $caAttachments,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'ca_attachments' => null
+            ], 500);
+        }
+    }
+
     private function getRomanMonth($month)
     {
         $romanMonths = [

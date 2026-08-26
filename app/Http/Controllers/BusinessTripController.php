@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Exports\BusinessTripExport;
 use App\Exports\UsersExport;
 use App\Models\BTApproval;
@@ -13761,6 +13762,46 @@ class BusinessTripController extends Controller
                 "declarationCount",
             ),
         );
+    }
+
+    public function getAttachments($id) {
+        try {
+            $transaction = BusinessTrip::where("id", $id)->get();
+            if (!$transaction) {
+                return response()->json([
+                    'ca_attachments' => null
+                ], 500);
+            }
+
+            $ca_transactions = CATransaction::where("no_sppd", $transaction->no_sppd)->get();
+            if (!$ca_transactions || $ca_transactions->isEmpty()) {
+                return response()->json([
+                    'ca_attachments' => null
+                ], 500);
+            }
+
+            $caAttachments = [];
+
+            foreach ($ca_transactions as $ca_transaction) {
+                $attachmentPaths = AttachmentHelper::resolve_paths($ca_transaction->prove_declare);
+
+                foreach ($attachmentPaths as $attachmentPath) {
+                    $caAttachments[] = [
+                        "url" => $attachmentPath,
+                        "name" => basename($attachmentPath),
+                        "no_ca" => $ca_transaction->no_ca,
+                    ];
+                }
+            }
+
+            return response()->json([
+                'ca_attachments' => $caAttachments,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'ca_attachments' => null
+            ], 500);
+        }
     }
 
     private function generateNoSppd()

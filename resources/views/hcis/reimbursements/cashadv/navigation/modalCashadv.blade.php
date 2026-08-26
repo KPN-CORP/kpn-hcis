@@ -437,20 +437,7 @@
                 <div class="modal-body">
                     <input type="hidden" name="transaction_id" id="transaction_id">
                     <div class="attachment-section mb-4">
-                        <h5 class="mb-3">
-                            <i class="bi bi-file-earmark-image me-1"></i>
-                            CA
-                        </h5>
                         <div id="caAttachments" class="row g-3">
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="attachment-section mt-4">
-                        <h5 class="mb-3">
-                            <i class="bi bi-file-earmark-image me-1"></i>
-                            CA Deklarasi
-                        </h5>
-                        <div id="caDeclarationAttachments" class="row g-3">
                         </div>
                     </div>
                 </div>

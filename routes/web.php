@@ -440,6 +440,10 @@ Route::middleware("auth")->group(function () {
             ApprovalReimburseController::class,
             "cashadvancedActionExtendAdmin",
         ])->name("approvalExtAdmin.cashadvancedExtApprovedAdmin");
+        Route::get("/cashadvanced/admin/attachment/{id}", [
+            ReimburseController::class,
+            "getAttachments",
+        ])->name("cashadvanced.admin.attachment");
     });
 
     // Route::get('/cashadvanced/deklarasi/form/{id}', [ReimburseController::class, 'cashadvancedDeklarasi'])->name('cashadvanced.deklarasi');
@@ -976,6 +980,10 @@ Route::middleware("auth")->group(function () {
             BusinessTripController::class,
             "deleteAdmin",
         ])->name("delete.btAdmin");
+        Route::get("/businessTrip/admin/attachment/{id}", [
+            BusinessTripController::class,
+            "getAttachments",
+        ])->name("businessTrip.admin.attachment");
 
         //division
         Route::get("/businessTrip/admin/division", [

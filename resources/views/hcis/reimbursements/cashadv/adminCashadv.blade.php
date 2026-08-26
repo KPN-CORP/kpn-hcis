@@ -1876,17 +1876,13 @@
             $('#transaction_id').val(transactionId);
 
             $.ajax({
-                url: '/cash-advance/' + transactionId + '/attachments',
+                url: '/cashadvanced/admin/attachment/' + transactionId,
                 type: 'GET',
 
                 success: function (response) {
                     renderAttachments(
                         'caAttachments',
                         response.ca_attachments
-                    );
-                    renderAttachments(
-                        'caDeclarationAttachments',
-                        response.ca_declaration_attachments
                     );
 
                     const modal = new bootstrap.Modal(
@@ -1901,13 +1897,6 @@
                         <div class="col-12">
                             <div class="alert alert-danger">
                                 Failed to load CA attachments.
-                            </div>
-                        </div>
-                    `);
-                    $('#caDeclarationAttachments').html(`
-                        <div class="col-12">
-                            <div class="alert alert-danger">
-                                Failed to load CA Declaration attachments.
                             </div>
                         </div>
                     `);

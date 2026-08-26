@@ -196,6 +196,7 @@
                             <th>Ticket</th>
                             <th>Taxi</th>
                             <th>Status</th>
+                            <th>Attachment</th>
                             <th style="">Approve</th>
                             <th style="width: 270px;">Action</th>
                         </tr>
@@ -359,7 +360,13 @@
                                         {{ $n->status == 'Approved' ? 'Request Approved' : $n->status }}
                                     </span>
                                 </td>
-
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-outline-info btn-view-attachment" data-bs-toggle="modal"  data-bs-target="#viewAttachmentModal"
+                                        data-id="{{ $n->id }}"
+                                        title="View Attachment">
+                                            <i class="bi bi-paperclip"></i>
+                                    </button>
+                                </td>
                                 <td style="text-align: center; align-content: center">
                                     @if ($n->status != 'Draft' && $n->status != 'Declaration Draft')
                                         <button type="button" class="btn btn-outline-success rounded-pill"
@@ -694,6 +701,38 @@
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="viewAttachmentModal" tabindex="-1"
+        aria-labelledby="viewAttachmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewAttachmentModalLabel">
+                        Attachment
+                    </h5>
+                    <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="transaction_id" id="transaction_id">
+                    <div class="attachment-section mb-4">
+                        <div id="attachments" class="row g-3">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                        Close
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -1533,5 +1572,91 @@
 
         // Initial call to set dates if there are pre-filled values
         updateEndDate2();
+    </script>
+
+    <script>
+        function renderAttachments(containerId, attachments) {
+            const container = document.getElementById(containerId);
+
+            container.innerHTML = '';
+
+            if (!attachments || attachments.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12">
+                        <div class="text-muted text-center py-4">
+                            <i class="bi bi-image fs-3 d-block mb-2"></i>
+                            No attachment
+                        </div>
+                    </div>
+                `;
+
+                return;
+            }
+
+            attachments.forEach(function (attachment) {
+                const html = `
+                    <div class="col-md-4 col-sm-6 attachment-item">
+                        <a href="${attachment.url}"
+                            target="_blank"
+                            class="attachment-preview"
+                            title="Open ${attachment.name ?? 'attachment'}">
+                            <img src="${attachment.url}"
+                                alt="${attachment.name ?? 'Attachment'}">
+                            <div class="attachment-overlay">
+                                <i class="bi bi-box-arrow-up-right"></i>
+                            </div>
+                        </a>
+                        <div class="attachment-name"
+                            title="${attachment.name ?? ''}">
+                            ${attachment.no_ca ?? ''}
+                            -
+                            ${attachment.name ?? 'Attachment'}
+                        </div>
+                    </div>
+                `;
+
+                container.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        $(document).on('click', '.btn-view-attachment', function () {
+            const transactionId = $(this).data('id');
+
+            $('#transaction_id').val(transactionId);
+
+            $.ajax({
+                url: '/businessTrip/admin/attachment/' + transactionId,
+                type: 'GET',
+
+                success: function (response) {
+                    renderAttachments(
+                        'attachments',
+                        response.ca_attachments
+                    );
+
+                    const modal = new bootstrap.Modal(
+                        document.getElementById('viewAttachmentModal')
+                    );
+
+                    modal.show();
+                },
+
+                error: function () {
+                    $('#attachments').html(`
+                        <div class="col-12">
+                            <div class="alert alert-danger">
+                                Failed to load attachments.
+                            </div>
+                        </div>
+                    `);
+
+                    const modal = new bootstrap.Modal(
+                        document.getElementById('viewAttachmentModal')
+                    );
+
+                    modal.show();
+                }
+            });
+        });
     </script>
 @endsection
