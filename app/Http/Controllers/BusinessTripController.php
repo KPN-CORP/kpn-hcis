@@ -580,6 +580,12 @@ class BusinessTripController extends Controller
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
 
+        $specialCaseApprovals = $this->specialCaseApproval($employee);
+        if ($specialCaseApprovals) {
+            $managerL1 = $specialCaseApprovals["l1"];
+            $managerL2 = $specialCaseApprovals["l2"];
+        }
+
         $isJobLevel = MatrixApproval::where("modul", "businesstrip")
             ->where(
                 "group_company",
@@ -1409,7 +1415,7 @@ class BusinessTripController extends Controller
                         }
                     }
 
-                    if ($employee_id != null) {
+                    if ($employee_id != null && $employee_id != "-") {
                         $model_approval = new ca_approval();
                         $model_approval->ca_id = $ca->id; // Use $ca->id instead of $request->id_ca
                         $model_approval->role_name =
@@ -1718,7 +1724,7 @@ class BusinessTripController extends Controller
                         }
                     }
 
-                    if ($employee_id != null) {
+                    if ($employee_id != null && $employee_id != "-") {
                         $model_approval = new ca_approval();
                         $model_approval->ca_id = $ent->id;
                         $model_approval->role_name =
@@ -2123,6 +2129,12 @@ class BusinessTripController extends Controller
 
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
+
+        $specialCaseApprovals = $this->specialCaseApproval($employee);
+        if ($specialCaseApprovals) {
+            $managerL1 = $specialCaseApprovals["l1"];
+            $managerL2 = $specialCaseApprovals["l2"];
+        }
 
         // Handle "CA Transaction" update
         $caRecords = CATransaction::where("no_sppd", $oldNoSppd)->get();
@@ -3810,7 +3822,7 @@ class BusinessTripController extends Controller
                         }
                     }
 
-                    if ($employee_id != null) {
+                    if ($employee_id != null && $employee_id != "-") {
                         $model_approval = new ca_sett_approval();
                         $model_approval->ca_id = $dnsRecord->id ?? $ca->id;
                         $model_approval->role_name =
@@ -3888,7 +3900,7 @@ class BusinessTripController extends Controller
                         }
                     }
 
-                    if ($employee_id != null) {
+                    if ($employee_id != null && $employee_id != "-") {
                         $model_approval = new ca_sett_approval();
                         $model_approval->ca_id =
                             $entrRecord->id ?? ($ent->id ?? $ca->id);
@@ -4176,6 +4188,12 @@ class BusinessTripController extends Controller
             $managerL1 = $deptHeadManager->employee_id;
             $managerL2 = $deptHeadManager->manager_l1_id;
 
+            $specialCaseApprovals = $this->specialCaseApproval($employee_data);
+            if ($specialCaseApprovals) {
+                $managerL1 = $specialCaseApprovals["l1"];
+                $managerL2 = $specialCaseApprovals["l2"];
+            }
+
             if ($dnsTab) {
                 $model_ca_bt->approval_extend = $req->input("action_ca_submit");
 
@@ -4278,7 +4296,7 @@ class BusinessTripController extends Controller
                         }
                     }
 
-                    if ($employee_id != null) {
+                    if ($employee_id != null && $employee_id != "-") {
                         $model_approval = new ca_extend();
                         $model_approval->ca_id = $model_ca_bt->id;
                         $model_approval->role_name =
@@ -4410,7 +4428,7 @@ class BusinessTripController extends Controller
                         }
                     }
 
-                    if ($employee_id != null) {
+                    if ($employee_id != null && $employee_id != "-") {
                         $model_approval = new ca_extend();
                         $model_approval->ca_id = $model_ca_ent->id;
                         $model_approval->role_name =
@@ -6161,6 +6179,12 @@ class BusinessTripController extends Controller
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
 
+        $specialCaseApprovals = $this->specialCaseApproval($employee);
+        if ($specialCaseApprovals) {
+            $managerL1 = $specialCaseApprovals["l1"];
+            $managerL2 = $specialCaseApprovals["l2"];
+        }
+
         $isJobLevel = MatrixApproval::where("modul", "businesstrip")
             ->where(
                 "group_company",
@@ -6770,7 +6794,7 @@ class BusinessTripController extends Controller
                         }
                     }
 
-                    if ($employee_id != null) {
+                    if ($employee_id != null && $employee_id != "-") {
                         $model_approval = new ca_approval();
                         $model_approval->ca_id = $ca_id;
                         $model_approval->role_name =
@@ -7067,7 +7091,7 @@ class BusinessTripController extends Controller
                         }
                     }
 
-                    if ($employee_id != null) {
+                    if ($employee_id != null && $employee_id != "-") {
                         $model_approval = new ca_approval();
                         $model_approval->ca_id = $ent_id;
                         $model_approval->role_name =
@@ -13833,5 +13857,45 @@ class BusinessTripController extends Controller
                 "error" => $e->getMessage(),
             ]);
         }
+    }
+
+    private function specialCaseApproval($employee) {
+        if (!$employee) {
+            return false;
+        }
+
+        if ($employee->employee_id == "01126010017") {
+            return [
+                "l1" => "01126010012",
+                "l2" => "-",
+                "l3" => "-",
+                "l4" => "-",
+                "l5" => "-",
+                "l6" => "-",
+                "l7" => "-",
+            ];
+        } else if ($employee->employee_id == "01116020002") {
+            return [
+                "l1" => "01126010012",
+                "l2" => "-",
+                "l3" => "-",
+                "l4" => "-",
+                "l5" => "-",
+                "l6" => "-",
+                "l7" => "-",
+            ];
+        } else if ($employee->employee_id == "01112040001") {
+            return [
+                "l1" => "01126010012",
+                "l2" => "-",
+                "l3" => "-",
+                "l4" => "-",
+                "l5" => "-",
+                "l6" => "-",
+                "l7" => "-",
+            ];
+        }
+
+        return false;
     }
 }
