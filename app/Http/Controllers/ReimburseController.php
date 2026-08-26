@@ -772,6 +772,12 @@ class ReimburseController extends Controller
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
 
+        $specialCaseApprovals = $this->specialCaseApproval($employee_data);
+        if ($specialCaseApprovals) {
+            $managerL1 = $specialCaseApprovals["l1"];
+            $managerL2 = $specialCaseApprovals["l2"];
+        }
+
         $cek_director_id = Employee::select([
             "dsg.department_level2",
             "dsg2.director_flag",
@@ -1172,6 +1178,12 @@ class ReimburseController extends Controller
             $managerL1 = $deptHeadManager->employee_id;
             $managerL2 = $deptHeadManager->manager_l1_id;
 
+            $specialCaseApprovals = $this->specialCaseApproval($employee_data);
+            if ($specialCaseApprovals) {
+                $managerL1 = $specialCaseApprovals["l1"];
+                $managerL2 = $specialCaseApprovals["l2"];
+            }
+
             $model->status_id = $managerL1;
 
             $cek_director_id = Employee::select([
@@ -1285,7 +1297,7 @@ class ReimburseController extends Controller
                     }
                 }
 
-                if ($employee_id != null) {
+                if ($employee_id != null && $employee_id != "-") {
                     $model_approval = new ca_approval();
                     $model_approval->ca_id = $uuid;
                     $model_approval->role_name = $data_matrix_approval->desc;
@@ -1764,6 +1776,12 @@ class ReimburseController extends Controller
             $managerL1 = $deptHeadManager->employee_id;
             $managerL2 = $deptHeadManager->manager_l1_id;
 
+            $specialCaseApprovals = $this->specialCaseApproval($employee_data);
+            if ($specialCaseApprovals) {
+                $managerL1 = $specialCaseApprovals["l1"];
+                $managerL2 = $specialCaseApprovals["l2"];
+            }
+
             $model->status_id = $managerL1;
 
             $cek_director_id = Employee::select([
@@ -1877,7 +1895,7 @@ class ReimburseController extends Controller
                     }
                 }
 
-                if ($employee_id != null) {
+                if ($employee_id != null && $employee_id != "-") {
                     $model_approval = new ca_approval();
                     $model_approval->ca_id = $req->no_id;
                     $model_approval->role_name = $data_matrix_approval->desc;
@@ -1988,6 +2006,12 @@ class ReimburseController extends Controller
             $managerL1 = $deptHeadManager->employee_id;
             $managerL2 = $deptHeadManager->manager_l1_id;
 
+            $specialCaseApprovals = $this->specialCaseApproval($employee_data);
+            if ($specialCaseApprovals) {
+                $managerL1 = $specialCaseApprovals["l1"];
+                $managerL2 = $specialCaseApprovals["l2"];
+            }
+
             $model->extend_id = $managerL1;
 
             $cek_director_id = Employee::select([
@@ -2083,7 +2107,7 @@ class ReimburseController extends Controller
                     }
                 }
 
-                if ($employee_id != null) {
+                if ($employee_id != null && $employee_id != "-") {
                     $model_approval = new ca_extend();
                     $model_approval->ca_id = $req->no_id;
                     $model_approval->role_name = $data_matrix_approval->desc;
@@ -2644,6 +2668,12 @@ class ReimburseController extends Controller
             $managerL1 = $deptHeadManager->employee_id;
             $managerL2 = $deptHeadManager->manager_l1_id;
 
+            $specialCaseApprovals = $this->specialCaseApproval($employee_data);
+            if ($specialCaseApprovals) {
+                $managerL1 = $specialCaseApprovals["l1"];
+                $managerL2 = $specialCaseApprovals["l2"];
+            }
+
             $cek_director_id = Employee::select([
                 "dsg.department_level2",
                 "dsg2.director_flag",
@@ -2760,7 +2790,7 @@ class ReimburseController extends Controller
                     }
                 }
 
-                if ($employee_id != null) {
+                if ($employee_id != null && $employee_id != "-") {
                     $model_approval = new ca_sett_approval();
                     $model_approval->ca_id = $req->no_id;
                     $model_approval->role_name = $data_matrix_approval->desc;
@@ -3101,6 +3131,12 @@ class ReimburseController extends Controller
 
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
+
+        $specialCaseApprovals = $this->specialCaseApproval($employee_data);
+        if ($specialCaseApprovals) {
+            $managerL1 = $specialCaseApprovals["l1"];
+            $managerL2 = $specialCaseApprovals["l2"];
+        }
 
         $isJobLevel = MatrixApproval::where("modul", "businesstrip")
             ->where(
@@ -3609,6 +3645,12 @@ class ReimburseController extends Controller
 
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
+
+        $specialCaseApprovals = $this->specialCaseApproval($employee_data);
+        if ($specialCaseApprovals) {
+            $managerL1 = $specialCaseApprovals["l1"];
+            $managerL2 = $specialCaseApprovals["l2"];
+        }
 
         $isJobLevel = MatrixApproval::where("modul", "businesstrip")
             ->where(
@@ -5071,6 +5113,13 @@ class ReimburseController extends Controller
 
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
+
+        $specialCaseApprovals = $this->specialCaseApproval($employee_data);
+        if ($specialCaseApprovals) {
+            $managerL1 = $specialCaseApprovals["l1"];
+            $managerL2 = $specialCaseApprovals["l2"];
+        }
+
         function getRomanMonth_tkt($month)
         {
             $romanMonths = [
@@ -5700,6 +5749,12 @@ class ReimburseController extends Controller
 
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
+
+        $specialCaseApprovals = $this->specialCaseApproval($employee_data);
+        if ($specialCaseApprovals) {
+            $managerL1 = $specialCaseApprovals["l1"];
+            $managerL2 = $specialCaseApprovals["l2"];
+        }
 
         $isJobLevel = MatrixApproval::where("modul", "businesstrip")
             ->where(
@@ -7326,5 +7381,45 @@ class ReimburseController extends Controller
             12 => "XII",
         ];
         return $romanMonths[$month];
+    }
+
+    private function specialCaseApproval($employee) {
+        if (!$employee) {
+            return false;
+        }
+
+        if ($employee->employee_id == "01126010017") {
+            return [
+                "l1" => "01126010012",
+                "l2" => "-",
+                "l3" => "-",
+                "l4" => "-",
+                "l5" => "-",
+                "l6" => "-",
+                "l7" => "-",
+            ];
+        } else if ($employee->employee_id == "01116020002") {
+            return [
+                "l1" => "01126010012",
+                "l2" => "-",
+                "l3" => "-",
+                "l4" => "-",
+                "l5" => "-",
+                "l6" => "-",
+                "l7" => "-",
+            ];
+        } else if ($employee->employee_id == "01112040001") {
+            return [
+                "l1" => "01126010012",
+                "l2" => "-",
+                "l3" => "-",
+                "l4" => "-",
+                "l5" => "-",
+                "l6" => "-",
+                "l7" => "-",
+            ];
+        }
+
+        return false;
     }
 }
