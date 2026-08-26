@@ -388,121 +388,367 @@
         </table>
     @endif
 
-    <div style="page-break-after:always;">
-        <table border=0 style="width: 20%; font-size: 11px;">
-            <tr>
-                <td style=" vertical-align: top;">
-                    <table class="table-approve" style="width: 100%; text-align: center; display: inline-table;">
-                        <tr>
-                            <th>Submitted By</th>
-                        </tr>
-                        <tr>
-                            <td>User</td>
-                        </tr>
-                        <tr>
-                            <td><br><br><br><br><br></td>
-                        </tr>
-                        <tr>
-                            <td>{{ $transactions->employee->fullname }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ $transactions->created_at }}</td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
+    @if (((strtolower(auth()->user()->employee->group_company) == "plantations" || strtolower(auth()->user()->employee->group_company) == "kpn plantations") && (strtolower(auth()->user()->employee->office_area) == "ho gama tower" || strtolower(auth()->user()->employee->office_area) == "head office - jakarta")))
+        <div style="page-break-after:always;">
 
-        <table border=0 style="width: 100%; font-size: 11px;">
-            <tr>
-                <td style="width: 100%;">
-                    <table class="table-approve" style="text-align:center;">
-                        <tr>
-                            <th colspan="{{ count($approval) }}">Approval</th>
-                        </tr>
-                        <tr>
-                            @foreach ($approval as $role)
-                                <td style="width: 20%;">
-                                    @if ($role->role_name == 'Dept Head')
-                                        Approval 1
-                                    @elseif ($role->role_name == 'Div Head')
-                                        Approval 2
-                                    @elseif ($role->role_name == 'Director')
-                                        Approval 3
-                                    @else
-                                        @if ($transactions && $transactions->employee && $transactions->employee->group_company == 'Plantations' && ($transactions->employee->location && $transactions->employee->location->location_type == 'Kebun'))
-                                            @if ($role->role_name == 'Dept Head HC GA')
-                                                HCO Region
-                                            @elseif ($role->role_name == 'HC GA')
-                                                HCO Region
-                                            @elseif ($role->role_name == 'Dept Head AR & AP')
-                                                KTU
+            <!-- ================= BARIS ATAS ================= -->
+            <table border="0" style="width: 100%; font-size: 11px;">
+                <tr>
+                    <!-- Kotak 1: Submitted By -->
+                    <td style="width: 25%; vertical-align: top; padding-right: 15px;">
+                        <table class="table-approve" style="width: 100%; text-align: center; display: inline-table;">
+                            <tr>
+                                <th>Submitted By</th>
+                            </tr>
+                            <tr>
+                                <td>User</td>
+                            </tr>
+                            <tr>
+                                <td><br><br><br><br><br></td>
+                            </tr>
+                            <tr>
+                                <td>{{ $transactions->employee->fullname }}</td>
+                            </tr>
+                            <tr>
+                                <td>{{ $transactions->created_at }}</td>
+                            </tr>
+                        </table>
+                    </td>
+
+                    <!-- Kotak 2: Dept Head (L1) & Div Head (L2) -->
+                    <td style="width: 75%; vertical-align: top;">
+                        <table class="table-approve" style="width: 100%; text-align:center;">
+                            <tr>
+                                @foreach ($approval as $role)
+                                    @if (in_array($role->role_name, ['Dept Head', 'Div Head']))
+                                        <th>{{ $role->role_name == 'Dept Head' ? 'Verified by' : 'Approved by' }}</th>
+                                    @endif
+                                @endforeach
+                            </tr>
+                            <tr>
+                                @foreach ($approval as $role)
+                                    @if (in_array($role->role_name, ['Dept Head', 'Div Head']))
+                                        <td style="width: 50%;">
+                                            @if ($role->role_name == 'Dept Head')
+                                                Approval 1
+                                            @elseif ($role->role_name == 'Div Head')
+                                                Approval 2
+                                            @elseif ($role->role_name == 'Director')
+                                                Approval 3
+                                            @else
+                                                @if ($role->role_name == 'Dept Head HC GA' && $employee_data->group_company == 'Plantations' && ($employee_data->location && $employee_data->location->location_type == 'Kebun'))
+                                                    HCO Region
+                                                @elseif ($role->role_name == 'HC GA' && $employee_data->group_company == 'Plantations' && ($employee_data->location && $employee_data->location->location_type == 'Kebun'))
+                                                    HCO Region
+                                                @elseif ($role->role_name == 'Dept Head AR & AP' && $employee_data->group_company == 'Plantations' && ($employee_data->location && $employee_data->location->location_type == 'Kebun'))
+                                                    KTU
+                                                @else
+                                                    {{ $role->role_name }}
+                                                @endif
+                                            @endif
+                                        </td>
+                                    @endif
+                                @endforeach
+                            </tr>
+                            <tr>
+                                @foreach ($approval as $role)
+                                    @if (in_array($role->role_name, ['Dept Head', 'Div Head']))
+                                        <td>
+                                            @if ($role->approval_status == 'Approved')
+                                                <br><img src="{{ asset('images/approved_64.png')}}" alt="logo">
+                                            @elseif (isset($sppds) && (($role->layer==1 && optional($sppds->latestApprovalL1)->approved_at<>'') || ($role->layer==2 && optional($sppds->latestApprovalL2)->approved_at<>'')))
+                                                <br><img src="{{ asset('images/approved_64.png')}}" alt="logo">
+                                            @else
+                                                <br><br><br><br><br>
+                                            @endif
+                                        </td>
+                                    @endif
+                                @endforeach
+                            </tr>
+                            <tr>
+                                @foreach ($approval as $role)
+                                    @if (in_array($role->role_name, ['Dept Head', 'Div Head']))
+                                        <td>{{ $role->employee ? $role->employee->fullname : '' }}</td>
+                                    @endif
+                                @endforeach
+                            </tr>
+                            <tr>
+                                @foreach ($approval as $role)
+                                    @if (in_array($role->role_name, ['Dept Head', 'Div Head']))
+                                        <td style="text-align:center;">
+                                            @if ($role->approval_status == 'Approved')
+                                                {{ $role->approved_at ? \Carbon\Carbon::parse($role->approved_at) : 'Date : ' }}
+                                            @elseif (isset($sppds) && $role->layer==1 && optional($sppds->latestApprovalL1)->approved_at<>'')
+                                                {{ $sppds->latestApprovalL1->approved_at }}
+                                            @elseif (isset($sppds) && $role->layer==2 && optional($sppds->latestApprovalL2)->approved_at<>'')
+                                                {{ $sppds->latestApprovalL2->approved_at }}
+                                            @else
+                                                &nbsp;
+                                            @endif
+                                        </td>
+                                    @endif
+                                @endforeach
+                            </tr>
+                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                                @php
+                                    $isApprovedByAdmin = false;
+                                    foreach ($approval as $role) {
+                                        if (isset($role->by_admin) && strtolower($role->by_admin) == "t" && isset($role->admin_id) && !empty($role->admin_id) && isset($role->admin_employee)) {
+                                            $isApprovedByAdmin = true;
+                                            break;
+                                        }
+                                    }
+                                @endphp
+                                @if ($isApprovedByAdmin)
+                                    <tr>
+                                        @foreach ($approval as $role)
+                                            @if (in_array($role->role_name, ['Dept Head', 'Div Head']))
+                                                @if (isset($role->by_admin) && strtolower($role->by_admin) == "t" && isset($role->admin_id) && !empty($role->admin_id) && isset($role->admin_employee))
+                                                    <td>
+                                                        Approved by:
+                                                        <br/>
+                                                        {{ $role->admin_employee->fullname }}
+                                                    </td>
+                                                @else
+                                                    <td>&nbsp;</td>
+                                                @endif
+                                            @endif
+                                        @endforeach
+                                    </tr>
+                                @endif
+                            @endif
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+            <br>
+
+            <!-- ================= BARIS BAWAH ================= -->
+            <table border="0" style="width: 100%; font-size: 11px;">
+                <tr>
+                    <td style="width: 100%; vertical-align: top;">
+                        <table class="table-approve" style="width: 100%; text-align:center;">
+                            <tr>
+                                @foreach ($approval as $role)
+                                    @if (!in_array($role->role_name, ['Dept Head', 'Div Head']))
+                                        <th>{{ in_array($role->role_name, ['HC GA', 'Dept Head HC GA', 'Dept Head AR & AP']) ? 'Verified by' : 'Approved by' }}</th>
+                                    @endif
+                                @endforeach
+                            </tr>
+                            <tr>
+                                @foreach ($approval as $role)
+                                    @if (!in_array($role->role_name, ['Dept Head', 'Div Head']))
+                                        <td style="width: 20%;">
+                                            @if ($role->role_name == 'Dept Head')
+                                                Approval 1
+                                            @elseif ($role->role_name == 'Div Head')
+                                                Approval 2
+                                            @elseif ($role->role_name == 'Director')
+                                                Approval 3
+                                            @else
+                                                @if ($role->role_name == 'Dept Head HC GA' && $employee_data->group_company == 'Plantations' && ($employee_data->location && $employee_data->location->location_type == 'Kebun'))
+                                                    HCO Region
+                                                @elseif ($role->role_name == 'HC GA' && $employee_data->group_company == 'Plantations' && ($employee_data->location && $employee_data->location->location_type == 'Kebun'))
+                                                    HCO Region
+                                                @elseif ($role->role_name == 'Dept Head AR & AP' && $employee_data->group_company == 'Plantations' && ($employee_data->location && $employee_data->location->location_type == 'Kebun'))
+                                                    KTU
+                                                @else
+                                                    {{ $role->role_name }}
+                                                @endif
+                                            @endif
+                                        </td>
+                                    @endif
+                                @endforeach
+                            </tr>
+                            <tr>
+                                @foreach ($approval as $role)
+                                    @if (!in_array($role->role_name, ['Dept Head', 'Div Head']))
+                                        <td>
+                                            @if ($role->approval_status == 'Approved')
+                                                <br><img src="{{ asset('images/approved_64.png')}}" alt="logo">
+                                            @elseif (isset($sppds) && (($role->layer==1 && optional($sppds->latestApprovalL1)->approved_at<>'') || ($role->layer==2 && optional($sppds->latestApprovalL2)->approved_at<>'')))
+                                                <br><img src="{{ asset('images/approved_64.png')}}" alt="logo">
+                                            @else
+                                                <br><br><br><br><br>
+                                            @endif
+                                        </td>
+                                    @endif
+                                @endforeach
+                            </tr>
+                            <tr>
+                                @foreach ($approval as $role)
+                                    @if (!in_array($role->role_name, ['Dept Head', 'Div Head']))
+                                        <td>{{ $role->employee ? $role->employee->fullname : '' }}</td>
+                                    @endif
+                                @endforeach
+                            </tr>
+                            <tr>
+                                @foreach ($approval as $role)
+                                    @if (!in_array($role->role_name, ['Dept Head', 'Div Head']))
+                                        <td style="text-align:center;">
+                                            @if ($role->approval_status == 'Approved')
+                                                {{ $role->approved_at ? \Carbon\Carbon::parse($role->approved_at) : 'Date : ' }}
+                                            @elseif (isset($sppds) && $role->layer==1 && optional($sppds->latestApprovalL1)->approved_at<>'')
+                                                {{ $sppds->latestApprovalL1->approved_at }}
+                                            @elseif (isset($sppds) && $role->layer==2 && optional($sppds->latestApprovalL2)->approved_at<>'')
+                                                {{ $sppds->latestApprovalL2->approved_at }}
+                                            @else
+                                                &nbsp;
+                                            @endif
+                                        </td>
+                                    @endif
+                                @endforeach
+                            </tr>
+                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                                @php
+                                    $isApprovedByAdmin = false;
+                                    foreach ($approval as $role) {
+                                        if (isset($role->by_admin) && strtolower($role->by_admin) == "t" && isset($role->admin_id) && !empty($role->admin_id) && isset($role->admin_employee)) {
+                                            $isApprovedByAdmin = true;
+                                            break;
+                                        }
+                                    }
+                                @endphp
+                                @if ($isApprovedByAdmin)
+                                    <tr>
+                                        @foreach ($approval as $role)
+                                            @if (!in_array($role->role_name, ['Dept Head', 'Div Head']))
+                                                @if (isset($role->by_admin) && strtolower($role->by_admin) == "t" && isset($role->admin_id) && !empty($role->admin_id) && isset($role->admin_employee))
+                                                    <td>
+                                                        Approved by:
+                                                        <br/>
+                                                        {{ $role->admin_employee->fullname }}
+                                                    </td>
+                                                @else
+                                                    <td>&nbsp;</td>
+                                                @endif
+                                            @endif
+                                        @endforeach
+                                    </tr>
+                                @endif
+                            @endif
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    @else
+        <div style="page-break-after:always;">
+            <table border=0 style="width: 20%; font-size: 11px;">
+                <tr>
+                    <td style=" vertical-align: top;">
+                        <table class="table-approve" style="width: 100%; text-align: center; display: inline-table;">
+                            <tr>
+                                <th>Submitted By</th>
+                            </tr>
+                            <tr>
+                                <td>User</td>
+                            </tr>
+                            <tr>
+                                <td><br><br><br><br><br></td>
+                            </tr>
+                            <tr>
+                                <td>{{ $transactions->employee->fullname }}</td>
+                            </tr>
+                            <tr>
+                                <td>{{ $transactions->created_at }}</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <table border=0 style="width: 100%; font-size: 11px;">
+                <tr>
+                    <td style="width: 100%;">
+                        <table class="table-approve" style="text-align:center;">
+                            <tr>
+                                <th colspan="{{ count($approval) }}">Approval</th>
+                            </tr>
+                            <tr>
+                                @foreach ($approval as $role)
+                                    <td style="width: 20%;">
+                                        @if ($role->role_name == 'Dept Head')
+                                            Approval 1
+                                        @elseif ($role->role_name == 'Div Head')
+                                            Approval 2
+                                        @elseif ($role->role_name == 'Director')
+                                            Approval 3
+                                        @else
+                                            @if ($transactions && $transactions->employee && $transactions->employee->group_company == 'Plantations' && ($transactions->employee->location && $transactions->employee->location->location_type == 'Kebun'))
+                                                @if ($role->role_name == 'Dept Head HC GA')
+                                                    HCO Region
+                                                @elseif ($role->role_name == 'HC GA')
+                                                    HCO Region
+                                                @elseif ($role->role_name == 'Dept Head AR & AP')
+                                                    KTU
+                                                @else
+                                                    {{ $role->role_name }}
+                                                @endif
                                             @else
                                                 {{ $role->role_name }}
                                             @endif
-                                        @else
-                                            {{ $role->role_name }}
                                         @endif
-                                    @endif
-                                </td>
-                            @endforeach
-                        </tr>
-                        <tr>
-                            @foreach ($approval as $role)
-                                <td>
-                                    @if($role->approval_status =='Approved')
-                                        {{-- <br><img src="{{ public_path('images/approved_64.png')}}" alt="logo"> --}}
-                                        <br><img src="{{ asset('images/approved_64.png')}}" alt="logo">
-                                    @else
-                                        <br><br><br><br><br>
-                                    @endif
-                                </td>
-                            @endforeach
-                        </tr>
-                        <tr>
-                            @foreach ($approval as $role)
-                                <td>{{ $role->employee ? $role->employee->fullname : '' }}</td>
-                            @endforeach
-                        </tr>
-                        <tr>
-                            @foreach ($approval as $role)
-                                <td style="text-align:center;">
-                                    {{ $role->approved_at ? \Carbon\Carbon::parse($role->approved_at) : 'Date : ' }}
-                                </td>
-                            @endforeach
-                        </tr>
-                        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
-                            @php
-                                $isApprovedByAdmin = false;
+                                    </td>
+                                @endforeach
+                            </tr>
+                            <tr>
+                                @foreach ($approval as $role)
+                                    <td>
+                                        @if($role->approval_status =='Approved')
+                                            {{-- <br><img src="{{ public_path('images/approved_64.png')}}" alt="logo"> --}}
+                                            <br><img src="{{ asset('images/approved_64.png')}}" alt="logo">
+                                        @else
+                                            <br><br><br><br><br>
+                                        @endif
+                                    </td>
+                                @endforeach
+                            </tr>
+                            <tr>
+                                @foreach ($approval as $role)
+                                    <td>{{ $role->employee ? $role->employee->fullname : '' }}</td>
+                                @endforeach
+                            </tr>
+                            <tr>
+                                @foreach ($approval as $role)
+                                    <td style="text-align:center;">
+                                        {{ $role->approved_at ? \Carbon\Carbon::parse($role->approved_at) : 'Date : ' }}
+                                    </td>
+                                @endforeach
+                            </tr>
+                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                                @php
+                                    $isApprovedByAdmin = false;
 
-                                foreach ($approval as $role) {
-                                    if (isset($role->by_admin) && strtolower($role->by_admin) == "t" && isset($role->admin_id) && !empty($role->admin_id) && isset($role->admin_employee)) {
-                                        $isApprovedByAdmin = true;
-                                        break;
+                                    foreach ($approval as $role) {
+                                        if (isset($role->by_admin) && strtolower($role->by_admin) == "t" && isset($role->admin_id) && !empty($role->admin_id) && isset($role->admin_employee)) {
+                                            $isApprovedByAdmin = true;
+                                            break;
+                                        }
                                     }
-                                }
-                            @endphp
-                            @if ($isApprovedByAdmin)
-                                <tr>
-                                    @foreach ($approval as $role)
-                                        @if (isset($role->by_admin) && strtolower($role->by_admin) == "t" && isset($role->admin_id) && !empty($role->admin_id) && isset($role->admin_employee))
-                                            <td>
-                                                Approved by:
-                                                <br/>
-                                                {{ $role->admin_employee->fullname }}
-                                            </td>
-                                        @else
-                                            <td>&nbsp;</td>
-                                        @endif
-                                    @endforeach
-                                </tr>
+                                @endphp
+                                @if ($isApprovedByAdmin)
+                                    <tr>
+                                        @foreach ($approval as $role)
+                                            @if (isset($role->by_admin) && strtolower($role->by_admin) == "t" && isset($role->admin_id) && !empty($role->admin_id) && isset($role->admin_employee))
+                                                <td>
+                                                    Approved by:
+                                                    <br/>
+                                                    {{ $role->admin_employee->fullname }}
+                                                </td>
+                                            @else
+                                                <td>&nbsp;</td>
+                                            @endif
+                                        @endforeach
+                                    </tr>
+                                @endif
                             @endif
-                        @endif
-                    </table>
-                </td>
-            </tr>
-        </table>
-    </div>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    @endif
 
     <div>
         <h2 style="text-align: center">Cash Advanced Attachment</h2>
