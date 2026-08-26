@@ -283,6 +283,12 @@ class HomeTripController extends Controller
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
 
+        $specialCaseApprovals = $this->specialCaseApproval($employee);
+        if ($specialCaseApprovals) {
+            $managerL1 = $specialCaseApprovals["l1"];
+            $managerL2 = $specialCaseApprovals["l2"];
+        }
+
         $isJobLevel = MatrixApproval::where('modul', 'businesstrip')
             ->where('group_company', 'like', '%' . $employee->group_company . '%')
             ->where('job_level', 'like', '%' . $employee->job_level . '%')
@@ -502,6 +508,12 @@ class HomeTripController extends Controller
 
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
+
+        $specialCaseApprovals = $this->specialCaseApproval($employee_data);
+        if ($specialCaseApprovals) {
+            $managerL1 = $specialCaseApprovals["l1"];
+            $managerL2 = $specialCaseApprovals["l2"];
+        }
 
         $isJobLevel = MatrixApproval::where('modul', 'businesstrip')
             ->where('group_company', 'like', '%' . $employee->group_company . '%')
@@ -969,5 +981,45 @@ class HomeTripController extends Controller
             'fullname',
             'plafonds',
         ));
+    }
+
+    private function specialCaseApproval($employee) {
+        if (!$employee) {
+            return false;
+        }
+
+        if ($employee->employee_id == "01126010017") {
+            return [
+                "l1" => "01126010012",
+                "l2" => "-",
+                "l3" => "-",
+                "l4" => "-",
+                "l5" => "-",
+                "l6" => "-",
+                "l7" => "-",
+            ];
+        } else if ($employee->employee_id == "01116020002") {
+            return [
+                "l1" => "01126010012",
+                "l2" => "-",
+                "l3" => "-",
+                "l4" => "-",
+                "l5" => "-",
+                "l6" => "-",
+                "l7" => "-",
+            ];
+        } else if ($employee->employee_id == "01112040001") {
+            return [
+                "l1" => "01126010012",
+                "l2" => "-",
+                "l3" => "-",
+                "l4" => "-",
+                "l5" => "-",
+                "l6" => "-",
+                "l7" => "-",
+            ];
+        }
+
+        return false;
     }
 }
