@@ -166,6 +166,47 @@ class HomeTripController extends Controller
                     session()->flash('refresh', true);
                 }
             }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Handle existing employees before Home Trip feature was introduced
+            |--------------------------------------------------------------------------
+            */
+
+            // $homeTripFeatureStartDate = '2025-01-01';
+
+            // $firstEligibleDate = (clone $joiningDate)->modify('+1 year');
+
+            // $hasEverHadHomeTrip = HomeTrip::where('employee_id', $employee->employee_id)
+            //     ->where('relation_type', 'Employee')
+            //     ->exists();
+
+            // $isProbation = $employee->employee_type == 'Probation';
+
+            // if (
+            //     $firstEligibleDate < date_create($homeTripFeatureStartDate)
+            //     && date('Y-m-d') >= $homeTripFeatureStartDate
+            //     && !$hasEverHadHomeTrip
+            //     && !$isProbation
+            // ) {
+            //     $dependents = Dependents::where('employee_id', $employee->employee_id)->get();
+            //     $totalFamilyMembers = $dependents->count() + 1;
+
+            //     $quota = $totalFamilyMembers * 2;
+
+            //     $homeTrip = new HomeTrip();
+            //     $homeTrip->id = Str::uuid();
+            //     $homeTrip->employee_id = $employee->employee_id;
+            //     $homeTrip->name = $employee->fullname;
+            //     $homeTrip->relation_type = 'Employee';
+            //     $homeTrip->quota = $quota;
+            //     $homeTrip->last_generate = $homeTripFeatureStartDate;
+            //     $homeTrip->period = $currentYear;
+            //     $homeTrip->created_by = $userId;
+            //     $homeTrip->save();
+
+            //     session()->flash('refresh', true);
+            // }
         }
 
         return view('hcis.reimbursements.homeTrip.homeTrip', compact(
@@ -241,6 +282,12 @@ class HomeTripController extends Controller
         $deptHeadManager = $this->findDepartmentHead($employee);
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
+
+        $specialCaseApprovals = $this->specialCaseApproval($employee);
+        if ($specialCaseApprovals) {
+            $managerL1 = $specialCaseApprovals["l1"];
+            $managerL2 = $specialCaseApprovals["l2"];
+        }
 
         $isJobLevel = MatrixApproval::where('modul', 'businesstrip')
             ->where('group_company', 'like', '%' . $employee->group_company . '%')
@@ -461,6 +508,12 @@ class HomeTripController extends Controller
 
         $managerL1 = $deptHeadManager->employee_id;
         $managerL2 = $deptHeadManager->manager_l1_id;
+
+        $specialCaseApprovals = $this->specialCaseApproval($employee_data);
+        if ($specialCaseApprovals) {
+            $managerL1 = $specialCaseApprovals["l1"];
+            $managerL2 = $specialCaseApprovals["l2"];
+        }
 
         $isJobLevel = MatrixApproval::where('modul', 'businesstrip')
             ->where('group_company', 'like', '%' . $employee->group_company . '%')
@@ -928,5 +981,45 @@ class HomeTripController extends Controller
             'fullname',
             'plafonds',
         ));
+    }
+
+    private function specialCaseApproval($employee) {
+        if (!$employee) {
+            return false;
+        }
+
+        if ($employee->employee_id == "01126010017") {
+            return [
+                "l1" => "01126010012",
+                "l2" => "-",
+                "l3" => "-",
+                "l4" => "-",
+                "l5" => "-",
+                "l6" => "-",
+                "l7" => "-",
+            ];
+        } else if ($employee->employee_id == "01116020002") {
+            return [
+                "l1" => "01126010012",
+                "l2" => "-",
+                "l3" => "-",
+                "l4" => "-",
+                "l5" => "-",
+                "l6" => "-",
+                "l7" => "-",
+            ];
+        } else if ($employee->employee_id == "01112040001") {
+            return [
+                "l1" => "01126010012",
+                "l2" => "-",
+                "l3" => "-",
+                "l4" => "-",
+                "l5" => "-",
+                "l6" => "-",
+                "l7" => "-",
+            ];
+        }
+
+        return false;
     }
 }
