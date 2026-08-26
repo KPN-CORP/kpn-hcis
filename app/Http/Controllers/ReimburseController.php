@@ -1356,7 +1356,6 @@ class ReimburseController extends Controller
                     $model_approval->employee_id = $employee_id;
                     $model_approval->layer = $data_matrix_approval->layer;
                     $model_approval->approval_status = "Pending";
-                    $model_approval->custom_action_name = $data_matrix_approval->custom_action_name;
 
                     // Simpan data ke database
                     $model_approval->save();
@@ -2005,7 +2004,6 @@ class ReimburseController extends Controller
                     $model_approval->employee_id = $employee_id;
                     $model_approval->layer = $data_matrix_approval->layer;
                     $model_approval->approval_status = "Pending";
-                    $model_approval->custom_action_name = $data_matrix_approval->custom_action_name;
 
                     // Simpan data ke database
                     $model_approval->save();
@@ -2262,7 +2260,6 @@ class ReimburseController extends Controller
                         "ext_totaldays",
                     );
                     $model_approval->reason_extend = $req->input("ext_reason");
-                    $model_approval->custom_action_name = $data_matrix_approval->custom_action_name;
 
                     // Simpan data ke database
                     $model_approval->save();
@@ -3134,7 +3131,6 @@ class ReimburseController extends Controller
                     $model_approval->employee_id = $employee_id;
                     $model_approval->layer = $data_matrix_approval->layer;
                     $model_approval->approval_status = "Pending";
-                    $model_approval->custom_action_name = $data_matrix_approval->custom_action_name;
                     $model_approval->save();
                 }
                 // }
