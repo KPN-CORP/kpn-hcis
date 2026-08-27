@@ -63,6 +63,67 @@
             padding-right: 10px;
             box-shadow: inset 6px 0 0 #fff;
         }
+
+        .attachment-item {
+            position: relative;
+        }
+
+        .attachment-preview {
+            position: relative;
+            display: block;
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: #f8f9fa;
+            cursor: pointer;
+        }
+
+        .attachment-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.2s ease;
+        }
+
+        .attachment-preview:hover img {
+            transform: scale(1.05);
+        }
+
+        .attachment-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0);
+            color: white;
+            transition: background 0.2s ease;
+        }
+
+        .attachment-preview:hover .attachment-overlay {
+            background: rgba(0, 0, 0, 0.45);
+        }
+
+        .attachment-overlay i {
+            font-size: 28px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .attachment-preview:hover .attachment-overlay i {
+            opacity: 1;
+        }
+
+        .attachment-name {
+            margin-top: 6px;
+            font-size: 13px;
+            color: #6c757d;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     </style>
 @endsection
 
@@ -237,6 +298,7 @@
                                         <th>Request</th>
                                         <th>Declaration</th>
                                         <th>Status CA</th>
+                                        <th>Attachment</th>
                                         <th>Actions</th>
                                         <th>Export</th>
                                         <th>Delete</th>
@@ -286,6 +348,13 @@
                                                 ($ca_transaction->ca_status == 'On Progress' ? 'secondary' : 'default')) }}" title="{{$ca_transaction->paid_date}}">
                                                     {{ $ca_transaction->ca_status }}
                                                 </p>
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-outline-info btn-view-attachment" data-bs-toggle="modal"  data-bs-target="#viewAttachmentModal"
+                                                    data-id="{{ $ca_transaction->id }}"
+                                                    title="View Attachment">
+                                                        <i class="bi bi-paperclip"></i>
+                                                </button>
                                             </td>
                                             <!-- Button Action -->
                                             <td class="text-left">
@@ -1799,4 +1868,46 @@
             }, 1000);
         </script>
     @endif --}}
+
+    <script>
+        $(document).on('click', '.btn-view-attachment', function () {
+            const transactionId = $(this).data('id');
+
+            $('#transaction_id').val(transactionId);
+
+            $.ajax({
+                url: '/cashadvanced/admin/attachment/' + transactionId,
+                type: 'GET',
+
+                success: function (response) {
+                    renderAttachments(
+                        'caAttachments',
+                        response.ca_attachments
+                    );
+
+                    const modal = new bootstrap.Modal(
+                        document.getElementById('viewAttachmentModal')
+                    );
+
+                    modal.show();
+                },
+
+                error: function () {
+                    $('#caAttachments').html(`
+                        <div class="col-12">
+                            <div class="alert alert-danger">
+                                Failed to load CA attachments.
+                            </div>
+                        </div>
+                    `);
+
+                    const modal = new bootstrap.Modal(
+                        document.getElementById('viewAttachmentModal')
+                    );
+
+                    modal.show();
+                }
+            });
+        });
+    </script>
 @endpush
