@@ -1884,12 +1884,6 @@
                         'caAttachments',
                         response.ca_attachments
                     );
-
-                    const modal = new bootstrap.Modal(
-                        document.getElementById('viewAttachmentModal')
-                    );
-
-                    modal.show();
                 },
 
                 error: function () {
@@ -1900,12 +1894,6 @@
                             </div>
                         </div>
                     `);
-
-                    const modal = new bootstrap.Modal(
-                        document.getElementById('viewAttachmentModal')
-                    );
-
-                    modal.show();
                 }
             });
         });
