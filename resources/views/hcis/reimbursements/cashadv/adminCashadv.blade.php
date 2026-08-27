@@ -155,7 +155,7 @@
                             <div class="input-group">
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-outline-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="dropdownButton">
-                                        {{ request()->get('from_date') || request()->get('until_date') ? 'by Create Date' : 'by Start Date' }}
+                                        {{ (request()->get('from_date') || request()->get('until_date')) || (!request()->get('from_date') && !request()->get('until_date') && !request()->get('start_date')) ? 'by Create Date' : 'by Start Date' }}
                                     </button>
                                     <ul class="dropdown-menu">
                                         <li><a class="dropdown-item" href="#" onclick="updateDropdownText(this, 'start_date')">by Start Date</a></li>
@@ -163,11 +163,11 @@
                                     </ul>
                                 </div>
 
-                                <input type="date" class="form-control mx-2" style="{{ request()->get('from_date') || request()->get('until_date') ? 'display: none' : 'display: block' }}" id="start_date" name="start_date" placeholder="Start Date" title="Start Date" value="{{ request()->get('start_date') }}" onchange="updateEndDate2()">
-                                <input type="date" class="form-control mx-2" style="{{ request()->get('from_date') || request()->get('until_date') ? 'display: block' : 'display: none' }}" id="from_date" name="from_date" placeholder="From Date" title="From Date" value="{{ request()->get('from_date') }}" onchange="updateEndDate2()">
+                                <input type="date" class="form-control mx-2" style="{{ (request()->get('from_date') || request()->get('until_date')) || (!request()->get('from_date') && !request()->get('until_date') && !request()->get('start_date')) ? 'display: none' : 'display: block' }}" id="start_date" name="start_date" placeholder="Start Date" title="Start Date" value="{{ request()->get('start_date') }}" onchange="updateEndDate2()">
+                                <input type="date" class="form-control mx-2" style="{{ (request()->get('from_date') || request()->get('until_date')) || (!request()->get('from_date') && !request()->get('until_date') && !request()->get('start_date')) ? 'display: block' : 'display: none' }}" id="from_date" name="from_date" placeholder="From Date" title="From Date" value="{{ request()->get('from_date') }}" onchange="updateEndDate2()">
                                 <label class="col-form-label"> - </label>
-                                <input type="date" class="form-control mx-2" style="{{ request()->get('from_date') || request()->get('until_date') ? 'display: none' : 'display: block' }}" id="end_date" name="end_date" placeholder="End Date" title="End Date" value="{{ request()->get('end_date') }}" disabled>
-                                <input type="date" class="form-control mx-2" style="{{ request()->get('from_date') || request()->get('until_date') ? 'display: block' : 'display: none' }}" id="until_date" name="until_date" placeholder="Until Date" title="Until Date" value="{{ request()->get('until_date') }}" disabled>
+                                <input type="date" class="form-control mx-2" style="{{ (request()->get('from_date') || request()->get('until_date')) || (!request()->get('from_date') && !request()->get('until_date') && !request()->get('start_date')) ? 'display: none' : 'display: block' }}" id="end_date" name="end_date" placeholder="End Date" title="End Date" value="{{ request()->get('end_date') }}" disabled>
+                                <input type="date" class="form-control mx-2" style="{{ (request()->get('from_date') || request()->get('until_date')) || (!request()->get('from_date') && !request()->get('until_date') && !request()->get('start_date')) ? 'display: block' : 'display: none' }}" id="until_date" name="until_date" placeholder="Until Date" title="Until Date" value="{{ request()->get('until_date') }}" disabled>
 
                                 <script>
                                     function updateEndDate2() {
