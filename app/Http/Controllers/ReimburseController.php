@@ -48,6 +48,7 @@ use App\Mail\HotelNotification;
 use App\Mail\TicketNotification;
 use App\Mail\HomeTripNotification;
 use App\Helpers\Attachment as AttachmentHelper;
+use Illuminate\Support\Facades\Storage;
 
 class ReimburseController extends Controller
 {
@@ -7771,8 +7772,25 @@ class ReimburseController extends Controller
             $caAttachments = [];
 
             foreach ($attachmentPaths as $attachmentPath) {
+                // Normalize slash
+                $attachmentPath = str_replace('\\', '/', $attachmentPath);
+
+                // Ambil path setelah storage/app/public/
+                $marker = 'storage/app/public/';
+
+                $position = strpos($attachmentPath, $marker);
+
+                if ($position !== false) {
+                    $relativePath = substr(
+                        $attachmentPath,
+                        $position + strlen($marker)
+                    );
+                } else {
+                    $relativePath = $attachmentPath;
+                }
+
                 $caAttachments[] = [
-                    "url" => $attachmentPath,
+                    'url' => Storage::url($relativePath),
                     "name" => basename($attachmentPath)
                 ];
             }

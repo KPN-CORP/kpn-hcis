@@ -47,6 +47,7 @@ use App\Mail\RefundNotification;
 use App\Models\ca_extend;
 use Illuminate\Support\Facades\Http;
 use App\Helpers\Attachment as AttachmentHelper;
+use Illuminate\Support\Facades\Storage;
 
 class BusinessTripController extends Controller
 {
@@ -13827,8 +13828,25 @@ class BusinessTripController extends Controller
                 $attachmentPaths = AttachmentHelper::resolve_paths($ca_transaction->prove_declare);
 
                 foreach ($attachmentPaths as $attachmentPath) {
+                    // Normalize slash
+                    $attachmentPath = str_replace('\\', '/', $attachmentPath);
+
+                    // Ambil path setelah storage/app/public/
+                    $marker = 'storage/app/public/';
+
+                    $position = strpos($attachmentPath, $marker);
+
+                    if ($position !== false) {
+                        $relativePath = substr(
+                            $attachmentPath,
+                            $position + strlen($marker)
+                        );
+                    } else {
+                        $relativePath = $attachmentPath;
+                    }
+
                     $caAttachments[] = [
-                        "url" => $attachmentPath,
+                        'url' => Storage::url($relativePath),
                         "name" => basename($attachmentPath),
                         "no_ca" => $ca_transaction->no_ca,
                     ];
