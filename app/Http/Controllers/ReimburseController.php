@@ -7699,7 +7699,7 @@ class ReimburseController extends Controller
         return redirect()->back()->with("success", "Tickets has been deleted");
     }
 
-    public function getAttachments($id) {
+    public function getAttachmentsAdmin($id) {
         try {
             $transaction = CATransaction::where("id", $id)->first();
             if (!$transaction) {
@@ -7730,7 +7730,10 @@ class ReimburseController extends Controller
                 }
 
                 $caAttachments[] = [
-                    'url' => Storage::url($relativePath),
+                    'url' => route('cashadvanced.admin.attachment.view', [
+                        'id' => $transaction->id,
+                        'path' => $relativePath,
+                    ]),
                     "name" => basename($attachmentPath)
                 ];
             }
@@ -7743,6 +7746,30 @@ class ReimburseController extends Controller
                 'ca_attachments' => null
             ], 500);
         }
+    }
+
+    public function viewAttachmentAdmin($id, Request $request)
+    {
+        $transaction = CATransaction::findOrFail($id);
+
+        $path = $request->query('path');
+
+        if (!$path) {
+            abort(404);
+        }
+
+        $basePath = realpath(storage_path('app/public'));
+        $filePath = realpath(storage_path('app/public/' . $path));
+
+        if (!$filePath || !str_starts_with($filePath, $basePath . DIRECTORY_SEPARATOR)) {
+            abort(404);
+        }
+
+        if (!file_exists($filePath)) {
+            abort(404);
+        }
+
+        return response()->file($filePath);
     }
 
     private function getRomanMonth($month)

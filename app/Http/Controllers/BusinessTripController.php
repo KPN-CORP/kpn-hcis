@@ -13757,7 +13757,7 @@ class BusinessTripController extends Controller
         );
     }
 
-    public function getAttachments($id) {
+    public function getAttachmentsAdmin($id) {
         try {
             $transaction = BusinessTrip::where("id", $id)->get();
             if (!$transaction) {
@@ -13797,7 +13797,10 @@ class BusinessTripController extends Controller
                     }
 
                     $caAttachments[] = [
-                        'url' => Storage::url($relativePath),
+                        'url' => route('cashadvanced.admin.attachment.view', [
+                            'id' => $ca_transaction->id,
+                            'path' => $relativePath,
+                        ]),
                         "name" => basename($attachmentPath),
                         "no_ca" => $ca_transaction->no_ca,
                     ];
