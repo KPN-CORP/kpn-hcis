@@ -13759,18 +13759,18 @@ class BusinessTripController extends Controller
 
     public function getAttachmentsAdmin($id) {
         try {
-            $transaction = BusinessTrip::where("id", $id)->get();
+            $transaction = BusinessTrip::where("id", $id)->first();
             if (!$transaction) {
                 return response()->json([
                     'ca_attachments' => null
-                ], 500);
+                ]);
             }
 
             $ca_transactions = CATransaction::where("no_sppd", $transaction->no_sppd)->get();
             if (!$ca_transactions || $ca_transactions->isEmpty()) {
                 return response()->json([
                     'ca_attachments' => null
-                ], 500);
+                ]);
             }
 
             $caAttachments = [];
@@ -13812,7 +13812,8 @@ class BusinessTripController extends Controller
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'ca_attachments' => null
+                'ca_attachments' => null,
+                'error' => $e->getMessage()
             ], 500);
         }
     }
