@@ -307,8 +307,8 @@
                                 <tbody>
                                     @foreach ($ca_transactions as $ca_transaction)
                                         <tr>
-                                            <td class="text-center">{{ $loop->index + 1 }}</td>
-                                            <td style="background-color: white;" class="sticky-col">{{ $ca_transaction->no_ca }}</td>
+                                            <td class="text-center align-middle">{{ $loop->index + 1 }}</td>
+                                            <td style="background-color: white;" class="sticky-col align-middle">{{ $ca_transaction->no_ca }}</td>
                                             @if ($ca_transaction->type_ca == 'dns')
                                                 <td>Business Travel</td>
                                             @elseif($ca_transaction->type_ca == 'ndns')
@@ -317,39 +317,39 @@
                                                 <td>Entertainment</td>
                                             @endif
 
-                                            <td>{{ $ca_transaction->employee->fullname }}</td>
-                                            <td>{{ $ca_transaction->contribution_level_code }}</td>
-                                            <td>{{ date('j M Y', strtotime($ca_transaction->formatted_start_date)) }}</td>
-                                            <td>{{ date('j M Y', strtotime($ca_transaction->formatted_end_date)) }}</td>
-                                            <td>Rp. {{ number_format($ca_transaction->total_ca) }}</td>
-                                            <td>Rp. {{ number_format($ca_transaction->total_real) }}</td>
-                                            <td>
+                                            <td class="align-middle">{{ $ca_transaction->employee->fullname }}</td>
+                                            <td class="align-middle">{{ $ca_transaction->contribution_level_code }}</td>
+                                            <td class="align-middle">{{ date('j M Y', strtotime($ca_transaction->formatted_start_date)) }}</td>
+                                            <td class="align-middle">{{ date('j M Y', strtotime($ca_transaction->formatted_end_date)) }}</td>
+                                            <td class="align-middle">Rp. {{ number_format($ca_transaction->total_ca) }}</td>
+                                            <td class="align-middle">Rp. {{ number_format($ca_transaction->total_real) }}</td>
+                                            <td class="align-middle">
                                                 @if ($ca_transaction->total_cost < 0)
                                                     <span class="text-danger">Rp. -{{ number_format(abs($ca_transaction->total_cost)) }}</span>
                                                 @else
                                                     <span class="text-success">Rp. {{ number_format($ca_transaction->total_cost) }}</span>
                                                 @endif
                                             </td>
-                                            <td>
+                                            <td class="align-middle">
                                                 @if($ca_transaction->total_ca != 0)
                                                 <p class="badge text-bg-{{ $ca_transaction->approval_status == 'Approved' ? 'success' : ($ca_transaction->approval_status == 'Declaration' ? 'info' : ($ca_transaction->approval_status == 'Pending' ? 'warning' : ($ca_transaction->approval_status == 'Rejected' ? 'danger' : ($ca_transaction->approval_status == 'Draft' ? 'secondary' : 'default')))) }}" style="pointer-events: auto; cursor: default;" title="{{$ca_transaction->approval_status." - ".$ca_transaction->ReqName}}">
                                                     {{ $ca_transaction->approval_status }}
                                                 </p>
                                                 @endif
                                             </td>
-                                            <td>
+                                            <td class="align-middle">
                                                 <p class="badge text-bg-{{ $ca_transaction->approval_sett == 'Approved' ? 'success' : ($ca_transaction->approval_sett == 'Declaration' ? 'info' : ($ca_transaction->approval_sett == 'Pending' ? 'warning' : ($ca_transaction->approval_sett == 'Rejected' ? 'danger' : ($ca_transaction->approval_sett == 'Draft' ? 'secondary' : 'default')))) }}" style="pointer-events: auto; cursor: default;" title="{{$ca_transaction->approval_sett." - ".$ca_transaction->settName}}">
                                                     {{ $ca_transaction->approval_sett }}
                                                 </p>
                                             </td>
-                                            <td>
+                                            <td class="align-middle">
                                                 <p class="badge text-bg-{{ $ca_transaction->ca_status == 'Done' ? 'success' :
                                                 ($ca_transaction->ca_status == 'Refund' ? 'danger' :
                                                 ($ca_transaction->ca_status == 'On Progress' ? 'secondary' : 'default')) }}" title="{{$ca_transaction->paid_date}}">
                                                     {{ $ca_transaction->ca_status }}
                                                 </p>
                                             </td>
-                                            <td class="text-center">
+                                            <td class="text-center align-middle">
                                                 <button type="button" class="btn btn-outline-info btn-view-attachment" data-bs-toggle="modal"  data-bs-target="#viewAttachmentModal"
                                                     data-id="{{ $ca_transaction->id }}"
                                                     title="View Attachment">
@@ -357,7 +357,7 @@
                                                 </button>
                                             </td>
                                             <!-- Button Action -->
-                                            <td class="text-left">
+                                            <td class="text-left align-middle">
                                                 @if(($ca_transaction->approval_sett != '' || $ca_transaction->approval_sett == 'Pending' || $ca_transaction->approval_sett == 'Approved' ) && $ca_transaction->approval_status != 'Rejected' && $ca_transaction->approval_status != 'Draft' && ($ca_transaction->approval_extend == 'Pending' || $ca_transaction->approval_extend == 'Approved' && $ca_transaction->approval_sett !== 'Rejected'))
                                                     <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" title="Approval Deklarasi Update" data-bs-target="#approvalDecExtModal"
                                                         data-type="{{ $ca_transaction->type_ca }}"
@@ -457,7 +457,7 @@
                                                 @endif
                                             </td>
                                             <!-- Button Export -->
-                                            <td class="text-center">
+                                            <td class="text-center align-middle">
                                                 @if($ca_transaction->approval_status != 'Draft' && $ca_transaction->approval_status != 'Rejected')
                                                     <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"  data-bs-target="#exportModal"
                                                         data-id="{{ $ca_transaction->id }}"
@@ -469,7 +469,7 @@
                                                 @endif
                                             </td>
                                             <!-- Button Delete -->
-                                            <td class="text-center">
+                                            <td class="text-center align-middle">
                                                 <form id="delete-form-{{ $ca_transaction->id }}" action="{{ route('cashadvanced.delete', $ca_transaction->id) }}" method="POST" style="display:inline;">
                                                     @csrf
                                                     <button type="button" class="btn btn-outline-danger delete-button" data-id="{{ $ca_transaction->id }}" data-ca="{{ $ca_transaction->no_ca }}" title="Delete">

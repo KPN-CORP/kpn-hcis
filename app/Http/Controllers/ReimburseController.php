@@ -7765,7 +7765,7 @@ class ReimburseController extends Controller
             if (!$transaction) {
                 return response()->json([
                     'ca_attachments' => null
-                ], 500);
+                ]);
             }
 
             $attachmentPaths = AttachmentHelper::resolve_paths($transaction->prove_declare);
@@ -7803,7 +7803,8 @@ class ReimburseController extends Controller
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'ca_attachments' => null
+                'ca_attachments' => null,
+                'error' => $e->getMessage()
             ], 500);
         }
     }

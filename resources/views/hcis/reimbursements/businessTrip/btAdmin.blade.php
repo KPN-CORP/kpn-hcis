@@ -59,6 +59,67 @@
             padding-right: 10px;
             box-shadow: inset 6px 0 0 #fff;
         }
+
+        .attachment-item {
+            position: relative;
+        }
+
+        .attachment-preview {
+            position: relative;
+            display: block;
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: #f8f9fa;
+            cursor: pointer;
+        }
+
+        .attachment-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.2s ease;
+        }
+
+        .attachment-preview:hover img {
+            transform: scale(1.05);
+        }
+
+        .attachment-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0);
+            color: white;
+            transition: background 0.2s ease;
+        }
+
+        .attachment-preview:hover .attachment-overlay {
+            background: rgba(0, 0, 0, 0.45);
+        }
+
+        .attachment-overlay i {
+            font-size: 28px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .attachment-preview:hover .attachment-overlay i {
+            opacity: 1;
+        }
+
+        .attachment-name {
+            margin-top: 6px;
+            font-size: 13px;
+            color: #6c757d;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     </style>
 @endsection
 
@@ -205,14 +266,14 @@
 
                         @foreach ($sppd as $idx => $n)
                             <tr>
-                                <td scope="row" style="text-align: center;">
+                                <td class="align-middle" scope="row" style="text-align: center;">
                                     {{ $loop->iteration }}
                                 </td>
-                                <td class="sticky-col">{{ $n->no_sppd }}</td>
-                                <td>{{ $n->nama }}</td>
-                                <td>{{ $n->tujuan }}</td>
-                                <td>{{ \Carbon\Carbon::parse($n->mulai)->format('d-M-Y') }}</td>
-                                <td>{{ \Carbon\Carbon::parse($n->kembali)->format('d-M-Y') }}</td>
+                                <td class="sticky-col align-middle">{{ $n->no_sppd }}</td>
+                                <td class="align-middle">{{ $n->nama }}</td>
+                                <td class="align-middle">{{ $n->tujuan }}</td>
+                                <td class="align-middle">{{ \Carbon\Carbon::parse($n->mulai)->format('d-M-Y') }}</td>
+                                <td class="align-middle">{{ \Carbon\Carbon::parse($n->kembali)->format('d-M-Y') }}</td>
                                 <td style="text-align: center; align-content: center">
                                     @if ($n->ca == 'Ya' && isset($caTransactions[$n->no_sppd]))
                                         <a class="text-info btn-detail" data-toggle="modal" data-target="#detailModal"
@@ -360,7 +421,7 @@
                                         {{ $n->status == 'Approved' ? 'Request Approved' : $n->status }}
                                     </span>
                                 </td>
-                                <td class="text-center">
+                                <td class="text-center align-middle">
                                     <button type="button" class="btn btn-outline-info btn-view-attachment" data-bs-toggle="modal"  data-bs-target="#viewAttachmentModal"
                                         data-id="{{ $n->id }}"
                                         title="View Attachment">
