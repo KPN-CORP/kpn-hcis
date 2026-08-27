@@ -173,7 +173,7 @@
                                 <label for="export-request" class="col-form-label">Download CA:</label>
                             </div>
                             <div class="col-md-5 mb-3 text-end">
-                                <a href="{{ route('cashadvanced.download', ':id') }}" id="downloadLink" target="_blank" class="btn btn-outline-primary" title="Download CA">
+                                <a href="{{ route('cashadvanced.download', ':id') }}" id="downloadLink" class="btn btn-outline-primary" title="Download CA">
                                     <i class="bi bi-file-earmark-arrow-down"></i>
                                 </a>
                             </div>
@@ -183,7 +183,7 @@
                                 <label for="export-deklarasi" class="col-form-label">Download CA Deklarasi:</label>
                             </div>
                             <div class="col-md-5 mb-3 text-end">
-                                <a href="{{ route('cashadvanced.downloadDeclare', ':id') }}" id="declareLink" target="_blank" class="btn btn-outline-primary" title="Download CA Deklarasi">
+                                <a href="{{ route('cashadvanced.downloadDeclare', ':id') }}" id="declareLink" class="btn btn-outline-primary" title="Download CA Deklarasi">
                                     <i class="bi bi-file-earmark-arrow-down"></i>
                                 </a>
                             </div>
