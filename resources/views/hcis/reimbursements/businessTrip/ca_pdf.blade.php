@@ -332,7 +332,24 @@
         </table>
         <br>
 
-        @if (((strtolower(auth()->user()->employee->group_company) == "plantations" || strtolower(auth()->user()->employee->group_company) == "kpn plantations") && (strtolower(auth()->user()->employee->office_area) == "ho gama tower" || strtolower(auth()->user()->employee->office_area) == "head office - jakarta")))
+        @if (
+        auth()->user()->employee &&
+        (
+            (
+                (
+                    strtolower(auth()->user()->employee->group_company ?? '') === 'plantations' ||
+                    strtolower(auth()->user()->employee->group_company ?? '') === 'kpn plantations'
+                )
+                &&
+                (
+                    strtolower(auth()->user()->employee->office_area ?? '') === 'ho gama tower' ||
+                    strtolower(auth()->user()->employee->office_area ?? '') === 'head office - jakarta'
+                )
+            )
+            ||
+            auth()->user()->employee->employee_id === '02114020045'
+        )
+    )
             <div style="page-break-after:always;">
 
                 <!-- ================= BARIS ATAS ================= -->
