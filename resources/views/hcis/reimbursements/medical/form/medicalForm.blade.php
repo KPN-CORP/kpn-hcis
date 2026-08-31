@@ -369,13 +369,43 @@
         }
     }
 
-    // Ambil tanggal hari ini
+    // // Ambil tanggal hari ini
+    // const today = new Date();
+
+    // // Set tanggal ke 2 bulan yang lalu
+    // const twoMonthsAgo = new Date();
+    // twoMonthsAgo.setMonth(today.getMonth() - 2);
+    // twoMonthsAgo.setDate(today.getDate() + 1); // Ditambah 1 agar hasilnya H-2 bulan + 1 hari
+
     const today = new Date();
 
-    // Set tanggal ke 2 bulan yang lalu
-    const twoMonthsAgo = new Date();
-    twoMonthsAgo.setMonth(today.getMonth() - 2);
-    twoMonthsAgo.setDate(today.getDate() + 1); // Ditambah 1 agar hasilnya H-2 bulan + 1 hari
+    const targetYear = today.getFullYear();
+    const targetMonth = today.getMonth() - 2;
+
+    const lastDayOfTargetMonth = new Date(
+        targetYear,
+        targetMonth + 1,
+        0
+    ).getDate();
+
+    const targetDate = Math.min(
+        today.getDate(),
+        lastDayOfTargetMonth
+    );
+
+    const twoMonthsAgo = new Date(
+        targetYear,
+        targetMonth,
+        targetDate
+    );
+
+    twoMonthsAgo.setDate(
+        twoMonthsAgo.getDate() + 1
+    );
+
+    //
+    //
+    //
 
     // Format tanggal ke YYYY-MM-DD
     const formattedToday = today.toISOString().split("T")[0];
