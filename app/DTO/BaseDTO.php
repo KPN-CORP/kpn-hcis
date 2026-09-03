@@ -12,6 +12,15 @@ abstract class BaseDTO {
         );
     }
 
+    public function toUpperCaseArray(): array
+    {
+        return collect($this->toArray())
+            ->mapWithKeys(fn ($value, $key) => [
+                strtoupper($key) => $value
+            ])
+            ->all();
+    }
+
     public function toJSON(int $options = 0): string {
         $json = json_encode($this->toArray(), $options);
 

@@ -67,13 +67,20 @@ class ELogService {
         ];
     }
 
-    public function insertFirstReceipt(HealthCoverageModel $medicalData, EmployeeModel|null $employeeData) {
+    public function insertFirstReceipt(string $medicalID) {
         $payload = new ELogInsertFirstReceiptRequestDTO(
             extsyscompanycode: $medicalData->contribution_level_code ?? "",
             invoice_code: $medicalData->no_invoice ?? "",
             no_po: $medicalData->no_medic ?? "",
-            vendor: $medicalData->employee_id ?? "",
+            vendor: "SMEDICAL",
             amount: $medicalData->balance ?? 0,
+            sisa_over_plafond: 0,
+            non_reimbursable_amount: 0,
+            nik: "",
+            no_rekening: "",
+            nama_bank: "",
+            cost_center: "",
+            plafond_type: "",
             notes: $medicalData->coverage_detail ?? "",
             first_dept: "",
             created_by: "",
@@ -101,7 +108,7 @@ class ELogService {
 
         $httpClient = app(HttpClient::class);
 
-        $httpRes = $httpClient->postJSON($this->apiBaseUrl . "/log-firstreceipt", $payload, [
+        $httpRes = $httpClient->postJSON($this->apiBaseUrl . "/log-firstreceipt", $payload->toUpperCaseArray(), [
             "Authorization" => "Bearer " . $accessToken
         ]);
         if (!$httpRes["status"]) {
