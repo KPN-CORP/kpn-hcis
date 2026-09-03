@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Exports\BusinessTripExport;
 use App\Exports\UsersExport;
 use App\Models\BTApproval;
@@ -45,6 +46,7 @@ use App\Mail\RefundNotification;
 use App\Models\ca_extend;
 use Illuminate\Support\Facades\Http;
 use App\Helpers\Attachment as AttachmentHelper;
+use Illuminate\Support\Facades\Storage;
 
 class BusinessTripController extends Controller
 {
@@ -1358,6 +1360,42 @@ class BusinessTripController extends Controller
                     )
                     ->get();
 
+                $data_matrix_approvals_specific_employee = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "specific_employee_id",
+                        $employee->employee_id
+                    )
+                    ->whereRaw(
+                        '? BETWEEN CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
+                $data_matrix_approvals_specific_office_location = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "group_company",
+                        "like",
+                        "%" . $employee->group_company . "%",
+                    )
+                    ->where(
+                        "specific_office_location",
+                        "like",
+                        "%" . $employee->office_area . "%",
+                    )
+                    ->whereRaw(
+                        '? BETWEEN CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
                     ->where(function ($query) use ($employee) {
@@ -1370,7 +1408,15 @@ class BusinessTripController extends Controller
                     })
                     ->first();
 
-                foreach ($data_matrix_approvals as $data_matrix_approval) {
+                if ($data_matrix_approvals_specific_employee->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_employee;
+                } else if ($data_matrix_approvals_specific_office_location->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_office_location;
+                } else {
+                    $used_data_matrix_approvals = $data_matrix_approvals;
+                }
+
+                foreach ($used_data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
                     } elseif ($data_matrix_approval->employee_id == "cek_L2") {
@@ -1384,7 +1430,7 @@ class BusinessTripController extends Controller
                     }
 
                     // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                    if ($data_approval_setting) {
+                    if ($data_approval_setting && $data_matrix_approvals_specific_employee->isEmpty()) {
                         if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
                             $employee_id = $data_approval_setting->hcga_employee_id;
                         }
@@ -1667,6 +1713,48 @@ class BusinessTripController extends Controller
                     )
                     ->get();
 
+                $data_matrix_approvals_specific_employee = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "specific_employee_id",
+                        $employee->employee_id
+                    )
+                    ->whereRaw(
+                        '
+            ? BETWEEN
+            CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND
+            CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
+                $data_matrix_approvals_specific_office_location = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "group_company",
+                        "like",
+                        "%" . $employee->group_company . "%",
+                    )
+                    ->where(
+                        "specific_office_location",
+                        "like",
+                        "%" . $employee->office_area . "%",
+                    )
+                    ->whereRaw(
+                        '
+            ? BETWEEN
+            CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND
+            CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
                     ->where(function ($query) use ($employee) {
@@ -1679,7 +1767,15 @@ class BusinessTripController extends Controller
                     })
                     ->first();
 
-                foreach ($data_matrix_approvals as $data_matrix_approval) {
+                if ($data_matrix_approvals_specific_employee->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_employee;
+                } else if ($data_matrix_approvals_specific_office_location->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_office_location;
+                } else {
+                    $used_data_matrix_approvals = $data_matrix_approvals;
+                }
+
+                foreach ($used_data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
                     } elseif ($data_matrix_approval->employee_id == "cek_L2") {
@@ -1693,7 +1789,7 @@ class BusinessTripController extends Controller
                     }
 
                     // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                    if ($data_approval_setting) {
+                    if ($data_approval_setting && $data_matrix_approvals_specific_employee->isEmpty()) {
                         if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
                             $employee_id = $data_approval_setting->hcga_employee_id;
                         }
@@ -3765,6 +3861,42 @@ class BusinessTripController extends Controller
                     )
                     ->get();
 
+                $data_matrix_approvals_specific_employee = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "specific_employee_id",
+                        $employee->employee_id
+                    )
+                    ->whereRaw(
+                        '? BETWEEN CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
+                $data_matrix_approvals_specific_office_location = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "group_company",
+                        "like",
+                        "%" . $employee->group_company . "%",
+                    )
+                    ->where(
+                        "specific_office_location",
+                        "like",
+                        "%" . $employee->office_area . "%",
+                    )
+                    ->whereRaw(
+                        '? BETWEEN CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
                     ->where(function ($query) use ($employee) {
@@ -3777,7 +3909,15 @@ class BusinessTripController extends Controller
                     })
                     ->first();
 
-                foreach ($data_matrix_approvals as $data_matrix_approval) {
+                if ($data_matrix_approvals_specific_employee->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_employee;
+                } else if ($data_matrix_approvals_specific_office_location->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_office_location;
+                } else {
+                    $used_data_matrix_approvals = $data_matrix_approvals;
+                }
+
+                foreach ($used_data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
                     } elseif ($data_matrix_approval->employee_id == "cek_L2") {
@@ -3791,7 +3931,7 @@ class BusinessTripController extends Controller
                     }
 
                     // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                    if ($data_approval_setting) {
+                    if ($data_approval_setting && $data_matrix_approvals_specific_employee->isEmpty()) {
                         if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
                             $employee_id = $data_approval_setting->hcga_employee_id;
                         }
@@ -3843,6 +3983,42 @@ class BusinessTripController extends Controller
                     )
                     ->get();
 
+                $data_matrix_approvals_specific_employee = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "specific_employee_id",
+                        $employee->employee_id
+                    )
+                    ->whereRaw(
+                        '? BETWEEN CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
+                $data_matrix_approvals_specific_office_location = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "group_company",
+                        "like",
+                        "%" . $employee->group_company . "%",
+                    )
+                    ->where(
+                        "specific_office_location",
+                        "like",
+                        "%" . $employee->office_area . "%",
+                    )
+                    ->whereRaw(
+                        '? BETWEEN CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
                     ->where(function ($query) use ($employee) {
@@ -3855,7 +4031,15 @@ class BusinessTripController extends Controller
                     })
                     ->first();
 
-                foreach ($data_matrix_approvals as $data_matrix_approval) {
+                if ($data_matrix_approvals_specific_employee->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_employee;
+                } else if ($data_matrix_approvals_specific_office_location->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_office_location;
+                } else {
+                    $used_data_matrix_approvals = $data_matrix_approvals;
+                }
+
+                foreach ($used_data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
                     } elseif ($data_matrix_approval->employee_id == "cek_L2") {
@@ -3869,7 +4053,7 @@ class BusinessTripController extends Controller
                     }
 
                     // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                    if ($data_approval_setting) {
+                    if ($data_approval_setting && $data_matrix_approvals_specific_employee->isEmpty()) {
                         if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
                             $employee_id = $data_approval_setting->hcga_employee_id;
                         }
@@ -4239,6 +4423,34 @@ class BusinessTripController extends Controller
                     )
                     ->get();
 
+                $data_matrix_approvals_specific_employee = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%businesstripExtend%"
+                    )
+                    ->where(
+                        "specific_employee_id",
+                        $employee->employee_id
+                    )
+                    ->get();
+
+                $data_matrix_approvals_specific_office_location = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%businesstripExtend%"
+                    )
+                    ->where(
+                        "group_company",
+                        "like",
+                        "%" . $employee->group_company . "%",
+                    )
+                    ->where(
+                        "specific_office_location",
+                        "like",
+                        "%" . $employee->office_area . "%",
+                    )
+                    ->get();
+
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee_data->group_company . "%")
                     ->where(function ($query) use ($employee_data) {
@@ -4251,7 +4463,15 @@ class BusinessTripController extends Controller
                     })
                     ->first();
 
-                foreach ($data_matrix_approvals as $data_matrix_approval) {
+                if ($data_matrix_approvals_specific_employee->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_employee;
+                } else if ($data_matrix_approvals_specific_office_location->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_office_location;
+                } else {
+                    $used_data_matrix_approvals = $data_matrix_approvals;
+                }
+
+                foreach ($used_data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
                     } elseif ($data_matrix_approval->employee_id == "cek_L2") {
@@ -4265,7 +4485,7 @@ class BusinessTripController extends Controller
                     }
 
                     // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                    if ($data_approval_setting) {
+                    if ($data_approval_setting && $data_matrix_approvals_specific_employee->isEmpty()) {
                         if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
                             $employee_id = $data_approval_setting->hcga_employee_id;
                         }
@@ -4371,6 +4591,34 @@ class BusinessTripController extends Controller
                     )
                     ->get();
 
+                $data_matrix_approvals_specific_employee = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%businesstripExtend%"
+                    )
+                    ->where(
+                        "specific_employee_id",
+                        $employee->employee_id
+                    )
+                    ->get();
+
+                $data_matrix_approvals_specific_office_location = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%businesstripExtend%"
+                    )
+                    ->where(
+                        "group_company",
+                        "like",
+                        "%" . $employee->group_company . "%",
+                    )
+                    ->where(
+                        "specific_office_location",
+                        "like",
+                        "%" . $employee->office_area . "%",
+                    )
+                    ->get();
+
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee_data->group_company . "%")
                     ->where(function ($query) use ($employee_data) {
@@ -4383,7 +4631,15 @@ class BusinessTripController extends Controller
                     })
                     ->first();
 
-                foreach ($data_matrix_approvals as $data_matrix_approval) {
+                if ($data_matrix_approvals_specific_employee->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_employee;
+                } else if ($data_matrix_approvals_specific_office_location->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_office_location;
+                } else {
+                    $used_data_matrix_approvals = $data_matrix_approvals;
+                }
+
+                foreach ($used_data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
                     } elseif ($data_matrix_approval->employee_id == "cek_L2") {
@@ -4397,7 +4653,7 @@ class BusinessTripController extends Controller
                     }
 
                     // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                    if ($data_approval_setting) {
+                    if ($data_approval_setting && $data_matrix_approvals_specific_employee->isEmpty()) {
                         if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
                             $employee_id = $data_approval_setting->hcga_employee_id;
                         }
@@ -6717,6 +6973,48 @@ class BusinessTripController extends Controller
                     )
                     ->get();
 
+                $data_matrix_approvals_specific_employee = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "specific_employee_id",
+                        $employee->employee_id
+                    )
+                    ->whereRaw(
+                        '
+                            ? BETWEEN
+                            CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND
+                            CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
+                $data_matrix_approvals_specific_office_location = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "group_company",
+                        "like",
+                        "%" . $employee->group_company . "%",
+                    )
+                    ->where(
+                        "specific_office_location",
+                        "like",
+                        "%" . $employee->office_area . "%",
+                    )
+                    ->whereRaw(
+                        '
+                            ? BETWEEN
+                            CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND
+                            CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
                     ->where(function ($query) use ($employee) {
@@ -6729,7 +7027,15 @@ class BusinessTripController extends Controller
                     })
                     ->first();
 
-                foreach ($data_matrix_approvals as $data_matrix_approval) {
+                if ($data_matrix_approvals_specific_employee->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_employee;
+                } else if ($data_matrix_approvals_specific_office_location->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_office_location;
+                } else {
+                    $used_data_matrix_approvals = $data_matrix_approvals;
+                }
+
+                foreach ($used_data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
                     } elseif ($data_matrix_approval->employee_id == "cek_L2") {
@@ -6743,7 +7049,7 @@ class BusinessTripController extends Controller
                     }
 
                     // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                    if ($data_approval_setting) {
+                    if ($data_approval_setting && $data_matrix_approvals_specific_employee->isEmpty()) {
                         if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
                             $employee_id = $data_approval_setting->hcga_employee_id;
                         }
@@ -7014,6 +7320,48 @@ class BusinessTripController extends Controller
                     )
                     ->get();
 
+                $data_matrix_approvals_specific_employee = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "specific_employee_id",
+                        $employee->employee_id
+                    )
+                    ->whereRaw(
+                        '
+            ? BETWEEN
+            CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND
+            CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
+                $data_matrix_approvals_specific_office_location = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "group_company",
+                        "like",
+                        "%" . $employee->group_company . "%",
+                    )
+                    ->where(
+                        "specific_office_location",
+                        "like",
+                        "%" . $employee->office_area . "%",
+                    )
+                    ->whereRaw(
+                        '
+            ? BETWEEN
+            CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND
+            CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
                     ->where(function ($query) use ($employee) {
@@ -7026,7 +7374,15 @@ class BusinessTripController extends Controller
                     })
                     ->first();
 
-                foreach ($data_matrix_approvals as $data_matrix_approval) {
+                if ($data_matrix_approvals_specific_employee->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_employee;
+                } else if ($data_matrix_approvals_specific_office_location->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_office_location;
+                } else {
+                    $used_data_matrix_approvals = $data_matrix_approvals;
+                }
+
+                foreach ($used_data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
                     } elseif ($data_matrix_approval->employee_id == "cek_L2") {
@@ -7040,7 +7396,7 @@ class BusinessTripController extends Controller
                     }
 
                     // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                    if ($data_approval_setting) {
+                    if ($data_approval_setting && $data_matrix_approvals_specific_employee->isEmpty()) {
                         if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
                             $employee_id = $data_approval_setting->hcga_employee_id;
                         }
@@ -13401,6 +13757,67 @@ class BusinessTripController extends Controller
         );
     }
 
+    public function getAttachmentsAdmin($id) {
+        try {
+            $transaction = BusinessTrip::where("id", $id)->first();
+            if (!$transaction) {
+                return response()->json([
+                    'ca_attachments' => null
+                ]);
+            }
+
+            $ca_transactions = CATransaction::where("no_sppd", $transaction->no_sppd)->get();
+            if (!$ca_transactions || $ca_transactions->isEmpty()) {
+                return response()->json([
+                    'ca_attachments' => null
+                ]);
+            }
+
+            $caAttachments = [];
+
+            foreach ($ca_transactions as $ca_transaction) {
+                $attachmentPaths = AttachmentHelper::resolve_paths($ca_transaction->prove_declare);
+
+                foreach ($attachmentPaths as $attachmentPath) {
+                    // Normalize slash
+                    $attachmentPath = str_replace('\\', '/', $attachmentPath);
+
+                    // Ambil path setelah storage/app/public/
+                    $marker = 'storage/app/public/';
+
+                    $position = strpos($attachmentPath, $marker);
+
+                    if ($position !== false) {
+                        $relativePath = substr(
+                            $attachmentPath,
+                            $position + strlen($marker)
+                        );
+                    } else {
+                        $relativePath = $attachmentPath;
+                    }
+
+                    $caAttachments[] = [
+                        'url' => route('cashadvanced.admin.attachment.view', [
+                            'id' => $ca_transaction->id,
+                            'path' => $relativePath,
+                        ]),
+                        "name" => basename($attachmentPath),
+                        "no_ca" => $ca_transaction->no_ca,
+                    ];
+                }
+            }
+
+            return response()->json([
+                'ca_attachments' => $caAttachments,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'ca_attachments' => null,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     private function generateNoSppd()
     {
         $currentYear = date("Y");
@@ -13839,6 +14256,16 @@ class BusinessTripController extends Controller
             return [
                 "l1" => "01126010012",
                 "l2" => "-",
+                "l3" => "-",
+                "l4" => "-",
+                "l5" => "-",
+                "l6" => "-",
+                "l7" => "-",
+            ];
+        } else if ($employee->employee_id == "02114020045") {
+            return [
+                "l1" => "01113090005",
+                "l2" => "01123090014",
                 "l3" => "-",
                 "l4" => "-",
                 "l5" => "-",
