@@ -26,6 +26,7 @@ use App\Models\HealthCoverage;
 use App\Models\ApprovalPriority;
 use App\Models\ApprovalSetting;
 use App\Models\master_holiday;
+use App\Models\TransportHub;
 use Carbon\Carbon;
 use Excel;
 use Illuminate\Support\Facades\DB;
@@ -500,6 +501,13 @@ class BusinessTripController extends Controller
         }
 
         $holiday = master_holiday::pluck("tanggal_libur")->toArray();
+        $transportHubs = TransportHub::where("is_active", true);
+
+        if (strtolower($employee_data->group_company) == "downstream") {
+            $transportHubs = $transportHubs->where("group_company", "Downstream");
+        }
+
+        $transportHubs = $transportHubs->pluck("name");
 
         return view("hcis.reimbursements.businessTrip.editFormBt", [
             "n" => $n,
@@ -527,6 +535,7 @@ class BusinessTripController extends Controller
             "isDisabled" => $isDisabled,
             "revisiInfo" => $revisiInfo,
             "holiday" => $holiday,
+            "transport_hubs" => $transportHubs,
         ]);
     }
 
@@ -924,6 +933,8 @@ class BusinessTripController extends Controller
                     "jenis_tkt" => $request->jenis_tkt_dalam_kota,
                     "type_tkt" => $request->type_tkt_dalam_kota,
                     "ket_tkt" => $request->ket_tkt_dalam_kota,
+                    "others_dari_tkt" => $request->others_dari_tkt_dalam_kota,
+                    "others_ke_tkt" => $request->others_ke_tkt_dalam_kota,
                 ];
             } else {
                 $ticketFields = [
@@ -937,6 +948,8 @@ class BusinessTripController extends Controller
                     "jenis_tkt" => $request->jenis_tkt,
                     "type_tkt" => $request->type_tkt,
                     "ket_tkt" => $request->ket_tkt,
+                    "others_dari_tkt" => $request->others_dari_tkt,
+                    "others_ke_tkt" => $request->others_ke_tkt,
                 ];
             }
 
@@ -988,6 +1001,14 @@ class BusinessTripController extends Controller
                     $ticketData["np_tkt"] = $employee_data->fullname ?? null;
                     $ticketData["tlp_tkt"] =
                         $employee_data->personal_mobile_number ?? null;
+
+                    if (!empty($ticketFields["others_dari_tkt"][$key])) {
+                        $ticketData["dari_tkt"] = $ticketFields["others_dari_tkt"][$key];
+                    }
+
+                    if (!empty($ticketFields["others_ke_tkt"][$key])) {
+                        $ticketData["ke_tkt"] = $ticketFields["others_ke_tkt"][$key];
+                    }
 
                     if (isset($existingTickets[$value])) {
                         // Update existing ticket
@@ -6092,6 +6113,13 @@ class BusinessTripController extends Controller
         }
 
         $holiday = master_holiday::pluck("tanggal_libur")->toArray();
+        $transportHubs = TransportHub::where("is_active", true);
+
+        if (strtolower($employee_data->group_company) == "downstream") {
+            $transportHubs = $transportHubs->where("group_company", "Downstream");
+        }
+
+        $transportHubs = $transportHubs->pluck("name");
 
         $parentLink = "Business Travel";
         $link = "Business Travel Request";
@@ -6111,6 +6139,7 @@ class BusinessTripController extends Controller
             "group_company" => $employee_data->group_company,
             "isDisabled" => $isDisabled,
             "holiday" => $holiday,
+            "transport_hubs" =>$transportHubs
         ]);
     }
 
@@ -6354,6 +6383,8 @@ class BusinessTripController extends Controller
                     "type_tkt" => $request->type_tkt_dalam_kota,
                     "ket_tkt" => $request->ket_tkt_dalam_kota,
                     "approval_status" => $statusValue,
+                    "others_dari_tkt" => $request->others_dari_tkt_dalam_kota,
+                    "others_ke_tkt" => $request->others_ke_tkt_dalam_kota,
                 ];
             } else {
                 $ticketData = [
@@ -6369,6 +6400,8 @@ class BusinessTripController extends Controller
                     "ket_tkt" => $request->ket_tkt,
                     "approval_status" => $statusValue,
                     "jns_dinas_tkt" => "Dinas",
+                    "others_dari_tkt" => $request->others_dari_tkt,
+                    "others_ke_tkt" => $request->others_ke_tkt,
                 ];
             }
 
@@ -6413,6 +6446,14 @@ class BusinessTripController extends Controller
                     $tiket->manager_l2_id =
                         $isJobLevel->count() == 1 ? "-" : $managerL2;
                     $tiket->jns_dinas_tkt = "Dinas";
+
+                    if (!empty($ticketData["others_dari_tkt"][$key])) {
+                        $tiket->dari_tkt = $ticketData["others_dari_tkt"][$key];
+                    }
+
+                    if (!empty($ticketData["others_ke_tkt"][$key])) {
+                        $tiket->ke_tkt = $ticketData["others_ke_tkt"][$key];
+                    }
 
                     $tiket->save();
                 }
@@ -9143,6 +9184,13 @@ class BusinessTripController extends Controller
         // dd($taksi->toArray());
 
         $holiday = master_holiday::pluck("tanggal_libur")->toArray();
+        $transportHubs = TransportHub::where("is_active", true);
+
+        if (strtolower($employee_data->group_company) == "downstream") {
+            $transportHubs = $transportHubs->where("group_company", "Downstream");
+        }
+
+        $transportHubs = $transportHubs->pluck("name");
 
         $parentLink = "Business Travel Approval";
         $link = "Approval Details";
@@ -9172,6 +9220,7 @@ class BusinessTripController extends Controller
             "job_level_number" => $job_level_number,
             "messData" => $messData,
             "holiday" => $holiday,
+            "transport_hubs" => $transportHubs
         ]);
     }
 
