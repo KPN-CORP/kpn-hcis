@@ -67,7 +67,7 @@ class ELogService {
         ];
     }
 
-    public function insertFirstReceipt(string $medicalID) {
+    public function insertFirstReceipt(HealthCoverageModel $medicalData) {
         $payload = new ELogInsertFirstReceiptRequestDTO(
             extsyscompanycode: $medicalData->contribution_level_code ?? "",
             invoice_code: $medicalData->no_invoice ?? "",
