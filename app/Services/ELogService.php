@@ -5,7 +5,6 @@ namespace App\Services;
 use Illuminate\Support\Facades\Cache;
 
 use App\Models\HealthCoverage as HealthCoverageModel;
-use App\Models\Employee as EmployeeModel;
 use App\DTO\ELogInsertFirstReceiptRequestDTO;
 use App\DTO\ELogInsertFirstReceiptResponseDTO;
 use App\DTO\ELogLoginRequestDTO;
@@ -68,6 +67,8 @@ class ELogService {
     }
 
     public function insertFirstReceipt(HealthCoverageModel $medicalData) {
+        $employeeData = null;
+
         $payload = new ELogInsertFirstReceiptRequestDTO(
             extsyscompanycode: $medicalData->contribution_level_code ?? "",
             invoice_code: $medicalData->no_invoice ?? "",
