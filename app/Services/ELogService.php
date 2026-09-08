@@ -71,14 +71,14 @@ class ELogService {
 
     public function insertFirstReceipt(HealthCoverageModel $medicalData) {
         $bankName = "";
-        $costCenter = "";
+        $costCenterCode = "";
         $employeeID = $medicalData->employee_id;
 
         $employeeData = EmployeeModel::where("employee_id", $employeeID)->first();
         if ($employeeData) {
             $employeeID = $employeeData->employee_id ?? $employeeID;
-            $bankName = $employeeData->bank_name;
-            $costCenter = $employeeData->cost_center;
+            $bankName = $employeeData->bank_name ?? $bankName;
+            $costCenterCode = $employeeData->cost_center_code ?? $costCenterCode;
         }
 
         $medicalPlan = HealthPlanModel::where("employee_id", $employeeID)
@@ -103,7 +103,7 @@ class ELogService {
             nik: $employeeID,
             no_rekening: "",
             nama_bank: $bankName ?? "",
-            cost_center: $costCenter ?? "",
+            cost_center: $costCenterCode ?? "",
             medical_type: "Reimbursement",
             plafond_type: $medicalData->medical_type ?? "",
             notes: $medicalData->coverage_detail ?? "",
