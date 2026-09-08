@@ -1096,13 +1096,13 @@ class MedicalController extends Controller
                     ]);
                 }
 
-                $medicalEmployeeData = $medicalEmployee
-                    ->where("medical_type", $medical_type)
-                    ->first();
+                // $medicalEmployeeData = $medicalEmployee
+                //     ->where("medical_type", $medical_type)
+                //     ->first();
 
-                $eLogService = app(ELogService::class);
+                // $eLogService = app(ELogService::class);
 
-                $eLogService->insertFirstReceipt($existingCoverage, $medicalEmployeeData->employee ?? null);
+                // $eLogService->insertFirstReceipt($existingCoverage, $medicalEmployeeData->employee ?? null);
 
                 // $MDCNotificationLayer = Employee::where('employee_id', $employee_id)->pluck('email')->first();
                 // if ($MDCNotificationLayer) {
@@ -1548,6 +1548,10 @@ class MedicalController extends Controller
                     "approved_by" => $employee_id,
                     "approved_at" => now(),
                 ]);
+
+                $eLogService = app(ELogService::class);
+
+                $eLogService->insertFirstReceipt($coverage);
             }
 
             return redirect()

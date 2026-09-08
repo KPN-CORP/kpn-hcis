@@ -4,7 +4,10 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Cache;
 
+use App\Models\Employee as EmployeeModel;
+use App\Models\HealthPlan as HealthPlanModel;
 use App\Models\HealthCoverage as HealthCoverageModel;
+use App\Models\MasterSAPBankName as MasterSAPBankNameModel;
 use App\DTO\ELogInsertFirstReceiptRequestDTO;
 use App\DTO\ELogInsertFirstReceiptResponseDTO;
 use App\DTO\ELogLoginRequestDTO;
@@ -67,27 +70,54 @@ class ELogService {
     }
 
     public function insertFirstReceipt(HealthCoverageModel $medicalData) {
-        $employeeData = null;
+        $bankName = "";
+        $costCenter = "";
+        $employeeID = $medicalData->employee_id;
+
+        $employeeData = EmployeeModel::where("employee_id", $employeeID)->first();
+        if ($employeeData) {
+            $employeeID = $employeeData->employee_id ?? $employeeID;
+            $bankName = $employeeData->bank_name;
+            $costCenter = $employeeData->cost_center;
+        }
+
+        $medicalPlan = HealthPlanModel::where("employee_id", $employeeID)
+            ->where("period", $medicalData->period)
+            ->where("medical_type", $medicalData->medical_type)
+            ->whereNull("deleted_at")
+            ->first();
+
+        $masterSAPBankName = MasterSAPBankNameModel::where("hcis_bank_name", $bankName)->first();
+        if ($masterSAPBankName) {
+            $bankName = $masterSAPBankName->sap_bank_name ?? $bankName;
+        }
 
         $payload = new ELogInsertFirstReceiptRequestDTO(
             extsyscompanycode: $medicalData->contribution_level_code ?? "",
             invoice_code: $medicalData->no_invoice ?? "",
             no_po: $medicalData->no_medic ?? "",
             vendor: "SMEDICAL",
-            amount: $medicalData->balance ?? 0,
+            amount: 0,
             sisa_over_plafond: 0,
-            non_reimbursable_amount: 0,
-            nik: "",
+            non_reimbursable_amount: $medicalData->balance_uncoverage ?? 0,
+            nik: $employeeID,
             no_rekening: "",
-            nama_bank: "",
-            cost_center: "",
-            plafond_type: "",
+            nama_bank: $bankName ?? "",
+            cost_center: $costCenter ?? "",
+            medical_type: "Reimbursement",
+            plafond_type: $medicalData->medical_type ?? "",
             notes: $medicalData->coverage_detail ?? "",
             first_dept: "",
             created_by: "",
             inv_date: $medicalData->date ?? "",
             trans_type: "MEDICAL",
         );
+
+        if ($medicalData->balance_verif != null) {
+            $payload->amount = $medicalData->balance_verif;
+        } else {
+            $payload->amount = $medicalData->balance ?? 0;
+        }
 
         if ($medicalData->approved_by) {
             $payload->created_by = $medicalData->approved_by;
@@ -96,13 +126,22 @@ class ELogService {
         }
 
         if ($employeeData) {
+            if ($employeeData->bank_account_number && !empty($employeeData->bank_account_number)) {
+                $payload->no_rekening = $employeeData->bank_account_number;
+            }
+
             if (strtolower($employeeData->group_company) == "downstream") {
                 $payload->first_dept = "HRD-DWS";
             } else if (strtolower($employeeData->group_company) == "kpn corporation") {
                 $payload->first_dept = "HRD-CORP";
-            } else { // TODO: THIS IS FOR UPSTREAM, PLEASE CONFIRM THIS
                 $payload->first_dept = "HRD";
             }
+        } else {
+            $payload->first_dept = "HRD";
+        }
+
+        if ($medicalPlan) {
+            $payload->sisa_over_plafond = $medicalPlan->balance;
         }
 
         $accessToken = $this->getAccessToken();
