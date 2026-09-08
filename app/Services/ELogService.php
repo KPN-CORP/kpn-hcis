@@ -71,6 +71,7 @@ class ELogService {
 
     public function insertFirstReceipt(HealthCoverageModel $medicalData) {
         $bankName = "";
+        $namaPemilikRekening = "";
         $costCenterCode = "";
         $employeeID = $medicalData->employee_id;
 
@@ -78,6 +79,7 @@ class ELogService {
         if ($employeeData) {
             $employeeID = $employeeData->employee_id ?? $employeeID;
             $bankName = $employeeData->bank_name ?? $bankName;
+            $namaPemilikRekening = $employeeData->bank_account_name ?? $namaPemilikRekening;
             $costCenterCode = $employeeData->cost_center_code ?? $costCenterCode;
         }
 
@@ -102,6 +104,7 @@ class ELogService {
             non_reimbursable_amount: $medicalData->balance_uncoverage ?? 0,
             nik: $employeeID,
             no_rekening: "",
+            nama_pemilik_rekening: $namaPemilikRekening ?? "",
             nama_bank: $bankName ?? "",
             cost_center: $costCenterCode ?? "",
             medical_type: "Reimbursement",
