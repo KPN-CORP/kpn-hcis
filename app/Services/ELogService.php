@@ -79,7 +79,7 @@ class ELogService {
         if ($employeeData) {
             $employeeID = $employeeData->employee_id ?? $employeeID;
             $bankName = $employeeData->bank_name ?? $bankName;
-            $namaPemilikRekening = $employeeData->bank_account_name ?? $namaPemilikRekening;
+            $namaPemilikRekening = $employeeData->bank_account_name_payroll ?? $employeeData->bank_account_name ?? $namaPemilikRekening;
             $costCenterCode = $employeeData->cost_center_code ?? $costCenterCode;
         }
 

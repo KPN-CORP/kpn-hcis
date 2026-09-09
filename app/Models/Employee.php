@@ -60,7 +60,8 @@ class Employee extends Model
         'bank_account_number',
         'bank_account_name',
         'cost_center',
-        'cost_center_code'
+        'cost_center_code',
+        'bank_account_name_payroll'
     ];
 
     protected $keyType = 'string';
