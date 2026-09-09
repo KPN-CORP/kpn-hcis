@@ -62,7 +62,8 @@ class Employee extends Model
         'direct_reportees_employee_id',
         'old_employee_id_(rehired)',
         'cost_center',
-        'cost_center_code'
+        'cost_center_code',
+        'bank_account_name_payroll'
     ];
 
     protected $keyType = 'string';
