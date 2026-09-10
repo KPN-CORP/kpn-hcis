@@ -2750,37 +2750,39 @@ class BusinessTripController extends Controller
                         }
                     }
                 }
-                if ($request->has("start_bt_meals")) {
-                    foreach ($request->start_bt_meals as $key => $startDate) {
-                        $endDate = $request->end_bt_meals[$key] ?? "";
-                        $totalDays = $request->total_days_bt_meals[$key] ?? "";
-                        $companyCode = $request->company_bt_meals[$key] ?? "";
-                        $nominal = str_replace(
-                            ".",
-                            "",
-                            $request->nominal_bt_meals[$key] ?? "0",
-                        );
-                        $keterangan = $request->keterangan_bt_meals[$key] ?? "";
 
-                        if (
-                            !empty($startDate) &&
-                            !empty($endDate) &&
-                            !empty($totalDays) &&
-                            !empty($hotelName) &&
-                            !empty($companyCode) &&
-                            !empty($nominal)
-                        ) {
-                            $detail_meals[] = [
-                                "start_date" => $startDate,
-                                "end_date" => $endDate,
-                                "total_days" => $totalDays,
-                                "company_code" => $companyCode,
-                                "nominal" => $nominal,
-                                "keterangan" => $keterangan,
-                            ];
-                        }
-                    }
-                }
+                // THIS IS NOT REQUIRED
+                // if ($request->has("start_bt_meals")) {
+                //     foreach ($request->start_bt_meals as $key => $startDate) {
+                //         $endDate = $request->end_bt_meals[$key] ?? "";
+                //         $totalDays = $request->total_days_bt_meals[$key] ?? "";
+                //         $companyCode = $request->company_bt_meals[$key] ?? "";
+                //         $nominal = str_replace(
+                //             ".",
+                //             "",
+                //             $request->nominal_bt_meals[$key] ?? "0",
+                //         );
+                //         $keterangan = $request->keterangan_bt_meals[$key] ?? "";
+
+                //         if (
+                //             !empty($startDate) &&
+                //             !empty($endDate) &&
+                //             !empty($totalDays) &&
+                //             !empty($hotelName) &&
+                //             !empty($companyCode) &&
+                //             !empty($nominal)
+                //         ) {
+                //             $detail_meals[] = [
+                //                 "start_date" => $startDate,
+                //                 "end_date" => $endDate,
+                //                 "total_days" => $totalDays,
+                //                 "company_code" => $companyCode,
+                //                 "nominal" => $nominal,
+                //                 "keterangan" => $keterangan,
+                //             ];
+                //         }
+                //     }
+                // }
 
                 // Gabungkan detail entertain dan relation, lalu masukkan ke detail_ca
                 $declare_ca = [
@@ -3734,43 +3736,45 @@ class BusinessTripController extends Controller
                             }
                         }
                     }
-                    if ($request->has("start_bt_meals")) {
-                        foreach (
-                            $request->start_bt_meals
-                            as $key => $startDate
-                        ) {
-                            $endDate = $request->end_bt_meals[$key] ?? "";
-                            $totalDays =
-                                $request->total_days_bt_meals[$key] ?? "";
-                            $companyCode =
-                                $request->company_bt_meals[$key] ?? "";
-                            $nominal = str_replace(
-                                ".",
-                                "",
-                                $request->nominal_bt_meals[$key] ?? "0",
-                            );
-                            $keterangan =
-                                $request->keterangan_bt_meals[$key] ?? "";
 
-                            if (
-                                !empty($startDate) &&
-                                !empty($endDate) &&
-                                !empty($totalDays) &&
-                                !empty($hotelName) &&
-                                !empty($companyCode) &&
-                                !empty($nominal)
-                            ) {
-                                $detail_meals[] = [
-                                    "start_date" => $startDate,
-                                    "end_date" => $endDate,
-                                    "total_days" => $totalDays,
-                                    "company_code" => $companyCode,
-                                    "nominal" => $nominal,
-                                    "keterangan" => $keterangan,
-                                ];
-                            }
-                        }
-                    }
+                    // THIS IS NOT REQUIRED
+                    // if ($request->has("start_bt_meals")) {
+                    //     foreach (
+                    //         $request->start_bt_meals
+                    //         as $key => $startDate
+                    //     ) {
+                    //         $endDate = $request->end_bt_meals[$key] ?? "";
+                    //         $totalDays =
+                    //             $request->total_days_bt_meals[$key] ?? "";
+                    //         $companyCode =
+                    //             $request->company_bt_meals[$key] ?? "";
+                    //         $nominal = str_replace(
+                    //             ".",
+                    //             "",
+                    //             $request->nominal_bt_meals[$key] ?? "0",
+                    //         );
+                    //         $keterangan =
+                    //             $request->keterangan_bt_meals[$key] ?? "";
+
+                    //         if (
+                    //             !empty($startDate) &&
+                    //             !empty($endDate) &&
+                    //             !empty($totalDays) &&
+                    //             !empty($hotelName) &&
+                    //             !empty($companyCode) &&
+                    //             !empty($nominal)
+                    //         ) {
+                    //             $detail_meals[] = [
+                    //                 "start_date" => $startDate,
+                    //                 "end_date" => $endDate,
+                    //                 "total_days" => $totalDays,
+                    //                 "company_code" => $companyCode,
+                    //                 "nominal" => $nominal,
+                    //                 "keterangan" => $keterangan,
+                    //             ];
+                    //         }
+                    //     }
+                    // }
 
                     // Gabungkan detail entertain dan relation, lalu masukkan ke detail_ca
                     $declare_ca = [
