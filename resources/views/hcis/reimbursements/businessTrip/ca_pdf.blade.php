@@ -626,7 +626,7 @@
                     </table>
                 @endif
 
-                @if (count($detailCA['detail_lainnya']) > 0 && !empty($detailCA['detail_lainnya'][0]['keterangan']))
+                @if (count($detailCA['detail_lainnya']) > 0 && !empty($detailCA['detail_lainnya'][0]['tanggal']))
                     <table class="table-approve">
                         <tr>
                             <th colspan="4"><b>Others Plan :</b></th>
