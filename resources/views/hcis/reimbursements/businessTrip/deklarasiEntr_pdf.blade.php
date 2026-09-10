@@ -1235,7 +1235,7 @@
 
             @if (isset($detailCA['detail_lainnya']) &&
                     count($detailCA['detail_lainnya']) > 0 &&
-                    !empty($detailCA['detail_lainnya'][0]['keterangan']))
+                    !empty($detailCA['detail_lainnya'][0]['tanggal']))
                 <table class="table-approve">
                     <tr>
                         <th colspan="3"><b>Others Plan :</b></th>
@@ -1268,7 +1268,7 @@
                 </table>
             @endif
 
-            @if (count($declareCA['detail_lainnya']) > 0 && !empty($declareCA['detail_lainnya'][0]['keterangan']))
+            @if (count($declareCA['detail_lainnya']) > 0 && !empty($declareCA['detail_lainnya'][0]['tanggal']))
                 <table class="table-approve">
                     <tr>
                         <th colspan="3"><b>Others Plan Declaration :</b></th>
