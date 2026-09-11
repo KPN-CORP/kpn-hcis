@@ -212,7 +212,7 @@
             @if ($ticket->checkcompany && $ticket->checkcompany->contribution_level)
                 <td class="value">{{ $ticket->checkcompany->contribution_level }}</td>
             @else
-                <td class="value">{{ $passenger->company_name }}</td>
+                <td class="value">-</td>
             @endif
         </tr>
         <tr>

@@ -202,7 +202,11 @@
         <tr>
             <td class="label">Company</td>
             <td class="colon">:</td>
-            <td class="value">{{ $ticket->checkcompany->contribution_level ?? '-' }}</td>
+            @if ($ticket->checkcompany && $ticket->checkcompany->contribution_level)
+                <td class="value">{{ $ticket->checkcompany->contribution_level }}</td>
+            @else
+                <td class="value">-</td>
+            @endif
         </tr>
         <tr>
             <td class="label">Cost Center</td>
