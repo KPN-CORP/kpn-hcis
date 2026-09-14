@@ -45,6 +45,8 @@ class HealthCoverage extends Model
         'medical_proof',
         'submission_type',
         'deleted_at',
+        'elog_vendor',
+        'elog_medical_type'
     ];
 
     public function employee()
