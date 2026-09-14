@@ -149,6 +149,8 @@ class ELogService {
             } else if (strtolower($employeeData->group_company) == "kpn corporation") {
                 $payload->first_dept = "HRD-CORP";
                 $payload->first_dept = "HRD";
+            } else {
+                $payload->first_dept = "HRD";
             }
         } else {
             $payload->first_dept = "HRD";
