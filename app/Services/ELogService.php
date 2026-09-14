@@ -117,6 +117,7 @@ class ELogService {
             created_by: "",
             inv_date: $medicalData->date ?? "",
             trans_type: "MEDICAL",
+            currency: "IDR"
         );
 
         if ($medicalData->balance_verif != null) {
