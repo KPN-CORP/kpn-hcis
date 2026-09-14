@@ -131,6 +131,14 @@ class ELogService {
             $payload->created_by = $medicalData->verif_by;
         }
 
+        if ($medicalData->elog_vendor) {
+            $payload->vendor = $medicalData->elog_vendor ?? $payload->vendor;
+        }
+
+        if ($medicalData->elog_medical_type) {
+            $payload->medical_type = $medicalData->elog_medical_type ?? $payload->medical_type;
+        }
+
         if ($employeeData) {
             if ($employeeData->bank_account_number && !empty($employeeData->bank_account_number)) {
                 $payload->no_rekening = $employeeData->bank_account_number;
