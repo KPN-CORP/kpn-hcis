@@ -1,39 +1,86 @@
 <?php
 
-namespace App\Services;
+namespace App\Models;
 
-use App\Models\HealthCoverage as HealthCoverageModel;
-use App\Models\Employee as EmployeeModel;
-use App\Models\ELogInsertFirstReceiptRequestDTO;
-use App\Models\ELogInsertFirstReceiptResponseDTO;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ELogService {
-    public static function insertFirstReceipt(HealthCoverageModel $medicalData, EmployeeModel $employeeData) {
-        $payload = new ELogInsertFirstReceiptRequestDTO(
-            noMedic: "",
-        );
+class HealthCoverage extends Model
+{
+    use HasFactory, HasUuids;
+    use SoftDeletes;
+    protected $primaryKey = 'usage_id';
+    protected $table = 'mdc_transactions';
 
-        $httpClient = app(HttpClient::class);
+    protected $fillable = [
+        'usage_id',
+        'employee_id',
+        'contribution_level_code',
+        'no_medic',
+        'no_invoice',
+        'hospital_name',
+        'patient_name',
+        'disease',
+        'date',
+        'coverage_detail',
+        'period',
+        'medical_type',
+        'balance',
+        'balance_uncoverage',
+        'balance_uncoverage_company',
+        'balance_verif',
+        'balance_bpjs',
+        'verif_by',
+        'verif_at',
+        'approved_by',
+        'approved_at',
+        'reject_info',
+        'admin_notes',
+        'rejected_by',
+        'rejected_at',
+        'created_by',
+        'status',
+        'medical_proof',
+        'submission_type',
+        'deleted_at',
+        'reason',
+        'doc_status',
+        'doc_status_previous',
+        'doc_received_by',
+        'doc_received_at',
+        'is_revise',
+        'revise_info'
+    ];
 
-        $httpRes = $httpClient->postJSON("", $payload, [
-            "Authorization": "Bearer 123",
-        ]);
-        if (!$httpRes["status"]) {
-            return [
-                'status' => false,
-                'message'  => "",
-                'data'    => null,
-                'error'   => $httpRes["error"],
-            ];
-        }
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'employee_id', 'employee_id');
+    }
 
-        $resData = ELogInsertFirstReceiptResponseDTO::fromArray($httpRes["data"]);
+    public function employee_approve()
+    {
+        return $this->belongsTo(Employee::class, 'approved_by', 'employee_id');
+    }
 
-        return [
-            'status' => true,
-            'message'  => "",
-            'data'    => $resData,
-            'error'   => null,
-        ];
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'contribution_level_code', 'contribution_level_code');
+    }
+
+    public function employee_verified()
+    {
+        return $this->belongsTo(Employee::class, 'verif_by', 'employee_id');
+    }
+
+    public function employee_approved()
+    {
+        return $this->belongsTo(Employee::class, 'approved_by', 'employee_id');
+    }
+
+    public function employee_received()
+    {
+        return $this->belongsTo(Employee::class, 'doc_received_by', 'employee_id');
     }
 }
