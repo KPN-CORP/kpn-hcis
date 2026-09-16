@@ -22,7 +22,7 @@
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Transportation Type</label>
                             <div class="input-group">
-                                <select class="form-select form-select-sm" name="jenis_tkt[]">
+                                <select class="form-select form-select-sm" name="jenis_tkt[]" onchange="filterTransportHubByType(this)">
                                     <option value="">Select Transportation Type</option>
                                     <option value="Train"
                                         {{ $ticket && $ticket['jenis_tkt'] == 'Train' ? 'selected' : '' }}>Train</option>
@@ -150,7 +150,7 @@
                         <div class="col-md-6 mb-2">
                             <label class="form-label">Transportation Type</label>
                             <div class="input-group">
-                                <select class="form-select form-select-sm" name="jenis_tkt[]">
+                                <select class="form-select form-select-sm" name="jenis_tkt[]" onchange="filterTransportHubByType(this)">
                                     <option value="">Select Transportation Type</option>
                                     <option value="Train"
                                         {{ $ticket && $ticket['jenis_tkt'] == 'Train' ? 'selected' : '' }}>Train</option>

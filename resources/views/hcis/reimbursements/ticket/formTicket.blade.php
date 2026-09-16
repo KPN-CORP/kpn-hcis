@@ -223,7 +223,7 @@
                                                         Type</label>
                                                     <div class="input-group">
                                                         <select class="form-select form-select-sm select2" name="jenis_tkt[]"
-                                                            id="jenis_tkt_<?php echo $i; ?>" required>
+                                                            id="jenis_tkt_<?php echo $i; ?>" onchange="filterTransportHubByType(this)" required>
                                                             <option value="">Select Transportation Type</option>
                                                             <option value="Train">Train</option>
                                                             <option value="Airplane">Airplane</option>
@@ -697,7 +697,7 @@
                             <div class="col-md-6 mb-2">
                                 <label class="form-label" for="jenis_tkt_${formNumber}">Transportation Type</label>
                                 <div class="input-group">
-                                    <select class="form-select form-select-sm select2" name="jenis_tkt[]" id="jenis_tkt_${formNumber}">
+                                    <select class="form-select form-select-sm select2" name="jenis_tkt[]" id="jenis_tkt_${formNumber}" onchange="filterTransportHubByType(this)">
                                         <option value="">Select Transportation Type</option>
                                         <option value="Train">Train</option>
                                         <option value="Airplane">Airplane</option>
