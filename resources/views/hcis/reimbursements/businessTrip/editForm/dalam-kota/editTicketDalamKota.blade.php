@@ -18,19 +18,37 @@
                     <b>TICKET <?php echo $i; ?></b>
                 </div>
                 <div class="row">
-                    <div class="col-md-4 mb-2">
-                        <label class="form-label">Employee Name</label>
-                        <select class="form-select form-select-sm select2" id="noktp_tkt_dalam_kota_<?php echo $i; ?>"
-                            name="noktp_tkt_dalam_kota[]">
-                            <option value="" selected>Please Select</option>
-                            @foreach ($employees as $employee)
-                                <option value="{{ $employee->ktp }}"
-                                    {{ $ticket && $ticket['noktp_tkt'] == $employee->ktp ? 'selected' : '' }}>
-                                    {{ $employee->ktp . ' - ' . $employee->fullname }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Transportation Type</label>
+                            <div class="input-group">
+                                <select class="form-select form-select-sm" name="jenis_tkt_dalam_kota[]">
+                                    <option value="">Select Transportation Type</option>
+                                    <option value="Train"
+                                        {{ $ticket && $ticket['jenis_tkt'] == 'Train' ? 'selected' : '' }}>Train</option>
+                                    <option value="Airplane"
+                                        {{ $ticket && $ticket['jenis_tkt'] == 'Airplane' ? 'selected' : '' }}>Airplane
+                                    </option>
+                                    <option value="Ferry"
+                                        {{ $ticket && $ticket['jenis_tkt'] == 'Ferry' ? 'selected' : '' }}>Ferry</option>
+                                </select>
+                            </div>
+                        </div>
+                    @else
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Employee Name</label>
+                            <select class="form-select form-select-sm select2" id="noktp_tkt_dalam_kota_<?php echo $i; ?>"
+                                name="noktp_tkt_dalam_kota[]">
+                                <option value="" selected>Please Select</option>
+                                @foreach ($employees as $employee)
+                                    <option value="{{ $employee->ktp }}"
+                                        {{ $ticket && $ticket['noktp_tkt'] == $employee->ktp ? 'selected' : '' }}>
+                                        {{ $employee->ktp . ' - ' . $employee->fullname }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
                     @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
                         @php
                             $isOtherFrom = !in_array($ticket['dari_tkt'], $transport_hubs->toArray());
@@ -114,21 +132,37 @@
                     @endif
                 </div>
                 <div class="row">
-                    <div class="col-md-6 mb-2">
-                        <label class="form-label">Transportation Type</label>
-                        <div class="input-group">
-                            <select class="form-select form-select-sm" name="jenis_tkt_dalam_kota[]">
-                                <option value="">Select Transportation Type</option>
-                                <option value="Train"
-                                    {{ $ticket && $ticket['jenis_tkt'] == 'Train' ? 'selected' : '' }}>Train</option>
-                                <option value="Airplane"
-                                    {{ $ticket && $ticket['jenis_tkt'] == 'Airplane' ? 'selected' : '' }}>Airplane
-                                </option>
-                                <option value="Ferry"
-                                    {{ $ticket && $ticket['jenis_tkt'] == 'Ferry' ? 'selected' : '' }}>Ferry</option>
+                    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label">Employee Name</label>
+                            <select class="form-select form-select-sm select2" id="noktp_tkt_dalam_kota_<?php echo $i; ?>"
+                                name="noktp_tkt_dalam_kota[]">
+                                <option value="" selected>Please Select</option>
+                                @foreach ($employees as $employee)
+                                    <option value="{{ $employee->ktp }}"
+                                        {{ $ticket && $ticket['noktp_tkt'] == $employee->ktp ? 'selected' : '' }}>
+                                        {{ $employee->ktp . ' - ' . $employee->fullname }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
-                    </div>
+                    @else
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label">Transportation Type</label>
+                            <div class="input-group">
+                                <select class="form-select form-select-sm" name="jenis_tkt_dalam_kota[]">
+                                    <option value="">Select Transportation Type</option>
+                                    <option value="Train"
+                                        {{ $ticket && $ticket['jenis_tkt'] == 'Train' ? 'selected' : '' }}>Train</option>
+                                    <option value="Airplane"
+                                        {{ $ticket && $ticket['jenis_tkt'] == 'Airplane' ? 'selected' : '' }}>Airplane
+                                    </option>
+                                    <option value="Ferry"
+                                        {{ $ticket && $ticket['jenis_tkt'] == 'Ferry' ? 'selected' : '' }}>Ferry</option>
+                                </select>
+                            </div>
+                        </div>
+                    @endif
                     <div class="col-md-6 mb-2">
                         <label class="form-label">Ticket Type</label>
                         <select class="form-select form-select-sm" name="type_tkt_dalam_kota[]">

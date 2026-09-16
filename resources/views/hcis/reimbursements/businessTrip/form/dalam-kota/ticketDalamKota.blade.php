@@ -10,18 +10,33 @@
                     <b>TICKET <?php echo $i; ?></b>
                 </div>
                 <div class="row">
-                    <div class="col-md-4 mb-2">
-                        <label class="form-label">Employee Name</label>
-                        <select class="form-select form-select-sm select2" id="noktp_tkt_dalam_kota_<?php echo $i; ?>"
-                            name="noktp_tkt_dalam_kota[]">
-                            <option value="" selected>Please Select</option>
-                            @foreach ($employees as $employee)
-                                <option value="{{ $employee->ktp }}">
-                                    {{ $employee->employee_id . ' - ' . $employee->fullname }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label" for="jenis_tkt_dalam_kota_<?php echo $i; ?>">Transportation Type</label>
+                            <div class="input-group">
+                                <select class="form-select form-select-sm" name="jenis_tkt_dalam_kota[]"
+                                    id="jenis_tkt_dalam_kota_<?php echo $i; ?>">
+                                    <option value="">Select Transportation Type</option>
+                                    <option value="Airplane">Airplane</option>
+                                    <option value="Train">Train</option>
+                                    <option value="Ferry">Ferry</option>
+                                </select>
+                            </div>
+                        </div>
+                    @else
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Employee Name</label>
+                            <select class="form-select form-select-sm select2" id="noktp_tkt_dalam_kota_<?php echo $i; ?>"
+                                name="noktp_tkt_dalam_kota[]">
+                                <option value="" selected>Please Select</option>
+                                @foreach ($employees as $employee)
+                                    <option value="{{ $employee->ktp }}">
+                                        {{ $employee->employee_id . ' - ' . $employee->fullname }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
                     @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
                         <div class="col-md-4 mb-2">
                             <label for="dari_tkt_dalam_kota" class="form-label">From</label>
@@ -81,19 +96,33 @@
                     @endif
                 </div>
                 <div class="row">
-                    <div class="col-md-6 mb-2">
-                        <label class="form-label" for="jenis_tkt_dalam_kota_<?php echo $i; ?>">Transportation
-                            Type</label>
-                        <div class="input-group">
-                            <select class="form-select form-select-sm" name="jenis_tkt_dalam_kota[]"
-                                id="jenis_tkt_dalam_kota_<?php echo $i; ?>">
-                                <option value="">Select Transportation Type</option>
-                                <option value="Airplane">Airplane</option>
-                                <option value="Train">Train</option>
-                                <option value="Ferry">Ferry</option>
+                    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label">Employee Name</label>
+                            <select class="form-select form-select-sm select2" id="noktp_tkt_dalam_kota_<?php echo $i; ?>"
+                                name="noktp_tkt_dalam_kota[]">
+                                <option value="" selected>Please Select</option>
+                                @foreach ($employees as $employee)
+                                    <option value="{{ $employee->ktp }}">
+                                        {{ $employee->employee_id . ' - ' . $employee->fullname }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
-                    </div>
+                    @else
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label" for="jenis_tkt_dalam_kota_<?php echo $i; ?>">Transportation Type</label>
+                            <div class="input-group">
+                                <select class="form-select form-select-sm" name="jenis_tkt_dalam_kota[]"
+                                    id="jenis_tkt_dalam_kota_<?php echo $i; ?>">
+                                    <option value="">Select Transportation Type</option>
+                                    <option value="Airplane">Airplane</option>
+                                    <option value="Train">Train</option>
+                                    <option value="Ferry">Ferry</option>
+                                </select>
+                            </div>
+                        </div>
+                    @endif
                     <div class="col-md-6 mb-2">
                         <label for="type_tkt_dalam_kota_<?php echo $i; ?>" class="form-label">Ticket Type</label>
                         <select class="form-select form-select-sm" name="type_tkt_dalam_kota[]">
