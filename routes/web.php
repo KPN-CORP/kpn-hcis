@@ -440,6 +440,14 @@ Route::middleware("auth")->group(function () {
             ApprovalReimburseController::class,
             "cashadvancedActionExtendAdmin",
         ])->name("approvalExtAdmin.cashadvancedExtApprovedAdmin");
+        Route::get("/cashadvanced/admin/attachment/{id}", [
+            ReimburseController::class,
+            "getAttachmentsAdmin",
+        ])->name("cashadvanced.admin.attachment");
+        Route::get("/cashadvanced/admin/attachment/view/{id}", [
+            ReimburseController::class,
+            "viewAttachmentAdmin",
+        ])->name("cashadvanced.admin.attachment.view");
     });
 
     // Route::get('/cashadvanced/deklarasi/form/{id}', [ReimburseController::class, 'cashadvancedDeklarasi'])->name('cashadvanced.deklarasi');
@@ -464,7 +472,7 @@ Route::middleware("auth")->group(function () {
     ])->name("cashadvanced.declare");
     Route::get("/cashadvanced/deklarasi/download/{id}", [
         ReimburseController::class,
-        "cashadvancedDownloadDeklarasi",
+        "cashadvancedDeklarasiDownload",
     ])->name("cashadvanced.downloadDeclare");
 
     // My Cash Advanced Done
@@ -976,6 +984,10 @@ Route::middleware("auth")->group(function () {
             BusinessTripController::class,
             "deleteAdmin",
         ])->name("delete.btAdmin");
+        Route::get("/businessTrip/admin/attachment/{id}", [
+            BusinessTripController::class,
+            "getAttachmentsAdmin",
+        ])->name("businessTrip.admin.attachment");
 
         //division
         Route::get("/businessTrip/admin/division", [

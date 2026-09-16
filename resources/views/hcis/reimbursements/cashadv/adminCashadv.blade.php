@@ -63,6 +63,67 @@
             padding-right: 10px;
             box-shadow: inset 6px 0 0 #fff;
         }
+
+        .attachment-item {
+            position: relative;
+        }
+
+        .attachment-preview {
+            position: relative;
+            display: block;
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: #f8f9fa;
+            cursor: pointer;
+        }
+
+        .attachment-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.2s ease;
+        }
+
+        .attachment-preview:hover img {
+            transform: scale(1.05);
+        }
+
+        .attachment-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0);
+            color: white;
+            transition: background 0.2s ease;
+        }
+
+        .attachment-preview:hover .attachment-overlay {
+            background: rgba(0, 0, 0, 0.45);
+        }
+
+        .attachment-overlay i {
+            font-size: 28px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .attachment-preview:hover .attachment-overlay i {
+            opacity: 1;
+        }
+
+        .attachment-name {
+            margin-top: 6px;
+            font-size: 13px;
+            color: #6c757d;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     </style>
 @endsection
 
@@ -94,7 +155,7 @@
                             <div class="input-group">
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-outline-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="dropdownButton">
-                                        {{ request()->get('from_date') || request()->get('until_date') ? 'by Create Date' : 'by Start Date' }}
+                                        {{ (request()->get('from_date') || request()->get('until_date')) || (!request()->get('from_date') && !request()->get('until_date') && !request()->get('start_date')) ? 'by Create Date' : 'by Start Date' }}
                                     </button>
                                     <ul class="dropdown-menu">
                                         <li><a class="dropdown-item" href="#" onclick="updateDropdownText(this, 'start_date')">by Start Date</a></li>
@@ -102,11 +163,11 @@
                                     </ul>
                                 </div>
 
-                                <input type="date" class="form-control mx-2" style="{{ request()->get('from_date') || request()->get('until_date') ? 'display: none' : 'display: block' }}" id="start_date" name="start_date" placeholder="Start Date" title="Start Date" value="{{ request()->get('start_date') }}" onchange="updateEndDate2()">
-                                <input type="date" class="form-control mx-2" style="{{ request()->get('from_date') || request()->get('until_date') ? 'display: block' : 'display: none' }}" id="from_date" name="from_date" placeholder="From Date" title="From Date" value="{{ request()->get('from_date') }}" onchange="updateEndDate2()">
+                                <input type="date" class="form-control mx-2" style="{{ (request()->get('from_date') || request()->get('until_date')) || (!request()->get('from_date') && !request()->get('until_date') && !request()->get('start_date')) ? 'display: none' : 'display: block' }}" id="start_date" name="start_date" placeholder="Start Date" title="Start Date" value="{{ request()->get('start_date') }}" onchange="updateEndDate2()">
+                                <input type="date" class="form-control mx-2" style="{{ (request()->get('from_date') || request()->get('until_date')) || (!request()->get('from_date') && !request()->get('until_date') && !request()->get('start_date')) ? 'display: block' : 'display: none' }}" id="from_date" name="from_date" placeholder="From Date" title="From Date" value="{{ request()->get('from_date') }}" onchange="updateEndDate2()">
                                 <label class="col-form-label"> - </label>
-                                <input type="date" class="form-control mx-2" style="{{ request()->get('from_date') || request()->get('until_date') ? 'display: none' : 'display: block' }}" id="end_date" name="end_date" placeholder="End Date" title="End Date" value="{{ request()->get('end_date') }}" disabled>
-                                <input type="date" class="form-control mx-2" style="{{ request()->get('from_date') || request()->get('until_date') ? 'display: block' : 'display: none' }}" id="until_date" name="until_date" placeholder="Until Date" title="Until Date" value="{{ request()->get('until_date') }}" disabled>
+                                <input type="date" class="form-control mx-2" style="{{ (request()->get('from_date') || request()->get('until_date')) || (!request()->get('from_date') && !request()->get('until_date') && !request()->get('start_date')) ? 'display: none' : 'display: block' }}" id="end_date" name="end_date" placeholder="End Date" title="End Date" value="{{ request()->get('end_date') }}" disabled>
+                                <input type="date" class="form-control mx-2" style="{{ (request()->get('from_date') || request()->get('until_date')) || (!request()->get('from_date') && !request()->get('until_date') && !request()->get('start_date')) ? 'display: block' : 'display: none' }}" id="until_date" name="until_date" placeholder="Until Date" title="Until Date" value="{{ request()->get('until_date') }}" disabled>
 
                                 <script>
                                     function updateEndDate2() {
@@ -237,6 +298,7 @@
                                         <th>Request</th>
                                         <th>Declaration</th>
                                         <th>Status CA</th>
+                                        <th>Attachment</th>
                                         <th>Actions</th>
                                         <th>Export</th>
                                         <th>Delete</th>
@@ -245,8 +307,8 @@
                                 <tbody>
                                     @foreach ($ca_transactions as $ca_transaction)
                                         <tr>
-                                            <td class="text-center">{{ $loop->index + 1 }}</td>
-                                            <td style="background-color: white;" class="sticky-col">{{ $ca_transaction->no_ca }}</td>
+                                            <td class="text-center align-middle">{{ $loop->index + 1 }}</td>
+                                            <td style="background-color: white;" class="sticky-col align-middle">{{ $ca_transaction->no_ca }}</td>
                                             @if ($ca_transaction->type_ca == 'dns')
                                                 <td>Business Travel</td>
                                             @elseif($ca_transaction->type_ca == 'ndns')
@@ -255,40 +317,47 @@
                                                 <td>Entertainment</td>
                                             @endif
 
-                                            <td>{{ $ca_transaction->employee->fullname }}</td>
-                                            <td>{{ $ca_transaction->contribution_level_code }}</td>
-                                            <td>{{ date('j M Y', strtotime($ca_transaction->formatted_start_date)) }}</td>
-                                            <td>{{ date('j M Y', strtotime($ca_transaction->formatted_end_date)) }}</td>
-                                            <td>Rp. {{ number_format($ca_transaction->total_ca) }}</td>
-                                            <td>Rp. {{ number_format($ca_transaction->total_real) }}</td>
-                                            <td>
+                                            <td class="align-middle">{{ $ca_transaction->employee->fullname }}</td>
+                                            <td class="align-middle">{{ $ca_transaction->contribution_level_code }}</td>
+                                            <td class="align-middle">{{ date('j M Y', strtotime($ca_transaction->formatted_start_date)) }}</td>
+                                            <td class="align-middle">{{ date('j M Y', strtotime($ca_transaction->formatted_end_date)) }}</td>
+                                            <td class="align-middle">Rp. {{ number_format($ca_transaction->total_ca) }}</td>
+                                            <td class="align-middle">Rp. {{ number_format($ca_transaction->total_real) }}</td>
+                                            <td class="align-middle">
                                                 @if ($ca_transaction->total_cost < 0)
                                                     <span class="text-danger">Rp. -{{ number_format(abs($ca_transaction->total_cost)) }}</span>
                                                 @else
                                                     <span class="text-success">Rp. {{ number_format($ca_transaction->total_cost) }}</span>
                                                 @endif
                                             </td>
-                                            <td>
+                                            <td class="align-middle">
                                                 @if($ca_transaction->total_ca != 0)
                                                 <p class="badge text-bg-{{ $ca_transaction->approval_status == 'Approved' ? 'success' : ($ca_transaction->approval_status == 'Declaration' ? 'info' : ($ca_transaction->approval_status == 'Pending' ? 'warning' : ($ca_transaction->approval_status == 'Rejected' ? 'danger' : ($ca_transaction->approval_status == 'Draft' ? 'secondary' : 'default')))) }}" style="pointer-events: auto; cursor: default;" title="{{$ca_transaction->approval_status." - ".$ca_transaction->ReqName}}">
                                                     {{ $ca_transaction->approval_status }}
                                                 </p>
                                                 @endif
                                             </td>
-                                            <td>
+                                            <td class="align-middle">
                                                 <p class="badge text-bg-{{ $ca_transaction->approval_sett == 'Approved' ? 'success' : ($ca_transaction->approval_sett == 'Declaration' ? 'info' : ($ca_transaction->approval_sett == 'Pending' ? 'warning' : ($ca_transaction->approval_sett == 'Rejected' ? 'danger' : ($ca_transaction->approval_sett == 'Draft' ? 'secondary' : 'default')))) }}" style="pointer-events: auto; cursor: default;" title="{{$ca_transaction->approval_sett." - ".$ca_transaction->settName}}">
                                                     {{ $ca_transaction->approval_sett }}
                                                 </p>
                                             </td>
-                                            <td>
+                                            <td class="align-middle">
                                                 <p class="badge text-bg-{{ $ca_transaction->ca_status == 'Done' ? 'success' :
                                                 ($ca_transaction->ca_status == 'Refund' ? 'danger' :
                                                 ($ca_transaction->ca_status == 'On Progress' ? 'secondary' : 'default')) }}" title="{{$ca_transaction->paid_date}}">
                                                     {{ $ca_transaction->ca_status }}
                                                 </p>
                                             </td>
+                                            <td class="text-center align-middle">
+                                                <button type="button" class="btn btn-outline-info btn-view-attachment" data-bs-toggle="modal"  data-bs-target="#viewAttachmentModal"
+                                                    data-id="{{ $ca_transaction->id }}"
+                                                    title="View Attachment">
+                                                        <i class="bi bi-paperclip"></i>
+                                                </button>
+                                            </td>
                                             <!-- Button Action -->
-                                            <td class="text-left">
+                                            <td class="text-left align-middle">
                                                 @if(($ca_transaction->approval_sett != '' || $ca_transaction->approval_sett == 'Pending' || $ca_transaction->approval_sett == 'Approved' ) && $ca_transaction->approval_status != 'Rejected' && $ca_transaction->approval_status != 'Draft' && ($ca_transaction->approval_extend == 'Pending' || $ca_transaction->approval_extend == 'Approved' && $ca_transaction->approval_sett !== 'Rejected'))
                                                     <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" title="Approval Deklarasi Update" data-bs-target="#approvalDecExtModal"
                                                         data-type="{{ $ca_transaction->type_ca }}"
@@ -388,7 +457,7 @@
                                                 @endif
                                             </td>
                                             <!-- Button Export -->
-                                            <td class="text-center">
+                                            <td class="text-center align-middle">
                                                 @if($ca_transaction->approval_status != 'Draft' && $ca_transaction->approval_status != 'Rejected')
                                                     <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal"  data-bs-target="#exportModal"
                                                         data-id="{{ $ca_transaction->id }}"
@@ -400,7 +469,7 @@
                                                 @endif
                                             </td>
                                             <!-- Button Delete -->
-                                            <td class="text-center">
+                                            <td class="text-center align-middle">
                                                 <form id="delete-form-{{ $ca_transaction->id }}" action="{{ route('cashadvanced.delete', $ca_transaction->id) }}" method="POST" style="display:inline;">
                                                     @csrf
                                                     <button type="button" class="btn btn-outline-danger delete-button" data-id="{{ $ca_transaction->id }}" data-ca="{{ $ca_transaction->no_ca }}" title="Delete">
@@ -1799,4 +1868,34 @@
             }, 1000);
         </script>
     @endif --}}
+
+    <script>
+        $(document).on('click', '.btn-view-attachment', function () {
+            const transactionId = $(this).data('id');
+
+            $('#transaction_id').val(transactionId);
+
+            $.ajax({
+                url: '/cashadvanced/admin/attachment/' + transactionId,
+                type: 'GET',
+
+                success: function (response) {
+                    renderAttachments(
+                        'caAttachments',
+                        response.ca_attachments
+                    );
+                },
+
+                error: function () {
+                    $('#caAttachments').html(`
+                        <div class="col-12">
+                            <div class="alert alert-danger">
+                                Failed to load CA attachments.
+                            </div>
+                        </div>
+                    `);
+                }
+            });
+        });
+    </script>
 @endpush
