@@ -142,7 +142,7 @@
                                   </button>
                               </form>
                           @endif
-                          @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                          @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
                               @if ($item->is_revise)
                                   <form method="GET" action="/medical/form-update/{{ $item->usage_id }}"
                                       style="display: inline-block;">
