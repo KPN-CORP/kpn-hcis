@@ -7,8 +7,8 @@
         const dari = row.find('select[name="dari_tkt[]"]');
         const ke = row.find('select[name="ke_tkt[]"]');
 
-        filterTransportLocation(dari, type);
-        filterTransportLocation(ke, type);
+        filterTransportHubLocation(dari, type);
+        filterTransportHubLocation(ke, type);
     }
 
     function filterTransportHubLocation(select, type) {
