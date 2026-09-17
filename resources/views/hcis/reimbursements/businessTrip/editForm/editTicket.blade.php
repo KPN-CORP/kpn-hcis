@@ -56,7 +56,7 @@
                         @endphp
                         <div class="col-md-4 mb-2">
                             <label for="dari_tkt" class="form-label">From</label>
-                            <select class="form-select form-select-sm select2" name="dari_tkt[]" id="dari_tkt" onchange="DariTiketToggleOthers()" required>
+                            <select class="form-select form-select-sm select2 select2-transport-hub" name="dari_tkt[]" id="dari_tkt" onchange="DariTiketToggleOthers()" required>
                                 <option value="">--- Choose Location ---</option>
                                 @foreach ($transport_hubs as $transport_hub)
                                     <option value="{{ $transport_hub }}"
@@ -86,7 +86,7 @@
                         </div>
                         <div class="col-md-4 mb-2">
                             <label for="ke_tkt" class="form-label">To</label>
-                            <select class="form-select form-select-sm select2" name="ke_tkt[]" id="ke_tkt" onchange="KeTiketToggleOthers()" required>
+                            <select class="form-select form-select-sm select2 select2-transport-hub" name="ke_tkt[]" id="ke_tkt" onchange="KeTiketToggleOthers()" required>
                                 <option value="">--- Choose Location ---</option>
                                 @foreach ($transport_hubs as $transport_hub)
                                     <option value="{{ $transport_hub }}"

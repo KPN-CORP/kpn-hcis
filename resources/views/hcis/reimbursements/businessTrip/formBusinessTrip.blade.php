@@ -490,6 +490,7 @@
     @include('js.hcis.common.businessTrip')
     @include('js.hcis.common.perdiem')
     @include('js.hcis.common.req')
+    @include('js.hcis.common.transportHub')
     @include('js.hcis.businessTrip')
     <link href="{{ asset('vendor/select2/dist/css/select2.min.css') }}" rel="stylesheet" />
     <script src="{{ asset('vendor/select2/dist/js/select2.min.js') }}"></script>

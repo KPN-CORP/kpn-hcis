@@ -609,6 +609,7 @@
     @include('js.hcis.common.businessTrip')
     @include('js.hcis.common.perdiem')
     @include('js.hcis.common.req')
+    @include('js.hcis.common.transportHub')
     @include('js.hcis.editBusinessTrip')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
