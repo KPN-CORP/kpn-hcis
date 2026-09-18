@@ -1530,11 +1530,10 @@
                                     @endforeach
                                     <option value="Others">Others</option>
                                 </select>
-                                <br>
                                 <div class="row">
                                     <div class="">
                                         <input type="text" name="others_dari_tkt[]" id="others_dari_tkt"
-                                        class="form-control form-control-sm" placeholder="ex: Yogyakarta (YIA)"
+                                        class="form-control form-control-sm mt-2" placeholder="ex: Yogyakarta (YIA)"
                                         value="" style="display: none;">
                                     </div>
                                 </div>
@@ -1550,11 +1549,10 @@
                                     @endforeach
                                     <option value="Others">Others</option>
                                 </select>
-                                <br>
                                 <div class="row">
                                     <div class="">
                                         <input type="text" name="others_ke_tkt[]" id="others_ke_tkt"
-                                        class="form-control form-control-sm" placeholder="ex: Jakarta (CGK)"
+                                        class="form-control form-control-sm mt-2" placeholder="ex: Jakarta (CGK)"
                                         value="" style="display: none;">
                                     </div>
                                 </div>
@@ -2013,11 +2011,10 @@
                                     @endforeach
                                     <option value="Others">Others</option>
                                 </select>
-                                <br>
                                 <div class="row">
                                     <div class="">
                                         <input type="text" name="others_dari_tkt_dalam_kota[]" id="others_dari_tkt_dalam_kota"
-                                        class="form-control form-control-sm" placeholder="ex: Yogyakarta (YIA)"
+                                        class="form-control form-control-sm mt-2" placeholder="ex: Yogyakarta (YIA)"
                                         value="" style="display: none;">
                                     </div>
                                 </div>
@@ -2033,11 +2030,10 @@
                                     @endforeach
                                     <option value="Others">Others</option>
                                 </select>
-                                <br>
                                 <div class="row">
                                     <div class="">
                                         <input type="text" name="others_ke_tkt_dalam_kota[]" id="others_ke_tkt_dalam_kota"
-                                        class="form-control form-control-sm" placeholder="ex: Jakarta (CGK)"
+                                        class="form-control form-control-sm mt-2" placeholder="ex: Jakarta (CGK)"
                                         value="" style="display: none;">
                                     </div>
                                 </div>

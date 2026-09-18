@@ -171,17 +171,39 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <div class="col-md-4">
-                                                    <div class="mb-2">
-                                                        <label class="form-label" for="tlp_tkt_<?php echo $i; ?>">Phone
-                                                            Number</label>
-                                                        <input type="number" name="tlp_tkt[]"
-                                                            id="tlp_tkt_<?php echo $i; ?>"
-                                                            class="form-control form-control-sm bg-light" maxlength="12"
-                                                            value="{{ $ticket['tlp_tkt'] ?? '' }}"
-                                                            placeholder="ex: 08123123123" readonly>
+                                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                                                    <div class="col-md-4 mb-2">
+                                                        <label class="form-label">Transportation Type</label>
+                                                        <div class="input-group">
+                                                            <select class="form-select form-select-sm" name="jenis_tkt[]"
+                                                                disabled>
+                                                                <option value="">Select Transportation Type</option>
+                                                                <option value="Train"
+                                                                    {{ $ticket && $ticket['jenis_tkt'] == 'Train' ? 'selected' : '' }}>
+                                                                    Train</option>
+                                                                <option value="Airplane"
+                                                                    {{ $ticket && $ticket['jenis_tkt'] == 'Airplane' ? 'selected' : '' }}>
+                                                                    Airplane
+                                                                </option>
+                                                                <option value="Ferry"
+                                                                    {{ $ticket && $ticket['jenis_tkt'] == 'Ferry' ? 'selected' : '' }}>
+                                                                    Ferry</option>
+                                                            </select>
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                @else
+                                                    <div class="col-md-4">
+                                                        <div class="mb-2">
+                                                            <label class="form-label" for="tlp_tkt_<?php echo $i; ?>">Phone
+                                                                Number</label>
+                                                            <input type="number" name="tlp_tkt[]"
+                                                                id="tlp_tkt_<?php echo $i; ?>"
+                                                                class="form-control form-control-sm bg-light" maxlength="12"
+                                                                value="{{ $ticket['tlp_tkt'] ?? '' }}"
+                                                                placeholder="ex: 08123123123" readonly>
+                                                        </div>
+                                                    </div>
+                                                @endif
                                                 @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
                                                     @php
                                                         $isOtherFrom = !in_array($ticket['dari_tkt'], $transport_hubs->toArray());
@@ -202,14 +224,13 @@
                                                                 Others
                                                             </option>
                                                         </select>
-                                                        <br/>
                                                         <div class="row">
                                                             <div class="">
                                                                 <input
                                                                     type="text"
                                                                     id="others_dari_tkt"
                                                                     name="others_dari_tkt[]"
-                                                                    class="form-control form-control-sm"
+                                                                    class="form-control form-control-sm mt-2"
                                                                     placeholder="ex: Yogyakarta (YIA)"
                                                                     value="{{ $isOtherFrom ? $ticket['dari_tkt'] : '' }}"
                                                                     style="{{ $isOtherFrom ? '' : 'display:none;' }}"
@@ -233,14 +254,13 @@
                                                                 Others
                                                             </option>
                                                         </select>
-                                                        <br/>
                                                         <div class="row">
                                                             <div class="">
                                                                 <input
                                                                     type="text"
                                                                     id="others_ke_tkt"
                                                                     name="others_ke_tkt[]"
-                                                                    class="form-control form-control-sm"
+                                                                    class="form-control form-control-sm mt-2"
                                                                     placeholder="ex: Jakarta (CGK)"
                                                                     value="{{ $isOtherTo ? $ticket['ke_tkt'] : '' }}"
                                                                     style="{{ $isOtherTo ? '' : 'display:none;' }}"
@@ -271,25 +291,39 @@
                                                 @endif
                                             </div>
                                             <div class="row">
-                                                <div class="col-md-6 mb-2">
-                                                    <label class="form-label">Transportation Type</label>
-                                                    <div class="input-group">
-                                                        <select class="form-select form-select-sm" name="jenis_tkt[]"
-                                                            disabled>
-                                                            <option value="">Select Transportation Type</option>
-                                                            <option value="Train"
-                                                                {{ $ticket && $ticket['jenis_tkt'] == 'Train' ? 'selected' : '' }}>
-                                                                Train</option>
-                                                            <option value="Airplane"
-                                                                {{ $ticket && $ticket['jenis_tkt'] == 'Airplane' ? 'selected' : '' }}>
-                                                                Airplane
-                                                            </option>
-                                                            <option value="Ferry"
-                                                                {{ $ticket && $ticket['jenis_tkt'] == 'Ferry' ? 'selected' : '' }}>
-                                                                Ferry</option>
-                                                        </select>
+                                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                                                    <div class="col-md-6">
+                                                        <div class="mb-2">
+                                                            <label class="form-label" for="tlp_tkt_<?php echo $i; ?>">Phone
+                                                                Number</label>
+                                                            <input type="number" name="tlp_tkt[]"
+                                                                id="tlp_tkt_<?php echo $i; ?>"
+                                                                class="form-control form-control-sm bg-light" maxlength="12"
+                                                                value="{{ $ticket['tlp_tkt'] ?? '' }}"
+                                                                placeholder="ex: 08123123123" readonly>
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                @else
+                                                    <div class="col-md-6 mb-2">
+                                                        <label class="form-label">Transportation Type</label>
+                                                        <div class="input-group">
+                                                            <select class="form-select form-select-sm" name="jenis_tkt[]"
+                                                                disabled>
+                                                                <option value="">Select Transportation Type</option>
+                                                                <option value="Train"
+                                                                    {{ $ticket && $ticket['jenis_tkt'] == 'Train' ? 'selected' : '' }}>
+                                                                    Train</option>
+                                                                <option value="Airplane"
+                                                                    {{ $ticket && $ticket['jenis_tkt'] == 'Airplane' ? 'selected' : '' }}>
+                                                                    Airplane
+                                                                </option>
+                                                                <option value="Ferry"
+                                                                    {{ $ticket && $ticket['jenis_tkt'] == 'Ferry' ? 'selected' : '' }}>
+                                                                    Ferry</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                @endif
                                                 <div class="col-md-6 mb-2">
                                                     <label class="form-label">Ticket Type</label>
                                                     <select class="form-select form-select-sm" name="type_tkt[]" disabled>

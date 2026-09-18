@@ -69,14 +69,13 @@
                                     Others
                                 </option>
                             </select>
-                            <br/>
                             <div class="row">
                                 <div class="">
                                     <input
                                         type="text"
                                         id="others_dari_tkt"
                                         name="others_dari_tkt[]"
-                                        class="form-control form-control-sm"
+                                        class="form-control form-control-sm mt-2"
                                         placeholder="ex: Yogyakarta (YIA)"
                                         value="{{ $isOtherFrom ? $ticket['dari_tkt'] : '' }}"
                                         style="{{ $isOtherFrom ? '' : 'display:none;' }}"
@@ -99,14 +98,13 @@
                                     Others
                                 </option>
                             </select>
-                            <br/>
                             <div class="row">
                                 <div class="">
                                     <input
                                         type="text"
                                         id="others_ke_tkt"
                                         name="others_ke_tkt[]"
-                                        class="form-control form-control-sm"
+                                        class="form-control form-control-sm mt-2"
                                         placeholder="ex: Jakarta (CGK)"
                                         value="{{ $isOtherTo ? $ticket['ke_tkt'] : '' }}"
                                         style="{{ $isOtherTo ? '' : 'display:none;' }}"
