@@ -3695,6 +3695,7 @@
 
     function initializeTransportSelect2() {
         $(".select2-transport-hub").each(function() {
+            console.log(this);
             const $select = $(this);
 
             if (!$select.data("select2")) {

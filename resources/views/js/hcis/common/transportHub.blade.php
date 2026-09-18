@@ -8,24 +8,24 @@
                 return;
             }
 
-            const dari = row.find('select[name="dari_tkt[]"]');
-            const dari_dalam_kota = row.find('select[name="dari_tkt_dalam_kota[]"]');
-            const ke = row.find('select[name="ke_tkt[]"]');
-            const ke_dalam_kota = row.find('select[name="ke_tkt_dalam_kota[]"]');
+            const dari = row.find('select[name^="dari_tkt["]');
+            const dari_dalam_kota = row.find('select[name^="dari_tkt_dalam_kota["]');
+            const ke = row.find('select[name^="ke_tkt["]');
+            const ke_dalam_kota = row.find('select[name^="ke_tkt_dalam_kota["]');
 
-            if (dari) {
+            if (dari.length > 0) {
                 filterTransportHubLocation(dari, type);
             }
 
-            if (dari_dalam_kota) {
+            if (dari_dalam_kota.length > 0) {
                 filterTransportHubLocation(dari_dalam_kota, type);
             }
 
-            if (ke) {
+            if (ke.length > 0) {
                 filterTransportHubLocation(ke, type);
             }
 
-            if (ke_dalam_kota) {
+            if (ke_dalam_kota.length > 0) {
                 filterTransportHubLocation(ke_dalam_kota, type);
             }
         }
