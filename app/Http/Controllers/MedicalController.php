@@ -1109,6 +1109,11 @@ class MedicalController extends Controller
         $medical_formatted_total_current_claim = number_format($medical_total_current_claim, 0, ',', '.');
         $medical_formatted_closing_balance_plafond = number_format($medical_closing_balance_plafond, 0, ',', '.');
 
+        if (strtolower($employee_data->group_company) == "downstream") {
+            $medical_formatted_opening_balance_plafond = '';
+            $medical_formatted_closing_balance_plafond = '';
+        }
+
         $pdf = PDF::loadView(
             "hcis.reimbursements.medical.medical_pdf",
             [
