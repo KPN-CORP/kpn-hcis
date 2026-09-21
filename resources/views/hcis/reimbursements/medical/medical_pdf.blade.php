@@ -258,7 +258,7 @@
             <td class="label"><b>Total</b></td>
             <td>
                 @if (empty($medical_formatted_opening_balance_plafond))
-                    <span> - </span>
+                    <span> </span>
                 @else
                     <span><b>Rp.</b></span>
                     <span><b>{{ $medical_formatted_opening_balance_plafond }}</b></span>
@@ -274,7 +274,7 @@
             </td>
             <td>
                 @if (empty($medical_formatted_closing_balance_plafond))
-                    <span> - </span>
+                    <span> </span>
                 @else
                     <span><b>Rp.</b></span>
                     <span><b>{{ $medical_formatted_closing_balance_plafond }}</b></span>
