@@ -19,7 +19,7 @@
                                 @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
                                     <div class="col-md-4 mb-2">
                                         <label for="dari_tkt" class="form-label">From</label>
-                                        <select class="form-select form-select-sm select2" name="dari_tkt[]" id="dari_tkt" onchange="DariTiketToggleOthers()" required>
+                                        <select class="form-select form-select-sm select2 select2-transport-hub" name="dari_tkt[]" id="dari_tkt" onchange="DariTiketToggleOthers()" required>
                                             <option value="">--- Choose Location ---</option>
                                             @foreach ($transport_hubs as $transport_hub)
                                                 <option value="{{ $transport_hub }}">
@@ -28,18 +28,17 @@
                                             @endforeach
                                             <option value="Others">Others</option>
                                         </select>
-                                        <br>
                                         <div class="row">
                                             <div class="">
                                                 <input type="text" name="others_dari_tkt[]" id="others_dari_tkt"
-                                                class="form-control form-control-sm" placeholder="ex: Yogyakarta (YIA)"
+                                                class="form-control form-control-sm mt-2" placeholder="ex: Yogyakarta (YIA)"
                                                 value="" style="display: none;">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-4 mb-2">
                                         <label for="ke_tkt" class="form-label">To</label>
-                                        <select class="form-select form-select-sm select2" name="ke_tkt[]" id="ke_tkt" onchange="KeTiketToggleOthers()" required>
+                                        <select class="form-select form-select-sm select2 select2-transport-hub" name="ke_tkt[]" id="ke_tkt" onchange="KeTiketToggleOthers()" required>
                                             <option value="">--- Choose Location ---</option>
                                             @foreach ($transport_hubs as $transport_hub)
                                                 <option value="{{ $transport_hub }}">
@@ -48,11 +47,10 @@
                                             @endforeach
                                             <option value="Others">Others</option>
                                         </select>
-                                        <br>
                                         <div class="row">
                                             <div class="">
                                                 <input type="text" name="others_ke_tkt[]" id="others_ke_tkt"
-                                                class="form-control form-control-sm" placeholder="ex: Jakarta (CGK)"
+                                                class="form-control form-control-sm mt-2" placeholder="ex: Jakarta (CGK)"
                                                 value="" style="display: none;">
                                             </div>
                                         </div>
