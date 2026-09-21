@@ -186,7 +186,7 @@
                             </div>
                             <input type="hidden" name="status" value="Pending" id="status">
 
-                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
                                 <br/>
                                 <br/>
 
@@ -224,7 +224,7 @@
                             @endif
 
                             <div class="d-flex justify-content-end mt-4">
-                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
                                     <button id="revise-button" type="button" class="btn btn-warning rounded-pill revise-button" style="margin-right: 10px"
                                         name="action_submit" value="Revise" data-bs-toggle="modal" data-bs-target="#reviseReasonModal">Revise</button>
                                     <button id="reject-button" type="button" class="btn btn-outline-danger rounded-pill reject-button" style="margin-right: 10px"
@@ -241,7 +241,7 @@
     </div>
 
     <!-- Revise Reason Modal -->
-    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
         <div class="modal fade" id="reviseReasonModal" tabindex="-1" aria-labelledby="reviseReasonModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
@@ -279,7 +279,7 @@
     @endif
 
     <!-- Rejection Reason Modal -->
-    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
         <div class="modal fade" id="rejectReasonModal" tabindex="-1" aria-labelledby="rejectReasonModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
@@ -725,7 +725,7 @@
         });
     </script>
 
-    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
         <script>
             $('#document_received_toggle').change(function () {
                 $(this).prop('disabled', true);
