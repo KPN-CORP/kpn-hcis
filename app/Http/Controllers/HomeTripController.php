@@ -1018,6 +1018,16 @@ class HomeTripController extends Controller
                 "l6" => "-",
                 "l7" => "-",
             ];
+        } else if ($employee->employee_id == "02114020045") {
+            return [
+                "l1" => "01113090005",
+                "l2" => "01123090014",
+                "l3" => "-",
+                "l4" => "-",
+                "l5" => "-",
+                "l6" => "-",
+                "l7" => "-",
+            ];
         }
 
         return false;
