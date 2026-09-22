@@ -560,30 +560,54 @@
 
                 clearTimeout(employeeCoveredAmountTypingTimer);
 
-                var selectedDate = $("#date").val();
-                var selectedYear = selectedDate
-                    ? new Date(selectedDate).getFullYear()
-                    : null;
-                var selectedTypes = $("#medical_type").val();
-
                 employeeCoveredAmountTypingTimer = setTimeout(function () {
                     var type = $el.attr("id").split("_").pop();
+                    var selectedDate = $("#date").val();
+                    var selectedYear = selectedDate ? new Date(selectedDate).getFullYear() : null;
                     var balance = typeToBalanceMap[type]?.[selectedYear] || 0;
                     var claimValue = balanceMapping[type] || 0;
-                    var companyCoveredAmountElem = $(`#company_covered_amount_${type}`);
-                    var employeeCoveredAmount = parseInt($el.val().replace(/\./g, ""), 10) || 0;
-                    var companyCoveredAmount = parseInt(companyCoveredAmountElem.val().replace(/\./g, ""), 10) || 0;
+                    var $company = $(`#company_covered_amount_${type}`);
+                    var employeeAmount = parseInt(String($el.val()).replace(/\./g, ""), 10) || 0;
 
-                    companyCoveredAmount = companyCoveredAmount - employeeCoveredAmount;
+                    if (claimValue > 0) {
+                        if (employeeAmount > claimValue) {
+                            employeeAmount = claimValue;
+                            $el.val(formatCurrency(employeeAmount));
+                        }
 
-                    if (companyCoveredAmount < 0) {
-                        companyCoveredAmount = 0;
-                        employeeCoveredAmount = claimValue - (claimValue - balance);
+                        var companyAmount = claimValue - employeeAmount;
 
-                        $el.val(formatCurrency(employeeCoveredAmount));
+                        $company.val(formatCurrency(companyAmount));
                     }
+                }, 300);
+            });
 
-                    companyCoveredAmountElem.val(formatCurrency(companyCoveredAmount));
+            var companyCoveredAmountTypingTimer;
+
+            $(document).on("input", ".company-covered-amount", function () {
+                var $el = $(this);
+
+                clearTimeout(companyCoveredAmountTypingTimer);
+
+                companyCoveredAmountTypingTimer = setTimeout(function () {
+                    var type = $el.attr("id").split("_").pop();
+                    var selectedDate = $("#date").val();
+                    var selectedYear = selectedDate ? new Date(selectedDate).getFullYear() : null;
+                    var balance = typeToBalanceMap[type]?.[selectedYear] || 0;
+                    var claimValue = balanceMapping[type] || 0;
+                    var $employee = $(`#employee_covered_amount_${type}`);
+                    var companyAmount = parseInt(String($el.val()).replace(/\./g, ""), 10) || 0;
+
+                    if (claimValue > 0) {
+                        if (companyAmount > claimValue) {
+                            companyAmount = claimValue;
+                            $el.val(formatCurrency(companyAmount));
+                        }
+
+                        var employeeAmount = claimValue - companyAmount;
+
+                        $employee.val(formatCurrency(employeeAmount));
+                    }
                 }, 300);
             });
         });
