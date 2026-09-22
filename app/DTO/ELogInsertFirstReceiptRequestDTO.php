@@ -24,6 +24,7 @@ class ELogInsertFirstReceiptRequestDTO extends BaseDTO {
         public string $created_by,
         public string $inv_date,
         public string $trans_type,
+        public string $currency,
     ) {}
 
     public function toUpperCaseArray(): array
@@ -49,6 +50,7 @@ class ELogInsertFirstReceiptRequestDTO extends BaseDTO {
             'CREATED_BY' => $this->created_by,
             'INV_DATE' => $this->inv_date,
             'TRANS_TYPE' => $this->trans_type,
+            'currency' => $this->currency,
         ];
     }
 }

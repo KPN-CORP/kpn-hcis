@@ -117,6 +117,7 @@ class ELogService {
             created_by: "",
             inv_date: $medicalData->date ?? "",
             trans_type: "MEDICAL",
+            currency: "IDR"
         );
 
         if ($medicalData->balance_verif != null) {
@@ -148,6 +149,8 @@ class ELogService {
                 $payload->first_dept = "HRD-DWS";
             } else if (strtolower($employeeData->group_company) == "kpn corporation") {
                 $payload->first_dept = "HRD-CORP";
+                $payload->first_dept = "HRD";
+            } else {
                 $payload->first_dept = "HRD";
             }
         } else {
