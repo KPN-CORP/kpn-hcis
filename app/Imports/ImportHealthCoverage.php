@@ -141,6 +141,25 @@ class ImportHealthCoverage implements ToModel
             $errorMessage = "Amount BPJS Cover tidak boleh minus.";
         }
 
+        $employeeCoveredAmount = null;
+        $companyCoveredAmount = null;
+
+        if (array_key_exists(14, $row) && !empty($row[14]) && is_numeric($row[14])) {
+            $employeeCoveredAmount = $row[14];
+
+            if ($employeeCoveredAmount < 0) {
+                $errorMessage = "Employee Covered Amount tidak boleh minus.";
+            }
+        }
+
+        if (array_key_exists(15, $row) && !empty($row[15]) && is_numeric($row[15])) {
+            $companyCoveredAmount = $row[15];
+
+            if ($companyCoveredAmount < 0) {
+                $errorMessage = "Company Covered Amount tidak boleh minus.";
+            }
+        }
+
         // Validasi format tanggal
         if (is_numeric($row[8])) {
             $dateTime = Date::excelToDateTimeObject(intval($row[8]));
@@ -161,7 +180,11 @@ class ImportHealthCoverage implements ToModel
 
         // Jika ada error, simpan ke array gagal
         if ($errorMessage) {
-            $row[14] = $errorMessage; // Simpan error di kolom ke-14
+            if (array_key_exists(15, $row)) {
+                $row[16] = $errorMessage; // Simpan error di kolom ke-16
+            } else {
+                $row[14] = $errorMessage; // Simpan error di kolom ke-14
+            }
             $this->failedRows[] = $row;
             return null; // Jangan simpan ke database
         }
@@ -192,6 +215,8 @@ class ImportHealthCoverage implements ToModel
             "approved_by" => $employee->employee_id,
             "created_at" => now(),
             "approved_at" => now(),
+            "employee_covered_amount" => $employeeCoveredAmount,
+            "company_covered_amount" => $companyCoveredAmount
         ]);
 
         $this->batchRecords[] = $healthCoverage;
