@@ -315,7 +315,7 @@ class ImportHealthCoverage implements ToModel
 
         // dd($healthPlan->balance);
 
-        if ($healthPlan->balance < 0 && $healthPlan->over_plafond_email_sent_date == null) {
+        if ($healthPlan->balance < 0 && $healthPlan->over_plafond_email_sent_date == null && (strtolower($employee->group_company) == "downstream")) {
             Mail::to($employee->email)->bcc('dali.kewara@kpn-corp.com')->queue(
                 (new MedicalOverPlafondNotification(
                     $plafond,

@@ -45,6 +45,7 @@ class MedicalRemainingPlafondJob implements ShouldQueue
                             $today->copy()->subMonths(1)
                         );
                 })
+                ->whereNull("deleted_at")
                 ->get();
 
             foreach($healthPlans as $healthPlan) {
