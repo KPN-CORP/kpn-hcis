@@ -694,11 +694,10 @@
                                 exceededType = type;
                             }
                         } else {
-
-                            if (parsedValue > plafondNumber) {
-                                exceededPlafond = true;
-                                exceededType = type;
-                            }
+                            // if (parsedValue > plafondNumber) {
+                            //     exceededPlafond = true;
+                            //     exceededType = type;
+                            // }
                         }
                     });
 
@@ -839,10 +838,10 @@
                             }
                         } else {
                             // Check if input exceeds plafond directly
-                            if (parsedValue > plafondNumber) {
-                                exceededPlafond = true;
-                                exceededType = type;
-                            }
+                            // if (parsedValue > plafondNumber) {
+                            //     exceededPlafond = true;
+                            //     exceededType = type;
+                            // }
                         }
                     });
                     // Show alert if the plafond is exceeded
