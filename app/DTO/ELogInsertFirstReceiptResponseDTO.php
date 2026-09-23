@@ -2,7 +2,8 @@
 
 namespace App\DTO;
 
-class ELogInsertFirstReceiptResponseDTO extends BaseDTO {
+class ELogInsertFirstReceiptResponseDTO extends BaseDTO
+{
     public function __construct(
         public readonly string $status,
         public readonly string $message,
@@ -13,8 +14,9 @@ class ELogInsertFirstReceiptResponseDTO extends BaseDTO {
         public readonly string $data_message,
     ) {}
 
-    public static function fromArray(array $response): self {
-        return new self(
+    public static function fromArray(array $response): static
+    {
+        return new static(
             status: $response['status'] ?? '',
             message: $response['message'] ?? '',
             success: $response['data']['success'] ?? false,

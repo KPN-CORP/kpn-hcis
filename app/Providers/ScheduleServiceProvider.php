@@ -32,5 +32,6 @@ class ScheduleServiceProvider extends ServiceProvider
         $schedule->command('app:sync-certifications')->monthlyOn(1, '01:10');
         $schedule->command('app:sync-movements')->monthlyOn(1, '01:20');
         $schedule->command('app:sync-promotions')->monthlyOn(1, '01:30');
+        $schedule->command('queue:work --queue=kpn-hcis --stop-when-empty --timeout=960 --tries=1 --max-time=1500')->everyMinute()->withoutOverlapping(30)->runInBackground();
     }
 }

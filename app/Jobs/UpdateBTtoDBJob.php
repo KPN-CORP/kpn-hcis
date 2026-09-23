@@ -17,6 +17,10 @@ class UpdateBTtoDBJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $timeout = 900;
+    public $tries = 1;
+    public $failOnTimeout = true;
+
     /**
      * Execute the job.
      */

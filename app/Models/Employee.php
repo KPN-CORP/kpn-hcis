@@ -58,7 +58,12 @@ class Employee extends Model
         'mother_name',
         'bank_name',
         'bank_account_number',
-        'bank_account_name'
+        'bank_account_name',
+        'direct_reportees_employee_id',
+        'old_employee_id_(rehired)',
+        'cost_center',
+        'cost_center_code',
+        'bank_account_name_payroll'
     ];
 
     protected $keyType = 'string';

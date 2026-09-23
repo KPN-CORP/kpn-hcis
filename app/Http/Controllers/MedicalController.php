@@ -299,7 +299,8 @@ class MedicalController extends Controller
 
                     if (!$existingHealthPlan) {
                         if ($plafond_lists->medical_type == "Maternity") {
-                            $balance = $plafond_lists->balance * ($bulan / 12);
+                            // $balance = $plafond_lists->balance * ($bulan / 12);
+                            $balance = $plafond_lists->balance;
                         } elseif ($plafond_lists->medical_type == "Inpatient") {
                             $balance = $plafond_lists->balance * ($bulan / 12);
                         } elseif (
@@ -307,7 +308,8 @@ class MedicalController extends Controller
                         ) {
                             $balance = $plafond_lists->balance * ($bulan / 12);
                         } elseif ($plafond_lists->medical_type == "Glasses") {
-                            $balance = $plafond_lists->balance * ($bulan / 12);
+                            // $balance = $plafond_lists->balance * ($bulan / 12);
+                            $balance = $plafond_lists->balance;
                         }
 
                         $newHealthPlan = HealthPlan::create([
@@ -480,6 +482,8 @@ class MedicalController extends Controller
             HealthCoverage::where("employee_id", $employee_id)
                 ->where("period", $currentYear)
                 ->where("medical_type", "Glasses")
+                ->where("status", "!=", "Draft")
+                ->whereNull("deleted_at")
                 ->count() >= 1;
         // dd($isProbation);
 
@@ -684,6 +688,8 @@ class MedicalController extends Controller
             HealthCoverage::where("employee_id", $employee_id)
                 ->where("period", $currentYear)
                 ->where("medical_type", "Glasses")
+                ->where("status", "!=", "Draft")
+                ->whereNull("deleted_at")
                 ->count() >= 1;
 
         $medicalBalances = HealthPlan::where("employee_id", $employee_id)
@@ -1399,13 +1405,13 @@ class MedicalController extends Controller
                     ]);
                 }
 
-                $medicalEmployeeData = $medicalEmployee
-                    ->where("medical_type", $medical_type)
-                    ->first();
+                // $medicalEmployeeData = $medicalEmployee
+                //     ->where("medical_type", $medical_type)
+                //     ->first();
 
-                $eLogService = app(ELogService::class);
+                // $eLogService = app(ELogService::class);
 
-                $eLogService->insertFirstReceipt($existingCoverage, $medicalEmployeeData->employee ?? null);
+                // $eLogService->insertFirstReceipt($existingCoverage, $medicalEmployeeData->employee ?? null);
 
                 // $MDCNotificationLayer = Employee::where('employee_id', $employee_id)->pluck('email')->first();
                 // if ($MDCNotificationLayer) {
@@ -2051,6 +2057,10 @@ class MedicalController extends Controller
                     "is_revise" => false,
                     "revise_info" => null,
                 ]);
+
+                $eLogService = app(ELogService::class);
+
+                $eLogService->insertFirstReceipt($coverage);
             }
 
             return redirect()
@@ -2551,7 +2561,8 @@ class MedicalController extends Controller
 
                     if (!$existingHealthPlan) {
                         if ($plafond_lists->medical_type == "Maternity") {
-                            $balance = $plafond_lists->balance * ($bulan / 12);
+                            // $balance = $plafond_lists->balance * ($bulan / 12);
+                            $balance = $plafond_lists->balance;
                         } elseif ($plafond_lists->medical_type == "Inpatient") {
                             $balance = $plafond_lists->balance * ($bulan / 12);
                         } elseif (
@@ -2559,7 +2570,8 @@ class MedicalController extends Controller
                         ) {
                             $balance = $plafond_lists->balance * ($bulan / 12);
                         } elseif ($plafond_lists->medical_type == "Glasses") {
-                            $balance = $plafond_lists->balance * ($bulan / 12);
+                            // $balance = $plafond_lists->balance * ($bulan / 12);
+                            $balance = $plafond_lists->balance;
                         }
 
                         $newHealthPlan = HealthPlan::create([
