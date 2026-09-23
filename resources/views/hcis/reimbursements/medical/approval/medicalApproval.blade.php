@@ -95,7 +95,7 @@
                                             <th class="text-center">{{ $master_medicals->name }}</th>
                                         @endforeach
 
-                                        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                                        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
                                             <th data-priority="1">Progress</th>
                                         @else
                                             <th data-priority="1">Status</th>
@@ -130,7 +130,7 @@
                                                 </td>
                                             @endforeach
 
-                                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
                                                 <td style="align-content: center; text-align: center">
                                                     @php
                                                         $status = $item->status;

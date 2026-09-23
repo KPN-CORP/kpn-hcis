@@ -930,6 +930,7 @@ function LuarKotaTicketInit() {
             toggleRequiredAttributes(addedForm, ticketCheckbox.checked);
             updateFormNumbers();
             initializeAllSelect2(); // Initialize Select2 for new dropdowns
+            initializeTransportSelect2();
         } else {
             Swal.fire({
                 title: "Warning!",
@@ -991,16 +992,30 @@ function LuarKotaTicketInit() {
                         <b>TICKET ${formNumber}</b>
                     </div>
                     <div class="row">
-                        <div class="col-md-4 mb-2">
-                            <label class="form-label">Employee Name</label>
-                            <select class="form-select form-select-sm selection2" id="noktp_tkt_${formNumber}" name="noktp_tkt[]">
-                               <option value="">Please Select</option>
-                            </select>
-                        </div>
+                        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Transportation Type</label>
+                                <div class="input-group">
+                                    <select class="form-select form-select-sm select2" name="jenis_tkt[]" id="jenis_tkt_${formNumber}" onchange="filterTransportHubByType(this)">
+                                        <option value="">Select Transportation Type</option>
+                                        <option value="Train">Train</option>
+                                        <option value="Airplane">Airplane</option>
+                                        <option value="Ferry">Ferry</option>
+                                    </select>
+                                </div>
+                            </div>
+                        @else
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Employee Name</label>
+                                <select class="form-select form-select-sm selection2" id="noktp_tkt_${formNumber}" name="noktp_tkt[]">
+                                <option value="">Please Select</option>
+                                </select>
+                            </div>
+                        @endif
                         @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
                             <div class="col-md-4 mb-2">
                                 <label for="dari_tkt" class="form-label">From</label>
-                                <select class="form-select form-select-sm select2" name="dari_tkt[]" id="dari_tkt" onchange="DariTiketToggleOthers()" required>
+                                <select class="form-select form-select-sm select2 select2-transport-hub" name="dari_tkt[]" id="dari_tkt" onchange="DariTiketToggleOthers()" required>
                                     <option value="">--- Choose Location ---</option>
                                     @foreach ($transport_hubs as $transport_hub)
                                         <option value="{{ $transport_hub }}">
@@ -1009,18 +1024,17 @@ function LuarKotaTicketInit() {
                                     @endforeach
                                     <option value="Others">Others</option>
                                 </select>
-                                <br>
                                 <div class="row">
                                     <div class="">
                                         <input type="text" name="others_dari_tkt[]" id="others_dari_tkt"
-                                        class="form-control form-control-sm" placeholder="ex: Yogyakarta (YIA)"
+                                        class="form-control form-control-sm mt-2" placeholder="ex: Yogyakarta (YIA)"
                                         value="" style="display: none;">
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label for="ke_tkt" class="form-label">To</label>
-                                <select class="form-select form-select-sm select2" name="ke_tkt[]" id="ke_tkt" onchange="KeTiketToggleOthers()" required>
+                                <select class="form-select form-select-sm select2 select2-transport-hub" name="ke_tkt[]" id="ke_tkt" onchange="KeTiketToggleOthers()" required>
                                     <option value="">--- Choose Location ---</option>
                                     @foreach ($transport_hubs as $transport_hub)
                                         <option value="{{ $transport_hub }}">
@@ -1029,11 +1043,10 @@ function LuarKotaTicketInit() {
                                     @endforeach
                                     <option value="Others">Others</option>
                                 </select>
-                                <br>
                                 <div class="row">
                                     <div class="">
                                         <input type="text" name="others_ke_tkt[]" id="others_ke_tkt"
-                                        class="form-control form-control-sm" placeholder="ex: Jakarta (CGK)"
+                                        class="form-control form-control-sm mt-2" placeholder="ex: Jakarta (CGK)"
                                         value="" style="display: none;">
                                     </div>
                                 </div>
@@ -1054,17 +1067,26 @@ function LuarKotaTicketInit() {
                         @endif
                     </div>
                      <div class="row">
-                        <div class="col-md-6 mb-2">
-                            <label class="form-label">Transportation Type</label>
-                            <div class="input-group">
-                                <select class="form-select form-select-sm select2" name="jenis_tkt[]" id="jenis_tkt_${formNumber}">
-                                    <option value="">Select Transportation Type</option>
-                                    <option value="Train">Train</option>
-                                    <option value="Airplane">Airplane</option>
-                                    <option value="Ferry">Ferry</option>
+                        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label">Employee Name</label>
+                                <select class="form-select form-select-sm selection2" id="noktp_tkt_${formNumber}" name="noktp_tkt[]">
+                                <option value="">Please Select</option>
                                 </select>
                             </div>
-                        </div>
+                        @else
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label">Transportation Type</label>
+                                <div class="input-group">
+                                    <select class="form-select form-select-sm select2" name="jenis_tkt[]" id="jenis_tkt_${formNumber}" onchange="filterTransportHubByType(this)">
+                                        <option value="">Select Transportation Type</option>
+                                        <option value="Train">Train</option>
+                                        <option value="Airplane">Airplane</option>
+                                        <option value="Ferry">Ferry</option>
+                                    </select>
+                                </div>
+                            </div>
+                        @endif
                         <div class="col-md-6 mb-2">
                             <label class="form-label">Ticket Type</label>
                             <select class="form-select form-select-sm" name="type_tkt[]">
@@ -1392,6 +1414,7 @@ function DalamKotaTicketInit() {
             );
             updateFormNumbersDalamKota();
             initializeAllSelect2DalamKota();
+            initializeTransportSelect2();
         } else {
             Swal.fire({
                 title: "Warning!",
@@ -1454,16 +1477,30 @@ function DalamKotaTicketInit() {
                         <b>TICKET ${formNumber}</b>
                     </div>
                     <div class="row">
-                        <div class="col-md-4 mb-2">
-                            <label class="form-label">Employee Name</label>
-                            <select class="form-select form-select-sm selection-dalam-kota2" id="noktp_tkt_dalam_kota_${formNumber}" name="noktp_tkt_dalam_kota[]">
-                               <option value="">Please Select</option>
-                            </select>
-                        </div>
+                        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Transportation Type</label>
+                                <div class="input-group">
+                                    <select class="form-select form-select-sm select2" name="jenis_tkt_dalam_kota[]" id="jenis_tkt_dalam_kota_${formNumber}" onchange="filterTransportHubByType(this)">
+                                        <option value="">Select Transportation Type</option>
+                                        <option value="Train">Train</option>
+                                        <option value="Airplane">Airplane</option>
+                                        <option value="Ferry">Ferry</option>
+                                    </select>
+                                </div>
+                            </div>
+                        @else
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Employee Name</label>
+                                <select class="form-select form-select-sm selection-dalam-kota2 selection2" id="noktp_tkt_dalam_kota_${formNumber}" name="noktp_tkt_dalam_kota[]">
+                                <option value="">Please Select</option>
+                                </select>
+                            </div>
+                        @endif
                         @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
                             <div class="col-md-4 mb-2">
                                 <label for="dari_tkt_dalam_kota" class="form-label">From</label>
-                                <select class="form-select form-select-sm select2" name="dari_tkt_dalam_kota[]" id="dari_tkt_dalam_kota" onchange="DariTiketDalamKotaToggleOthers()" required>
+                                <select class="form-select form-select-sm select2 select2-transport-hub" name="dari_tkt_dalam_kota[]" id="dari_tkt_dalam_kota" onchange="DariTiketDalamKotaToggleOthers()" required>
                                     <option value="">--- Choose Location ---</option>
                                     @foreach ($transport_hubs as $transport_hub)
                                         <option value="{{ $transport_hub }}">
@@ -1472,18 +1509,17 @@ function DalamKotaTicketInit() {
                                     @endforeach
                                     <option value="Others">Others</option>
                                 </select>
-                                <br>
                                 <div class="row">
                                     <div class="">
                                         <input type="text" name="others_dari_tkt_dalam_kota[]" id="others_dari_tkt_dalam_kota"
-                                        class="form-control form-control-sm" placeholder="ex: Yogyakarta (YIA)"
+                                        class="form-control form-control-sm mt-2" placeholder="ex: Yogyakarta (YIA)"
                                         value="" style="display: none;">
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label for="ke_tkt_dalam_kota" class="form-label">To</label>
-                                <select class="form-select form-select-sm select2" name="ke_tkt_dalam_kota[]" id="ke_tkt_dalam_kota" onchange="KeTiketDalamKotaToggleOthers()" required>
+                                <select class="form-select form-select-sm select2 select2-transport-hub" name="ke_tkt_dalam_kota[]" id="ke_tkt_dalam_kota" onchange="KeTiketDalamKotaToggleOthers()" required>
                                     <option value="">--- Choose Location ---</option>
                                     @foreach ($transport_hubs as $transport_hub)
                                         <option value="{{ $transport_hub }}">
@@ -1492,11 +1528,10 @@ function DalamKotaTicketInit() {
                                     @endforeach
                                     <option value="Others">Others</option>
                                 </select>
-                                <br>
                                 <div class="row">
                                     <div class="">
                                         <input type="text" name="others_ke_tkt_dalam_kota[]" id="others_ke_tkt_dalam_kota"
-                                        class="form-control form-control-sm" placeholder="ex: Jakarta (CGK)"
+                                        class="form-control form-control-sm mt-2" placeholder="ex: Jakarta (CGK)"
                                         value="" style="display: none;">
                                     </div>
                                 </div>
@@ -1516,18 +1551,27 @@ function DalamKotaTicketInit() {
                             </div>
                         @endif
                     </div>
-                     <div class="row">
-                        <div class="col-md-6 mb-2">
-                            <label class="form-label">Transportation Type</label>
-                            <div class="input-group">
-                                <select class="form-select form-select-sm select2" name="jenis_tkt_dalam_kota[]" id="jenis_tkt_dalam_kota_${formNumber}">
-                                    <option value="">Select Transportation Type</option>
-                                    <option value="Train">Train</option>
-                                    <option value="Airplane">Airplane</option>
-                                    <option value="Ferry">Ferry</option>
+                    <div class="row">
+                        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label">Employee Name</label>
+                                <select class="form-select form-select-sm selection-dalam-kota2 selection2" id="noktp_tkt_dalam_kota_${formNumber}" name="noktp_tkt_dalam_kota[]">
+                                <option value="">Please Select</option>
                                 </select>
                             </div>
-                        </div>
+                        @else
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label">Transportation Type</label>
+                                <div class="input-group">
+                                    <select class="form-select form-select-sm select2" name="jenis_tkt_dalam_kota[]" id="jenis_tkt_dalam_kota_${formNumber}" onchange="filterTransportHubByType(this)">
+                                        <option value="">Select Transportation Type</option>
+                                        <option value="Train">Train</option>
+                                        <option value="Airplane">Airplane</option>
+                                        <option value="Ferry">Ferry</option>
+                                    </select>
+                                </div>
+                            </div>
+                        @endif
                         <div class="col-md-6 mb-2">
                             <label class="form-label">Ticket Type</label>
                             <select class="form-select form-select-sm" name="type_tkt_dalam_kota[]">
@@ -2691,4 +2735,19 @@ document.getElementById("end_date").addEventListener("change", function () {
 
     document.getElementById("ca_decla").value = `${year}-${month}-${day}`;
 });
+
+function initializeTransportSelect2(container) {
+    $(".select2-transport-hub").each(function() {
+        const $select = $(this);
+
+        if (!$select.data("select2")) {
+            $select.select2({
+                theme: "bootstrap-5",
+                width: "100%",
+                minimumInputLength: 0,
+                allowClear: false
+            });
+        }
+    });
+}
 </script>

@@ -36,7 +36,7 @@
                             enctype="multipart/form-data">
                             @csrf
 
-                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
                                 <div class="row">
                                     <div class="col-md-6">
                                         <table width="100%" class="">
@@ -120,7 +120,7 @@
                                     </select>
                                 </div>
 
-                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
                                     @php
                                         $isOtherHospital = !in_array($medic->hospital_name, $medical_hospitals->toArray());
                                     @endphp
@@ -932,7 +932,7 @@
 
     </script>
 
-    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
         <script>
             $(document).ready(function () {
                 $('#hospital_name').select2({

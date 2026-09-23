@@ -11,22 +11,37 @@
                         <b>TICKET <?php echo $i; ?></b>
                     </div>
                     <div class="row">
-                        <div class="col-md-4 mb-2">
-                            <label class="form-label">Employee Name</label>
-                            <select class="form-select form-select-sm select2" id="noktp_tkt_<?php echo $i; ?>"
-                                name="noktp_tkt[]">
-                                <option value="" selected>Please Select</option>
-                                @foreach ($employees as $employee)
-                                    <option value="{{ $employee->ktp }}">
-                                        {{ $employee->employee_id . ' - ' . $employee->fullname }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label" for="jenis_tkt_<?php echo $i; ?>">Transportation Type</label>
+                                <div class="input-group">
+                                    <select class="form-select form-select-sm" name="jenis_tkt[]"
+                                        id="jenis_tkt_<?php echo $i; ?>" onchange="filterTransportHubByType(this)">
+                                        <option value="">Select Transportation Type</option>
+                                        <option value="Train">Train</option>
+                                        <option value="Airplane">Airplane</option>
+                                        <option value="Ferry">Ferry</option>
+                                    </select>
+                                </div>
+                            </div>
+                        @else
+                            <div class="col-md-4 mb-2">
+                                <label class="form-label">Employee Name</label>
+                                <select class="form-select form-select-sm select2" id="noktp_tkt_<?php echo $i; ?>"
+                                    name="noktp_tkt[]">
+                                    <option value="" selected>Please Select</option>
+                                    @foreach ($employees as $employee)
+                                        <option value="{{ $employee->ktp }}">
+                                            {{ $employee->employee_id . ' - ' . $employee->fullname }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
                         @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
                             <div class="col-md-4 mb-2">
                                 <label for="dari_tkt" class="form-label">From</label>
-                                <select class="form-select form-select-sm select2" name="dari_tkt[]" id="dari_tkt" onchange="DariTiketToggleOthers()" required>
+                                <select class="form-select form-select-sm select2 select2-transport-hub" name="dari_tkt[]" id="dari_tkt" onchange="DariTiketToggleOthers()" required>
                                     <option value="">--- Choose Location ---</option>
                                     @foreach ($transport_hubs as $transport_hub)
                                         <option value="{{ $transport_hub }}">
@@ -35,18 +50,17 @@
                                     @endforeach
                                     <option value="Others">Others</option>
                                 </select>
-                                <br>
                                 <div class="row">
                                     <div class="">
                                         <input type="text" name="others_dari_tkt[]" id="others_dari_tkt"
-                                        class="form-control form-control-sm" placeholder="ex: Yogyakarta (YIA)"
+                                        class="form-control form-control-sm mt-2" placeholder="ex: Yogyakarta (YIA)"
                                         value="" style="display: none;">
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label for="ke_tkt" class="form-label">To</label>
-                                <select class="form-select form-select-sm select2" name="ke_tkt[]" id="ke_tkt" onchange="KeTiketToggleOthers()" required>
+                                <select class="form-select form-select-sm select2 select2-transport-hub" name="ke_tkt[]" id="ke_tkt" onchange="KeTiketToggleOthers()" required>
                                     <option value="">--- Choose Location ---</option>
                                     @foreach ($transport_hubs as $transport_hub)
                                         <option value="{{ $transport_hub }}">
@@ -55,11 +69,10 @@
                                     @endforeach
                                     <option value="Others">Others</option>
                                 </select>
-                                <br>
                                 <div class="row">
                                     <div class="">
                                         <input type="text" name="others_ke_tkt[]" id="others_ke_tkt"
-                                        class="form-control form-control-sm" placeholder="ex: Jakarta (CGK)"
+                                        class="form-control form-control-sm mt-2" placeholder="ex: Jakarta (CGK)"
                                         value="" style="display: none;">
                                     </div>
                                 </div>
@@ -82,18 +95,33 @@
                         @endif
                     </div>
                     <div class="row">
-                        <div class="col-md-6 mb-2">
-                            <label class="form-label" for="jenis_tkt_<?php echo $i; ?>">Transportation Type</label>
-                            <div class="input-group">
-                                <select class="form-select form-select-sm" name="jenis_tkt[]"
-                                    id="jenis_tkt_<?php echo $i; ?>">
-                                    <option value="">Select Transportation Type</option>
-                                    <option value="Train">Train</option>
-                                    <option value="Airplane">Airplane</option>
-                                    <option value="Ferry">Ferry</option>
+                        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label">Employee Name</label>
+                                <select class="form-select form-select-sm select2" id="noktp_tkt_<?php echo $i; ?>"
+                                    name="noktp_tkt[]">
+                                    <option value="" selected>Please Select</option>
+                                    @foreach ($employees as $employee)
+                                        <option value="{{ $employee->ktp }}">
+                                            {{ $employee->employee_id . ' - ' . $employee->fullname }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
-                        </div>
+                        @else
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label" for="jenis_tkt_<?php echo $i; ?>">Transportation Type</label>
+                                <div class="input-group">
+                                    <select class="form-select form-select-sm" name="jenis_tkt[]"
+                                        id="jenis_tkt_<?php echo $i; ?>" onchange="filterTransportHubByType(this)">
+                                        <option value="">Select Transportation Type</option>
+                                        <option value="Train">Train</option>
+                                        <option value="Airplane">Airplane</option>
+                                        <option value="Ferry">Ferry</option>
+                                    </select>
+                                </div>
+                            </div>
+                        @endif
                         <div class="col-md-6 mb-2">
                             <label for="type_tkt_<?php echo $i; ?>" class="form-label">Ticket Type</label>
                             <select class="form-select form-select-sm" name="type_tkt[]">
