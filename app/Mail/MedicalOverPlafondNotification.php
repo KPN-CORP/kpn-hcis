@@ -15,12 +15,14 @@ class MedicalOverPlafondNotification extends Mailable implements ShouldQueue
 
     public $healthPlafond;
     public $healthPlan;
+    public $employee;
     public $logoBase64;
 
-    public function __construct($healthPlafond, $healthPlan, $logoBase64 = null)
+    public function __construct($healthPlafond, $healthPlan, $employee, $logoBase64 = null)
     {
         $this->healthPlafond = $healthPlafond;
         $this->healthPlan = $healthPlan;
+        $this->employee = $employee;
         $this->logoBase64 = $logoBase64;
     }
 

@@ -15,23 +15,25 @@ class MedicalRemainingPlafondNotification extends Mailable implements ShouldQueu
 
     public $healthPlafond;
     public $healthPlan;
+    public $employee;
     public $logoBase64;
 
-    public function __construct($healthPlafond, $healthPlan, $logoBase64 = null)
+    public function __construct($healthPlafond, $healthPlan, $employee, $logoBase64 = null)
     {
         $this->healthPlafond = $healthPlafond;
         $this->healthPlan = $healthPlan;
+        $this->employee = $employee;
         $this->logoBase64 = $logoBase64;
     }
 
     public function build()
     {
-        return $this->subject('Medical Remaining Plafond Notification')->view('hcis.reimbursements.medical.email.mdcRemainingPlafondNotification');
+        return $this->subject('Sisa Plafon Medical Anda di Bawah 20%')->view('hcis.reimbursements.medical.email.mdcRemainingPlafondNotification');
     }
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Medical Remaining Plafond Notification',
+            subject: 'Sisa Plafon Medical Anda di Bawah 20%',
         );
     }
 

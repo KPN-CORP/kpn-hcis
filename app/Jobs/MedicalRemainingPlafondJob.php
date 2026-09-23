@@ -74,6 +74,7 @@ class MedicalRemainingPlafondJob implements ShouldQueue
                     (new MedicalRemainingPlafondNotification(
                         $plafond,
                         $healthPlan,
+                        $employee,
                         $base64Image
                     ))->onQueue('hcis')
                 );

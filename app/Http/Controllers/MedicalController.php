@@ -703,6 +703,7 @@ class MedicalController extends Controller
                         (new MedicalOverPlafondNotification(
                             $plafond,
                             $healthPlan,
+                            $employee_data,
                             $base64Image
                         ))->onQueue('hcis')
                     );

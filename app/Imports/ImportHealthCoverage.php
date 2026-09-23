@@ -320,6 +320,7 @@ class ImportHealthCoverage implements ToModel
                 (new MedicalOverPlafondNotification(
                     $plafond,
                     $healthPlan,
+                    $employee,
                     $this->base64Image
                 ))->onQueue('hcis')
             );
