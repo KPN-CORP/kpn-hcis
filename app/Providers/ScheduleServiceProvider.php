@@ -32,5 +32,6 @@ class ScheduleServiceProvider extends ServiceProvider
         $schedule->command('app:sync-certifications')->monthlyOn(1, '01:10');
         $schedule->command('app:sync-movements')->monthlyOn(1, '01:20');
         $schedule->command('app:sync-promotions')->monthlyOn(1, '01:30');
+        $schedule->command('medical:remaining-plafond')->dailyAt('08:00');
     }
 }
