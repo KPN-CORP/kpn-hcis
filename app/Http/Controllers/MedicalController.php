@@ -1363,10 +1363,10 @@ class MedicalController extends Controller
 
                 $employeeCoveredAmount = isset($employeeCoveredAmounts[$medical_type])
                     ? (int) str_replace(".", "", $employeeCoveredAmounts[$medical_type])
-                    : 0;
+                    : null;
                 $companyCoveredAmount = isset($companyCoveredAmounts[$medical_type])
                 ? (int) str_replace(".", "", $companyCoveredAmounts[$medical_type])
-                    : 0;
+                    : null;
 
                 $docReceivedBy = $existingCoverage->doc_received_by;
                 $docReceivedAt = $existingCoverage->doc_received_at;
