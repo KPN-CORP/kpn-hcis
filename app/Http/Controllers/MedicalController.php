@@ -1308,6 +1308,8 @@ class MedicalController extends Controller
         // Process the medical verification costs
         $medical_costs = $request->input("medical_costs", []);
         $bpjs_costs = $request->input("bpjs_cover", []);
+        $employeeCoveredAmounts = $request->input("employee_covered_amount", []);
+        $companyCoveredAmounts = $request->input("company_covered_amount", []);
         $existingCoverages = HealthCoverage::where(
             "no_medic",
             $no_medic,
@@ -1359,6 +1361,13 @@ class MedicalController extends Controller
                     ? (int) str_replace(".", "", $bpjs_costs[$medical_type])
                     : 0;
 
+                $employeeCoveredAmount = isset($employeeCoveredAmounts[$medical_type])
+                    ? (int) str_replace(".", "", $employeeCoveredAmounts[$medical_type])
+                    : 0;
+                $companyCoveredAmount = isset($companyCoveredAmounts[$medical_type])
+                ? (int) str_replace(".", "", $companyCoveredAmounts[$medical_type])
+                    : 0;
+
                 $docReceivedBy = $existingCoverage->doc_received_by;
                 $docReceivedAt = $existingCoverage->doc_received_at;
 
@@ -1382,6 +1391,8 @@ class MedicalController extends Controller
                     "balance_bpjs" => $bpjs_cost,
                     "is_revise" => false,
                     "revise_info" => null,
+                    "employee_covered_amount" => $employeeCoveredAmount,
+                    "company_covered_amount" => $companyCoveredAmount
                 ]);
                 if ($medical_plan->balance < $verif_cost) {
                     $old_balance_total =
