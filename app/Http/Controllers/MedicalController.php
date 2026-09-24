@@ -704,11 +704,19 @@ class MedicalController extends Controller
                 }
 
                 if ($val > $healthPlan->balance && $healthPlan->over_plafond_email_sent_date == null) {
+                    $totalUsage = HealthCoverage::where("employee_id", $employee_data->employee_id)
+                        ->where("period", $healthCoverage->period)
+                        ->whereIn("status", ["Pending", "Done"])
+                        ->where("medical_type", $healthPlan->medical_type)
+                        ->whereNull("deleted_at")
+                        ->sum("balance");
+
                     Mail::to($employee_data->email)->bcc('dali.kewara@kpn-corp.com')->queue(
                         (new MedicalOverPlafondNotification(
                             $plafond,
                             $healthPlan,
                             $employee_data,
+                            $totalUsage,
                             $base64Image
                         ))->onQueue('kpn-hcis')
                     );

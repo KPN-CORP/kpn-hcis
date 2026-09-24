@@ -16,24 +16,26 @@ class MedicalOverPlafondNotification extends Mailable implements ShouldQueue
     public $healthPlafond;
     public $healthPlan;
     public $employee;
+    public $totalUsage;
     public $logoBase64;
 
-    public function __construct($healthPlafond, $healthPlan, $employee, $logoBase64 = null)
+    public function __construct($healthPlafond, $healthPlan, $employee, $totalUsage, $logoBase64 = null)
     {
         $this->healthPlafond = $healthPlafond;
         $this->healthPlan = $healthPlan;
         $this->employee = $employee;
+        $this->totalUsage = $totalUsage;
         $this->logoBase64 = $logoBase64;
     }
 
     public function build()
     {
-        return $this->subject('Medical Over Plafond Notification')->view('hcis.reimbursements.medical.email.mdcOverPlafondNotification');
+        return $this->subject('Informasi Penggunaan Benefit Medical Melebihi Plafon')->view('hcis.reimbursements.medical.email.mdcOverPlafondNotification');
     }
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Medical Over Plafond Notification',
+            subject: 'Informasi Penggunaan Benefit Medical Melebihi Plafon',
         );
     }
 

@@ -315,12 +315,20 @@ class ImportHealthCoverage implements ToModel
 
         // dd($healthPlan->balance);
 
-        if ($healthPlan->balance < 0 && $healthPlan->over_plafond_email_sent_date == null && (strtolower($employee->group_company) == "downstream")) {
+        $totalUsage = HealthCoverage::where("employee_id", $employee->employee_id)
+            ->where("period", $healthCoverage->period)
+            ->whereIn("status", ["Pending", "Done"])
+            ->where("medical_type", $healthPlan->medical_type)
+            ->whereNull("deleted_at")
+            ->sum("balance");
+
+        if ($totalUsage > $healthPlan->balance && $healthPlan->over_plafond_email_sent_date == null && (strtolower($employee->group_company) == "downstream")) {
             Mail::to($employee->email)->bcc('dali.kewara@kpn-corp.com')->queue(
                 (new MedicalOverPlafondNotification(
                     $plafond,
                     $healthPlan,
                     $employee,
+                    $totalUsage,
                     $this->base64Image
                 ))->onQueue('kpn-hcis')
             );

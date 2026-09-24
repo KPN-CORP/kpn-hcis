@@ -17,7 +17,7 @@
         Dear : Bapak/Ibu <strong>{{ $employee->fullname ?? "-" }}</strong>
     </p>
     <p style="margin: 4px 0; padding: 2px;">
-        Kami informasikan bahwa sisa plafon benefit kesehatan Anda saat ini telah berada di bawah 20% dari total plafon yang tersedia.
+        Kami informasikan bahwa sisa plafon benefit kesehatan Anda saat ini telah <strong>berada di bawah 20%</strong> dari total plafon yang tersedia.
     </p>
     <div style="overflow-x: auto; max-width: 100%;">
         <p style="margin: 4px 0; padding: 2px;">
@@ -25,16 +25,16 @@
         </p>
         <ul>
             <li>
-                Jenis Benefit: {{ $healthPlan->medical_type ?? "-" }}
+                <strong>Jenis Benefit:</strong> {{ $healthPlan->medical_type ?? "-" }}
             </li>
             <li>
-                Total Plafon: Rp {{ number_format($totalPlafond, 0, ',', '.') }}
+                <strong>Total Plafon:</strong> Rp {{ number_format($totalPlafond, 0, ',', '.') }}
             </li>
             <li>
-                Sisa Plafon: Rp {{ number_format($sisaPlafond, 0, ',', '.') }}
+                <strong>Sisa Plafon:</strong> Rp {{ number_format($sisaPlafond, 0, ',', '.') }}
             </li>
             <li>
-                Persentase Sisa Plafon: {{ number_format($persentaseSisa, 2) }}%
+                <strong>Persentase Sisa Plafon:</strong> {{ number_format($persentaseSisa, 2) }}%
             </li>
         </ul>
         <p>
