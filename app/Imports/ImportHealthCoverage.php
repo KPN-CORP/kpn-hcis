@@ -322,7 +322,7 @@ class ImportHealthCoverage implements ToModel
                     $healthPlan,
                     $employee,
                     $this->base64Image
-                ))->onQueue('hcis')
+                ))->onQueue('kpn-hcis')
             );
 
             $healthPlan->over_plafond_email_sent_date = $this->today;
