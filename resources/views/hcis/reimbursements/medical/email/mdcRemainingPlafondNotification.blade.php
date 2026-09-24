@@ -34,7 +34,7 @@
                 Sisa Plafon: Rp {{ number_format($sisaPlafond, 0, ',', '.') }}
             </li>
             <li>
-                Persentase Sisa Plafon: {{ number_format($persentaseSisa, 2) }}
+                Persentase Sisa Plafon: {{ number_format($persentaseSisa, 2) }}%
             </li>
         </ul>
         <p>
