@@ -676,14 +676,14 @@ class MedicalController extends Controller
                 ->get()
                 ->keyBy("medical_type");
 
-            $healthPlans = HealthPlan::where("employee_id", "")
-                ->where("period", "")
+            $healthPlans = HealthPlan::where("employee_id", $employee_data->employee_id)
+                ->where("period", $period)
                 ->whereNull("deleted_at")
                 ->get()
                 ->keyBy("medical_type");
 
-            $healthCoverages = HealthCoverage::where("employee_id", "")
-                ->where("period", "")
+            $healthCoverages = HealthCoverage::where("employee_id", $employee_data->employee_id)
+                ->where("period", $period)
                 ->where("status", "Pending")
                 ->whereNull("deleted_at")
                 ->get()
