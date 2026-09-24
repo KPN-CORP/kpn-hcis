@@ -204,7 +204,9 @@ class EmployeeController extends Controller
                             'bank_name' => $employee['nama_bank'],
                             'bank_account_number' => $employee['bank_account'],
                             'bank_account_name' => $employee['nama_pemilik_rekening'],
-                            'users_id' => $employee['user_unique_id']
+                            'users_id' => $employee['user_unique_id'],
+                            'cost_center' => $employee['cost_center'],
+                            'cost_center_code' => $employee['cost_center_code']
                         ]
                     );
 
@@ -343,7 +345,9 @@ class EmployeeController extends Controller
                             'bank_name' => $employee['nama_bank'],
                             'bank_account_number' => $employee['bank_account'],
                             'bank_account_name' => $employee['nama_pemilik_rekening'],
-                            'users_id' => $employee['user_unique_id']
+                            'users_id' => $employee['user_unique_id'],
+                            'cost_center' => $employee['cost_center'],
+                            'cost_center_code' => $employee['cost_center_code']
                         ]
                     );
 
