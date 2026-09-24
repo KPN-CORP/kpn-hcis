@@ -99,17 +99,13 @@
                             </div>
 
                             {{-- Dynamic Forms --}}
-                            <div class="row">
-                                <div id="balanceContainer" class="col-md-4 mb-3"></div>
-                                <div id="dynamicForms" class="col-md-4 mb-3"></div>
-                                <div id="bpjsCoverContainer" class="col-md-4 mb-3"></div>
-                            </div>
+                            <div id="balanceContainer" class="row"></div>
+                            <div id="dynamicForms" class="row"></div>
+                            <div id="bpjsCoverContainer" class="row"></div>
 
                             @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
-                                <div class="row">
-                                    <div id="employeeCoveredAmount" class="col-md-6 mb-3"></div>
-                                    <div id="companyCoveredAmount" class="col-md-6 mb-3"></div>
-                                </div>
+                                <div id="employeeCoveredAmount" class="row"></div>
+                                <div id="companyCoveredAmount" class="row"></div>
                             @endif
 
                             <div class="row mb-2">
@@ -326,69 +322,83 @@
     @endif
 
     {{-- <script src="{{ asset('/js/medical/medical-edit.js') }}"></script> --}}
+    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+        <script>
+            function generateEmployeeCoveredAmountForms(selectedTypes, selectedYear) {
+                var containerElem = $("#employeeCoveredAmount");
+
+                containerElem.empty();
+
+                if (selectedTypes && selectedTypes.length > 0) {
+                    selectedTypes.forEach(function (type) {
+                        var coveredAmount = 0;
+                        var balance = typeToBalanceMap[type]?.[selectedYear] || 0;
+                        var claimValue = balanceMapping[type] || 0;
+
+                        if (claimValue > balance) {
+                            coveredAmount = claimValue - balance;
+                        }
+
+                        var formGroupElem = `
+                            <div class="col-md-3 mb-3">
+                                <label for="employee_covered_amount_${type}" class="form-label">${type} Employee Covered Amount</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Rp</span>
+                                    <input type="text" class="form-control currency-input employee-covered-amount" id="employee_covered_amount_${type}" name="employee_covered_amount[${type}]" placeholder="0" value="${formatCurrency(coveredAmount)}" required>
+                                </div>
+                            </div>
+                        `;
+
+                        containerElem.append(formGroupElem);
+                    });
+                }
+            }
+
+            function generateCompanyCoveredAmountForms(selectedTypes, selectedYear) {
+                var containerElem = $("#companyCoveredAmount");
+
+                containerElem.empty();
+
+                if (selectedTypes && selectedTypes.length > 0) {
+                    selectedTypes.forEach(function (type) {
+                        var coveredAmount = 0;
+                        var balance = typeToBalanceMap[type]?.[selectedYear] || 0;
+                        var claimValue = balanceMapping[type] || 0;
+
+                        if (claimValue > balance) {
+                            coveredAmount = claimValue - (claimValue - balance);
+                        } else {
+                            coveredAmount = claimValue;
+                        }
+
+                        var formGroupElem = `
+                            <div class="col-md-3 mb-3">
+                                <label for="company_covered_amount_${type}" class="form-label">${type} Company Covered Amount</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Rp</span>
+                                    <input type="text" class="form-control currency-input company-covered-amount" id="company_covered_amount_${type}" name="company_covered_amount[${type}]" placeholder="0" value="${formatCurrency(coveredAmount)}" required>
+                                </div>
+                            </div>
+                        `;
+
+                        containerElem.append(formGroupElem);
+                    });
+                }
+            }
+        </script>
+    @else
+        <script>
+            function generateEmployeeCoveredAmountForms(selectedTypes, selectedYear) {
+                return;
+            }
+
+            function generateCompanyCoveredAmountForms(selectedTypes, selectedYear) {
+                return;
+            }
+        </script>
+    @endif
+
     <script>
-        function generateEmployeeCoveredAmountForms(selectedTypes, selectedYear) {
-            var containerElem = $("#employeeCoveredAmount");
-
-            containerElem.empty();
-
-            if (selectedTypes && selectedTypes.length > 0) {
-                selectedTypes.forEach(function (type) {
-                    var coveredAmount = 0;
-                    var balance = typeToBalanceMap[type]?.[selectedYear] || 0;
-                    var claimValue = balanceMapping[type] || 0;
-
-                    if (claimValue > balance) {
-                        coveredAmount = claimValue - balance;
-                    }
-
-                    var formGroupElem = `
-                        <div class="mb-2">
-                            <label for="employee_covered_amount_${type}" class="form-label">${type} Employee Covered Amount</label>
-                            <div class="input-group">
-                                <span class="input-group-text">Rp</span>
-                                <input type="text" class="form-control currency-input employee-covered-amount" id="employee_covered_amount_${type}" name="employee_covered_amount[${type}]" placeholder="0" value="${formatCurrency(coveredAmount)}" required>
-                            </div>
-                        </div>
-                    `;
-
-                    containerElem.append(formGroupElem);
-                });
-            }
-        }
-
-        function generateCompanyCoveredAmountForms(selectedTypes, selectedYear) {
-            var containerElem = $("#companyCoveredAmount");
-
-            containerElem.empty();
-
-            if (selectedTypes && selectedTypes.length > 0) {
-                selectedTypes.forEach(function (type) {
-                    var coveredAmount = 0;
-                    var balance = typeToBalanceMap[type]?.[selectedYear] || 0;
-                    var claimValue = balanceMapping[type] || 0;
-
-                    if (claimValue > balance) {
-                        coveredAmount = claimValue - (claimValue - balance);
-                    } else {
-                        coveredAmount = claimValue;
-                    }
-
-                    var formGroupElem = `
-                        <div class="mb-2">
-                            <label for="company_covered_amount_${type}" class="form-label">${type} Company Covered Amount</label>
-                            <div class="input-group">
-                                <span class="input-group-text">Rp</span>
-                                <input type="text" class="form-control currency-input company-covered-amount" id="company_covered_amount_${type}" name="company_covered_amount[${type}]" placeholder="0" value="${formatCurrency(coveredAmount)}" required>
-                            </div>
-                        </div>
-                    `;
-
-                    containerElem.append(formGroupElem);
-                });
-            }
-        }
-
         $(document).ready(function () {
             // Function to generate balance display based on selected types and year
             function generateBalanceDisplay(selectedTypes, selectedYear) {
@@ -400,7 +410,7 @@
                         // Fetch balance based on type and year
                         var balance = typeToBalanceMap[type]?.[selectedYear] || 0; // Default to 0 if not found
                         var balanceGroup = `
-                        <div class="mb-2">
+                        <div class="col-md-3 mb-3">
                             <label for="${type}" class="form-label">${type} Plafond</label>
                             <div class="input-group">
                                 <span class="input-group-text">Rp</span>
@@ -422,7 +432,7 @@
                 if (selectedTypes && selectedTypes.length > 0) {
                     selectedTypes.forEach(function (type) {
                         var formGroupBpjs = `
-                        <div class="mb-2">
+                        <div class="col-md-3 mb-3">
                             <label for="bpjs_cover_${type}" class="form-label">${type} BPJS Cover</label>
                             <div class="input-group">
                                 <span class="input-group-text">Rp</span>
@@ -481,7 +491,7 @@
                         var balanceValue = balanceMapping[type] || ""; // Get the balance from mapping or set to empty
                         var formattedValue = formatCurrency(balanceValue); // Format the initial value
                         var formGroup = `
-                        <div class="mb-2">
+                        <div class="col-md-3 mb-3">
                             <label for="${type}" class="form-label">${type} Claim</label>
                             <div class="input-group">
                                 <span class="input-group-text">Rp</span>
@@ -527,89 +537,6 @@
             // Step to initialize the dynamic forms on page load with selected values
             var initialSelectedTypes = $("#medical_type").val();
             generateDynamicForms(initialSelectedTypes); // Call this function to set initial forms
-
-            // On typing
-
-            var medicalClaimAmountTypingTimer;
-
-            $(document).on("input", ".medical-claim-amount", function () {
-                var $el = $(this);
-
-                clearTimeout(medicalClaimAmountTypingTimer);
-
-                var selectedDate = $("#date").val();
-                var selectedYear = selectedDate
-                    ? new Date(selectedDate).getFullYear()
-                    : null;
-                var selectedTypes = $("#medical_type").val();
-
-                medicalClaimAmountTypingTimer = setTimeout(function () {
-                    var type = $el.attr("id");
-
-                    balanceMapping[type] = parseInt($el.val().replace(/\./g, ""), 10) || 0;
-
-                    generateEmployeeCoveredAmountForms(selectedTypes, selectedYear);
-                    generateCompanyCoveredAmountForms(selectedTypes, selectedYear);
-                }, 300);
-            });
-
-            var employeeCoveredAmountTypingTimer;
-
-            $(document).on("input", ".employee-covered-amount", function () {
-                var $el = $(this);
-
-                clearTimeout(employeeCoveredAmountTypingTimer);
-
-                employeeCoveredAmountTypingTimer = setTimeout(function () {
-                    var type = $el.attr("id").split("_").pop();
-                    var selectedDate = $("#date").val();
-                    var selectedYear = selectedDate ? new Date(selectedDate).getFullYear() : null;
-                    var balance = typeToBalanceMap[type]?.[selectedYear] || 0;
-                    var claimValue = balanceMapping[type] || 0;
-                    var $company = $(`#company_covered_amount_${type}`);
-                    var employeeAmount = parseInt(String($el.val()).replace(/\./g, ""), 10) || 0;
-
-                    if (claimValue > 0) {
-                        if (employeeAmount > claimValue) {
-                            employeeAmount = claimValue;
-                            $el.val(formatCurrency(employeeAmount));
-                        }
-
-                        var companyAmount = claimValue - employeeAmount;
-
-                        $company.val(formatCurrency(companyAmount));
-                    }
-                }, 300);
-            });
-
-            var companyCoveredAmountTypingTimer;
-
-            $(document).on("input", ".company-covered-amount", function () {
-                var $el = $(this);
-
-                clearTimeout(companyCoveredAmountTypingTimer);
-
-                companyCoveredAmountTypingTimer = setTimeout(function () {
-                    var type = $el.attr("id").split("_").pop();
-                    var selectedDate = $("#date").val();
-                    var selectedYear = selectedDate ? new Date(selectedDate).getFullYear() : null;
-                    var balance = typeToBalanceMap[type]?.[selectedYear] || 0;
-                    var claimValue = balanceMapping[type] || 0;
-                    var $employee = $(`#employee_covered_amount_${type}`);
-                    var companyAmount = parseInt(String($el.val()).replace(/\./g, ""), 10) || 0;
-
-                    if (claimValue > 0) {
-                        if (companyAmount > claimValue) {
-                            companyAmount = claimValue;
-                            $el.val(formatCurrency(companyAmount));
-                        }
-
-                        var employeeAmount = claimValue - companyAmount;
-
-                        $employee.val(formatCurrency(employeeAmount));
-                    }
-                }, 300);
-            });
         });
 
         // This function is kept outside for global access if needed
@@ -643,6 +570,92 @@
         dateInput.setAttribute("min", formattedTwoWeeksAgo);
         dateInput.setAttribute("max", formattedToday); // Optional: To limit selection to today
     </script>
+    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+        <script>
+            $(document).ready(function () {
+                var medicalClaimAmountTypingTimer;
+
+                $(document).on("input", ".medical-claim-amount", function () {
+                    var $el = $(this);
+
+                    clearTimeout(medicalClaimAmountTypingTimer);
+
+                    var selectedDate = $("#date").val();
+                    var selectedYear = selectedDate
+                        ? new Date(selectedDate).getFullYear()
+                        : null;
+                    var selectedTypes = $("#medical_type").val();
+
+                    medicalClaimAmountTypingTimer = setTimeout(function () {
+                        var type = $el.attr("id");
+
+                        balanceMapping[type] = parseInt($el.val().replace(/\./g, ""), 10) || 0;
+
+                        generateEmployeeCoveredAmountForms(selectedTypes, selectedYear);
+                        generateCompanyCoveredAmountForms(selectedTypes, selectedYear);
+                    }, 300);
+                });
+
+                var employeeCoveredAmountTypingTimer;
+
+                $(document).on("input", ".employee-covered-amount", function () {
+                    var $el = $(this);
+
+                    clearTimeout(employeeCoveredAmountTypingTimer);
+
+                    employeeCoveredAmountTypingTimer = setTimeout(function () {
+                        var type = $el.attr("id").split("_").pop();
+                        var selectedDate = $("#date").val();
+                        var selectedYear = selectedDate ? new Date(selectedDate).getFullYear() : null;
+                        var balance = typeToBalanceMap[type]?.[selectedYear] || 0;
+                        var claimValue = balanceMapping[type] || 0;
+                        var $company = $(`#company_covered_amount_${type}`);
+                        var employeeAmount = parseInt(String($el.val()).replace(/\./g, ""), 10) || 0;
+
+                        if (claimValue > 0) {
+                            if (employeeAmount > claimValue) {
+                                employeeAmount = claimValue;
+                                $el.val(formatCurrency(employeeAmount));
+                            }
+
+                            var companyAmount = claimValue - employeeAmount;
+
+                            $company.val(formatCurrency(companyAmount));
+                        }
+                    }, 300);
+                });
+
+                var companyCoveredAmountTypingTimer;
+
+                $(document).on("input", ".company-covered-amount", function () {
+                    var $el = $(this);
+
+                    clearTimeout(companyCoveredAmountTypingTimer);
+
+                    companyCoveredAmountTypingTimer = setTimeout(function () {
+                        var type = $el.attr("id").split("_").pop();
+                        var selectedDate = $("#date").val();
+                        var selectedYear = selectedDate ? new Date(selectedDate).getFullYear() : null;
+                        var balance = typeToBalanceMap[type]?.[selectedYear] || 0;
+                        var claimValue = balanceMapping[type] || 0;
+                        var $employee = $(`#employee_covered_amount_${type}`);
+                        var companyAmount = parseInt(String($el.val()).replace(/\./g, ""), 10) || 0;
+
+                        if (claimValue > 0) {
+                            if (companyAmount > claimValue) {
+                                companyAmount = claimValue;
+                                $el.val(formatCurrency(companyAmount));
+                            }
+
+                            var employeeAmount = claimValue - companyAmount;
+
+                            $employee.val(formatCurrency(employeeAmount));
+                        }
+                    }, 300);
+                });
+            });
+        </script>
+    @endif
     <script>
         var medicalTypeData = @json($medical_type);
         var balanceMapping = @json($balanceMapping);

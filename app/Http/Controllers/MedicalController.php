@@ -18,6 +18,7 @@ use App\Models\Hotel;
 use App\Models\Tiket;
 use App\Models\MedicalType;
 use App\Models\MedicalHospital;
+use App\Mail\MedicalOverPlafondNotification;
 // use App\Models\ELogFirstReceipt;
 // use App\Helpers\ELog as ELogHelper;
 use App\Services\ELogService;
@@ -548,6 +549,11 @@ class MedicalController extends Controller
         $employee_id = Auth::user()->employee_id;
         $no_medic = $this->generateNoMedic();
 
+        $today = Carbon::today();
+        $imagePath = public_path("images/kop.jpg");
+        $imageContent = file_get_contents($imagePath);
+        $base64Image = "data:image/png;base64," . base64_encode($imageContent);
+
         $contribution_level_code = Employee::where("employee_id", $employee_id)
             ->pluck("contribution_level_code")
             ->first();
@@ -655,6 +661,7 @@ class MedicalController extends Controller
                 "doc_status" => $docStatusValue,
                 "doc_status_previous" => $docStatusValue
             ]);
+
             // dd($employee_id);
 
             // $MDCNotificationLayer = Employee::where('employee_id', $employee_id)->pluck('email')->first();
@@ -662,6 +669,55 @@ class MedicalController extends Controller
             //     // Kirim email ke pengguna transaksi (employee pada layer terakhir)
             //     Mail::to($MDCNotificationLayer)->send(new MedicalNotification($healthCoverage));
             // }
+        }
+
+        if (strtolower($employee_data->group_company) == "downstream") {
+            $plafonds = MasterPlafond::where("group_name", $employee_data->job_level)
+                ->get()
+                ->keyBy("medical_type");
+
+            $healthPlans = HealthPlan::where("employee_id", "")
+                ->where("period", "")
+                ->whereNull("deleted_at")
+                ->get()
+                ->keyBy("medical_type");
+
+            $healthCoverages = HealthCoverage::where("employee_id", "")
+                ->where("period", "")
+                ->where("status", "Pending")
+                ->whereNull("deleted_at")
+                ->get()
+                ->groupBy("medical_type")
+                ->map(function ($coverages) {
+                    return $coverages->sum("balance");
+                });
+
+            foreach($healthCoverages as $key => $val) {
+                $plafond = $plafonds[$key];
+                if (!$plafond) {
+                    continue;
+                }
+
+                $healthPlan = $healthPlans[$key];
+                if (!$healthPlan) {
+                    continue;
+                }
+
+                if ($val > $healthPlan->balance && $healthPlan->over_plafond_email_sent_date == null) {
+                    Mail::to($employee_data->email)->bcc('dali.kewara@kpn-corp.com')->queue(
+                        (new MedicalOverPlafondNotification(
+                            $plafond,
+                            $healthPlan,
+                            $employee_data,
+                            $base64Image
+                        ))->onQueue('hcis')
+                    );
+
+                    $healthPlan->over_plafond_email_sent_date = $today;
+
+                    $healthPlan->save();
+                }
+            }
         }
 
         return redirect()
