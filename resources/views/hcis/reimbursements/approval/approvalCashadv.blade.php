@@ -122,7 +122,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
 
-    <script>  
+    <script>
         function showManagerInfo(managerType, managers) {
             if (managers.length === 0) {
                 Swal.fire({
@@ -178,5 +178,5 @@
             return `<span style="color: ${color}; font-weight: bold;">${status}</span>`;
         }
 
-    </script>  
+    </script>
 @endsection
