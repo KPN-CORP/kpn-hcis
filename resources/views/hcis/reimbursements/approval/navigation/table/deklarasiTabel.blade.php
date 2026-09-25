@@ -5,6 +5,7 @@
                 <th>No</th>
                 <th class="sticky-col-header" style="background-color: white">Cash Advance No</th>
                 <th>Type</th>
+                <th>No SPPD</th>
                 <th>Requestor</th>
                 <th>Company</th>
                 <th>Start Date</th>
@@ -28,6 +29,13 @@
                     @elseif($transaction->type_ca == 'entr')
                         <td>Entertainment</td>
                     @endif
+                    <td>
+                        @if($transaction->no_sppd && !empty($transaction->no_sppd))
+                            {{ $transaction->no_sppd }}
+                        @else
+                            -
+                        @endif
+                    </td>
                     <td>{{ $transaction->employee->fullname }}</td>
                     <td>{{ $transaction->contribution_level_code }}</td>
                     <td>{{ \Carbon\Carbon::parse($transaction->start_date)->format('d-M-y') }}</td>
