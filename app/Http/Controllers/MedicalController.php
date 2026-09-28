@@ -1095,20 +1095,6 @@ class MedicalController extends Controller
                         "balance_uncoverage" => $balance_diff_formatted,
                     ]);
                 }
-
-                // $medicalEmployeeData = $medicalEmployee
-                //     ->where("medical_type", $medical_type)
-                //     ->first();
-
-                // $eLogService = app(ELogService::class);
-
-                // $eLogService->insertFirstReceipt($existingCoverage, $medicalEmployeeData->employee ?? null);
-
-                // $MDCNotificationLayer = Employee::where('employee_id', $employee_id)->pluck('email')->first();
-                // if ($MDCNotificationLayer) {
-                //     // Kirim email ke pengguna transaksi (employee pada layer terakhir)
-                //     Mail::to($MDCNotificationLayer)->send(new MedicalNotification($healthCoverage));
-                // }
             } else {
                 Log::info(
                     "No existing coverage found for medical_type: $medical_type",
