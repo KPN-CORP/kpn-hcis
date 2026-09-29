@@ -73,7 +73,10 @@ class ELogService {
     public function insertFirstReceipt($id) {
         $today = Carbon::now();
 
-        $medicalData = HealthCoverageModel::where("usage_id", $id)->first();
+        $medicalData = HealthCoverageModel::where("usage_id", $id)
+            ->where("status", "Done")
+            ->whereNull("deleted_at")
+            ->first();
         if (!$medicalData) {
             return [
                 'status' => false,
