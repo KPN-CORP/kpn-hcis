@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Log;
 use Throwable;
 use RuntimeException;
 
-use App\Models\HealthCoverage as HealthCoverageModel;
 use App\Services\ELogService;
 
 class ELogInsertFirstReceiptJob implements ShouldQueue
@@ -21,7 +20,7 @@ class ELogInsertFirstReceiptJob implements ShouldQueue
     public $timeout = 120;
     public $tries = 3;
 
-    public function __construct(public int $coverageId)
+    public function __construct(public string $id)
     {
         $this->onQueue('kpn-hcis');
     }
@@ -33,31 +32,23 @@ class ELogInsertFirstReceiptJob implements ShouldQueue
 
     public function handle(ELogService $eLogService): void
     {
-        $coverage = HealthCoverageModel::find($this->coverageId);
-
-        if (!$coverage) {
-            Log::warning('ELog: coverage tidak ditemukan', ['id' => $this->coverageId]);
-            return;
-        }
-
-        $result = $eLogService->insertFirstReceipt($coverage);
-
+        $result = $eLogService->insertFirstReceipt($this->id);
         if (!($result['status'] ?? false)) {
-            Log::error('ELog insertFirstReceipt gagal', [
-                'coverage_id' => $this->coverageId,
+            Log::error('ELogInsertFirstReceipt gagal', [
+                'coverage_id' => $this->id,
                 'error'       => $result['error'] ?? null,
             ]);
 
-            throw new RuntimeException('ELog insertFirstReceipt gagal untuk coverage ' . $this->coverageId);
+            throw new RuntimeException('ELogInsertFirstReceipt gagal untuk coverage ' . $this->id);
         }
 
-        Log::info('ELog insertFirstReceipt sukses', ['coverage_id' => $this->coverageId]);
+        Log::info('ELogInsertFirstReceipt sukses', ['coverage' => $this->id]);
     }
 
     public function failed(Throwable $e): void
     {
         Log::error('ELogInsertFirstReceiptJob failed', [
-            'coverage_id' => $this->coverageId,
+            'coverage_id' => $this->id,
             'error'       => $e->getMessage(),
         ]);
     }

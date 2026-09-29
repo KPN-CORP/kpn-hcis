@@ -17,6 +17,7 @@ use App\Models\BusinessTrip;
 use App\Models\Hotel;
 use App\Models\Tiket;
 use App\Services\ELogService;
+use App\Jobs\ELogInsertFirstReceiptJob;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
@@ -1535,9 +1536,7 @@ class MedicalController extends Controller
                     "approved_at" => now(),
                 ]);
 
-                $eLogService = app(ELogService::class);
-
-                $eLogService->insertFirstReceipt($coverage);
+                ELogInsertFirstReceiptJob::dispatch($coverage->id);
             }
 
             return redirect()
