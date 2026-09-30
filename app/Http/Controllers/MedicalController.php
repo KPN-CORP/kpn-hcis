@@ -22,6 +22,7 @@ use App\Mail\MedicalOverPlafondNotification;
 // use App\Models\ELogFirstReceipt;
 // use App\Helpers\ELog as ELogHelper;
 use App\Services\ELogService;
+use App\Jobs\ELogInsertFirstReceiptJob;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
@@ -1468,20 +1469,6 @@ class MedicalController extends Controller
                         "balance_uncoverage" => $balance_diff_formatted,
                     ]);
                 }
-
-                // $medicalEmployeeData = $medicalEmployee
-                //     ->where("medical_type", $medical_type)
-                //     ->first();
-
-                // $eLogService = app(ELogService::class);
-
-                // $eLogService->insertFirstReceipt($existingCoverage, $medicalEmployeeData->employee ?? null);
-
-                // $MDCNotificationLayer = Employee::where('employee_id', $employee_id)->pluck('email')->first();
-                // if ($MDCNotificationLayer) {
-                //     // Kirim email ke pengguna transaksi (employee pada layer terakhir)
-                //     Mail::to($MDCNotificationLayer)->send(new MedicalNotification($healthCoverage));
-                // }
             } else {
                 Log::info(
                     "No existing coverage found for medical_type: $medical_type",
@@ -2122,9 +2109,7 @@ class MedicalController extends Controller
                     "revise_info" => null,
                 ]);
 
-                $eLogService = app(ELogService::class);
-
-                $eLogService->insertFirstReceipt($coverage);
+                ELogInsertFirstReceiptJob::dispatch($coverage->id);
             }
 
             return redirect()
