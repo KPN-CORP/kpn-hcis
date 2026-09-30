@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 
 use App\Models\Employee as EmployeeModel;
@@ -69,7 +70,30 @@ class ELogService {
         ];
     }
 
-    public function insertFirstReceipt(HealthCoverageModel $medicalData) {
+    public function insertFirstReceipt($id) {
+        $today = Carbon::now();
+
+        $medicalData = HealthCoverageModel::where("usage_id", $id)
+            ->where("status", "Done")
+            ->whereNull("deleted_at")
+            ->first();
+        if (!$medicalData) {
+            return [
+                'status' => false,
+                'message'  => "failed",
+                'data'    => null,
+                'error'   => "No medical data",
+            ];
+        }
+        if ($medicalData->elog_insert_first_receipt_sync_date && $medicalData->elog_insert_first_receipt_sync_date != null && !empty($medical->elog_insert_first_receipt_sync_date)) {
+            return [
+                'status' => false,
+                'message'  => "failed",
+                'data'    => null,
+                'error'   => "Medical data already sync with the ELog",
+            ];
+        }
+
         $bankName = "";
         $namaPemilikRekening = "";
         $costCenterCode = "";
@@ -186,6 +210,10 @@ class ELogService {
                 'error'   => null,
             ];
         }
+
+        $medicalData->elog_insert_first_receipt_sync_date = $today;
+
+        $medicalData->save();
 
         return [
             'status' => true,
