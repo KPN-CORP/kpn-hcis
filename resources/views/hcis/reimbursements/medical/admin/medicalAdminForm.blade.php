@@ -103,6 +103,11 @@
                             <div id="dynamicForms" class="row"></div>
                             <div id="bpjsCoverContainer" class="row"></div>
 
+                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                                <div id="employeeCoveredAmount" class="row"></div>
+                                <div id="companyCoveredAmount" class="row"></div>
+                            @endif
+
                             <div class="row mb-2">
                                 <div class="col-md-12 mt-2">
                                     <label for="" class="form-label">Admin Notes</label>
@@ -186,7 +191,7 @@
                             </div>
                             <input type="hidden" name="status" value="Pending" id="status">
 
-                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
                                 <br/>
                                 <br/>
 
@@ -224,7 +229,7 @@
                             @endif
 
                             <div class="d-flex justify-content-end mt-4">
-                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
                                     <button id="revise-button" type="button" class="btn btn-warning rounded-pill revise-button" style="margin-right: 10px"
                                         name="action_submit" value="Revise" data-bs-toggle="modal" data-bs-target="#reviseReasonModal">Revise</button>
                                     <button id="reject-button" type="button" class="btn btn-outline-danger rounded-pill reject-button" style="margin-right: 10px"
@@ -241,7 +246,7 @@
     </div>
 
     <!-- Revise Reason Modal -->
-    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
         <div class="modal fade" id="reviseReasonModal" tabindex="-1" aria-labelledby="reviseReasonModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
@@ -279,7 +284,7 @@
     @endif
 
     <!-- Rejection Reason Modal -->
-    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
         <div class="modal fade" id="rejectReasonModal" tabindex="-1" aria-labelledby="rejectReasonModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
@@ -317,6 +322,82 @@
     @endif
 
     {{-- <script src="{{ asset('/js/medical/medical-edit.js') }}"></script> --}}
+    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+        <script>
+            function generateEmployeeCoveredAmountForms(selectedTypes, selectedYear) {
+                var containerElem = $("#employeeCoveredAmount");
+
+                containerElem.empty();
+
+                if (selectedTypes && selectedTypes.length > 0) {
+                    selectedTypes.forEach(function (type) {
+                        var coveredAmount = 0;
+                        var balance = typeToBalanceMap[type]?.[selectedYear] || 0;
+                        var claimValue = balanceMapping[type] || 0;
+
+                        if (claimValue > balance) {
+                            coveredAmount = claimValue - balance;
+                        }
+
+                        var formGroupElem = `
+                            <div class="col-md-3 mb-3">
+                                <label for="employee_covered_amount_${type}" class="form-label">${type} Employee Covered Amount</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Rp</span>
+                                    <input type="text" class="form-control currency-input employee-covered-amount" id="employee_covered_amount_${type}" name="employee_covered_amount[${type}]" placeholder="0" value="${formatCurrency(coveredAmount)}" required>
+                                </div>
+                            </div>
+                        `;
+
+                        containerElem.append(formGroupElem);
+                    });
+                }
+            }
+
+            function generateCompanyCoveredAmountForms(selectedTypes, selectedYear) {
+                var containerElem = $("#companyCoveredAmount");
+
+                containerElem.empty();
+
+                if (selectedTypes && selectedTypes.length > 0) {
+                    selectedTypes.forEach(function (type) {
+                        var coveredAmount = 0;
+                        var balance = typeToBalanceMap[type]?.[selectedYear] || 0;
+                        var claimValue = balanceMapping[type] || 0;
+
+                        if (claimValue > balance) {
+                            coveredAmount = claimValue - (claimValue - balance);
+                        } else {
+                            coveredAmount = claimValue;
+                        }
+
+                        var formGroupElem = `
+                            <div class="col-md-3 mb-3">
+                                <label for="company_covered_amount_${type}" class="form-label">${type} Company Covered Amount</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Rp</span>
+                                    <input type="text" class="form-control currency-input company-covered-amount" id="company_covered_amount_${type}" name="company_covered_amount[${type}]" placeholder="0" value="${formatCurrency(coveredAmount)}" required>
+                                </div>
+                            </div>
+                        `;
+
+                        containerElem.append(formGroupElem);
+                    });
+                }
+            }
+        </script>
+    @else
+        <script>
+            function generateEmployeeCoveredAmountForms(selectedTypes, selectedYear) {
+                return;
+            }
+
+            function generateCompanyCoveredAmountForms(selectedTypes, selectedYear) {
+                return;
+            }
+        </script>
+    @endif
+
     <script>
         $(document).ready(function () {
             // Function to generate balance display based on selected types and year
@@ -376,6 +457,8 @@
                 if (selectedYear && selectedTypes) {
                     generateBalanceDisplay(selectedTypes, selectedYear);
                     generateBpjsCoverForms(selectedTypes);
+                    generateEmployeeCoveredAmountForms(selectedTypes, selectedYear);
+                    generateCompanyCoveredAmountForms(selectedTypes, selectedYear);
                 }
             }
 
@@ -412,7 +495,7 @@
                             <label for="${type}" class="form-label">${type} Claim</label>
                             <div class="input-group">
                                 <span class="input-group-text">Rp</span>
-                                <input type="text" class="form-control currency-input" id="${type}" name="medical_costs[${type}]" placeholder="0" value="${formattedValue}" required>
+                                <input type="text" class="form-control currency-input medical-claim-amount" id="${type}" name="medical_costs[${type}]" placeholder="0" value="${formattedValue}" required>
                             </div>
                         </div>
                     `;
@@ -486,14 +569,99 @@
         const dateInput = document.getElementById("date");
         dateInput.setAttribute("min", formattedTwoWeeksAgo);
         dateInput.setAttribute("max", formattedToday); // Optional: To limit selection to today
-
     </script>
+    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+        <script>
+            $(document).ready(function () {
+                var medicalClaimAmountTypingTimer;
+
+                $(document).on("input", ".medical-claim-amount", function () {
+                    var $el = $(this);
+
+                    clearTimeout(medicalClaimAmountTypingTimer);
+
+                    var selectedDate = $("#date").val();
+                    var selectedYear = selectedDate
+                        ? new Date(selectedDate).getFullYear()
+                        : null;
+                    var selectedTypes = $("#medical_type").val();
+
+                    medicalClaimAmountTypingTimer = setTimeout(function () {
+                        var type = $el.attr("id");
+
+                        balanceMapping[type] = parseInt($el.val().replace(/\./g, ""), 10) || 0;
+
+                        generateEmployeeCoveredAmountForms(selectedTypes, selectedYear);
+                        generateCompanyCoveredAmountForms(selectedTypes, selectedYear);
+                    }, 300);
+                });
+
+                var employeeCoveredAmountTypingTimer;
+
+                $(document).on("input", ".employee-covered-amount", function () {
+                    var $el = $(this);
+
+                    clearTimeout(employeeCoveredAmountTypingTimer);
+
+                    employeeCoveredAmountTypingTimer = setTimeout(function () {
+                        var type = $el.attr("id").split("_").pop();
+                        var selectedDate = $("#date").val();
+                        var selectedYear = selectedDate ? new Date(selectedDate).getFullYear() : null;
+                        var balance = typeToBalanceMap[type]?.[selectedYear] || 0;
+                        var claimValue = balanceMapping[type] || 0;
+                        var $company = $(`#company_covered_amount_${type}`);
+                        var employeeAmount = parseInt(String($el.val()).replace(/\./g, ""), 10) || 0;
+
+                        if (claimValue > 0) {
+                            if (employeeAmount > claimValue) {
+                                employeeAmount = claimValue;
+                                $el.val(formatCurrency(employeeAmount));
+                            }
+
+                            var companyAmount = claimValue - employeeAmount;
+
+                            $company.val(formatCurrency(companyAmount));
+                        }
+                    }, 300);
+                });
+
+                var companyCoveredAmountTypingTimer;
+
+                $(document).on("input", ".company-covered-amount", function () {
+                    var $el = $(this);
+
+                    clearTimeout(companyCoveredAmountTypingTimer);
+
+                    companyCoveredAmountTypingTimer = setTimeout(function () {
+                        var type = $el.attr("id").split("_").pop();
+                        var selectedDate = $("#date").val();
+                        var selectedYear = selectedDate ? new Date(selectedDate).getFullYear() : null;
+                        var balance = typeToBalanceMap[type]?.[selectedYear] || 0;
+                        var claimValue = balanceMapping[type] || 0;
+                        var $employee = $(`#employee_covered_amount_${type}`);
+                        var companyAmount = parseInt(String($el.val()).replace(/\./g, ""), 10) || 0;
+
+                        if (claimValue > 0) {
+                            if (companyAmount > claimValue) {
+                                companyAmount = claimValue;
+                                $el.val(formatCurrency(companyAmount));
+                            }
+
+                            var employeeAmount = claimValue - companyAmount;
+
+                            $employee.val(formatCurrency(employeeAmount));
+                        }
+                    }, 300);
+                });
+            });
+        </script>
+    @endif
     <script>
         var medicalTypeData = @json($medical_type);
         var balanceMapping = @json($balanceMapping);
         var typeToBalanceMap = @json($balanceData);
+        var balanceMappingUpdated = @json($balanceMapping);
     </script>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.submit-button').forEach(button => {
@@ -539,11 +707,10 @@
                                 exceededType = type;
                             }
                         } else {
-
-                            if (parsedValue > plafondNumber) {
-                                exceededPlafond = true;
-                                exceededType = type;
-                            }
+                            // if (parsedValue > plafondNumber) {
+                            //     exceededPlafond = true;
+                            //     exceededType = type;
+                            // }
                         }
                     });
 
@@ -684,10 +851,10 @@
                             }
                         } else {
                             // Check if input exceeds plafond directly
-                            if (parsedValue > plafondNumber) {
-                                exceededPlafond = true;
-                                exceededType = type;
-                            }
+                            // if (parsedValue > plafondNumber) {
+                            //     exceededPlafond = true;
+                            //     exceededType = type;
+                            // }
                         }
                     });
                     // Show alert if the plafond is exceeded
@@ -725,7 +892,7 @@
         });
     </script>
 
-    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
         <script>
             $('#document_received_toggle').change(function () {
                 $(this).prop('disabled', true);

@@ -2,10 +2,12 @@
 
 namespace App\Imports;
 
+use Carbon\Carbon;
 use App\Models\HealthCoverage;
 use App\Models\HealthPlan;
 use App\Models\MasterMedical;
 use App\Models\Employee;
+use App\Models\MasterPlafond;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -14,6 +16,7 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 use App\Exceptions\ImportDataInvalidException;
 use App\Exports\MedicalFailedImportExport;
 use App\Mail\MedicalNotification;
+use App\Mail\MedicalOverPlafondNotification;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -22,12 +25,18 @@ class ImportHealthCoverage implements ToModel
     private $batchRecords = [];
     private $failedRows = [];
     private $attachmentPath;
+    private $today;
+    private $base64Image;
 
     public function __construct($attachmentPath = null)
     {
         $this->attachmentPath = $attachmentPath
             ? json_encode([$attachmentPath])
             : null;
+        $this->today = Carbon::today();
+        $imagePath = public_path("images/kop.jpg");
+        $imageContent = file_get_contents($imagePath);
+        $this->base64Image = "data:image/png;base64," . base64_encode($imageContent);
     }
 
     public function generateNoMedic()
@@ -141,6 +150,25 @@ class ImportHealthCoverage implements ToModel
             $errorMessage = "Amount BPJS Cover tidak boleh minus.";
         }
 
+        $employeeCoveredAmount = null;
+        $companyCoveredAmount = null;
+
+        if (array_key_exists(14, $row) && !empty($row[14]) && is_numeric($row[14])) {
+            $employeeCoveredAmount = $row[14];
+
+            if ($employeeCoveredAmount < 0) {
+                $errorMessage = "Employee Covered Amount tidak boleh minus.";
+            }
+        }
+
+        if (array_key_exists(15, $row) && !empty($row[15]) && is_numeric($row[15])) {
+            $companyCoveredAmount = $row[15];
+
+            if ($companyCoveredAmount < 0) {
+                $errorMessage = "Company Covered Amount tidak boleh minus.";
+            }
+        }
+
         // Validasi format tanggal
         if (is_numeric($row[8])) {
             $dateTime = Date::excelToDateTimeObject(intval($row[8]));
@@ -161,7 +189,11 @@ class ImportHealthCoverage implements ToModel
 
         // Jika ada error, simpan ke array gagal
         if ($errorMessage) {
-            $row[14] = $errorMessage; // Simpan error di kolom ke-14
+            if (array_key_exists(15, $row)) {
+                $row[16] = $errorMessage; // Simpan error di kolom ke-16
+            } else {
+                $row[14] = $errorMessage; // Simpan error di kolom ke-14
+            }
             $this->failedRows[] = $row;
             return null; // Jangan simpan ke database
         }
@@ -192,6 +224,8 @@ class ImportHealthCoverage implements ToModel
             "approved_by" => $employee->employee_id,
             "created_at" => now(),
             "approved_at" => now(),
+            "employee_covered_amount" => $employeeCoveredAmount,
+            "company_covered_amount" => $companyCoveredAmount
         ]);
 
         $this->batchRecords[] = $healthCoverage;
@@ -238,37 +272,71 @@ class ImportHealthCoverage implements ToModel
 
     private function performCalculations(HealthCoverage $healthCoverage)
     {
-        $healthPlan = HealthPlan::where(
-            "employee_id",
-            $healthCoverage->employee_id,
-        )
+        $employee = Employee::where("employee_id", $healthCoverage->employee_id)->first();
+        if (!$employee) {
+            $this->calculateBalance($healthCoverage);
+            Log::error("ImportHealthCoverage: Employee Not Found: " . $healthCoverage->employee_id);
+            return;
+        }
+
+        $healthPlan = HealthPlan::where("employee_id", $employee->employee_id)
             ->where("medical_type", $healthCoverage->medical_type)
             ->where("period", $healthCoverage->period)
             ->first();
-
-        if ($healthPlan) {
-            $initialBalance = $healthPlan->balance;
-
-            // if ($initialBalance > 0) {
-            $healthPlan->balance -= $healthCoverage->balance;
-            // }
-
-            if (
-                $initialBalance >= 0 &&
-                $healthCoverage->balance > $initialBalance
-            ) {
-                $healthCoverage->balance_uncoverage =
-                    $healthCoverage->balance - $initialBalance;
-            } elseif ($initialBalance < 0) {
-                $healthCoverage->balance_uncoverage = $healthCoverage->balance;
-            } else {
-                $healthCoverage->balance_uncoverage = 0;
-            }
-            // dd($healthPlan->balance);
-
-            $healthPlan->save();
+        if (!$healthPlan) {
+            $this->calculateBalance($healthCoverage);
+            Log::error("ImportHealthCoverage: Health Plan Not Found: " . $employee->employee_id . ", " . $healthCoverage->medical_type . ", " . $healthCoverage->period);
+            return;
         }
 
+        $plafond = MasterPlafond::where("group_name", $employee->job_level)
+            ->where("medical_type", $healthPlan->medical_type)
+            ->where("active", "T")
+            ->first();
+        if (!$plafond) {
+            $this->calculateBalance($healthCoverage);
+            Log::error("ImportHealthCoverage: Plafond Not Found: " . $employee->job_level . ", " . $healthPlan->medical_type);
+            return;
+        }
+
+        $initialBalance = $healthPlan->balance;
+
+        // if ($initialBalance > 0) {
+        $healthPlan->balance -= $healthCoverage->balance;
+        // }
+
+        if ($initialBalance >= 0 && $healthCoverage->balance > $initialBalance) {
+            $healthCoverage->balance_uncoverage = $healthCoverage->balance - $initialBalance;
+        } elseif ($initialBalance < 0) {
+            $healthCoverage->balance_uncoverage = $healthCoverage->balance;
+        } else {
+            $healthCoverage->balance_uncoverage = 0;
+        }
+
+        // dd($healthPlan->balance);
+
+        $totalUsage = HealthCoverage::where("employee_id", $employee->employee_id)
+            ->where("period", $healthCoverage->period)
+            ->whereIn("status", ["Pending", "Done"])
+            ->where("medical_type", $healthPlan->medical_type)
+            ->whereNull("deleted_at")
+            ->sum("balance");
+
+        if ($totalUsage > $healthPlan->balance && $healthPlan->over_plafond_email_sent_date == null && (strtolower($employee->group_company) == "downstream")) {
+            Mail::to($employee->email)->bcc('dali.kewara@kpn-corp.com')->queue(
+                (new MedicalOverPlafondNotification(
+                    $plafond,
+                    $healthPlan,
+                    $employee,
+                    $totalUsage,
+                    $this->base64Image
+                ))->onQueue('kpn-hcis')
+            );
+
+            $healthPlan->over_plafond_email_sent_date = $this->today;
+        }
+
+        $healthPlan->save();
         $this->calculateBalance($healthCoverage);
     }
 

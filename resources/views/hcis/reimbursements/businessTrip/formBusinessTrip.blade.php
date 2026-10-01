@@ -490,6 +490,7 @@
     @include('js.hcis.common.businessTrip')
     @include('js.hcis.common.perdiem')
     @include('js.hcis.common.req')
+    @include('js.hcis.common.transportHub')
     @include('js.hcis.businessTrip')
     <link href="{{ asset('vendor/select2/dist/css/select2.min.css') }}" rel="stylesheet" />
     <script src="{{ asset('vendor/select2/dist/js/select2.min.js') }}"></script>
@@ -1184,4 +1185,134 @@
             document.getElementById('ca_decla_3').value = `${year}-${month}-${day}`;
         });
     </script>
+
+    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+        <script>
+            $(document).ready(function () {
+                if ($('#dari_tkt').length && $.fn.select2) {
+                    $('#dari_tkt').select2({
+                        width: '100%',
+                        theme: 'bootstrap-5',
+                        matcher: function (params, data) {
+                            if ($.trim(params.term) === '') {
+                                return data;
+                            }
+                            if (data.text === 'Others') {
+                                return data;
+                            }
+                            if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
+                                return data;
+                            }
+                            return null;
+                        }
+                    });
+                }
+
+                if ($('#ke_tkt').length && $.fn.select2) {
+                    $('#ke_tkt').select2({
+                        width: '100%',
+                        theme: 'bootstrap-5',
+                        matcher: function (params, data) {
+                            if ($.trim(params.term) === '') {
+                                return data;
+                            }
+                            if (data.text === 'Others') {
+                                return data;
+                            }
+                            if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
+                                return data;
+                            }
+                            return null;
+                        }
+                    });
+                }
+
+                if ($('#dari_tkt_dalam_kota').length && $.fn.select2) {
+                    $('#dari_tkt_dalam_kota').select2({
+                        width: '100%',
+                        theme: 'bootstrap-5',
+                        matcher: function (params, data) {
+                            if ($.trim(params.term) === '') {
+                                return data;
+                            }
+                            if (data.text === 'Others') {
+                                return data;
+                            }
+                            if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
+                                return data;
+                            }
+                            return null;
+                        }
+                    });
+                }
+
+                if ($('#ke_tkt_dalam_kota').length && $.fn.select2) {
+                    $('#ke_tkt_dalam_kota').select2({
+                        width: '100%',
+                        theme: 'bootstrap-5',
+                        matcher: function (params, data) {
+                            if ($.trim(params.term) === '') {
+                                return data;
+                            }
+                            if (data.text === 'Others') {
+                                return data;
+                            }
+                            if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
+                                return data;
+                            }
+                            return null;
+                        }
+                    });
+                }
+            });
+
+            function DariTiketToggleOthers() {
+                var selectElem = document.getElementById("dari_tkt");
+                var othersSelectElem = document.getElementById("others_dari_tkt");
+
+                if (selectElem.value === "Others") {
+                    othersSelectElem.style.display = "block";
+                } else {
+                    othersSelectElem.style.display = "none";
+                    othersSelectElem.value = "";
+                }
+            }
+
+            function KeTiketToggleOthers() {
+                var selectElem = document.getElementById("ke_tkt");
+                var othersSelectElem = document.getElementById("others_ke_tkt");
+
+                if (selectElem.value === "Others") {
+                    othersSelectElem.style.display = "block";
+                } else {
+                    othersSelectElem.style.display = "none";
+                    othersSelectElem.value = "";
+                }
+            }
+
+            function DariTiketDalamKotaToggleOthers() {
+                var selectElem = document.getElementById("dari_tkt_dalam_kota");
+                var othersSelectElem = document.getElementById("others_dari_tkt_dalam_kota");
+
+                if (selectElem.value === "Others") {
+                    othersSelectElem.style.display = "block";
+                } else {
+                    othersSelectElem.style.display = "none";
+                    othersSelectElem.value = "";
+                }
+            }
+
+            function KeTiketDalamKotaToggleOthers() {
+                var selectElem = document.getElementById("ke_tkt_dalam_kota");
+                var othersSelectElem = document.getElementById("others_ke_tkt_dalam_kota");
+
+                if (selectElem.value === "Others") {
+                    othersSelectElem.style.display = "block";
+                } else {
+                    othersSelectElem.style.display = "none";
+                    othersSelectElem.value = "";
+                }
+            }
+        </script>
+    @endif
 @endsection

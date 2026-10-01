@@ -18,7 +18,7 @@
                       <th class="text-center">{{ $master_medicals->name }}</th>
                   @endforeach
 
-                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
                     <th data-priority="2">Progress</th>
                 @else
                     <th data-priority="2">Status</th>
@@ -53,7 +53,7 @@
                           </td>
                       @endforeach
 
-                      @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                      @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
                           <td style="align-content: center; text-align: center">
                               @php
                                   $status = $item->status;
@@ -142,7 +142,7 @@
                                   </button>
                               </form>
                           @endif
-                          @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                          @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
                               @if ($item->is_revise)
                                   <form method="GET" action="/medical/form-update/{{ $item->usage_id }}"
                                       style="display: inline-block;">

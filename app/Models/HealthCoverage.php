@@ -51,7 +51,12 @@ class HealthCoverage extends Model
         'doc_received_by',
         'doc_received_at',
         'is_revise',
-        'revise_info'
+        'revise_info',
+        'elog_vendor',
+        'elog_medical_type',
+        'elog_insert_first_receipt_sync_date',
+        'employee_covered_amount',
+        'company_covered_amount'
     ];
 
     public function employee()
