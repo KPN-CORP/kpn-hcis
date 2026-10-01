@@ -18,6 +18,7 @@ use App\Models\Hotel;
 use App\Models\Tiket;
 use App\Models\MedicalType;
 use App\Models\MedicalHospital;
+use App\Mail\MedicalOverPlafondNotification;
 // use App\Models\ELogFirstReceipt;
 // use App\Helpers\ELog as ELogHelper;
 use App\Services\ELogService;
@@ -549,6 +550,11 @@ class MedicalController extends Controller
         $employee_id = Auth::user()->employee_id;
         $no_medic = $this->generateNoMedic();
 
+        $today = Carbon::today();
+        $imagePath = public_path("images/kop.jpg");
+        $imageContent = file_get_contents($imagePath);
+        $base64Image = "data:image/png;base64," . base64_encode($imageContent);
+
         $contribution_level_code = Employee::where("employee_id", $employee_id)
             ->pluck("contribution_level_code")
             ->first();
@@ -656,6 +662,7 @@ class MedicalController extends Controller
                 "doc_status" => $docStatusValue,
                 "doc_status_previous" => $docStatusValue
             ]);
+
             // dd($employee_id);
 
             // $MDCNotificationLayer = Employee::where('employee_id', $employee_id)->pluck('email')->first();
@@ -663,6 +670,63 @@ class MedicalController extends Controller
             //     // Kirim email ke pengguna transaksi (employee pada layer terakhir)
             //     Mail::to($MDCNotificationLayer)->send(new MedicalNotification($healthCoverage));
             // }
+        }
+
+        if (strtolower($employee_data->group_company) == "downstream") {
+            $plafonds = MasterPlafond::where("group_name", $employee_data->job_level)
+                ->get()
+                ->keyBy("medical_type");
+
+            $healthPlans = HealthPlan::where("employee_id", $employee_data->employee_id)
+                ->where("period", $period)
+                ->whereNull("deleted_at")
+                ->get()
+                ->keyBy("medical_type");
+
+            $healthCoverages = HealthCoverage::where("employee_id", $employee_data->employee_id)
+                ->where("period", $period)
+                ->where("status", "Pending")
+                ->whereNull("deleted_at")
+                ->get()
+                ->groupBy("medical_type")
+                ->map(function ($coverages) {
+                    return $coverages->sum("balance");
+                });
+
+            foreach($healthCoverages as $key => $val) {
+                $plafond = $plafonds[$key];
+                if (!$plafond) {
+                    continue;
+                }
+
+                $healthPlan = $healthPlans[$key];
+                if (!$healthPlan) {
+                    continue;
+                }
+
+                if ($val > $healthPlan->balance && $healthPlan->over_plafond_email_sent_date == null) {
+                    $totalUsage = HealthCoverage::where("employee_id", $employee_data->employee_id)
+                        ->where("period", $healthCoverage->period)
+                        ->whereIn("status", ["Pending", "Done"])
+                        ->where("medical_type", $healthPlan->medical_type)
+                        ->whereNull("deleted_at")
+                        ->sum("balance");
+
+                    Mail::to($employee_data->email)->bcc('dali.kewara@kpn-corp.com')->queue(
+                        (new MedicalOverPlafondNotification(
+                            $plafond,
+                            $healthPlan,
+                            $employee_data,
+                            $totalUsage,
+                            $base64Image
+                        ))->onQueue('kpn-hcis')
+                    );
+
+                    $healthPlan->over_plafond_email_sent_date = $today;
+
+                    $healthPlan->save();
+                }
+            }
         }
 
         return redirect()
@@ -1061,11 +1125,11 @@ class MedicalController extends Controller
                 $medical_approvals["employee_names"][] = "Megiyanti Matande";
                 $medical_approvals["dates"][] = "";
             } else {
-                $medical_approvals["labels"][] = "Received";
-                $medical_approvals["statuses"][] = "";
-                $medical_approvals["role_names"][] = "HC Officer";
-                $medical_approvals["employee_names"][] = "";
-                $medical_approvals["dates"][] = "";
+                // $medical_approvals["labels"][] = "Received";
+                // $medical_approvals["statuses"][] = "";
+                // $medical_approvals["role_names"][] = "HC Officer";
+                // $medical_approvals["employee_names"][] = "";
+                // $medical_approvals["dates"][] = "";
             }
         }
 
@@ -1116,6 +1180,11 @@ class MedicalController extends Controller
         $medical_formatted_opening_balance_plafond = number_format($medical_opening_balance_plafond, 0, ',', '.');
         $medical_formatted_total_current_claim = number_format($medical_total_current_claim, 0, ',', '.');
         $medical_formatted_closing_balance_plafond = number_format($medical_closing_balance_plafond, 0, ',', '.');
+
+        if (strtolower($employee_data->group_company) == "downstream") {
+            $medical_formatted_opening_balance_plafond = '';
+            $medical_formatted_closing_balance_plafond = '';
+        }
 
         $pdf = PDF::loadView(
             "hcis.reimbursements.medical.medical_pdf",
@@ -1304,6 +1373,8 @@ class MedicalController extends Controller
         // Process the medical verification costs
         $medical_costs = $request->input("medical_costs", []);
         $bpjs_costs = $request->input("bpjs_cover", []);
+        $employeeCoveredAmounts = $request->input("employee_covered_amount", []);
+        $companyCoveredAmounts = $request->input("company_covered_amount", []);
         $existingCoverages = HealthCoverage::where(
             "no_medic",
             $no_medic,
@@ -1355,6 +1426,13 @@ class MedicalController extends Controller
                     ? (int) str_replace(".", "", $bpjs_costs[$medical_type])
                     : 0;
 
+                $employeeCoveredAmount = isset($employeeCoveredAmounts[$medical_type])
+                    ? (int) str_replace(".", "", $employeeCoveredAmounts[$medical_type])
+                    : null;
+                $companyCoveredAmount = isset($companyCoveredAmounts[$medical_type])
+                ? (int) str_replace(".", "", $companyCoveredAmounts[$medical_type])
+                    : null;
+
                 $docReceivedBy = $existingCoverage->doc_received_by;
                 $docReceivedAt = $existingCoverage->doc_received_at;
 
@@ -1378,6 +1456,8 @@ class MedicalController extends Controller
                     "balance_bpjs" => $bpjs_cost,
                     "is_revise" => false,
                     "revise_info" => null,
+                    "employee_covered_amount" => $employeeCoveredAmount,
+                    "company_covered_amount" => $companyCoveredAmount
                 ]);
                 if ($medical_plan->balance < $verif_cost) {
                     $old_balance_total =

@@ -21,6 +21,8 @@ class HealthPlan extends Model
         'balance',
         'period',
         'created_by',
+        'remaining_plafond_email_sent_date',
+        'over_plafond_email_sent_date'
     ];
 
     public function employee()
