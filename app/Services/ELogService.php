@@ -99,7 +99,7 @@ class ELogService {
         $costCenterCode = "";
         $employeeID = $medicalData->employee_id;
         $createdName = "";
-        $nonReimbursableAmount = $medicalData->balance_uncoverage ?? $medicalData->employee_covered_amount ?? 0;
+        $nonReimbursableAmount = $medicalData->employee_covered_amount ?? $medicalData->balance_uncoverage ?? 0;
 
         $employeeData = EmployeeModel::where("employee_id", $employeeID)->first();
         if ($employeeData) {
