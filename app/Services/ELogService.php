@@ -99,6 +99,7 @@ class ELogService {
         $costCenterCode = "";
         $employeeID = $medicalData->employee_id;
         $createdName = "";
+        $nonReimbursableAmount = $medicalData->employee_covered_amount ?? 0;
 
         $employeeData = EmployeeModel::where("employee_id", $employeeID)->first();
         if ($employeeData) {
@@ -127,7 +128,7 @@ class ELogService {
             vendor: "SMEDICAL",
             amount: 0,
             sisa_over_plafond: 0,
-            non_reimbursable_amount: $medicalData->balance_uncoverage ?? 0,
+            non_reimbursable_amount: $nonReimbursableAmount * -1,
             nik: $employeeID,
             no_rekening: "",
             nama_pemilik_rekening: $namaPemilikRekening ?? "",
