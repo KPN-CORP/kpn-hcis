@@ -2109,7 +2109,7 @@ class MedicalController extends Controller
                     "revise_info" => null,
                 ]);
 
-                ELogInsertFirstReceiptJob::dispatch($coverage->id);
+                ELogInsertFirstReceiptJob::dispatch($coverage->usage_id);
             }
 
             return redirect()
