@@ -37,9 +37,10 @@ class ScheduleServiceProvider extends ServiceProvider
 
         $queue = config('queue.hcis_queue');
 
-        $schedule->command(`queue:work --queue={$queue} --stop-when-empty --timeout=960 --tries=1 --max-time=1500`)
+        $schedule->command("queue:work --queue={$queue} --stop-when-empty --timeout=960 --tries=1 --max-time=1500")
             ->everyMinute()
             ->withoutOverlapping(30)
-            ->runInBackground();
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/queue-worker.log'));
     }
 }
