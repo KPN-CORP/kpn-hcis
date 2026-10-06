@@ -22,7 +22,7 @@ class ELogInsertFirstReceiptJob implements ShouldQueue
 
     public function __construct(public string $id)
     {
-        $this->onQueue('kpn-hcis');
+        $this->onQueue(config('queue.hcis_queue'));
     }
 
     public function backoff(): array
