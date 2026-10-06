@@ -666,7 +666,7 @@ class MedicalController extends Controller
             // }
         }
 
-        if (strtolower($employee_data->group_company) == "downstream") {
+        if ($statusValue == "Pending" && strtolower($employee_data->group_company) == "downstream") {
             $plafonds = MasterPlafond::where("group_name", $employee_data->job_level)
                 ->get()
                 ->keyBy("medical_type");
@@ -1010,7 +1010,7 @@ class MedicalController extends Controller
                 });
         }
 
-        if (strtolower($employee_data->group_company) == "downstream") {
+        if ($statusValue == "Pending" && strtolower($employee_data->group_company) == "downstream") {
             $plafonds = MasterPlafond::where("group_name", $employee_data->job_level)
                 ->get()
                 ->keyBy("medical_type");
