@@ -1536,7 +1536,7 @@ class MedicalController extends Controller
                     "approved_at" => now(),
                 ]);
 
-                ELogInsertFirstReceiptJob::dispatch($coverage->id);
+                ELogInsertFirstReceiptJob::dispatch($coverage->usage_id);
             }
 
             return redirect()
