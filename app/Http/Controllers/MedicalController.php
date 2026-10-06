@@ -713,7 +713,7 @@ class MedicalController extends Controller
                             $employee_data,
                             $totalUsage,
                             $base64Image
-                        ))->onQueue('kpn-hcis')
+                        ))->onQueue(config('queue.hcis_queue'))
                     );
 
                     $healthPlan->over_plafond_email_sent_date = $today;
