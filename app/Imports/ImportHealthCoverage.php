@@ -307,8 +307,11 @@ class ImportHealthCoverage implements ToModel
 
         if ($initialBalance >= 0 && $healthCoverage->balance > $initialBalance) {
             $healthCoverage->balance_uncoverage = $healthCoverage->balance - $initialBalance;
+            $healthCoverage->employee_covered_amount = $healthCoverage->balance_uncoverage;
+            $healthCoverage->company_covered_amount = $initialBalance;
         } elseif ($initialBalance < 0) {
             $healthCoverage->balance_uncoverage = $healthCoverage->balance;
+            $healthCoverage->employee_covered_amount = $healthCoverage->balance_uncoverage;
         } else {
             $healthCoverage->balance_uncoverage = 0;
         }
