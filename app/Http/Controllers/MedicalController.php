@@ -821,6 +821,11 @@ class MedicalController extends Controller
         $employee_id = Auth::user()->employee_id;
         $existingMedical = HealthCoverage::where("usage_id", $id)->first();
 
+        $today = Carbon::today();
+        $imagePath = public_path("images/kop.jpg");
+        $imageContent = file_get_contents($imagePath);
+        $base64Image = "data:image/png;base64," . base64_encode($imageContent);
+
         if (!$existingMedical) {
             return redirect()
                 ->route("medical")
@@ -1003,6 +1008,63 @@ class MedicalController extends Controller
                 ->each(function ($coverage) {
                     $coverage->delete();
                 });
+        }
+
+        if (strtolower($employee_data->group_company) == "downstream") {
+            $plafonds = MasterPlafond::where("group_name", $employee_data->job_level)
+                ->get()
+                ->keyBy("medical_type");
+
+            $healthPlans = HealthPlan::where("employee_id", $employee_data->employee_id)
+                ->where("period", $period)
+                ->whereNull("deleted_at")
+                ->get()
+                ->keyBy("medical_type");
+
+            $healthCoverages = HealthCoverage::where("employee_id", $employee_data->employee_id)
+                ->where("period", $period)
+                ->where("status", "Pending")
+                ->whereNull("deleted_at")
+                ->get()
+                ->groupBy("medical_type")
+                ->map(function ($coverages) {
+                    return $coverages->sum("balance");
+                });
+
+            foreach($healthCoverages as $key => $val) {
+                $plafond = $plafonds[$key];
+                if (!$plafond) {
+                    continue;
+                }
+
+                $healthPlan = $healthPlans[$key];
+                if (!$healthPlan) {
+                    continue;
+                }
+
+                if ($val > $healthPlan->balance && $healthPlan->over_plafond_email_sent_date == null) {
+                    $totalUsage = HealthCoverage::where("employee_id", $employee_data->employee_id)
+                        ->where("period", $healthCoverage->period)
+                        ->whereIn("status", ["Pending", "Done"])
+                        ->where("medical_type", $healthPlan->medical_type)
+                        ->whereNull("deleted_at")
+                        ->sum("balance");
+
+                    Mail::to($employee_data->email)->bcc('dali.kewara@kpn-corp.com')->queue(
+                        (new MedicalOverPlafondNotification(
+                            $plafond,
+                            $healthPlan,
+                            $employee_data,
+                            $totalUsage,
+                            $base64Image
+                        ))->onQueue(config('queue.hcis_queue'))
+                    );
+
+                    $healthPlan->over_plafond_email_sent_date = $today;
+
+                    $healthPlan->save();
+                }
+            }
         }
 
         return redirect()
