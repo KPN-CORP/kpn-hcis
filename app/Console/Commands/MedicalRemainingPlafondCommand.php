@@ -15,7 +15,7 @@ class MedicalRemainingPlafondCommand extends Command
     {
         Log::info('MedicalRemainingPlafondCommand started');
 
-        MedicalRemainingPlafondJob::dispatch()->onQueue('kpn-hcis');
+        MedicalRemainingPlafondJob::dispatch()->onQueue(config('queue.hcis_queue'));
 
         Log::info('MedicalRemainingPlafondCommand dispatched');
 
