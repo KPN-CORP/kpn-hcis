@@ -32,8 +32,14 @@ class ScheduleServiceProvider extends ServiceProvider
         $schedule->command('app:sync-certifications')->monthlyOn(1, '01:10');
         $schedule->command('app:sync-movements')->monthlyOn(1, '01:20');
         $schedule->command('app:sync-promotions')->monthlyOn(1, '01:30');
-        $schedule->command('queue:work --queue=kpn-hcis --stop-when-empty --timeout=960 --tries=1 --max-time=1500')->everyMinute()->withoutOverlapping(30)->runInBackground();
-        $schedule->command('medical:remaining-plafond')->dailyAt('08:00');
         $schedule->command('elog:trigger-failed-process')->dailyAt('00:15')->withoutOverlapping();
+        $schedule->command('medical:remaining-plafond')->dailyAt('08:00');
+
+        $queue = config('queue.hcis_queue');
+
+        $schedule->command(`queue:work --queue={$queue} --stop-when-empty --timeout=960 --tries=1 --max-time=1500`)
+            ->everyMinute()
+            ->withoutOverlapping(30)
+            ->runInBackground();
     }
 }

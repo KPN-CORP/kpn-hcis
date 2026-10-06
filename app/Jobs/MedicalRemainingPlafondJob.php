@@ -76,7 +76,7 @@ class MedicalRemainingPlafondJob implements ShouldQueue
                         $healthPlan,
                         $employee,
                         $base64Image
-                    ))->onQueue('kpn-hcis')
+                    ))->onQueue(config('queue.hcis_queue'))
                 );
 
                 $healthPlan->remaining_plafond_email_sent_date = $today;
