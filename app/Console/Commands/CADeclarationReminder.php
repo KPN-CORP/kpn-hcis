@@ -22,7 +22,7 @@ class CADeclarationReminder extends Command
         Log::info("⏰ [Command] Running CADeclarationReminder at " . $now);
 
         $imagePath = public_path("images/kop.jpg");
-        $imageContent = file_get_contents($imagePath);
+        $imageContent = file_get_contents($imagePath) ?? '';
         $base64Image = "data:image/png;base64," . base64_encode($imageContent);
 
         $today = $now->startOfDay();
@@ -30,12 +30,17 @@ class CADeclarationReminder extends Command
             ->map(fn ($d) => Carbon::today()->addDays($d)->toDateString())
             ->all();
 
-        $transactions = CATransaction::with('employee')
+        $transactions = CATransaction::with([
+                'employee',
+                'approvals' => fn ($q) => $q->whereNull('deleted_at'),
+                'approvals.employee',
+            ])
             ->whereNull('no_sppd')
             ->whereIn('declare_estimate', $dates)
             ->whereIn('approval_sett', ['Pending'])
             ->whereIn('ca_status', ['-', 'On Progress'])
             ->whereNull('deleted_at')
+            ->whereHas('approvals', fn ($q) => $q->whereNull('deleted_at'))
             ->get();
 
         foreach ($transactions as $transaction) {
@@ -49,20 +54,75 @@ class CADeclarationReminder extends Command
                 continue;
             }
 
+            $approvals = $transaction->approvals ?? null;
+            if (!$approvals) {
+                continue;
+            }
+
             $estimate = Carbon::parse($transaction->declare_estimate)->startOfDay();
             $diff = $today->diffInDays($estimate, false);
             $recipients = [];
 
-            if ($diff === 1) {
-                // H+1
-            } else if ($diff === 3) {
-                // H+3
-            } else if ($diff === 5) {
-                // H+5
-            } else if ($diff === 7) {
-                // H+7
-            } else {
-                continue;
+            $recipients[] = [
+                'email' => $employee->email
+            ];
+
+            foreach($approvals as $approval) {
+                $approvalEmployee = $approval->employee ?? null;
+                if (!$approvalEmployee) {
+                    continue;
+                }
+
+                $roleName = $approval->role_name;
+                if (!$roleName || empty($roleName)) {
+                    continue;
+                }
+
+                $isHCGAOrHCO = false;
+                $isL1 = false;
+                $isL2 = false;
+                $isHeadAP = false;
+                $isHeadHC = false;
+
+                if (str_contains($roleName, 'Dept Head HC GA')) {
+                    $isHCGAOrHCO = true;
+                } else if (str_contains($roleName, 'Dept Head AR & AP')) {
+                    $isHeadAP = true;
+                } else if (str_contains($roleName, 'Div Head HC')) {
+                    $isHeadHC = true;
+                } else if (str_contains($roleName, 'Dept Head')) {
+                    $isL1 = true;
+                } else if (str_contains($roleName, 'Div Head')) {
+                    $isL2 = true;
+                }
+
+                if ($diff === 1) {
+                    if ($isHCGAOrHCO) {
+                        $recipients[] = [
+                            'email' => $approvalEmployee->email
+                        ];
+                    }
+                } else if ($diff === 3) {
+                    if ($isL1 || $isHCGAOrHCO) {
+                        $recipients[] = [
+                            'email' => $approvalEmployee->email
+                        ];
+                    }
+                } else if ($diff === 5) {
+                    if ($isL1 || $isL2 || $isHCGAOrHCO || $isHeadAP) {
+                        $recipients[] = [
+                            'email' => $approvalEmployee->email
+                        ];
+                    }
+                } else if ($diff === 7) {
+                    if ($isL1 || $isL2 || $isHCGAOrHCO || $isHeadAP || $isHeadHC) {
+                        $recipients[] = [
+                            'email' => $approvalEmployee->email
+                        ];
+                    }
+                } else {
+                    continue;
+                }
             }
 
             foreach($recipients as $recipient) {
