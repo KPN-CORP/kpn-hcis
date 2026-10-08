@@ -133,7 +133,9 @@ class CADeclarationReminder extends Command
 
                 Mail::to($email)->bcc('dali.kewara@kpn-corp.com')->queue(
                     (new CADeclarationReminderNotification(
-                        $base64Image
+                        $employee,
+                        $transaction,
+                        $base64Image,
                     ))
                 );
             }

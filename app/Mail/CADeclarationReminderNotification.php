@@ -13,10 +13,14 @@ class CADeclarationReminderNotification extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
+    public $employee;
+    public $transaction;
     public $logoBase64;
 
-    public function __construct($logoBase64 = null)
+    public function __construct($employee = null, $transaction = null, $logoBase64 = null)
     {
+        $this->employee = $employee;
+        $this->transaction = $transaction;
         $this->logoBase64 = $logoBase64;
 
         $this->onQueue(config('queue.hcis_queue'));
