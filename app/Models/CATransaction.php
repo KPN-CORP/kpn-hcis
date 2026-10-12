@@ -75,7 +75,7 @@ class CATransaction extends Model
     }
     public function approvals()
     {
-        return $this->hasMany(ca_approval::class, 'id', 'ca_id');
+        return $this->hasMany(ca_approval::class, 'ca_id', 'id');
     }
     public function settApprovals()
     {
