@@ -30,7 +30,7 @@
             Please complete your Cash Advance Declaration through the HC System as soon as possible.
         </p>
         <p>
-            {{ &actionUrl ?? '' }}
+            {{ $actionUrl ?? 'https://apps.hcis.live/cashadvanced' }}
         </p>
         <p>
             If you have already completed the declaration, please disregard this email.
