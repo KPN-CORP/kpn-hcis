@@ -141,6 +141,7 @@ class CADeclarationReminder extends Command
             }
         }
 
+        Log::info("✔ [Command] CADeclarationReminder DONE at " . Carbon::now());
         $this->info("✔ [Command] CADeclarationReminder DONE at " . Carbon::now());
     }
 }
