@@ -6414,7 +6414,6 @@ class ReimburseController extends Controller
             ->first();
 
         $noTkt = $ticket->no_tkt;
-        $quota = HomeTrip::where("employee_id", $ticketEmployeeId)->get();
 
         $ticketNpTkt = Tiket::where("no_tkt", $noTkt)->pluck("np_tkt");
         $ticketDate = Tiket::where("no_tkt", $noTkt)
@@ -6513,43 +6512,6 @@ class ReimburseController extends Controller
             Tiket::where("no_tkt", $noTkt)->update([
                 "approval_status" => "Approved",
             ]);
-            if ($ticket->jns_dinas_tkt == "Cuti") {
-                // Hitung total pengurangan kuota berdasarkan semua tiket
-                $totalDecrement = 0;
-
-                foreach ($ticketNpTkt as $name) {
-                    // Dapatkan type_tkt untuk setiap tiket berdasarkan nama
-                    $ticketType = Tiket::where("user_id", $ticket->user_id)
-                        ->where("no_tkt", $ticket->no_tkt)
-                        ->where("tkt_only", "=", "Y")
-                        ->where("np_tkt", $name) // Pastikan mengambil type_tkt untuk nama saat ini
-                        ->value("type_tkt");
-
-                    // Default ke 'One Way' jika type_tkt tidak ditemukan
-                    if (!$ticketType) {
-                        $ticketType = "One Way";
-                    }
-
-                    // Tentukan nilai pengurangan berdasarkan type_tkt
-                    $decrementValue = $ticketType == "One Way" ? 1 : 2;
-
-                    // Tambahkan nilai pengurangan ke total
-                    $totalDecrement += $decrementValue;
-                }
-
-                // Kurangi kuota total di HomeTrip berdasarkan employee_id
-                // HomeTrip::where('employee_id', $ticketEmployeeId)
-                //     ->where('period', $currentYear)
-                //     ->decrement('quota', $totalDecrement);
-                $homeTrip = HomeTrip::where("employee_id", $ticketEmployeeId)
-                    ->where("last_generate", "<=", $ticketDateCarbon)
-                    ->orderByDesc("period")
-                    ->first();
-
-                if ($homeTrip) {
-                    $homeTrip->decrement("quota", $totalDecrement);
-                }
-            }
         } elseif ($ticket->approval_status == "Pending L1") {
             Tiket::where("no_tkt", $noTkt)->update([
                 "approval_status" => "Pending L2",
@@ -6688,43 +6650,6 @@ class ReimburseController extends Controller
             Tiket::where("no_tkt", $noTkt)->update([
                 "approval_status" => "Approved",
             ]);
-            if ($ticket->jns_dinas_tkt == "Cuti") {
-                // Hitung total pengurangan kuota berdasarkan semua tiket
-                $totalDecrement = 0;
-
-                foreach ($ticketNpTkt as $name) {
-                    // Dapatkan type_tkt untuk setiap tiket berdasarkan nama
-                    $ticketType = Tiket::where("user_id", $ticket->user_id)
-                        ->where("no_tkt", $ticket->no_tkt)
-                        ->where("tkt_only", "=", "Y")
-                        ->where("np_tkt", $name) // Pastikan mengambil type_tkt untuk nama saat ini
-                        ->value("type_tkt");
-
-                    // Default ke 'One Way' jika type_tkt tidak ditemukan
-                    if (!$ticketType) {
-                        $ticketType = "One Way";
-                    }
-
-                    // Tentukan nilai pengurangan berdasarkan type_tkt
-                    $decrementValue = $ticketType == "One Way" ? 1 : 2;
-
-                    // Tambahkan nilai pengurangan ke total
-                    $totalDecrement += $decrementValue;
-                }
-
-                // Kurangi kuota total di HomeTrip berdasarkan employee_id
-                // HomeTrip::where('employee_id', $ticketEmployeeId)
-                //     ->where('period', $currentYear)
-                //     ->decrement('quota', $totalDecrement);
-                $homeTrip = HomeTrip::where("employee_id", $ticketEmployeeId)
-                    ->where("last_generate", "<=", $ticketDateCarbon)
-                    ->orderByDesc("period")
-                    ->first();
-
-                if ($homeTrip) {
-                    $homeTrip->decrement("quota", $totalDecrement);
-                }
-            }
         } else {
             return redirect()->back()->with("error", "Invalid status update.");
         }
@@ -6767,7 +6692,6 @@ class ReimburseController extends Controller
             ->first();
 
         $noTkt = $ticket->no_tkt;
-        $quota = HomeTrip::where("employee_id", $ticketEmployeeId)->get();
 
         $ticketNpTkt = Tiket::where("no_tkt", $noTkt)->pluck("np_tkt");
         // dd($ticketEmployeeId, $quota, $ticketNpTkt);
@@ -6859,35 +6783,6 @@ class ReimburseController extends Controller
             Tiket::where("no_tkt", $noTkt)->update([
                 "approval_status" => "Approved",
             ]);
-            if ($ticket->jns_dinas_tkt == "Cuti") {
-                // Hitung total pengurangan kuota berdasarkan semua tiket
-                $totalDecrement = 0;
-
-                foreach ($ticketNpTkt as $name) {
-                    // Dapatkan type_tkt untuk setiap tiket berdasarkan nama
-                    $ticketType = Tiket::where("user_id", $ticket->user_id)
-                        ->where("no_tkt", $ticket->no_tkt)
-                        ->where("tkt_only", "=", "Y")
-                        ->where("np_tkt", $name) // Pastikan mengambil type_tkt untuk nama saat ini
-                        ->value("type_tkt");
-
-                    // Default ke 'One Way' jika type_tkt tidak ditemukan
-                    if (!$ticketType) {
-                        $ticketType = "One Way";
-                    }
-
-                    // Tentukan nilai pengurangan berdasarkan type_tkt
-                    $decrementValue = $ticketType == "One Way" ? 1 : 2;
-
-                    // Tambahkan nilai pengurangan ke total
-                    $totalDecrement += $decrementValue;
-                }
-
-                // Kurangi kuota total di HomeTrip berdasarkan employee_id
-                HomeTrip::where("employee_id", $ticketEmployeeId)
-                    ->where("period", $currentYear)
-                    ->decrement("quota", $totalDecrement);
-            }
         } elseif ($ticket->approval_status == "Pending L1") {
             Tiket::where("no_tkt", $noTkt)->update([
                 "approval_status" => "Pending L2",
@@ -7026,35 +6921,6 @@ class ReimburseController extends Controller
             Tiket::where("no_tkt", $noTkt)->update([
                 "approval_status" => "Approved",
             ]);
-            if ($ticket->jns_dinas_tkt == "Cuti") {
-                // Hitung total pengurangan kuota berdasarkan semua tiket
-                $totalDecrement = 0;
-
-                foreach ($ticketNpTkt as $name) {
-                    // Dapatkan type_tkt untuk setiap tiket berdasarkan nama
-                    $ticketType = Tiket::where("user_id", $ticket->user_id)
-                        ->where("no_tkt", $ticket->no_tkt)
-                        ->where("tkt_only", "=", "Y")
-                        ->where("np_tkt", $name) // Pastikan mengambil type_tkt untuk nama saat ini
-                        ->value("type_tkt");
-
-                    // Default ke 'One Way' jika type_tkt tidak ditemukan
-                    if (!$ticketType) {
-                        $ticketType = "One Way";
-                    }
-
-                    // Tentukan nilai pengurangan berdasarkan type_tkt
-                    $decrementValue = $ticketType == "One Way" ? 1 : 2;
-
-                    // Tambahkan nilai pengurangan ke total
-                    $totalDecrement += $decrementValue;
-                }
-
-                // Kurangi kuota total di HomeTrip berdasarkan employee_id
-                HomeTrip::where("employee_id", $ticketEmployeeId)
-                    ->where("period", $currentYear)
-                    ->decrement("quota", $totalDecrement);
-            }
         } else {
             return redirect()->back()->with("error", "Invalid status update.");
         }

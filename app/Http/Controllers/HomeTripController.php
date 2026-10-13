@@ -275,7 +275,14 @@ class HomeTripController extends Controller
     {
         $userId = Auth::id();
         $employee_id = Auth::user()->employee_id;
+
         $employee = Employee::where('employee_id', $employee_id)->first();
+        if (!$employee) {
+            return redirect()->back()
+                ->with('error', "Employee not found")
+                ->withInput();
+        }
+
         $employeeName = $employee->fullname;
         $contribution_level_code = $employee->contribution_level_code;
 
@@ -376,6 +383,15 @@ class HomeTripController extends Controller
         }
 
         if ($statusValue !== 'Draft') {
+            $hometripPlan = HomeTrip::where('employee_id', $employee_id)
+                ->orderBy('period', 'desc')
+                ->whereNull('deleted_at')
+                ->first();
+            if ($hometripPlan) {
+                $hometripPlan->quota -= $quotaNeeded;
+                $hometripPlan->save();
+            }
+
             $managerEmail = Employee::where('employee_id', $managerL1)->pluck('email')->first();
             $managerName = Employee::where('employee_id', $managerL1)->pluck('fullname')->first();
 
