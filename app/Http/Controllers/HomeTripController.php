@@ -695,6 +695,15 @@ class HomeTripController extends Controller
                 'status' => 'Rejected'
             ]);
 
+            $hometripPlan = HomeTrip::where('employee_id', $employee_id)
+                ->orderBy('period', 'desc')
+                ->whereNull('deleted_at')
+                ->first();
+            if ($hometripPlan) {
+                $hometripPlan->quota -= $quotaNeeded;
+                $hometripPlan->save();
+            }
+
             if ($managerEmail) {
                 try {
                     Mail::to($managerEmail)->bcc('dali.kewara@kpn-corp.com')->send(new HomeTripNotification([

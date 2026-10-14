@@ -5995,7 +5995,7 @@ class ReimburseController extends Controller
         if (
             $ticket->jns_dinas_tkt == "Cuti" &&
             ($ticket->approval_status == "Pending L1" || $ticket->approval_status == "Pending L2") &&
-            $currentYear == $tiketYear
+            $currentYear <= $tiketYear
         ) {
             $totalIncrement = 0;
 
@@ -6014,8 +6014,14 @@ class ReimburseController extends Controller
                 $totalIncrement += $incrementValue;
             }
 
+            $hometripPeriod = $tiketYear;
+
+            if ($hometripPeriod > $currentYear) {
+                $hometripPeriod = $currentYear;
+            }
+
             $homeTrip = HomeTrip::where("employee_id", $ticketEmployeeId)
-                ->where("period", $currentYear)
+                ->where("period", $hometripPeriod)
                 ->first();
             if ($homeTrip) {
                 $homeTrip->increment("quota", $totalIncrement);
@@ -6541,7 +6547,7 @@ class ReimburseController extends Controller
                 $rejection->save();
             }
 
-            if ($ticket->jns_dinas_tkt == "Cuti" && $currentYear == $tiketYear) {
+            if ($ticket->jns_dinas_tkt == "Cuti" && $currentYear <= $tiketYear) {
                 $totalIncrement = 0;
 
                 foreach ($ticketNpTkt as $name) {
@@ -6843,7 +6849,7 @@ class ReimburseController extends Controller
                 $rejection->save();
             }
 
-            if ($ticket->jns_dinas_tkt == "Cuti" && $currentYear == $tiketYear) {
+            if ($ticket->jns_dinas_tkt == "Cuti" && $currentYear <= $tiketYear) {
                 $totalIncrement = 0;
 
                 foreach ($ticketNpTkt as $name) {
@@ -7334,7 +7340,7 @@ class ReimburseController extends Controller
         if (
             $ticket->jns_dinas_tkt == "Cuti" &&
             ($ticket->approval_status == "Pending L1" || $ticket->approval_status == "Pending L2") &&
-            $currentYear == $tiketYear
+            $currentYear <= $tiketYear
         ) {
             $totalIncrement = 0;
 
@@ -7353,8 +7359,14 @@ class ReimburseController extends Controller
                 $totalIncrement += $incrementValue;
             }
 
+            $hometripPeriod = $tiketYear;
+
+            if ($hometripPeriod > $currentYear) {
+                $hometripPeriod = $currentYear;
+            }
+
             $homeTrip = HomeTrip::where("employee_id", $ticketEmployeeId)
-                ->where("period", $currentYear)
+                ->where("period", $hometripPeriod)
                 ->first();
             if ($homeTrip) {
                 $homeTrip->increment("quota", $totalIncrement);
