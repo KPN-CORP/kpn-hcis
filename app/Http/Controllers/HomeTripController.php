@@ -733,6 +733,53 @@ class HomeTripController extends Controller
     public function homeTripDelete($id)
     {
         $ticket = Tiket::findByRouteKey($id);
+        if (!$ticket) {
+            return redirect()->back()->with("error", "Tiket not found.");
+        }
+
+        $ticketNpTkt = Tiket::where("no_tkt", $ticket->no_tkt)->pluck("np_tkt");
+        $ticketEmployeeId = Employee::where("id", $ticket->user_id)
+            ->pluck("employee_id")
+            ->first();
+        $currentYear = now()->year;
+        $tiketYear = Carbon::parse($ticket->tgl_brkt_tkt)->year;
+
+        if (
+            $ticket->jns_dinas_tkt == "Cuti" &&
+            ($ticket->approval_status == "Pending L1" || $ticket->approval_status == "Pending L2") &&
+            $currentYear <= $tiketYear
+        ) {
+            $totalIncrement = 0;
+
+            foreach ($ticketNpTkt as $name) {
+                $ticketType = Tiket::where("user_id", $ticket->user_id)
+                    ->where("no_tkt", $ticket->no_tkt)
+                    ->where("tkt_only", "=", "Y")
+                    ->where("np_tkt", $name)
+                    ->value("type_tkt");
+
+                if (!$ticketType) {
+                    $ticketType = "One Way";
+                }
+
+                $incrementValue = $ticketType == "One Way" ? 1 : 2;
+                $totalIncrement += $incrementValue;
+            }
+
+            $hometripPeriod = $tiketYear;
+
+            if ($hometripPeriod > $currentYear) {
+                $hometripPeriod = $currentYear;
+            }
+
+            $homeTrip = HomeTrip::where("employee_id", $ticketEmployeeId)
+                ->where("period", $hometripPeriod)
+                ->first();
+            if ($homeTrip) {
+                $homeTrip->increment("quota", $totalIncrement);
+            }
+        }
+
         Tiket::where('no_tkt', $ticket->no_tkt)->delete();
 
         return redirect()->route('home-trip')->with('success', 'Home Trip has been deleted');
