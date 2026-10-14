@@ -6499,6 +6499,33 @@ class ReimburseController extends Controller
                 $rejection->save();
             }
 
+            if ($ticket->jns_dinas_tkt == "Cuti") {
+                $totalIncrement = 0;
+
+                foreach ($ticketNpTkt as $name) {
+                    $ticketType = Tiket::where("user_id", $ticket->user_id)
+                        ->where("no_tkt", $ticket->no_tkt)
+                        ->where("tkt_only", "=", "Y")
+                        ->where("np_tkt", $name)
+                        ->value("type_tkt");
+
+                    if (!$ticketType) {
+                        $ticketType = "One Way";
+                    }
+
+                    $incrementValue = $ticketType == "One Way" ? 1 : 2;
+                    $totalIncrement += $incrementValue;
+                }
+
+                $homeTrip = HomeTrip::where("employee_id", $ticketEmployeeId)
+                    ->where("last_generate", "<=", $ticketDateCarbon)
+                    ->orderByDesc("period")
+                    ->first();
+                if ($homeTrip) {
+                    $homeTrip->increment("quota", $totalIncrement);
+                }
+            }
+
             // Redirect to the ticket approval page instead of back to the same page
             return redirect("/ticket/approval")->with(
                 "success",
@@ -6771,6 +6798,32 @@ class ReimburseController extends Controller
                 $rejection->reject_info = $rejectInfo;
                 $rejection->by_admin = "T";
                 $rejection->save();
+            }
+
+            if ($ticket->jns_dinas_tkt == "Cuti") {
+                $totalIncrement = 0;
+
+                foreach ($ticketNpTkt as $name) {
+                    $ticketType = Tiket::where("user_id", $ticket->user_id)
+                        ->where("no_tkt", $ticket->no_tkt)
+                        ->where("tkt_only", "=", "Y")
+                        ->where("np_tkt", $name)
+                        ->value("type_tkt");
+
+                    if (!$ticketType) {
+                        $ticketType = "One Way";
+                    }
+
+                    $incrementValue = $ticketType == "One Way" ? 1 : 2;
+                    $totalIncrement += $incrementValue;
+                }
+
+                $homeTrip = HomeTrip::where("employee_id", $ticketEmployeeId)
+                    ->where("period", $currentYear)
+                    ->first();
+                if ($homeTrip) {
+                    $homeTrip->increment("quota", $totalIncrement);
+                }
             }
 
             // Redirect to the ticket approval page instead of back to the same page
