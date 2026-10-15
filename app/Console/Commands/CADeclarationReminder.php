@@ -27,7 +27,7 @@ class CADeclarationReminder extends Command
 
         $today = $now->startOfDay();
         $dates = collect([1, 3, 5, 7])
-            ->map(fn ($d) => Carbon::today()->addDays($d)->toDateString())
+            ->map(fn ($d) => $today->copy()->subDays($d)->toDateString())
             ->all();
 
         $transactions = CATransaction::with([
@@ -35,9 +35,8 @@ class CADeclarationReminder extends Command
                 'approvals' => fn ($q) => $q->whereNull('deleted_at'),
                 'approvals.employee',
             ])
-            ->whereNull('no_sppd')
-            ->whereIn('declare_estimate', $dates)
-            ->whereIn('approval_sett', ['Pending'])
+            ->whereIn('end_date', $dates)
+            ->whereIn('approval_sett', ['', 'Draft', 'Pending'])
             ->whereIn('ca_status', ['-', 'On Progress'])
             ->whereNull('deleted_at')
             ->whereHas('approvals', fn ($q) => $q->whereNull('deleted_at'))
@@ -59,8 +58,8 @@ class CADeclarationReminder extends Command
                 continue;
             }
 
-            $estimate = Carbon::parse($transaction->declare_estimate)->startOfDay();
-            $diff = $today->diffInDays($estimate, false);
+            $estimate = Carbon::parse($transaction->end_date)->startOfDay();
+            $diff = (int) $estimate->diffInDays($today, false);
             $recipients = [];
 
             $recipients[] = [
