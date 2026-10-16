@@ -20,17 +20,17 @@
                 <strong>Business Trip No:</strong> {{ $transaction->no_sppd ?? "-" }}
             </li>
             <li>
-                <strong>Transaction Date:</strong> {{ $transaction->declare_estimate ?? "-" }}
+                <strong>Business Trip Period:</strong> {{ $transaction->mulai ?? "" }} - {{ $transaction->kembali ?? "" }}
             </li>
             <li>
-                <strong>Amount:</strong> Rp {{ number_format($transaction->total_ca ?? 0, 0, ',', '.') }}
+                <strong>Destination:</strong> {{ $transaction->tujuan ?? "-" }}
             </li>
         </ul>
         <p>
             Please complete your Business Trip Declaration through the HC System as soon as possible.
         </p>
         <p>
-            {{ $actionUrl ?? 'https://apps.hcis.live/cashadvanced' }}
+            {{ $actionUrl ?? 'https://apps.hcis.live/businessTrip' }}
         </p>
         <p>
             If you have already completed the declaration, please disregard this email.
