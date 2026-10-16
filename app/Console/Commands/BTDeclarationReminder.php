@@ -59,71 +59,33 @@ class BTDeclarationReminder extends Command
                 'email' => $employee->email
             ];
 
-            $approvals = [];
+            $isL1 = false;
+            $isL2 = false;
 
             if ($transaction->manager1) {
-                $approvals[] = $transaction->manager1;
+                $isL1 = true;
             }
 
             if ($transaction->manager2) {
-                $approvals[] = $transaction->manager2;
+                $isL2 = true;
             }
 
-            foreach($approvals as $approval) {
-                $approvalEmployee = $approval->employee ?? null;
-                if (!$approvalEmployee) {
-                    continue;
+            if ($diff === 3) {
+                if ($isL1) {
+                    $recipients[] = [
+                        'email' => $transaction->manager1->email
+                    ];
                 }
-
-                $roleName = $approval->role_name;
-                if (!$roleName || empty($roleName)) {
-                    continue;
+            } else if ($diff === 5 || $diff === 7) {
+                if ($isL1) {
+                    $recipients[] = [
+                        'email' => $transaction->manager1->email
+                    ];
                 }
-
-                $isHCGAOrHCO = false;
-                $isL1 = false;
-                $isL2 = false;
-                $isHeadAP = false;
-                $isHeadHC = false;
-
-                if (str_contains($roleName, 'Dept Head HC GA')) {
-                    $isHCGAOrHCO = true;
-                } else if (str_contains($roleName, 'Dept Head AR & AP')) {
-                    $isHeadAP = true;
-                } else if (str_contains($roleName, 'Div Head HC')) {
-                    $isHeadHC = true;
-                } else if (str_contains($roleName, 'Dept Head')) {
-                    $isL1 = true;
-                } else if (str_contains($roleName, 'Div Head')) {
-                    $isL2 = true;
-                }
-
-                if ($diff === 1) {
-                    if ($isHCGAOrHCO) {
-                        $recipients[] = [
-                            'email' => $approvalEmployee->email
-                        ];
-                    }
-                } else if ($diff === 3) {
-                    if ($isL1 || $isHCGAOrHCO) {
-                        $recipients[] = [
-                            'email' => $approvalEmployee->email
-                        ];
-                    }
-                } else if ($diff === 5) {
-                    if ($isL1 || $isL2 || $isHCGAOrHCO || $isHeadAP) {
-                        $recipients[] = [
-                            'email' => $approvalEmployee->email
-                        ];
-                    }
-                } else if ($diff === 7) {
-                    if ($isL1 || $isL2 || $isHCGAOrHCO || $isHeadAP || $isHeadHC) {
-                        $recipients[] = [
-                            'email' => $approvalEmployee->email
-                        ];
-                    }
-                } else {
-                    continue;
+                if ($isL2) {
+                    $recipients[] = [
+                        'email' => $transaction->manager2->email
+                    ];
                 }
             }
 
