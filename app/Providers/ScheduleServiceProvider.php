@@ -33,6 +33,7 @@ class ScheduleServiceProvider extends ServiceProvider
         $schedule->command('app:sync-movements')->monthlyOn(1, '01:20');
         $schedule->command('app:sync-promotions')->monthlyOn(1, '01:30');
         $schedule->command('ca:declaration-reminder')->dailyAt('08:00')->withoutOverlapping();
+        $schedule->command('bt:declaration-reminder')->dailyAt('08:00')->withoutOverlapping();
 
         $queue = config('queue.hcis_queue', 'kpn-hcis');
 
