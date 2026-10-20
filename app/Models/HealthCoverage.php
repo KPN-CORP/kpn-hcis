@@ -57,7 +57,8 @@ class HealthCoverage extends Model
         'elog_insert_first_receipt_sync_date',
         'employee_covered_amount',
         'company_covered_amount',
-        'paid_date'
+        'paid_date',
+        'billing_type'
     ];
 
     public function employee()
