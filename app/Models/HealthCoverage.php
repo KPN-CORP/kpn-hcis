@@ -53,7 +53,9 @@ class HealthCoverage extends Model
         'is_revise',
         'revise_info',
         'employee_covered_amount',
-        'company_covered_amount'
+        'company_covered_amount',
+        'elog_medical_type',
+        'billing_type'
     ];
 
     public function employee()

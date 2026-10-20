@@ -8,6 +8,7 @@ use App\Models\HealthPlan;
 use App\Models\MasterMedical;
 use App\Models\Employee;
 use App\Models\MasterPlafond;
+use App\Models\MedicalHospital;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -98,7 +99,7 @@ class ImportHealthCoverage implements ToModel
             $row[6] == $patDummy
         ) {
             throw new ImportDataInvalidException(
-                "You can Import Dummy data to Database.",
+                "You can't Import Dummy data to Database.",
             );
         }
 
@@ -152,6 +153,7 @@ class ImportHealthCoverage implements ToModel
 
         $employeeCoveredAmount = null;
         $companyCoveredAmount = null;
+        $billingType = null;
 
         if (array_key_exists(14, $row) && !empty($row[14]) && is_numeric($row[14])) {
             $employeeCoveredAmount = $row[14];
@@ -166,6 +168,14 @@ class ImportHealthCoverage implements ToModel
 
             if ($companyCoveredAmount < 0) {
                 $errorMessage = "Company Covered Amount tidak boleh minus.";
+            }
+        }
+
+        if (array_key_exists(16, $row) && !empty($row[16]) && is_numeric($row[16])) {
+            $billingType = $row[16];
+
+            if (!in_array($billingType, ['Reimbursement', 'Non Reimbursement'], true)) {
+                $billingType = null;
             }
         }
 
@@ -189,7 +199,9 @@ class ImportHealthCoverage implements ToModel
 
         // Jika ada error, simpan ke array gagal
         if ($errorMessage) {
-            if (array_key_exists(15, $row)) {
+            if (array_key_exists(16, $row)) {
+                $row[17] = $errorMessage; // Simpan error di kolom ke-17
+            } else if (array_key_exists(15, $row)) {
                 $row[16] = $errorMessage; // Simpan error di kolom ke-16
             } else {
                 $row[14] = $errorMessage; // Simpan error di kolom ke-14
@@ -225,7 +237,8 @@ class ImportHealthCoverage implements ToModel
             "created_at" => now(),
             "approved_at" => now(),
             "employee_covered_amount" => $employeeCoveredAmount,
-            "company_covered_amount" => $companyCoveredAmount
+            "company_covered_amount" => $companyCoveredAmount,
+            "billing_type" => $billingType
         ]);
 
         $this->batchRecords[] = $healthCoverage;
@@ -239,6 +252,20 @@ class ImportHealthCoverage implements ToModel
         $groupedRecords = collect($this->batchRecords)->groupBy("employee_id");
 
         foreach ($this->batchRecords as $healthCoverage) {
+            if (!$healthCoverage->billing_type || $healthCoverage->billing_type == null) {
+                $hospitalName = $healthCoverage->hospital_name ?? '';
+
+                $existMedicalHospital = MedicalHospital::where('is_active', true)
+                    ->where(function ($q) use ($hospitalName) {
+                        $q->where('hospital_name', $hospitalName)
+                          ->orWhereRaw('LOWER(hospital_name) = ?', [strtolower($hospitalName)]);
+                    })
+                    ->first();
+                if ($existMedicalHospital) {
+                    $healthCoverage->billing_type = "Non Reimbursement";
+                }
+            }
+
             $this->performCalculations($healthCoverage); // Perhitungan hanya dilakukan di sini
         }
 
