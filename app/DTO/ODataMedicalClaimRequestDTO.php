@@ -10,7 +10,7 @@ class ODataMedicalClaimRequestDTO extends BaseDTO {
     public function toUrlEncode(bool $withQuestionMark = false): string {
         $employeeID = $this->employee_id;
 
-        $query = "$filter=(NIK eq '{$employeeID}')&$format=json";
+        $query = "\$filter=(NIK eq '{$employeeID}')&\$format=json";
 
         return ($withQuestionMark ? '?' : '') . $query;
     }

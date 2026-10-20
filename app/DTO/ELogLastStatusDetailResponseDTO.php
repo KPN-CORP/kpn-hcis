@@ -9,8 +9,8 @@ class ELogLastStatusDetailResponseDTO extends BaseDTO {
         public readonly array $data,
     ) {}
 
-    public static function fromArray(array $response): self {
-        return new self(
+    public static function fromArray(array $response): static {
+        return new static(
             status: $response['status'] ?? '',
             count: (int) ($response['count'] ?? 0),
             data: $response['data'] ?? [],

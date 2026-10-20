@@ -7,7 +7,7 @@ class ODataMedicalClaimResponseResultDTO extends BaseDTO {
         public readonly array $results,
     ) {}
 
-    public static function fromArray(array $response): self {
+    public static function fromArray(array $response): static {
         $rows = $response['results'] ?? [];
         $results = [];
 
@@ -15,7 +15,7 @@ class ODataMedicalClaimResponseResultDTO extends BaseDTO {
             $results[] = ODataMedicalClaimResponseResultItemDTO::fromArray($row);
         }
 
-        return new self(
+        return new static(
             results: $results,
         );
     }

@@ -13,8 +13,8 @@ class ODataMedicalClaimResponseResultItemDTO extends BaseDTO {
         public readonly string $amount,
     ) {}
 
-    public static function fromArray(array $response): self {
-        return new self(
+    public static function fromArray(array $response): static {
+        return new static(
             company_code: $response['Company_code'] ?? '',
             nik: $response['NIK'] ?? '',
             cust_code: $response['cust_code'] ?? '',
