@@ -12,8 +12,8 @@ class ELogHistoryResponseItemDTO extends BaseDTO {
         public readonly string $created_at,
     ) {}
 
-    public static function fromArray(array $data): self {
-        return new self(
+    public static function fromArray(array $data): static {
+        return new static(
             action_type: $data['ACTION_TYPE'] ?? '',
             pos: (int) ($data['POS'] ?? 0),
             data_status: (int) ($data['STATUS'] ?? 0),

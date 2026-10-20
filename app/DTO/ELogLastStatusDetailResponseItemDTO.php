@@ -16,8 +16,8 @@ class ELogLastStatusDetailResponseItemDTO extends BaseDTO {
         public readonly string $last_updated_at,
     ) {}
 
-    public static function fromArray(array $response): self {
-        return new self(
+    public static function fromArray(array $response): static {
+        return new static(
             no_receipt_doc: $response['data']['NO_RECEIPT_DOC'] ?? '',
             company: $response['data']['COMPANY'] ?? '',
             amount: (int) ($response['data']['AMOUNT'] ?? 0),

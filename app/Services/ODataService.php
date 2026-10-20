@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Cache;
 
 use App\Models\Employee as EmployeeModel;
 use App\Models\HealthCoverage as HealthCoverageModel;
@@ -71,7 +70,7 @@ class ODataService {
 
         $httpClient = app(HttpClient::class);
 
-        $httpRes = $httpClient->getJSON($this->apiBaseUrl . "/sap/opu/odata/sap/ZCDS_MED_CLAIM_CDS/ZCDS_MED_CLAIM?", $payload->toUrlEncoded(), [
+        $httpRes = $httpClient->getJSON($this->apiBaseUrl . "/sap/opu/odata/sap/ZCDS_MED_CLAIM_CDS/ZCDS_MED_CLAIM?" . $payload->toUrlEncode(), [
             "Authorization" => "Basic " . base64_encode($this->apiUsername . ":" . $this->apiPassword),
         ]);
         if (!$httpRes["status"]) {
@@ -83,13 +82,13 @@ class ODataService {
             ];
         }
 
-        $resData = ODataMedicalClaimResponseDTO::fromArray($httpRes ?? []);
+        $resData = ODataMedicalClaimResponseDTO::fromArray($httpRes["data"] ?? []);
         if (!$resData || !$resData->d || empty($resData->d) || !$resData->d->results || empty($resData->d->results)) {
             return [
                 'status' => false,
-                'message'  => "No data to be processed",
+                'message'  => "failed",
                 'data'    => $resData,
-                'error'   => null,
+                'error'   => "No data to be processed",
             ];
         }
 

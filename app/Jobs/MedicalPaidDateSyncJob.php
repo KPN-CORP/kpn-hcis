@@ -37,6 +37,7 @@ class MedicalPaidDateSyncJob implements ShouldQueue
             Log::error('MedicalPaidDateSyncJob gagal', [
                 'coverage_id' => $this->id,
                 'error'       => $result['error'] ?? null,
+                'result'      => $result,
             ]);
 
             throw new RuntimeException('❌ MedicalPaidDateSyncJob gagal untuk coverage ' . $this->id);
