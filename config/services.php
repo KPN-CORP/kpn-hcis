@@ -43,4 +43,10 @@ return [
         'api_access_token_key' => env('ELOG_API_ACCESS_TOKEN_KEY', 'elog_api_access_token'),
     ],
 
+    'odata' => [
+        'api_base_url' => env('ODATA_API_BASE_URL'),
+        'api_username' => env('ODATA_API_USERNAME'),
+        'api_password' => env('ODATA_API_PASSWORD'),
+    ],
+
 ];

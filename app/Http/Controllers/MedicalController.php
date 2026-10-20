@@ -39,6 +39,7 @@ use App\Mail\MedicalNotification;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\ConnectionException;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
+use App\Jobs\MedicalPaidDateSyncJob;
 
 class MedicalController extends Controller
 {
@@ -181,40 +182,7 @@ class MedicalController extends Controller
 
             $item->usage_id = $usageId;
 
-            return $item;
-        });
-
-        $url =
-            "https://dsmprd-gm.gamasap.com:44300/sap/opu/odata/sap/ZCDS_MED_CLAIM_CDS/ZCDS_MED_CLAIM";
-
-        $filter = "\$filter=(NIK%20eq%20%27{$employee_id}%27)";
-        $params = "?$filter&\$format=json";
-
-        try {
-            $response = Http::withBasicAuth("GPFN-FICOFM", "Kpn@2023")
-                ->timeout(2)
-                ->connectTimeout(1)
-                ->withHeaders([
-                    "Accept" => "application/json",
-                ])
-                ->get($url . $params);
-        } catch (ConnectionException $e) {
-            $response = null;
-        }
-
-        $results = [];
-
-        if ($response && $response->successful()) {
-            $data = $response->json();
-            $results = $data["d"]["results"] ?? [];
-        }
-
-        $sapIndex = collect($results)->keyBy("Hcis_Id");
-
-        $medical->transform(function ($item) use ($sapIndex) {
-            $sapData = $sapIndex->get($item->no_medic);
-
-            $item->paid_date = $sapData["Paid_date"] ?? null;
+            MedicalPaidDateSyncJob::dispatch($usageId);
 
             return $item;
         });
