@@ -12,6 +12,16 @@ abstract class BaseDTO {
         );
     }
 
+    public function toUrlEncode(bool $withQuestionMark = false): string {
+        $query = http_build_query($this->toArray());
+
+        if ($query === '') {
+            return '';
+        }
+
+        return ($withQuestionMark ? '?' : '') . $query;
+    }
+
     public function toUpperCaseArray(): array
     {
         return collect($this->toArray())

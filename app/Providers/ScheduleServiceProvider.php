@@ -36,6 +36,7 @@ class ScheduleServiceProvider extends ServiceProvider
         $schedule->command('medical:remaining-plafond')->dailyAt('08:00');
         $schedule->command('ca:declaration-reminder')->dailyAt('08:00')->withoutOverlapping();
         $schedule->command('bt:declaration-reminder')->dailyAt('08:00')->withoutOverlapping();
+        $schedule->command('medical:paid-date-sync')->dailyAt('00:15')->withoutOverlapping();
 
         $queue = config('queue.hcis_queue', 'kpn-hcis');
 
