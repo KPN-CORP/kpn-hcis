@@ -17,11 +17,11 @@ class ODataMedicalClaimResponseResultItemDTO extends BaseDTO {
         return new self(
             company_code: $response['Company_code'] ?? '',
             nik: $response['NIK'] ?? '',
-            cust_code:: $response['cust_code'] ?? '',
-            paid_date:: $response['Paid_date'] ?? '',
-            hcis_id:: $response['Hcis_Id'] ?? '',
+            cust_code: $response['cust_code'] ?? '',
+            paid_date: $response['Paid_date'] ?? '',
+            hcis_id: $response['Hcis_Id'] ?? '',
             curr: $response['Curr'] ?? '',
-            amount:: $response['Amount'] ?? '',
+            amount: $response['Amount'] ?? '',
         );
     }
 }

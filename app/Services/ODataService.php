@@ -87,13 +87,29 @@ class ODataService {
         if (!$resData || !$resData->d || empty($resData->d) || !$resData->d->results || empty($resData->d->results)) {
             return [
                 'status' => false,
-                'message'  => "failed",
+                'message'  => "No data to be processed",
                 'data'    => $resData,
                 'error'   => null,
             ];
         }
 
-        // TODO
+        foreach ($resData->d->results as $row) {
+            if (!$row || !$row->hcis_id || !$row->nik || !$row->paid_date) {
+                continue;
+            }
+
+            if ($row->hcis_id != $medicalData->no_medic || $row->nik != $employeeID) {
+                continue;
+            }
+
+            $paidDate = Carbon::createFromFormat('Ymd', $row->paid_date)
+                ->startOfDay()
+                ->toDateTimeString();
+
+            $medicalData->paid_date = $paidDate;
+
+            $medicalData->save();
+        }
 
         return [
             'status' => true,
