@@ -290,6 +290,7 @@
     @include('js.hcis.common.reimbursements')
     @include('js.hcis.common.perdiem')
     @include('js.hcis.common.req')
+    @include('js.hcis.common.transportHub')
     @include('hcis.reimbursements.cashadv.navigation.modalCashadv')
 @endsection
 <!-- Tambahkan script JavaScript untuk mengumpulkan nilai repeat_days[] -->
