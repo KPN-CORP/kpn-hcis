@@ -344,7 +344,7 @@ class ImportHealthCoverage implements ToModel
             $healthCoverage->balance_uncoverage = 0;
         }
 
-        if ($healthCoverage->company_covered_amount && !empty($healthCoverage->company_covered_amount) && $healthCoverage->company_covered_amount != null && $healthCoverage->company_covered_amount > 0) {
+        if ($healthCoverage->company_covered_amount && $healthCoverage->company_covered_amount != null) {
             $healthPlanBalance = $initialBalance - $healthCoverage->company_covered_amount;
         }
 
