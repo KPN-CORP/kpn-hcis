@@ -155,7 +155,7 @@ class ImportHealthCoverage implements ToModel
         $companyCoveredAmount = null;
         $billingType = null;
 
-        if (array_key_exists(14, $row) && !empty($row[14]) && is_numeric($row[14])) {
+        if (array_key_exists(14, $row) && is_numeric($row[14])) {
             $employeeCoveredAmount = $row[14];
 
             if ($employeeCoveredAmount < 0) {
@@ -163,7 +163,7 @@ class ImportHealthCoverage implements ToModel
             }
         }
 
-        if (array_key_exists(15, $row) && !empty($row[15]) && is_numeric($row[15])) {
+        if (array_key_exists(15, $row) && is_numeric($row[15])) {
             $companyCoveredAmount = $row[15];
 
             if ($companyCoveredAmount < 0) {
@@ -171,7 +171,7 @@ class ImportHealthCoverage implements ToModel
             }
         }
 
-        if (array_key_exists(16, $row) && !empty($row[16]) && is_numeric($row[16])) {
+        if (array_key_exists(16, $row) && !empty($row[16])) {
             $billingType = $row[16];
 
             if (!in_array($billingType, ['Reimbursement', 'Non Reimbursement'], true)) {
