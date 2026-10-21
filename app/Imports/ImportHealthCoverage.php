@@ -263,6 +263,7 @@ class ImportHealthCoverage implements ToModel
                     ->first();
                 if ($existMedicalHospital) {
                     $healthCoverage->billing_type = "Non Reimbursement";
+                    $healthCoverage->elog_vendor = $existMedicalHospital->vendor_code;
                 }
             }
 

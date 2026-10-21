@@ -55,6 +55,7 @@ class HealthCoverage extends Model
         'employee_covered_amount',
         'company_covered_amount',
         'elog_medical_type',
+        'elog_vendor',
         'billing_type'
     ];
 
