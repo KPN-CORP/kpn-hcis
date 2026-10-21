@@ -327,23 +327,28 @@ class ImportHealthCoverage implements ToModel
         }
 
         $initialBalance = $healthPlan->balance;
-
-        // if ($initialBalance > 0) {
-        $healthPlan->balance -= $healthCoverage->balance;
-        // }
+        $healthPlanBalance = $initialBalance - $healthCoverage->balance;
 
         if ($initialBalance >= 0 && $healthCoverage->balance > $initialBalance) {
             $healthCoverage->balance_uncoverage = $healthCoverage->balance - $initialBalance;
-            $healthCoverage->employee_covered_amount = $healthCoverage->balance_uncoverage;
-            $healthCoverage->company_covered_amount = $initialBalance;
+            // if (!$healthCoverage->employee_covered_amount || empty($healthCoverage->employee_covered_amount) || $healthCoverage->employee_covered_amount == 0) {
+            //     $healthCoverage->employee_covered_amount = $healthCoverage->balance_uncoverage;
+            // }
+            // if (!$healthCoverage->company_covered_amount || empty($healthCoverage->company_covered_amount) || $healthCoverage->company_covered_amount == 0) {
+            //     $healthCoverage->company_covered_amount = $initialBalance;
+            // }
         } elseif ($initialBalance < 0) {
             $healthCoverage->balance_uncoverage = $healthCoverage->balance;
-            $healthCoverage->employee_covered_amount = $healthCoverage->balance_uncoverage;
+            // $healthCoverage->employee_covered_amount = $healthCoverage->balance_uncoverage;
         } else {
             $healthCoverage->balance_uncoverage = 0;
         }
 
-        // dd($healthPlan->balance);
+        if ($healthCoverage->company_covered_amount && !empty($healthCoverage->company_covered_amount) && $healthCoverage->company_covered_amount != null && $healthCoverage->company_covered_amount > 0) {
+            $healthPlanBalance = $initialBalance - $healthCoverage->company_covered_amount;
+        }
+
+        $healthPlan->balance = $healthPlanBalance;
 
         $totalUsage = HealthCoverage::where("employee_id", $employee->employee_id)
             ->where("period", $healthCoverage->period)
