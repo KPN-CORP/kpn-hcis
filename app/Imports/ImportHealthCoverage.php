@@ -252,22 +252,20 @@ class ImportHealthCoverage implements ToModel
         $groupedRecords = collect($this->batchRecords)->groupBy("employee_id");
 
         foreach ($this->batchRecords as $healthCoverage) {
-            if (!$healthCoverage->billing_type || $healthCoverage->billing_type == null) {
-                $hospitalName = $healthCoverage->hospital_name ?? '';
+            $hospitalName = $healthCoverage->hospital_name ?? '';
 
-                $existMedicalHospital = MedicalHospital::where('is_active', true)
-                    ->where(function ($q) use ($hospitalName) {
-                        $q->where('hospital_name', $hospitalName)
-                          ->orWhereRaw('LOWER(hospital_name) = ?', [strtolower($hospitalName)]);
-                    })
-                    ->first();
-                Log::info("hospitalName = " . $hospitalName);
-                Log::info("existMedicalHospital = " . $existMedicalHospital);
-                if ($existMedicalHospital) {
-                    Log::info("existMedicalHospital = EXIST");
+            $existMedicalHospital = MedicalHospital::where('is_active', true)
+                ->where(function ($q) use ($hospitalName) {
+                    $q->where('hospital_name', $hospitalName)
+                      ->orWhereRaw('LOWER(hospital_name) = ?', [strtolower($hospitalName)]);
+                })
+                ->first();
+            if ($existMedicalHospital) {
+                $healthCoverage->elog_vendor = $existMedicalHospital->vendor_code;
+
+                if (!$healthCoverage->billing_type || $healthCoverage->billing_type == null) {
                     $healthCoverage->billing_type = "Non Reimbursement";
                     $healthCoverage->elog_medical_type = "Non Reimbursement";
-                    $healthCoverage->elog_vendor = $existMedicalHospital->vendor_code;
                 }
             }
 
