@@ -20,6 +20,7 @@ use App\Mail\MedicalNotification;
 use App\Mail\MedicalOverPlafondNotification;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Jobs\ELogInsertFirstReceiptJob;
 
 class ImportHealthCoverage implements ToModel
 {
@@ -379,5 +380,9 @@ class ImportHealthCoverage implements ToModel
     private function calculateBalance(HealthCoverage $healthCoverage)
     {
         $healthCoverage->save();
+
+        if ($healthCoverage->status == "Done") {
+            ELogInsertFirstReceiptJob::dispatch($healthCoverage->usage_id);
+        }
     }
 }
