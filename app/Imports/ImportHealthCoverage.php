@@ -266,8 +266,9 @@ class ImportHealthCoverage implements ToModel
 
                 if (!$healthCoverage->billing_type || $healthCoverage->billing_type == null) {
                     $healthCoverage->billing_type = "Non Reimbursement";
-                    $healthCoverage->elog_medical_type = "Non Reimbursement";
                 }
+
+                $healthCoverage->elog_medical_type = $healthCoverage->billing_type;
             }
 
             $this->performCalculations($healthCoverage); // Perhitungan hanya dilakukan di sini
