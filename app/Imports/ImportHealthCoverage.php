@@ -262,8 +262,12 @@ class ImportHealthCoverage implements ToModel
                           ->orWhereRaw('LOWER(hospital_name) = ?', [strtolower($hospitalName)]);
                     })
                     ->first();
+                Log::info("hospitalName = " . $hospitalName);
+                Log::info("existMedicalHospital = " . $existMedicalHospital);
                 if ($existMedicalHospital) {
+                    Log::info("existMedicalHospital = EXIST");
                     $healthCoverage->billing_type = "Non Reimbursement";
+                    $healthCoverage->elog_medical_type = "Non Reimbursement";
                     $healthCoverage->elog_vendor = $existMedicalHospital->vendor_code;
                 }
             }
@@ -333,20 +337,13 @@ class ImportHealthCoverage implements ToModel
 
         if ($initialBalance >= 0 && $healthCoverage->balance > $initialBalance) {
             $healthCoverage->balance_uncoverage = $healthCoverage->balance - $initialBalance;
-            // if (!$healthCoverage->employee_covered_amount || empty($healthCoverage->employee_covered_amount) || $healthCoverage->employee_covered_amount == 0) {
-            //     $healthCoverage->employee_covered_amount = $healthCoverage->balance_uncoverage;
-            // }
-            // if (!$healthCoverage->company_covered_amount || empty($healthCoverage->company_covered_amount) || $healthCoverage->company_covered_amount == 0) {
-            //     $healthCoverage->company_covered_amount = $initialBalance;
-            // }
         } elseif ($initialBalance < 0) {
             $healthCoverage->balance_uncoverage = $healthCoverage->balance;
-            // $healthCoverage->employee_covered_amount = $healthCoverage->balance_uncoverage;
         } else {
             $healthCoverage->balance_uncoverage = 0;
         }
 
-        if ($healthCoverage->company_covered_amount != null) {
+        if ($healthCoverage->company_covered_amount !== null) {
             $healthPlanBalance = $initialBalance - $healthCoverage->company_covered_amount;
         }
 
