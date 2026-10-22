@@ -213,6 +213,8 @@ class ELogService {
         }
 
         $medicalData->elog_insert_first_receipt_sync_date = $today;
+        $medicalData->doc_status_previous = $medicalData->doc_status;
+        $medicalData->doc_status = "Processing Payment";
 
         $medicalData->save();
 
