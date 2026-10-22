@@ -634,6 +634,18 @@ class MedicalController extends Controller
                 $hospital_name = $request->others_hospital_name;
             }
 
+            $elogVendor = null;
+
+            $existMedicalHospital = MedicalHospital::where('is_active', true)
+                ->where(function ($q) use ($hospital_name) {
+                    $q->where('hospital_name', $hospital_name)
+                      ->orWhereRaw('LOWER(hospital_name) = ?', [strtolower($hospital_name)]);
+                })
+                ->first();
+            if ($existMedicalHospital) {
+                $elogVendor = $existMedicalHospital->vendor_code;
+            }
+
             $healthCoverage = HealthCoverage::create([
                 "usage_id" => (string) Str::uuid(),
                 "employee_id" => $employee_id,
@@ -654,7 +666,10 @@ class MedicalController extends Controller
                 "medical_proof" => $medical_proof_path,
                 "reason" => $request->reason,
                 "doc_status" => $docStatusValue,
-                "doc_status_previous" => $docStatusValue
+                "doc_status_previous" => $docStatusValue,
+                "billing_type" => "Reimbursement",
+                "elog_medical_type" => "Reimbursement",
+                "elog_vendor" => $elogVendor
             ]);
 
             // dd($employee_id);
@@ -923,6 +938,18 @@ class MedicalController extends Controller
             $hospital_name = $request->others_hospital_name;
         }
 
+        $elogVendor = null;
+
+        $existMedicalHospital = MedicalHospital::where('is_active', true)
+            ->where(function ($q) use ($hospital_name) {
+                $q->where('hospital_name', $hospital_name)
+                  ->orWhereRaw('LOWER(hospital_name) = ?', [strtolower($hospital_name)]);
+            })
+            ->first();
+        if ($existMedicalHospital) {
+            $elogVendor = $existMedicalHospital->vendor_code;
+        }
+
         // Update common fields for all records with the same no_medic
         $commonUpdateData = [
             "no_invoice" => $request->no_invoice,
@@ -996,6 +1023,9 @@ class MedicalController extends Controller
                         "rejected_by" => null,
                         "is_revise" => false,
                         "revise_info" => null,
+                        "billing_type" => "Reimbursement",
+                        "elog_medical_type" => "Reimbursement",
+                        "elog_vendor" => $elogVendor
                     ]),
                 );
             }
