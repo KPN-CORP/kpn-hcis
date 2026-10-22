@@ -193,6 +193,8 @@ class ImportHealthCoverage implements ToModel
             "approved_by" => $employee->employee_id,
             "created_at" => now(),
             "approved_at" => now(),
+            "doc_status" => "Reimbursement Approved",
+            "doc_status_previous" => "Reimbursement Approved"
         ]);
 
         $this->batchRecords[] = $healthCoverage;
@@ -277,7 +279,7 @@ class ImportHealthCoverage implements ToModel
     {
         $healthCoverage->save();
 
-        if ($healthCoverage->status == "Done") {
+        if ($healthCoverage->status == "Done" || $healthCoverage->doc_status == "Reimbursement Approved") {
             ELogInsertFirstReceiptJob::dispatch($healthCoverage->usage_id);
         }
     }

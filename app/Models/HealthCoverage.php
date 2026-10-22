@@ -48,7 +48,9 @@ class HealthCoverage extends Model
         'elog_vendor',
         'elog_medical_type',
         'elog_insert_first_receipt_sync_date',
-        'paid_date'
+        'paid_date',
+        'doc_status',
+        'doc_status_previous'
     ];
 
     public function employee()
