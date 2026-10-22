@@ -84,6 +84,7 @@ class MedicalController extends Controller
             "verif_by",
             "balance_verif",
             "approved_by",
+            DB::raw("DATE_FORMAT(paid_date, '%Y-%m-%d') as paid_date"),
             DB::raw(
                 'SUM(CASE WHEN medical_type = "Maternity" THEN balance ELSE 0 END) as maternity_total',
             ),
@@ -111,6 +112,7 @@ class MedicalController extends Controller
                 "verif_by",
                 "balance_verif",
                 "approved_by",
+                "paid_date"
             )
             ->orderBy("latest_created_at", "desc")
             ->get();
