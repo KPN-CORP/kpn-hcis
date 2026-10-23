@@ -12,6 +12,21 @@
     z-index: 9999;
 }
 
+// Fail-safe for the initial page-load overlay: if the page JS never runs (a
+// missing bundle, a script error) nothing would remove it and an already
+// rendered page stays hidden behind it. showLoader()/hideLoader() strip this
+// class, so AJAX spinners are never auto-hidden.
+#preloader.preloader--initial {
+    animation: preloader-failsafe 1s linear 3s forwards;
+}
+
+@keyframes preloader-failsafe {
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
 #status {
     width: 80px;
     height: 80px;
