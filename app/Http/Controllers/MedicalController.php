@@ -2252,100 +2252,180 @@ class MedicalController extends Controller
         ]);
     }
 
+    // ===================================================================
+    // LEGACY - diganti oleh medicalReportAdmin() di bawah.
+    // Disimpan utuh sebagai pembanding. Versi ini:
+    //  - memuat SELURUH mdc_transactions (43.472 baris model Eloquent)
+    //    ke memori lalu groupBy di PHP, walau tabelnya tidak dirender
+    //    sama sekali ketika belum ada filter (~1,2 dtk, 246 MB);
+    //  - memuat mdc_plans tahun berjalan untuk membangun $balances yang
+    //    tidak pernah dipakai view;
+    //  - eager-load tiga relasi Employee yang tidak pernah dibaca view.
+    // Jangan dipakai lagi.
+    // ===================================================================
+//    public function medicalReportAdmin(Request $request)
+//    {
+//        ini_set("max_execution_time", 300);
+//
+//        $parentLink = "Reimbursement";
+//        $link = "Medical Data Employee";
+//        $userId = Auth::id();
+//        $companies = Company::orderBy("contribution_level")->get();
+//
+//        $currentYear = date("Y");
+//
+//        $med_employee = collect();
+//        $hasFilter = false;
+//        $medicalGroup = [];
+//
+//        $userRole = auth()->user()->roles->last();
+//        $roleRestriction = json_decode($userRole->restriction, true);
+//        $restrictedWorkAreas = $roleRestriction["work_area_code"] ?? [];
+//        $restrictedGroupCompanies = $roleRestriction["group_company"] ?? [];
+//
+//        $healthCoverageQuery = HealthCoverage::query();
+//
+//        // Filter berdasarkan start_date dan end_date hanya untuk HealthCoverage
+//        if (request()->get("start_date") == "") {
+//        } else {
+//            if (
+//                $request->has(["start_date", "end_date"]) &&
+//                $request->input("start_date") != "" &&
+//                $request->input("end_date") != ""
+//            ) {
+//                $startDate = $request->input("start_date");
+//                $endDate = Carbon::parse($request->input("end_date"))->addDay();
+//                $healthCoverageQuery->whereBetween("created_at", [
+//                    $startDate,
+//                    $endDate,
+//                ]);
+//                $hasFilter = true;
+//            }
+//        }
+//
+//        if (request()->get("statusMDC") == "") {
+//        } else {
+//            if (
+//                $request->has("statusMDC") &&
+//                $request->input("statusMDC") !== ""
+//            ) {
+//                $statusMDC = $request->input("statusMDC");
+//                $healthCoverageQuery->where("status", $statusMDC);
+//                $hasFilter = true;
+//            }
+//        }
+//
+//        $medicalGroup = $healthCoverageQuery->get()->groupBy("employee_id");
+//
+//        $query = Employee::with([
+//            "employee",
+//            "statusReqEmployee",
+//            "statusSettEmployee",
+//        ]);
+//
+//        if (request()->get("stat") == "") {
+//        } else {
+//            if ($request->has("stat") && $request->input("stat") !== "") {
+//                $status = $request->input("stat");
+//                $query->where("group_company", $status);
+//                $hasFilter = true;
+//            }
+//        }
+//
+//        if (request()->get("unit") == "") {
+//        } else {
+//            if ($request->has("unit") && $request->input("unit") !== "") {
+//                $unit = $request->input("unit");
+//                $query->where("work_area_code", $unit);
+//                $hasFilter = true;
+//            }
+//        }
+//
+//        if (request()->get("customsearch") == "") {
+//        } else {
+//            if (
+//                $request->has("customsearch") &&
+//                $request->input("customsearch") !== ""
+//            ) {
+//                $customsearch = $request->input("customsearch");
+//                $query->where("fullname", "LIKE", "%" . $customsearch . "%");
+//                $hasFilter = true;
+//            }
+//        }
+//
+//        if (!empty($restrictedWorkAreas)) {
+//            // Tambahkan filter whereIn pada work_area_code jika ada restriction
+//            $query->whereIn("work_area_code", $restrictedWorkAreas);
+//            // dd($restrictedWorkAreas);
+//            $locations = Location::orderBy("area")
+//                ->whereIn("work_area", $restrictedWorkAreas)
+//                ->get();
+//        } else {
+//            $locations = Location::orderBy("area")->get();
+//        }
+//
+//        if (!empty($restrictedGroupCompanies)) {
+//            $unit = MasterBusinessUnit::whereIn(
+//                "nama_bisnis",
+//                $restrictedGroupCompanies,
+//            )->get();
+//        } else {
+//            $unit = MasterBusinessUnit::get(); // Jika tidak ada restriction, ambil semua
+//        }
+//
+//        if ($hasFilter) {
+//            $med_employee = $query->orderBy("created_at", "desc")->get();
+//        }
+//
+//        $medical_plans = HealthPlan::where("period", $currentYear)->get();
+//
+//        $balances = [];
+//        foreach ($medical_plans as $plan) {
+//            $balances[$plan->employee_id][$plan->medical_type] = $plan->balance;
+//        }
+//
+//        // foreach ($med_employee as $transaction) {
+//        //     $transaction->ReqName = $transaction->statusReqEmployee ? $transaction->statusReqEmployee->fullname : '';
+//        //     $transaction->settName = $transaction->statusSettEmployee ? $transaction->statusSettEmployee->fullname : '';
+//
+//        //     $employeeMedicalPlan = $medical_plans->where('employee_id', $transaction->employee_id)->first();
+//        //     $transaction->period = $employeeMedicalPlan ? $employeeMedicalPlan->period : '-';
+//
+//        //     if (isset($medicalGroup[$transaction->employee_id])) {
+//        //         $transaction->medical_coverage = $medicalGroup[$transaction->employee_id];
+//        //     }
+//        // }
+//
+//        return view("hcis.reimbursements.medical.admin.reportMedicalAdmin", [
+//            "link" => $link,
+//            "parentLink" => $parentLink,
+//            "userId" => $userId,
+//            "med_employee" => $med_employee,
+//            "companies" => $companies,
+//            "locations" => $locations,
+//            "master_medical" => MasterMedical::where("active", "T")->get(),
+//            "balances" => $balances, // Kirim balances ke view
+//            "unit" => $unit,
+//            "medicalGroup" => $medicalGroup,
+//            "userRole" => $userRole,
+//            "roleRestriction" => $roleRestriction,
+//            "restrictedWorkAreas" => $restrictedWorkAreas,
+//        ]);
+//    }
+
     public function medicalReportAdmin(Request $request)
     {
-        ini_set("max_execution_time", 300);
-
         $parentLink = "Reimbursement";
         $link = "Medical Data Employee";
         $userId = Auth::id();
         $companies = Company::orderBy("contribution_level")->get();
-
-        $currentYear = date("Y");
-
-        $med_employee = collect();
-        $hasFilter = false;
-        $medicalGroup = [];
 
         $userRole = auth()->user()->roles->last();
         $roleRestriction = json_decode($userRole->restriction, true);
         $restrictedWorkAreas = $roleRestriction["work_area_code"] ?? [];
         $restrictedGroupCompanies = $roleRestriction["group_company"] ?? [];
 
-        $healthCoverageQuery = HealthCoverage::query();
-
-        // Filter berdasarkan start_date dan end_date hanya untuk HealthCoverage
-        if (request()->get("start_date") == "") {
-        } else {
-            if (
-                $request->has(["start_date", "end_date"]) &&
-                $request->input("start_date") != "" &&
-                $request->input("end_date") != ""
-            ) {
-                $startDate = $request->input("start_date");
-                $endDate = Carbon::parse($request->input("end_date"))->addDay();
-                $healthCoverageQuery->whereBetween("created_at", [
-                    $startDate,
-                    $endDate,
-                ]);
-                $hasFilter = true;
-            }
-        }
-
-        if (request()->get("statusMDC") == "") {
-        } else {
-            if (
-                $request->has("statusMDC") &&
-                $request->input("statusMDC") !== ""
-            ) {
-                $statusMDC = $request->input("statusMDC");
-                $healthCoverageQuery->where("status", $statusMDC);
-                $hasFilter = true;
-            }
-        }
-
-        $medicalGroup = $healthCoverageQuery->get()->groupBy("employee_id");
-
-        $query = Employee::with([
-            "employee",
-            "statusReqEmployee",
-            "statusSettEmployee",
-        ]);
-
-        if (request()->get("stat") == "") {
-        } else {
-            if ($request->has("stat") && $request->input("stat") !== "") {
-                $status = $request->input("stat");
-                $query->where("group_company", $status);
-                $hasFilter = true;
-            }
-        }
-
-        if (request()->get("unit") == "") {
-        } else {
-            if ($request->has("unit") && $request->input("unit") !== "") {
-                $unit = $request->input("unit");
-                $query->where("work_area_code", $unit);
-                $hasFilter = true;
-            }
-        }
-
-        if (request()->get("customsearch") == "") {
-        } else {
-            if (
-                $request->has("customsearch") &&
-                $request->input("customsearch") !== ""
-            ) {
-                $customsearch = $request->input("customsearch");
-                $query->where("fullname", "LIKE", "%" . $customsearch . "%");
-                $hasFilter = true;
-            }
-        }
-
         if (!empty($restrictedWorkAreas)) {
-            // Tambahkan filter whereIn pada work_area_code jika ada restriction
-            $query->whereIn("work_area_code", $restrictedWorkAreas);
-            // dd($restrictedWorkAreas);
             $locations = Location::orderBy("area")
                 ->whereIn("work_area", $restrictedWorkAreas)
                 ->get();
@@ -2362,28 +2442,12 @@ class MedicalController extends Controller
             $unit = MasterBusinessUnit::get(); // Jika tidak ada restriction, ambil semua
         }
 
-        if ($hasFilter) {
-            $med_employee = $query->orderBy("created_at", "desc")->get();
-        }
-
-        $medical_plans = HealthPlan::where("period", $currentYear)->get();
-
-        $balances = [];
-        foreach ($medical_plans as $plan) {
-            $balances[$plan->employee_id][$plan->medical_type] = $plan->balance;
-        }
-
-        // foreach ($med_employee as $transaction) {
-        //     $transaction->ReqName = $transaction->statusReqEmployee ? $transaction->statusReqEmployee->fullname : '';
-        //     $transaction->settName = $transaction->statusSettEmployee ? $transaction->statusSettEmployee->fullname : '';
-
-        //     $employeeMedicalPlan = $medical_plans->where('employee_id', $transaction->employee_id)->first();
-        //     $transaction->period = $employeeMedicalPlan ? $employeeMedicalPlan->period : '-';
-
-        //     if (isset($medicalGroup[$transaction->employee_id])) {
-        //         $transaction->medical_coverage = $medicalGroup[$transaction->employee_id];
-        //     }
-        // }
+        // Baris tabel diambil per halaman lewat medicalReportAdminData()
+        // (DataTables server-side). Versi sebelumnya merender 12.590 baris
+        // sekaligus (HTML ~53 MB) dan memuat seluruh mdc_transactions ke
+        // memori. Keduanya dikirim kosong supaya kontrak view tidak berubah.
+        $med_employee = collect();
+        $medicalGroup = [];
 
         return view("hcis.reimbursements.medical.admin.reportMedicalAdmin", [
             "link" => $link,
@@ -2393,13 +2457,282 @@ class MedicalController extends Controller
             "companies" => $companies,
             "locations" => $locations,
             "master_medical" => MasterMedical::where("active", "T")->get(),
-            "balances" => $balances, // Kirim balances ke view
+            // $balances tidak pernah dipakai view.
+            "balances" => [],
             "unit" => $unit,
             "medicalGroup" => $medicalGroup,
             "userRole" => $userRole,
             "roleRestriction" => $roleRestriction,
             "restrictedWorkAreas" => $restrictedWorkAreas,
         ]);
+    }
+
+    /**
+     * Query dasar tabel "Medical Data Employee".
+     *
+     * Versi lama membangun tabel dari dua loop bersarang di Blade (karyawan x
+     * transaksinya). Di sini hubungan itu dinyatakan sebagai JOIN supaya bisa
+     * di-page di sisi server.
+     *
+     * Mengembalikan [builder, hasFilter]. Sama seperti versi lama, tanpa satu
+     * pun filter tabelnya memang tidak menampilkan baris.
+     */
+    private function medicalReportJoinedQuery(Request $request): array
+    {
+        $roleRestriction = json_decode(
+            auth()->user()->roles->last()->restriction,
+            true,
+        );
+        $restrictedWorkAreas = $roleRestriction["work_area_code"] ?? [];
+
+        $hasFilter = false;
+
+        $query = Employee::query()
+            ->join("mdc_transactions", function ($join) {
+                $join
+                    ->on(
+                        "mdc_transactions.employee_id",
+                        "=",
+                        "employees.employee_id",
+                    )
+                    // HealthCoverage memakai SoftDeletes; join manual harus
+                    // menerapkan scope-nya sendiri.
+                    ->whereNull("mdc_transactions.deleted_at");
+            })
+            ->select(
+                "employees.employee_id",
+                "employees.fullname",
+                "employees.company_name",
+                "mdc_transactions.usage_id",
+                "mdc_transactions.created_at",
+                "mdc_transactions.no_medic",
+                "mdc_transactions.no_invoice",
+                "mdc_transactions.hospital_name",
+                "mdc_transactions.patient_name",
+                "mdc_transactions.disease",
+                "mdc_transactions.medical_type",
+                "mdc_transactions.balance",
+                "mdc_transactions.status",
+            );
+
+        // --- filter transaksi ---
+        if (
+            $request->filled("start_date") &&
+            $request->filled("end_date")
+        ) {
+            $query->whereBetween("mdc_transactions.created_at", [
+                $request->input("start_date"),
+                Carbon::parse($request->input("end_date"))->addDay(),
+            ]);
+            $hasFilter = true;
+        }
+
+        if ($request->filled("statusMDC")) {
+            $query->where(
+                "mdc_transactions.status",
+                $request->input("statusMDC"),
+            );
+            $hasFilter = true;
+        }
+
+        // --- filter karyawan ---
+        if ($request->filled("stat")) {
+            $query->where(
+                "employees.group_company",
+                $request->input("stat"),
+            );
+            $hasFilter = true;
+        }
+
+        if ($request->filled("unit")) {
+            $query->where(
+                "employees.work_area_code",
+                $request->input("unit"),
+            );
+            $hasFilter = true;
+        }
+
+        if ($request->filled("customsearch")) {
+            $query->where(
+                "employees.fullname",
+                "LIKE",
+                "%" . $request->input("customsearch") . "%",
+            );
+            $hasFilter = true;
+        }
+
+        if (!empty($restrictedWorkAreas)) {
+            $query->whereIn(
+                "employees.work_area_code",
+                $restrictedWorkAreas,
+            );
+        }
+
+        return [$query, $hasFilter];
+    }
+
+    /**
+     * Sumber data DataTables server-side untuk tabel "Medical Data Employee".
+     */
+    public function medicalReportAdminData(Request $request)
+    {
+        [$query, $hasFilter] = $this->medicalReportJoinedQuery($request);
+
+        $draw = (int) $request->input("draw", 0);
+        $masterMedical = MasterMedical::where("active", "T")->get();
+
+        // Tanpa filter, dan ketika Unit Location di-set '-', versi lama tidak
+        // menampilkan baris apa pun. Perilaku itu dipertahankan.
+        if (!$hasFilter || $request->input("stat") === "-") {
+            return response()->json([
+                "draw" => $draw,
+                "recordsTotal" => 0,
+                "recordsFiltered" => 0,
+                "data" => [],
+            ]);
+        }
+
+        $recordsTotal = (clone $query)->count();
+
+        $search = trim((string) $request->input("search.value", ""));
+        if ($search !== "") {
+            $query->where(function ($q) use ($search) {
+                foreach (
+                    [
+                        "employees.fullname",
+                        "employees.company_name",
+                        "mdc_transactions.no_medic",
+                        "mdc_transactions.no_invoice",
+                        "mdc_transactions.hospital_name",
+                        "mdc_transactions.patient_name",
+                        "mdc_transactions.disease",
+                        "mdc_transactions.medical_type",
+                        "mdc_transactions.status",
+                    ]
+                    as $column
+                ) {
+                    $q->orWhere($column, "like", "%" . $search . "%");
+                }
+            });
+        }
+
+        $recordsFiltered =
+            $search === "" ? $recordsTotal : (clone $query)->count();
+
+        // Kolom 0 adalah nomor urut, 10..13 nilai per jenis medical, 15 aksi:
+        // tidak bisa diurutkan di SQL.
+        $sortable = [
+            1 => "mdc_transactions.created_at",
+            2 => "mdc_transactions.no_medic",
+            3 => "mdc_transactions.no_invoice",
+            4 => "mdc_transactions.hospital_name",
+            5 => "employees.company_name",
+            6 => "employees.fullname",
+            7 => "mdc_transactions.patient_name",
+            8 => "mdc_transactions.disease",
+            9 => "mdc_transactions.medical_type",
+        ];
+        $statusIdx = 10 + $masterMedical->count();
+        $orderColumn = (int) $request->input("order.0.column", -1);
+        $orderDir =
+            strtolower($request->input("order.0.dir", "asc")) === "desc"
+                ? "desc"
+                : "asc";
+
+        if ($orderColumn === $statusIdx) {
+            $query->orderBy("mdc_transactions.status", $orderDir);
+        } elseif (isset($sortable[$orderColumn])) {
+            $query->orderBy($sortable[$orderColumn], $orderDir);
+        } else {
+            // Urutan bawaan versi lama: karyawan terbaru dulu.
+            $query->orderBy("employees.created_at", "desc");
+        }
+
+        // Tiebreaker wajib: tanpa ini urutan baris dengan created_at sama
+        // tidak stabil antar halaman, sehingga baris bisa terlewat atau
+        // muncul dua kali saat paging.
+        $query
+            ->orderBy("employees.employee_id")
+            ->orderBy("mdc_transactions.usage_id");
+
+        $start = max(0, (int) $request->input("start", 0));
+        $length = (int) $request->input("length", 50);
+
+        if ($length > 0) {
+            $query->offset($start)->limit($length);
+        }
+
+        $rows = $query->get();
+
+        $data = [];
+        foreach ($rows as $i => $row) {
+            $data[] = $this->medicalReportRowCells(
+                $row,
+                $start + $i,
+                $masterMedical,
+            );
+        }
+
+        return response()->json([
+            "draw" => $draw,
+            "recordsTotal" => $recordsTotal,
+            "recordsFiltered" => $recordsFiltered,
+            "data" => $data,
+        ]);
+    }
+
+    /**
+     * Satu baris tabel "Medical Data Employee" sebagai array sel DataTables.
+     *
+     * $rowIndex adalah indeks global, jadi nomor urutnya berlanjut antar
+     * halaman (bukan mengulang dari 1 seperti bug $loop->iteration dulu).
+     */
+    private function medicalReportRowCells(
+        $row,
+        int $rowIndex,
+        $masterMedical
+    ): array {
+        $cells = [
+            (string) ($rowIndex + 1),
+            e($row->created_at),
+            e($row->no_medic),
+            e($row->no_invoice),
+            e($row->hospital_name),
+            e($row->company_name),
+            e($row->fullname),
+            e($row->patient_name),
+            e($row->disease),
+            e($row->medical_type),
+        ];
+
+        foreach ($masterMedical as $type) {
+            $cells[] =
+                $row->medical_type == $type->name
+                    ? "Rp. " . number_format((float) $row->balance, 0, ",", ".")
+                    : "Rp. 0";
+        }
+
+        $cells[] = e($row->status);
+
+        $noMedic = e($row->no_medic);
+        $cells[] =
+            '<form id="deleteForm_' .
+            $noMedic .
+            '" method="POST" action="' .
+            e(route("medicalReport-admin.delete", $row->usage_id)) .
+            '" style="display: inline-block;">' .
+            csrf_field() .
+            method_field("DELETE") .
+            '<input type="hidden" id="no_sppd_' .
+            $noMedic .
+            '" value="' .
+            $noMedic .
+            '">' .
+            '<button type="button" class="btn btn-outline-primary btn-sm rounded-pill delete-button" data-id="' .
+            $noMedic .
+            '"><i class="bi bi-trash-fill"></i></button></form>';
+
+        return $cells;
     }
 
     public function medicalAdminDetail(Request $request, $key)

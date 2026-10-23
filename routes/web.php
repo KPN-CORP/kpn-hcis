@@ -839,6 +839,11 @@ Route::middleware("auth")->group(function () {
             MedicalController::class,
             "medicalReportAdmin",
         ])->name("medical.report");
+        // Sumber data DataTables server-side untuk halaman di atas.
+        Route::get("/medical/report/data", [
+            MedicalController::class,
+            "medicalReportAdminData",
+        ])->name("medical.report.data");
         Route::get("/medical/confirmation", [
             MedicalController::class,
             "medicalAdminConfirmation",
