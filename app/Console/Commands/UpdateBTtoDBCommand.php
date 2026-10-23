@@ -14,7 +14,7 @@ class UpdateBTtoDBCommand extends Command
     public function handle()
     {
         Log::info('UpdateBTtoDBCommand started');
-        UpdateBTtoDBJob::dispatch()->onQueue('kpn-hcis');
+        UpdateBTtoDBJob::dispatch()->onQueue(config('queue.hcis_queue'));
         Log::info('UpdateBTtoDBJob dispatched');
 
         $this->info('Job dispatched successfully!');

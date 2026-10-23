@@ -14,6 +14,7 @@ return [
     */
 
     'default' => env('QUEUE_CONNECTION', 'database'),
+    'hcis_queue' => env('HCIS_QUEUE', 'kpn-hcis'),
 
     /*
     |--------------------------------------------------------------------------
