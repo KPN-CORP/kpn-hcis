@@ -843,6 +843,11 @@ Route::middleware("auth")->group(function () {
             MedicalController::class,
             "medicalAdminConfirmation",
         ])->name("medical.confirmation");
+        // Sumber data DataTables server-side untuk halaman di atas.
+        Route::get("/medical/confirmation/data", [
+            MedicalController::class,
+            "medicalAdminConfirmationData",
+        ])->name("medical.confirmation.data");
         Route::get("/medical/detail/{key}", [
             MedicalController::class,
             "medicalAdminDetail",
@@ -879,6 +884,11 @@ Route::middleware("auth")->group(function () {
             MedicalController::class,
             "medicalAdminTable",
         ])->name("medical-table.admin");
+        // Sumber data DataTables server-side untuk halaman di atas.
+        Route::get("/medical/admin/table/data", [
+            MedicalController::class,
+            "medicalAdminTableData",
+        ])->name("medical-table.admin.data");
         Route::get("/medical/admin/form-update/{id}", [
             MedicalController::class,
             "medicalAdminForm",

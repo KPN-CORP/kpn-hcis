@@ -36,6 +36,95 @@
     margin: -40px 0 0 -40px;
 }
 
+// Indikator "Processing..." DataTables (tabel server-side).
+//
+// Defaultnya DataTables 1.13.4 (dimuat dari CDN di link.blade.php) memakai
+// kotak kecil 200px dengan titik biru sendiri:
+//   div.dataTables_processing                        { width:200px; margin-left:-100px }
+//   div.dataTables_processing > div:last-child       { width:80px; height:15px }
+//   div.dataTables_processing > div:last-child > div { position:absolute; background:#0d6efd }
+//
+// Selector DataTables punya specificity yang sama (0,1,1) dengan selector
+// sederhana, dan app.css dimuat SEBELUM CSS DataTables di head-css.blade.php,
+// sehingga DataTables yang menang. Karena itu semua aturan di bawah memakai
+// specificity yang lebih tinggi.
+//
+// Markup yang disuntikkan lewat language.processing dibungkus .dt-loader,
+// supaya selector struktural DataTables (> div:last-child > div) mengenai
+// wrapper itu, bukan titik-titiknya. Titik (cucu) jadi tidak tersentuh sama
+// sekali dan tetap memakai style .bouncing-loader.
+.dataTables_wrapper,
+div.dt-container {
+    position: relative;
+}
+
+.dataTables_wrapper div.dataTables_processing,
+div.dt-container div.dt-processing {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: auto;
+    height: auto;
+    // margin wajib di-reset: DataTables memakai margin-left:-100px dan
+    // margin-top:-26px untuk menengahkan kotak 200px-nya.
+    margin: 0;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+    background-color: rgba(var(--#{$prefix}body-bg-rgb), 0.72);
+    z-index: 20;
+    // Saat pemuatan pertama tbody masih kosong, sehingga .dataTables_wrapper
+    // menyusut sampai ~74px dan titik-titiknya jatuh di baris toolbar
+    // (sebelah kiri kotak Search), di atas header tabel. min-height menjaga
+    // area overlay tetap cukup tinggi supaya titiknya selalu berada di
+    // bawah toolbar, di area tabel.
+    min-height: 160px;
+    // Posisi teks fallback "Processing..." kalau language.processing tidak
+    // di-set; isi div ini diganti seluruhnya kalau opsi itu dipakai.
+    text-align: center;
+    padding-top: 6.5rem;
+}
+
+// Menetralkan kotak 80x15 milik DataTables, lalu menengahkan loader.
+.dataTables_wrapper div.dataTables_processing div.dt-loader,
+div.dt-container div.dt-processing div.dt-loader {
+    position: absolute;
+    // Normalnya tepat di tengah overlay. Pada tabel pendek titik-titiknya
+    // akan naik sampai menimpa baris header, jadi jaraknya dari atas
+    // dibatasi minimal 110px (tinggi toolbar + thead). Deklarasi pertama
+    // adalah fallback untuk browser tanpa dukungan max().
+    top: 50%;
+    top: max(50%, 110px);
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: auto;
+    height: auto;
+    margin: 0;
+}
+
+// DataTables mewarnai "> div:last-child > div" biru dan memposisikannya
+// absolut. Dengan pembungkus .dt-loader, yang kena adalah .bouncing-loader,
+// jadi efeknya dibatalkan di sini. (0,4,3) mengalahkan (0,3,3) milik aturan
+// :nth-child DataTables.
+.dataTables_wrapper div.dataTables_processing div.dt-loader div.bouncing-loader,
+div.dt-container div.dt-processing div.dt-loader div.bouncing-loader {
+    position: static;
+    top: auto;
+    left: auto;
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background: none;
+    animation: none;
+
+    > div {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+}
+
 @keyframes bouncing-loader {
     to {
         opacity: 0.1;

@@ -1149,74 +1149,147 @@ class MedicalController extends Controller
         return $pdf->stream("Medical Claim " . $medical_no . ".pdf");
     }
 
+    // ===================================================================
+    // LEGACY - diganti oleh medicalAdminTable() di bawah.
+    // Disimpan utuh sebagai pembanding. Versi ini selalu gagal:
+    //   SQLSTATE[42000] 1055 - ORDER BY created_at tidak ada di GROUP BY
+    //   (sql_mode ONLY_FULL_GROUP_BY).
+    // Selain itu tidak pernah mengirim $master_medical / $sublink /
+    // $rejectMedic / $employees yang dibutuhkan view, dan mengambil
+    // usage_id satu query per baris (3.190 baris). Jangan dipakai lagi.
+    // ===================================================================
+//    public function medicalAdminTable()
+//    {
+//        // Fetch all dependents, no longer filtered by employee_id
+//        $family = Dependents::orderBy("date_of_birth", "desc")->get();
+//        // Fetch grouped medical data for all employees
+//        $medicalGroup = HealthCoverage::select(
+//            "no_medic",
+//            "date",
+//            "period",
+//            "hospital_name",
+//            "patient_name",
+//            "disease",
+//            DB::raw(
+//                'SUM(CASE WHEN medical_type = "Maternity" THEN balance ELSE 0 END) as maternity_total',
+//            ),
+//            DB::raw(
+//                'SUM(CASE WHEN medical_type = "Inpatient" THEN balance ELSE 0 END) as inpatient_total',
+//            ),
+//            DB::raw(
+//                'SUM(CASE WHEN medical_type = "Outpatient" THEN balance ELSE 0 END) as outpatient_total',
+//            ),
+//            DB::raw(
+//                'SUM(CASE WHEN medical_type = "Glasses" THEN balance ELSE 0 END) as glasses_total',
+//            ),
+//            "status",
+//            "doc_status",
+//            "is_revise"
+//        )
+//            ->where("status", "!=", "Draft")
+//            ->whereNull("verif_by")
+//            ->whereNull("balance_verif")
+//            ->groupBy(
+//                "no_medic",
+//                "date",
+//                "period",
+//                "hospital_name",
+//                "patient_name",
+//                "disease",
+//                "status",
+//                "doc_status",
+//                "is_revise"
+//            )
+//            ->orderBy("created_at", "desc")
+//            ->get();
+//
+//        // Add usage_id for each medical record without filtering by employee_id
+//        $medical = $medicalGroup->map(function ($item) {
+//            // Fetch the usage_id based on no_medic (for any employee)
+//            $usageId = HealthCoverage::where(
+//                "no_medic",
+//                $item->no_medic,
+//            )->value("usage_id");
+//
+//            // Add usage_id to the current item
+//            $item->usage_id = $usageId;
+//
+//            return $item;
+//        });
+//
+//        // Fetch medical plans for all employees
+//        $medical_plan = HealthPlan::orderBy("period", "desc")->get();
+//
+//        $parentLink = "Reimbursement";
+//        $link = "Medical";
+//
+//        return view(
+//            "hcis.reimbursements.medical.admin.medicalAdmin",
+//            compact("family", "medical_plan", "medical", "parentLink", "link"),
+//        );
+//    }
+
     public function medicalAdminTable()
     {
-        // Fetch all dependents, no longer filtered by employee_id
-        $family = Dependents::orderBy("date_of_birth", "desc")->get();
-        // Fetch grouped medical data for all employees
-        $medicalGroup = HealthCoverage::select(
-            "no_medic",
-            "date",
-            "period",
-            "hospital_name",
-            "patient_name",
-            "disease",
-            DB::raw(
-                'SUM(CASE WHEN medical_type = "Maternity" THEN balance ELSE 0 END) as maternity_total',
-            ),
-            DB::raw(
-                'SUM(CASE WHEN medical_type = "Inpatient" THEN balance ELSE 0 END) as inpatient_total',
-            ),
-            DB::raw(
-                'SUM(CASE WHEN medical_type = "Outpatient" THEN balance ELSE 0 END) as outpatient_total',
-            ),
-            DB::raw(
-                'SUM(CASE WHEN medical_type = "Glasses" THEN balance ELSE 0 END) as glasses_total',
-            ),
-            "status",
-            "doc_status",
-            "is_revise"
-        )
-            ->where("status", "!=", "Draft")
-            ->whereNull("verif_by")
-            ->whereNull("balance_verif")
-            ->groupBy(
-                "no_medic",
-                "date",
-                "period",
-                "hospital_name",
-                "patient_name",
-                "disease",
-                "status",
-                "doc_status",
-                "is_revise"
-            )
-            ->orderBy("created_at", "desc")
-            ->get();
+        // $family dan $medical_plan tidak dirender di route ini:
+        // familyDataAdmin / plafonMedicalAdmin hanya dipanggil di dalam
+        // @if (request()->routeIs('medical.detail')) pada medicalAdmin.blade.php.
+        // Tetap dikirim supaya bentuk compact() di bawah tidak berubah.
+        $family = collect();
+        $medical_plan = collect();
+        $formatted_data = [];
 
-        // Add usage_id for each medical record without filtering by employee_id
-        $medical = $medicalGroup->map(function ($item) {
-            // Fetch the usage_id based on no_medic (for any employee)
-            $usageId = HealthCoverage::where(
-                "no_medic",
-                $item->no_medic,
-            )->value("usage_id");
+        // Baris tabel diambil per halaman lewat medicalAdminTableData()
+        // (DataTables server-side), jadi halaman ini tidak lagi merender 3.190
+        // baris sekaligus. Query-nya sendiri ada di adminTableGroupedQuery().
+        $medical = collect();
+        $medicalGroup = collect();
 
-            // Add usage_id to the current item
-            $item->usage_id = $usageId;
+        // Variabel di bawah dibutuhkan medicalAdmin.blade.php /
+        // historyMedicalAdmin.blade.php tetapi tidak pernah dikirim versi lama,
+        // sehingga render tetap gagal walau query-nya sudah benar.
+        $master_medical = MasterMedical::where("active", "T")->get();
+
+        // Berbeda dengan /medical/confirmation, query di sini tidak mengecuali
+        // status 'Rejected', jadi showRejectInfo() memang bisa terpakai.
+        $rejectMedic = HealthCoverage::where("status", "Rejected")
+            ->get()
+            ->keyBy("no_medic");
+
+        $employeeIds = $rejectMedic
+            ->pluck("employee_id")
+            ->merge($rejectMedic->pluck("rejected_by"))
+            ->unique();
+        $employees = Employee::whereIn("employee_id", $employeeIds)->pluck(
+            "fullname",
+            "employee_id",
+        );
+
+        $rejectMedic->transform(function ($item) use ($employees) {
+            $item->employee_fullname = $employees->get($item->employee_id);
+            $item->rejected_by_fullname = $employees->get($item->rejected_by);
 
             return $item;
         });
 
-        // Fetch medical plans for all employees
-        $medical_plan = HealthPlan::orderBy("period", "desc")->get();
-
         $parentLink = "Reimbursement";
+        $sublink = "Medical";
         $link = "Medical";
 
         return view(
             "hcis.reimbursements.medical.admin.medicalAdmin",
-            compact("family", "medical_plan", "medical", "parentLink", "link"),
+            compact(
+                "family",
+                "medical_plan",
+                "medical",
+                "parentLink",
+                "sublink",
+                "link",
+                "rejectMedic",
+                "employees",
+                "master_medical",
+                "formatted_data",
+            ),
         );
     }
 
@@ -2889,21 +2962,220 @@ class MedicalController extends Controller
             ->with("success", "Medical successfully added.");
     }
 
+    // ===================================================================
+    // LEGACY - diganti oleh medicalAdminConfirmation() di bawah.
+    // Disimpan utuh sebagai pembanding.
+    // ===================================================================
+//    public function medicalAdminConfirmation(Request $request)
+//    {
+//        // Ambil data dependents, medical, dan medical_plan berdasarkan employee_id
+//        $family = Dependents::orderBy("date_of_birth", "desc")->get();
+//
+//        $permissionLocations = $this->permissionLocations;
+//        $permissionCompanies = $this->permissionCompanies;
+//        $permissionGroupCompanies = $this->permissionGroupCompanies;
+//
+//        $userRole = auth()->user()->roles->first();
+//        $roleRestriction = json_decode($userRole->restriction, true);
+//        // dd($roleRestriction);
+//
+//        $restrictedWorkAreas = $roleRestriction["work_area_code"] ?? [];
+//        $restrictedGroupCompanies = $roleRestriction["group_company"] ?? [];
+//
+//        $locations = !empty($restrictedWorkAreas)
+//            ? Location::orderBy("area")
+//                ->whereIn("work_area", $restrictedWorkAreas)
+//                ->get()
+//            : Location::orderBy("area")->get();
+//
+//        $hasFilter = false;
+//
+//        $query = HealthCoverage::from(
+//            "mdc_transactions as mdc_transactions",
+//        )->join(
+//            "employees",
+//            "mdc_transactions.employee_id",
+//            "=",
+//            "employees.employee_id",
+//        );
+//
+//        // Ambil data medical plan
+//        $medical_plan = HealthPlan::orderBy("period", "desc")->get();
+//
+//        // Filter berdasarkan request input 'stat'
+//        if ($request->has("stat") && $request->input("stat") !== null) {
+//            $status = $request->input("stat");
+//
+//            if ($status !== "-") {
+//                $query->where("employees.work_area_code", $status);
+//                $hasFilter = true;
+//            }
+//        }
+//
+//        // Jika tidak ada filter dari request, gunakan default permission lokasi
+//        if (!$hasFilter && !empty($restrictedWorkAreas)) {
+//            $query->whereIn("employees.work_area_code", $restrictedWorkAreas);
+//        }
+//
+//        // Tambahkan filter permission lain
+//        if (!empty($permissionLocations)) {
+//            $query->whereIn("employees.work_area_code", $permissionLocations);
+//        }
+//        if (!empty($permissionCompanies)) {
+//            $query->whereIn(
+//                "employees.contribution_level_code",
+//                $permissionCompanies,
+//            );
+//        }
+//        if (!empty($permissionGroupCompanies)) {
+//            $query->whereIn(
+//                "employees.group_company",
+//                $permissionGroupCompanies,
+//            );
+//        }
+//
+//        // Select dan agregasi
+//        $medicalGroup = $query
+//            ->select(
+//                "mdc_transactions.no_medic",
+//                "mdc_transactions.date",
+//                "mdc_transactions.employee_id",
+//                "mdc_transactions.period",
+//                "mdc_transactions.hospital_name",
+//                "mdc_transactions.patient_name",
+//                "mdc_transactions.disease",
+//                DB::raw(
+//                    'SUM(CASE WHEN mdc_transactions.medical_type = "Maternity" THEN mdc_transactions.balance ELSE 0 END) as maternity_total',
+//                ),
+//                DB::raw(
+//                    'SUM(CASE WHEN mdc_transactions.medical_type = "Inpatient" THEN mdc_transactions.balance ELSE 0 END) as inpatient_total',
+//                ),
+//                DB::raw(
+//                    'SUM(CASE WHEN mdc_transactions.medical_type = "Outpatient" THEN mdc_transactions.balance ELSE 0 END) as outpatient_total',
+//                ),
+//                DB::raw(
+//                    'SUM(CASE WHEN mdc_transactions.medical_type = "Glasses" THEN mdc_transactions.balance ELSE 0 END) as glasses_total',
+//                ),
+//                "mdc_transactions.status",
+//                "mdc_transactions.doc_status",
+//                "mdc_transactions.is_revise",
+//                DB::raw(
+//                    "MAX(mdc_transactions.created_at) as latest_created_at",
+//                ),
+//            )
+//            ->whereNotIn("mdc_transactions.status", [
+//                "Draft",
+//                "Done",
+//                "Rejected",
+//            ])
+//            ->whereNull("mdc_transactions.verif_by")
+//            ->whereNull("mdc_transactions.balance_verif")
+//            ->groupBy(
+//                "mdc_transactions.no_medic",
+//                "mdc_transactions.date",
+//                "mdc_transactions.period",
+//                "mdc_transactions.hospital_name",
+//                "mdc_transactions.patient_name",
+//                "mdc_transactions.disease",
+//                "mdc_transactions.status",
+//                "mdc_transactions.doc_status",
+//                "mdc_transactions.is_revise",
+//                "mdc_transactions.employee_id",
+//            )
+//            ->orderBy("latest_created_at", "desc")
+//            ->get();
+//
+//        // Proses data untuk ditampilkan di view
+//        $medical = $medicalGroup->map(function ($item) {
+//            $usageId = HealthCoverage::where(
+//                "no_medic",
+//                $item->no_medic,
+//            )->value("usage_id");
+//            $item->usage_id = $usageId;
+//            return $item;
+//        });
+//
+//        $rejectMedic = HealthCoverage::where("status", "Rejected") // Filter for rejected status
+//            ->get()
+//            ->keyBy("no_medic");
+//
+//        // Get employee IDs from both 'employee_id' and 'rejected_by'
+//        $employeeIds = $rejectMedic
+//            ->pluck("employee_id")
+//            ->merge($rejectMedic->pluck("rejected_by"))
+//            ->unique();
+//        $status = $request->input("stat");
+//        $employees = Employee::whereIn("employee_id", $employeeIds)
+//            ->where("work_area_code", $status)
+//            ->pluck("fullname", "employee_id");
+//
+//        // Now map the full names to the respective HealthCoverage records
+//        $rejectMedic->transform(function ($item) use ($employees) {
+//            $item->employee_fullname = $employees->get($item->employee_id);
+//            $item->rejected_by_fullname = $employees->get($item->rejected_by);
+//            return $item;
+//        });
+//
+//        $medical = $medical->map(function ($item) {
+//            $item->total_per_no_medic =
+//                $item->maternity_total +
+//                $item->inpatient_total +
+//                $item->outpatient_total +
+//                $item->glasses_total;
+//            $item->employee_fullname = $item->employee->fullname ?? "N/A";
+//            return $item;
+//        });
+//
+//        $master_medical = MasterMedical::where("active", "T")->get();
+//
+//        // Format data medical_plan
+//        $formatted_data = [];
+//        foreach ($medical_plan as $plan) {
+//            $formatted_data[$plan->period][$plan->medical_type] =
+//                $plan->balance;
+//        }
+//
+//        $parentLink = "Reimbursement";
+//        $sublink = "Medical";
+//        $link = "Confirmation";
+//
+//        // Kirim data ke view
+//        return view(
+//            "hcis.reimbursements.medical.admin.medicalAdmin",
+//            compact(
+//                "family",
+//                "medical_plan",
+//                "medical",
+//                "parentLink",
+//                "sublink",
+//                "link",
+//                "rejectMedic",
+//                "employees",
+//                "master_medical",
+//                "formatted_data",
+//                "locations",
+//                "hasFilter",
+//                "medicalGroup",
+//            ),
+//        );
+//    }
+
     public function medicalAdminConfirmation(Request $request)
     {
-        // Ambil data dependents, medical, dan medical_plan berdasarkan employee_id
-        $family = Dependents::orderBy("date_of_birth", "desc")->get();
+        // $family dan $medical_plan TIDAK dipakai di route ini.
+        // medicalAdmin.blade.php hanya merender tab Family Data dan Plafon
+        // Medical di dalam @if (request()->routeIs('medical.detail')), jadi
+        // familyDataAdmin / plafonMedicalAdmin tidak pernah di-render di
+        // /medical/confirmation. Versi lama tetap memuat 7.946 baris
+        // dependents + 78.224 baris mdc_plans lalu membuangnya.
+        $family = collect();
+        $medical_plan = collect();
+        $formatted_data = [];
 
-        $permissionLocations = $this->permissionLocations;
-        $permissionCompanies = $this->permissionCompanies;
-        $permissionGroupCompanies = $this->permissionGroupCompanies;
-
-        $userRole = auth()->user()->roles->first();
-        $roleRestriction = json_decode($userRole->restriction, true);
-        // dd($roleRestriction);
-
-        $restrictedWorkAreas = $roleRestriction["work_area_code"] ?? [];
-        $restrictedGroupCompanies = $roleRestriction["group_company"] ?? [];
+        $restrictedWorkAreas =
+            json_decode(auth()->user()->roles->first()->restriction, true)[
+                "work_area_code"
+            ] ?? [];
 
         $locations = !empty($restrictedWorkAreas)
             ? Location::orderBy("area")
@@ -2911,152 +3183,29 @@ class MedicalController extends Controller
                 ->get()
             : Location::orderBy("area")->get();
 
-        $hasFilter = false;
+        $hasFilter =
+            $request->input("stat") !== null &&
+            $request->input("stat") !== "-";
 
-        $query = HealthCoverage::from(
-            "mdc_transactions as mdc_transactions",
-        )->join(
-            "employees",
-            "mdc_transactions.employee_id",
-            "=",
-            "employees.employee_id",
-        );
+        // Baris tabel diambil per halaman lewat medicalAdminConfirmationData()
+        // (DataTables server-side), jadi halaman ini tidak lagi merender 3.183
+        // baris sekaligus. Keduanya dikirim kosong supaya compact() di bawah
+        // tidak berubah bentuknya.
+        $medical = collect();
+        $medicalGroup = collect();
 
-        // Ambil data medical plan
-        $medical_plan = HealthPlan::orderBy("period", "desc")->get();
-
-        // Filter berdasarkan request input 'stat'
-        if ($request->has("stat") && $request->input("stat") !== null) {
-            $status = $request->input("stat");
-
-            if ($status !== "-") {
-                $query->where("employees.work_area_code", $status);
-                $hasFilter = true;
-            }
-        }
-
-        // Jika tidak ada filter dari request, gunakan default permission lokasi
-        if (!$hasFilter && !empty($restrictedWorkAreas)) {
-            $query->whereIn("employees.work_area_code", $restrictedWorkAreas);
-        }
-
-        // Tambahkan filter permission lain
-        if (!empty($permissionLocations)) {
-            $query->whereIn("employees.work_area_code", $permissionLocations);
-        }
-        if (!empty($permissionCompanies)) {
-            $query->whereIn(
-                "employees.contribution_level_code",
-                $permissionCompanies,
-            );
-        }
-        if (!empty($permissionGroupCompanies)) {
-            $query->whereIn(
-                "employees.group_company",
-                $permissionGroupCompanies,
-            );
-        }
-
-        // Select dan agregasi
-        $medicalGroup = $query
-            ->select(
-                "mdc_transactions.no_medic",
-                "mdc_transactions.date",
-                "mdc_transactions.employee_id",
-                "mdc_transactions.period",
-                "mdc_transactions.hospital_name",
-                "mdc_transactions.patient_name",
-                "mdc_transactions.disease",
-                DB::raw(
-                    'SUM(CASE WHEN mdc_transactions.medical_type = "Maternity" THEN mdc_transactions.balance ELSE 0 END) as maternity_total',
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN mdc_transactions.medical_type = "Inpatient" THEN mdc_transactions.balance ELSE 0 END) as inpatient_total',
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN mdc_transactions.medical_type = "Outpatient" THEN mdc_transactions.balance ELSE 0 END) as outpatient_total',
-                ),
-                DB::raw(
-                    'SUM(CASE WHEN mdc_transactions.medical_type = "Glasses" THEN mdc_transactions.balance ELSE 0 END) as glasses_total',
-                ),
-                "mdc_transactions.status",
-                "mdc_transactions.doc_status",
-                "mdc_transactions.is_revise",
-                DB::raw(
-                    "MAX(mdc_transactions.created_at) as latest_created_at",
-                ),
-            )
-            ->whereNotIn("mdc_transactions.status", [
-                "Draft",
-                "Done",
-                "Rejected",
-            ])
-            ->whereNull("mdc_transactions.verif_by")
-            ->whereNull("mdc_transactions.balance_verif")
-            ->groupBy(
-                "mdc_transactions.no_medic",
-                "mdc_transactions.date",
-                "mdc_transactions.period",
-                "mdc_transactions.hospital_name",
-                "mdc_transactions.patient_name",
-                "mdc_transactions.disease",
-                "mdc_transactions.status",
-                "mdc_transactions.doc_status",
-                "mdc_transactions.is_revise",
-                "mdc_transactions.employee_id",
-            )
-            ->orderBy("latest_created_at", "desc")
-            ->get();
-
-        // Proses data untuk ditampilkan di view
-        $medical = $medicalGroup->map(function ($item) {
-            $usageId = HealthCoverage::where(
-                "no_medic",
-                $item->no_medic,
-            )->value("usage_id");
-            $item->usage_id = $usageId;
-            return $item;
-        });
-
-        $rejectMedic = HealthCoverage::where("status", "Rejected") // Filter for rejected status
-            ->get()
-            ->keyBy("no_medic");
-
-        // Get employee IDs from both 'employee_id' and 'rejected_by'
-        $employeeIds = $rejectMedic
-            ->pluck("employee_id")
-            ->merge($rejectMedic->pluck("rejected_by"))
-            ->unique();
-        $status = $request->input("stat");
-        $employees = Employee::whereIn("employee_id", $employeeIds)
-            ->where("work_area_code", $status)
-            ->pluck("fullname", "employee_id");
-
-        // Now map the full names to the respective HealthCoverage records
-        $rejectMedic->transform(function ($item) use ($employees) {
-            $item->employee_fullname = $employees->get($item->employee_id);
-            $item->rejected_by_fullname = $employees->get($item->rejected_by);
-            return $item;
-        });
-
-        $medical = $medical->map(function ($item) {
-            $item->total_per_no_medic =
-                $item->maternity_total +
-                $item->inpatient_total +
-                $item->outpatient_total +
-                $item->glasses_total;
-            $item->employee_fullname = $item->employee->fullname ?? "N/A";
-            return $item;
-        });
+        // $rejectMedic hanya dipakai showRejectInfo(), yang hanya terpasang
+        // lewat onclick pada baris ber-status 'Rejected'. Query halaman ini
+        // selalu whereNotIn status ['Draft','Done','Rejected'], jadi baris
+        // seperti itu tidak pernah ada di sini dan fungsinya tidak pernah
+        // dipanggil. Versi lama tetap men-json_encode 243 model penuh ke
+        // dalam halaman (~264 KB).
+        // CATATAN: kalau suatu saat route ini ikut menampilkan status
+        // 'Rejected', isi lagi kedua variabel ini.
+        $rejectMedic = collect();
+        $employees = collect();
 
         $master_medical = MasterMedical::where("active", "T")->get();
-
-        // Format data medical_plan
-        $formatted_data = [];
-        foreach ($medical_plan as $plan) {
-            $formatted_data[$plan->period][$plan->medical_type] =
-                $plan->balance;
-        }
 
         $parentLink = "Reimbursement";
         $sublink = "Medical";
@@ -3081,6 +3230,542 @@ class MedicalController extends Controller
                 "medicalGroup",
             ),
         );
+    }
+
+    /**
+     * Query dasar daftar konfirmasi medical.
+     *
+     * Dipakai bersama oleh halaman dan endpoint DataTables-nya supaya filter
+     * permission tidak pernah berbeda antara keduanya. Mengembalikan builder
+     * yang BELUM dieksekusi.
+     */
+    private function confirmationGroupedQuery(Request $request)
+    {
+        $permissionLocations = $this->permissionLocations;
+        $permissionCompanies = $this->permissionCompanies;
+        $permissionGroupCompanies = $this->permissionGroupCompanies;
+
+        $restrictedWorkAreas =
+            json_decode(auth()->user()->roles->first()->restriction, true)[
+                "work_area_code"
+            ] ?? [];
+
+        $hasFilter = false;
+
+        $query = HealthCoverage::from(
+            "mdc_transactions as mdc_transactions",
+        )->join(
+            "employees",
+            "mdc_transactions.employee_id",
+            "=",
+            "employees.employee_id",
+        );
+
+        if ($request->has("stat") && $request->input("stat") !== null) {
+            $stat = $request->input("stat");
+
+            if ($stat !== "-") {
+                $query->where("employees.work_area_code", $stat);
+                $hasFilter = true;
+            }
+        }
+
+        if (!$hasFilter && !empty($restrictedWorkAreas)) {
+            $query->whereIn("employees.work_area_code", $restrictedWorkAreas);
+        }
+
+        if (!empty($permissionLocations)) {
+            $query->whereIn("employees.work_area_code", $permissionLocations);
+        }
+        if (!empty($permissionCompanies)) {
+            $query->whereIn(
+                "employees.contribution_level_code",
+                $permissionCompanies,
+            );
+        }
+        if (!empty($permissionGroupCompanies)) {
+            $query->whereIn(
+                "employees.group_company",
+                $permissionGroupCompanies,
+            );
+        }
+
+        return $query
+            ->select(
+                "mdc_transactions.no_medic",
+                "mdc_transactions.date",
+                "mdc_transactions.employee_id",
+                "mdc_transactions.period",
+                "mdc_transactions.hospital_name",
+                "mdc_transactions.patient_name",
+                "mdc_transactions.disease",
+                DB::raw(
+                    'SUM(CASE WHEN mdc_transactions.medical_type = "Maternity" THEN mdc_transactions.balance ELSE 0 END) as maternity_total',
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN mdc_transactions.medical_type = "Inpatient" THEN mdc_transactions.balance ELSE 0 END) as inpatient_total',
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN mdc_transactions.medical_type = "Outpatient" THEN mdc_transactions.balance ELSE 0 END) as outpatient_total',
+                ),
+                DB::raw(
+                    'SUM(CASE WHEN mdc_transactions.medical_type = "Glasses" THEN mdc_transactions.balance ELSE 0 END) as glasses_total',
+                ),
+                "mdc_transactions.status",
+                "mdc_transactions.doc_status",
+                "mdc_transactions.is_revise",
+                DB::raw("MAX(employees.fullname) as employee_fullname"),
+                DB::raw(
+                    "MAX(mdc_transactions.created_at) as latest_created_at",
+                ),
+            )
+            ->whereNotIn("mdc_transactions.status", [
+                "Draft",
+                "Done",
+                "Rejected",
+            ])
+            ->whereNull("mdc_transactions.verif_by")
+            ->whereNull("mdc_transactions.balance_verif")
+            ->groupBy(
+                "mdc_transactions.no_medic",
+                "mdc_transactions.date",
+                "mdc_transactions.period",
+                "mdc_transactions.hospital_name",
+                "mdc_transactions.patient_name",
+                "mdc_transactions.disease",
+                "mdc_transactions.status",
+                "mdc_transactions.doc_status",
+                "mdc_transactions.is_revise",
+                "mdc_transactions.employee_id",
+            );
+    }
+
+    /**
+     * Sumber data DataTables server-side untuk /medical/confirmation.
+     *
+     * Halaman hanya mengirim satu halaman baris (default 5) alih-alih seluruh
+     * 3.183 baris, sehingga HTML turun dari ~9,3 MB.
+     */
+    /**
+     * Query dasar daftar /medical/admin/table.
+     *
+     * Dipakai bersama oleh halaman dan endpoint DataTables-nya.
+     */
+    private function adminTableGroupedQuery()
+    {
+        return HealthCoverage::select(
+            "no_medic",
+            "date",
+            "period",
+            "hospital_name",
+            "patient_name",
+            "disease",
+            DB::raw(
+                'SUM(CASE WHEN medical_type = "Maternity" THEN balance ELSE 0 END) as maternity_total',
+            ),
+            DB::raw(
+                'SUM(CASE WHEN medical_type = "Inpatient" THEN balance ELSE 0 END) as inpatient_total',
+            ),
+            DB::raw(
+                'SUM(CASE WHEN medical_type = "Outpatient" THEN balance ELSE 0 END) as outpatient_total',
+            ),
+            DB::raw(
+                'SUM(CASE WHEN medical_type = "Glasses" THEN balance ELSE 0 END) as glasses_total',
+            ),
+            "status",
+            "doc_status",
+            "is_revise",
+            DB::raw("MAX(created_at) as latest_created_at"),
+        )
+            ->where("status", "!=", "Draft")
+            ->whereNull("verif_by")
+            ->whereNull("balance_verif")
+            ->groupBy(
+                "no_medic",
+                "date",
+                "period",
+                "hospital_name",
+                "patient_name",
+                "disease",
+                "status",
+                "doc_status",
+                "is_revise",
+            );
+    }
+
+    /**
+     * Tata letak kolom tabel medical.
+     *
+     * Kedua route memakai historyMedicalAdmin.blade.php yang sama, tetapi
+     * route konfirmasi punya satu kolom ekstra (Employee Name), sehingga
+     * indeks kolom sesudahnya bergeser satu. Mengembalikan
+     * [peta kolom yang bisa diurutkan, indeks kolom master_medical pertama].
+     */
+    private function medicalTableColumns(bool $isConfirmation): array
+    {
+        $ordered = $isConfirmation
+            ? [
+                "employee_fullname",
+                "latest_created_at",
+                "date",
+                "period",
+                "no_medic",
+                "hospital_name",
+                "patient_name",
+                "__total",
+                "disease",
+            ]
+            : [
+                "latest_created_at",
+                "date",
+                "period",
+                "no_medic",
+                "hospital_name",
+                "patient_name",
+                "__total",
+                "disease",
+            ];
+
+        $sortable = [];
+        foreach ($ordered as $i => $name) {
+            // 0 = kolom control, 1 = nomor urut
+            $sortable[$i + 2] = $name;
+        }
+
+        // Setelah kolom di atas ada kolom Attachment, lalu master_medical.
+        $masterFirst = count($ordered) + 3;
+
+        return [$sortable, $masterFirst];
+    }
+
+    /**
+     * Sumber data DataTables server-side untuk /medical/confirmation.
+     */
+    public function medicalAdminConfirmationData(Request $request)
+    {
+        return $this->medicalTableDataResponse(
+            $request,
+            $this->confirmationGroupedQuery($request),
+            true,
+            collect(),
+        );
+    }
+
+    /**
+     * Sumber data DataTables server-side untuk /medical/admin/table.
+     *
+     * Berbeda dengan route konfirmasi, query di sini tidak mengecuali status
+     * 'Rejected', jadi $rejectMedic tetap diperlukan untuk tooltip/onclick
+     * showRejectInfo().
+     */
+    public function medicalAdminTableData(Request $request)
+    {
+        $rejectMedic = HealthCoverage::where("status", "Rejected")
+            ->get()
+            ->keyBy("no_medic");
+
+        return $this->medicalTableDataResponse(
+            $request,
+            $this->adminTableGroupedQuery(),
+            false,
+            $rejectMedic,
+        );
+    }
+
+    /**
+     * Pembentuk respons DataTables server-side untuk kedua route di atas.
+     */
+    private function medicalTableDataResponse(
+        Request $request,
+        $grouped,
+        bool $isConfirmation,
+        $rejectMedic
+    ) {
+        // Dibungkus subquery karena query utamanya memakai GROUP BY:
+        // count() langsung akan menghitung per grup, bukan jumlah grup.
+        $base = DB::query()->fromSub($grouped, "g");
+
+        $recordsTotal = (clone $base)->count();
+
+        $search = trim((string) $request->input("search.value", ""));
+        $filtered = clone $base;
+
+        if ($search !== "") {
+            $searchable = [
+                "no_medic",
+                "hospital_name",
+                "patient_name",
+                "disease",
+                "period",
+                "status",
+            ];
+
+            if ($isConfirmation) {
+                $searchable[] = "employee_fullname";
+            }
+
+            $filtered->where(function ($q) use ($search, $searchable) {
+                foreach ($searchable as $column) {
+                    $q->orWhere($column, "like", "%" . $search . "%");
+                }
+            });
+        }
+
+        // Tanpa kata kunci, hasilnya pasti sama dengan $recordsTotal. Hitung
+        // ulang hanya kalau memang ada pencarian: setiap count() menjalankan
+        // GROUP BY penuh atas ~43rb baris.
+        $recordsFiltered =
+            $search === "" ? $recordsTotal : (clone $filtered)->count();
+
+        [$sortable, $masterFirst] = $this->medicalTableColumns($isConfirmation);
+        $masterMedical = MasterMedical::where("active", "T")->get();
+        $statusIdx = $masterFirst + $masterMedical->count();
+
+        $orderColumn = (int) $request->input("order.0.column", -1);
+        $orderDir =
+            strtolower($request->input("order.0.dir", "desc")) === "asc"
+                ? "asc"
+                : "desc";
+
+        // Urutan default sama dengan versi lama: latest_created_at desc.
+        if ($orderColumn === $statusIdx) {
+            $filtered->orderBy("status", $orderDir);
+        } elseif (($sortable[$orderColumn] ?? null) === "__total") {
+            $filtered->orderByRaw(
+                "(maternity_total + inpatient_total + outpatient_total + glasses_total) " .
+                    $orderDir,
+            );
+        } elseif (isset($sortable[$orderColumn])) {
+            $filtered->orderBy($sortable[$orderColumn], $orderDir);
+        } else {
+            $filtered->orderBy("latest_created_at", "desc");
+        }
+
+        $start = max(0, (int) $request->input("start", 0));
+        $length = (int) $request->input("length", 5);
+
+        if ($length > 0) {
+            $filtered->offset($start)->limit($length);
+        }
+
+        $rows = $filtered->get();
+
+        // usage_id hanya untuk baris di halaman ini.
+        $usageIds = HealthCoverage::whereIn(
+            "no_medic",
+            $rows->pluck("no_medic"),
+        )
+            ->selectRaw("no_medic, MIN(usage_id) as usage_id")
+            ->groupBy("no_medic")
+            ->pluck("usage_id", "no_medic");
+
+        $isProperty =
+            auth()->check() &&
+            auth()->user()->employee &&
+            strtolower(auth()->user()->employee->group_company) == "property";
+
+        $data = [];
+        foreach ($rows as $i => $row) {
+            $row->usage_id = $usageIds[$row->no_medic] ?? null;
+            $data[] = $this->medicalTableRowCells(
+                $row,
+                $start + $i,
+                $masterMedical,
+                $isProperty,
+                $isConfirmation,
+                $rejectMedic,
+            );
+        }
+
+        return response()->json([
+            "draw" => (int) $request->input("draw", 0),
+            "recordsTotal" => $recordsTotal,
+            "recordsFiltered" => $recordsFiltered,
+            "data" => $data,
+        ]);
+    }
+
+    /**
+     * Satu baris tabel sebagai array sel DataTables.
+     *
+     * Markup-nya mengikuti historyMedicalAdmin.blade.php; $rowIndex adalah
+     * indeks global (bukan indeks halaman) supaya kondisi tombol hapus
+     * ($loop->first || status Pending) tetap sama dengan versi lama.
+     */
+    private function medicalTableRowCells(
+        $item,
+        int $rowIndex,
+        $masterMedical,
+        bool $isProperty,
+        bool $isConfirmation,
+        $rejectMedic
+    ): array {
+        $rupiah = fn($v) => "Rp. " . number_format((float) $v, 0, ",", ".");
+
+        $total =
+            $item->maternity_total +
+            $item->inpatient_total +
+            $item->outpatient_total +
+            $item->glasses_total;
+
+        $cells = ["", (string) ($rowIndex + 1)];
+
+        // Kolom Employee Name hanya ada di route konfirmasi.
+        if ($isConfirmation) {
+            $cells[] = e($item->employee_fullname ?? "N/A");
+        }
+
+        $cells[] = \Carbon\Carbon::parse($item->latest_created_at)->format(
+            "d M Y",
+        );
+        $cells[] = \Carbon\Carbon::parse($item->date)->format("d M Y");
+        $cells[] = e($item->period);
+        $cells[] = e($item->no_medic);
+        $cells[] = e($item->hospital_name);
+        $cells[] = e($item->patient_name);
+        $cells[] = $rupiah($total);
+        $cells[] = e($item->disease);
+
+        // Attachment: medical_proof tidak ada di SELECT yang di-group, sama
+        // seperti versi lama, sehingga tombolnya memang tidak pernah muncul.
+        $cells[] = !empty($item->medical_proof)
+            ? '<button type="button" class="btn btn-sm btn-warning rounded-pill" data-bs-toggle="modal" data-bs-target="#viewAttachmentModal-' .
+                e($item->no_medic) .
+                '">View</button>'
+            : "";
+
+        foreach ($masterMedical as $type) {
+            $field =
+                strtolower(str_replace(" ", "_", $type->name)) . "_total";
+            $cells[] = $rupiah($item->$field ?? 0);
+        }
+
+        $cells[] = $isProperty
+            ? $this->medicalPropertyStatusBadge($item)
+            : $this->medicalStatusBadge($item, $rejectMedic);
+
+        $cells[] = $this->medicalActionButtons(
+            $item,
+            $rowIndex,
+            $isProperty,
+            $isConfirmation,
+        );
+
+        return $cells;
+    }
+
+    private function medicalPropertyStatusBadge($item): string
+    {
+        $status = !empty($item->doc_status) ? $item->doc_status : $item->status;
+
+        $badgeClass = match ($status) {
+            "Pending", "Document Pending", "Document Received",
+            "Claim Verified", "Revise"
+                => "bg-warning",
+            "Reimbursement Approved", "Processing Payment", "Done", "Paid"
+                => "bg-success",
+            "Rejected" => "bg-danger",
+            "Draft" => "bg-secondary",
+            default => "bg-light",
+        };
+
+        if ($item->is_revise) {
+            $status .= " (Revise)";
+        }
+
+        return '<span class="badge rounded-pill ' .
+            $badgeClass .
+            ' text-center" style="font-size: 12px; padding: 0.5rem 1rem; cursor: pointer;">' .
+            e($status) .
+            "</span>";
+    }
+
+    private function medicalStatusBadge($item, $rejectMedic): string
+    {
+        $badgeClass = match ($item->status) {
+            "Pending" => "bg-warning",
+            "Done" => "bg-success",
+            "Rejected" => "bg-danger",
+            "Draft" => "bg-secondary",
+            default => "bg-light",
+        };
+
+        if (
+            $item->status == "Rejected" &&
+            isset($rejectMedic[$item->no_medic])
+        ) {
+            $attrs =
+                ' onclick="showRejectInfo(&#039;' .
+                e($item->no_medic) .
+                '&#039;)" title="Click to see rejection reason"';
+        } elseif ($item->status == "Done") {
+            $attrs =
+                ' title="' .
+                e("Approved GA by - " . ($item->approved_by_fullname ?? "") . " ") .
+                '"';
+        } else {
+            // Kedua query selalu memfilter verif_by & balance_verif NULL,
+            // jadi cabang ternary di view selalu yang pertama.
+            $attrs = ' title="Waiting for Admin GA to confirmation"';
+        }
+
+        return '<span class="badge rounded-pill ' .
+            $badgeClass .
+            ' text-center" style="font-size: 12px; padding: 0.5rem 1rem; cursor: pointer;"' .
+            $attrs .
+            ">" .
+            e($item->status) .
+            "</span>";
+    }
+
+    private function medicalActionButtons(
+        $item,
+        int $rowIndex,
+        bool $isProperty,
+        bool $isConfirmation
+    ): string {
+        $noMedic = e($item->no_medic);
+        $usageId = e($item->usage_id);
+        $html = "";
+
+        // Tombol edit hanya ada di route konfirmasi.
+        if ($isConfirmation) {
+            $html .=
+                '<form method="GET" action="/medical/admin/form-update/' .
+                $usageId .
+                '" style="display: inline-block;">' .
+                '<button type="submit" class="btn btn-outline-warning rounded-pill my-1" data-toggle="tooltip" title="Edit">' .
+                '<i class="bi bi-pencil-square"></i></button></form>';
+        }
+
+        if ($rowIndex === 0 || $item->status == "Pending") {
+            $html .=
+                '<form id="deleteForm_' .
+                $noMedic .
+                '" method="POST" action="/medical/admin/delete/' .
+                $usageId .
+                '" style="display: inline-block;">' .
+                csrf_field() .
+                method_field("DELETE") .
+                '<input type="hidden" id="no_sppd_' .
+                $noMedic .
+                '" value="' .
+                $noMedic .
+                '">' .
+                '<button type="button" class="btn btn-outline-danger rounded-pill delete-button" data-id="' .
+                $noMedic .
+                '"><i class="bi bi-trash-fill"></i></button></form>';
+        }
+
+        if ($isProperty) {
+            $html .=
+                '<a href="' .
+                e(route("medical.download", $item->usage_id)) .
+                '" target="_blank" class="btn btn-outline-info" title="Print">' .
+                '<i class="bi bi-file-earmark-arrow-down"></i></a>';
+        }
+
+        return $html;
     }
 
     public function importAdminExcel(Request $request)
