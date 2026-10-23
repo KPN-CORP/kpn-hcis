@@ -341,8 +341,14 @@ class ImportHealthCoverage implements ToModel
             $healthCoverage->balance_uncoverage = 0;
         }
 
-        if ($healthCoverage->company_covered_amount !== null) {
-            $healthPlanBalance = $initialBalance - $healthCoverage->company_covered_amount;
+        if (in_array(strtolower($employee->group_company), [
+            "downstream",
+            "plantations",
+            "kpn plantations"
+        ])) {
+            if ($healthCoverage->company_covered_amount !== null) {
+                $healthPlanBalance = $initialBalance - $healthCoverage->company_covered_amount;
+            }
         }
 
         $healthPlan->balance = $healthPlanBalance;
@@ -354,7 +360,9 @@ class ImportHealthCoverage implements ToModel
             ->whereNull("deleted_at")
             ->sum("balance");
 
-        if ($totalUsage > $healthPlan->balance && $healthPlan->over_plafond_email_sent_date == null && (strtolower($employee->group_company) == "downstream")) {
+        if ($totalUsage > $healthPlan->balance && $healthPlan->over_plafond_email_sent_date == null && (in_array(strtolower($employee->group_company), [
+            "downstream"
+        ]))) {
             Mail::to($employee->email)->bcc('dali.kewara@kpn-corp.com')->queue(
                 (new MedicalOverPlafondNotification(
                     $plafond,

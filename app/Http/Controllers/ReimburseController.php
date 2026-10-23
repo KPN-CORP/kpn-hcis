@@ -727,7 +727,9 @@ class ReimburseController extends Controller
         $companies = null;
         $locations = null;
 
-        if (strtolower($employee_data->group_company) == "property") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "property"
+        ])) {
             $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
             $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
         } else {
@@ -1422,7 +1424,9 @@ class ReimburseController extends Controller
         $companies = null;
         $locations = null;
 
-        if (strtolower($employee_data->group_company) == "property") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "property"
+        ])) {
             $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
             $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
         } else {
@@ -2265,10 +2269,10 @@ class ReimburseController extends Controller
             ->whereNull("deleted_at")
             ->orderBy("layer", "asc")
             ->get();
-        if (
-            $employee_data->group_company == "Plantations" ||
-            $employee_data->group_company == "KPN Plantations"
-        ) {
+        if (in_array(strtolower($employee_data->group_company), [
+            "plantations",
+            "kpn plantations"
+        ])) {
             $allowance = "Perdiem";
         } else {
             $allowance = "Allowance";
@@ -2838,7 +2842,9 @@ class ReimburseController extends Controller
         $model->sett_id = $nextApproval->employee_id;
         $model->declaration_at = Carbon::now();
 
-        if (strtolower($employee_data->group_company) == "property") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "property"
+        ])) {
             if (empty($model->no_declaration)) {
                 $model->no_declaration = $this->generateNoDeclaration();
             }
@@ -2996,7 +3002,9 @@ class ReimburseController extends Controller
         $companies = null;
         $locations = null;
 
-        if (strtolower($employee_data->group_company) == "property") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "property"
+        ])) {
             $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
             $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
         } else {
@@ -3501,7 +3509,9 @@ class ReimburseController extends Controller
         $companies = null;
         $locations = null;
 
-        if (strtolower($employee_data->group_company) == "property") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "property"
+        ])) {
             $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
             $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
         } else {
@@ -5015,7 +5025,9 @@ class ReimburseController extends Controller
         $companies = null;
         $locations = null;
 
-        if (strtolower($employee_data->group_company) == "property") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "property"
+        ])) {
             $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
             $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
         } else {
@@ -5043,7 +5055,9 @@ class ReimburseController extends Controller
 
         $transportHubs = TransportHub::where("is_active", true);
 
-        if (strtolower($employee_data->group_company) == "downstream") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "downstream"
+        ])) {
             $transportHubs = $transportHubs->where("group_company", "Downstream");
         }
 
@@ -5625,7 +5639,9 @@ class ReimburseController extends Controller
         $companies = null;
         $locations = null;
 
-        if (strtolower($employee_data->group_company) == "property") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "property"
+        ])) {
             $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
             $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
         } else {
@@ -5684,7 +5700,9 @@ class ReimburseController extends Controller
 
         $transportHubs = TransportHub::where("is_active", true);
 
-        if (strtolower($employee_data->group_company) == "downstream") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "downstream"
+        ])) {
             $transportHubs = $transportHubs->where("group_company", "Downstream");
         }
 
@@ -6393,7 +6411,9 @@ class ReimburseController extends Controller
 
         $transportHubs = TransportHub::where("is_active", true);
 
-        if (strtolower($employee_data->group_company) == "downstream") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "downstream"
+        ])) {
             $transportHubs = $transportHubs->where("group_company", "Downstream");
         }
 
