@@ -17,5 +17,13 @@ class ODataMedicalClaimRequestDTO extends BaseDTO {
         ], '', '&', PHP_QUERY_RFC3986);
 
         return ($withQuestionMark ? '?' : '') . $query;
+
+        // $employeeID = str_replace("'", "''", (string) $this->employee_id);
+
+        // $query = http_build_query([
+        //     'employee_code' => $employeeID,
+        // ], '', '&', PHP_QUERY_RFC3986);
+
+        // return ($withQuestionMark ? '?' : '') . $query;
     }
 }
