@@ -146,7 +146,7 @@ class ELogService {
         );
 
         if ($medicalData->balance_verif != null) {
-            $payload->amount = $medicalData->balance_verif;
+            $payload->amount = $medicalData->balance_verif ?? 0;
         } else {
             $payload->amount = $medicalData->balance ?? 0;
         }
@@ -183,7 +183,27 @@ class ELogService {
         }
 
         if ($medicalPlan) {
-            $payload->sisa_over_plafond = $medicalPlan->balance;
+            $coveredAmount = 0;
+
+            if ($medicalData->company_covered_amount !== null) {
+                $coveredAmount = $medicalData->company_covered_amount;
+            } else if ($medicalPlan->balance <= 0) {
+                $coveredAmount = 0;
+            } else if ($medicalPlan->balance > 0) {
+                if ($payload->amount > $medicalPlan->balance) {
+                    $coveredAmount = $medicalPlan->balance;
+                } else if ($payload->amount < $medicalPlan->balance) {
+                    $coveredAmount = $payload->amount;
+                } else if ($payload->amount == $medicalPlan->balance) {
+                    $coveredAmount = $medicalPlan->balance;
+                }
+            }
+
+            $payload->sisa_over_plafond = -max(0,
+                $payload->amount
+                - $coveredAmount
+                - $nonReimbursableAmount
+            );
         }
 
         $accessToken = $this->getAccessToken();
