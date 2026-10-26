@@ -100,9 +100,9 @@ class MedicalExport implements FromCollection, WithHeadings, WithStyles, WithEve
 
             foreach ($employeeCoverages as $coverage) {
                 // if ($coverage->status == 'Done' || $coverage->status == 'Pending') {
-                    $amountVerify = $coverage->balance_verif;  
-                    $amountBPJS = $coverage->balance_bpjs;  
-                    $amountInvoice = $amountVerify - $amountBPJS;                      
+                    $amountVerify = $coverage->balance_verif;
+                    $amountBPJS = $coverage->balance_bpjs;
+                    $amountInvoice = $amountVerify - $amountBPJS;
                     $combinedData[] = [
                         'number' => count($combinedData) + 1,
                         'NoMed' => $coverage->no_medic,
@@ -122,8 +122,8 @@ class MedicalExport implements FromCollection, WithHeadings, WithStyles, WithEve
                         'MedicalType' => $coverage->medical_type,
                         'Amount' => $coverage->balance,
                         'AmountUncoverage' => $coverage->balance_uncoverage,
-                        'AmountVerify' => $amountVerify,  
-                        'AmountBPJS' => $amountBPJS, 
+                        'AmountVerify' => $amountVerify,
+                        'AmountBPJS' => $amountBPJS,
                         'AmountInovice' => $amountInvoice,
                         'AdminNotes' => $coverage->admin_notes,
                         'PT' => $employee->company_name,

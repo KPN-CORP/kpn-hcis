@@ -360,10 +360,10 @@ class BusinessTripController extends Controller
 
         $isDisabled = $isApproved->count() >= 2;
 
-        if (
-            $employee_data->group_company == "Plantations" ||
-            $employee_data->group_company == "KPN Plantations"
-        ) {
+        if (in_array(strtolower($employee_data->group_company), [
+            "plantations",
+            "kpn plantations"
+        ])) {
             $allowance = "Perdiem";
         } else {
             $allowance = "Allowance";
@@ -494,7 +494,9 @@ class BusinessTripController extends Controller
         $companies = null;
         $locations = null;
 
-        if (strtolower($employee_data->group_company) == "property") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "property"
+        ])) {
             $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
             $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
         } else {
@@ -505,7 +507,9 @@ class BusinessTripController extends Controller
         $holiday = master_holiday::pluck("tanggal_libur")->toArray();
         $transportHubs = TransportHub::where("is_active", true);
 
-        if (strtolower($employee_data->group_company) == "downstream") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "downstream"
+        ])) {
             $transportHubs = $transportHubs->where("group_company", "Downstream");
         }
 
@@ -568,10 +572,10 @@ class BusinessTripController extends Controller
         $oldNoSppd = $n->no_sppd;
         $userId = Auth::id();
         $employee = Employee::where("id", $userId)->first();
-        if (
-            $employee->group_company == "Plantations" ||
-            $employee->group_company == "KPN Plantations"
-        ) {
+        if (in_array(strtolower($employee->group_company), [
+            "plantations",
+            "kpn plantations"
+        ])) {
             $allowance = "Perdiem";
         } else {
             $allowance = "Allowance";
@@ -2029,10 +2033,10 @@ class BusinessTripController extends Controller
         $n = BusinessTrip::find($id);
         $userId = Auth::id();
         $employee_data = Employee::where("id", $userId)->first();
-        if (
-            $employee_data->group_company == "Plantations" ||
-            $employee_data->group_company == "KPN Plantations"
-        ) {
+        if (in_array(strtolower($employee_data->group_company), [
+            "plantations",
+            "kpn plantations"
+        ])) {
             $allowance = "Perdiem";
         } else {
             $allowance = "Allowance";
@@ -2307,7 +2311,9 @@ class BusinessTripController extends Controller
                 $entId = $ent->id = (string) Str::uuid();
                 $ent->no_ca = $this->generateNoCa();
 
-                if (strtolower($employee_data->group_company) == "property") {
+                if (in_array(strtolower($employee_data->group_company), [
+                    "property"
+                ])) {
                     $ent->no_declaration = $noDeclaration;
                 }
 
@@ -2507,7 +2513,9 @@ class BusinessTripController extends Controller
                 $caId = $ca->id = (string) Str::uuid();
                 $ca->no_ca = $this->generateNoCa();
 
-                if (strtolower($employee_data->group_company) == "property") {
+                if (in_array(strtolower($employee_data->group_company), [
+                    "property"
+                ])) {
                     $ca->no_declaration = $noDeclaration;
                 }
 
@@ -2821,7 +2829,9 @@ class BusinessTripController extends Controller
                     $ca->user_id = $userId;
                     $caId = $ca->id;
 
-                    if (strtolower($employee_data->group_company) == "property") {
+                    if (in_array(strtolower($employee_data->group_company), [
+                        "property"
+                    ])) {
                         if (empty($ca->no_declaration)) {
                             $ca->no_declaration = $noDeclaration;
                         }
@@ -3080,7 +3090,9 @@ class BusinessTripController extends Controller
                     $ca->user_id = $userId;
                     $caId = $ca->id;
 
-                    if (strtolower($employee_data->group_company) == "property") {
+                    if (in_array(strtolower($employee_data->group_company), [
+                        "property"
+                    ])) {
                         if (empty($ca->no_declaration)) {
                             $ca->no_declaration = $noDeclaration;
                         }
@@ -3289,7 +3301,9 @@ class BusinessTripController extends Controller
                     $ca->total_cost =
                         -1 * (int) str_replace(".", "", $ca->total_real);
 
-                    if (strtolower($employee_data->group_company) == "property") {
+                    if (in_array(strtolower($employee_data->group_company), [
+                        "property"
+                    ])) {
                         if (empty($ca->no_declaration)) {
                             $ca->no_declaration = $noDeclaration;
                         }
@@ -3507,7 +3521,9 @@ class BusinessTripController extends Controller
                     $ca->total_cost =
                         -1 * (int) str_replace(".", "", $ca->total_real);
 
-                    if (strtolower($employee_data->group_company) == "property") {
+                    if (in_array(strtolower($employee_data->group_company), [
+                        "property"
+                    ])) {
                         if (empty($ca->no_declaration)) {
                             $ca->no_declaration = $noDeclaration;
                         }
@@ -3800,7 +3816,9 @@ class BusinessTripController extends Controller
             }
         }
         // Update the status field in the BusinessTrip record
-        if (strtolower($employee_data->group_company) == "property") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "property"
+        ])) {
             $n->update([
                 "no_declaration" => $noDeclaration,
                 "status" => $statusValue,
@@ -5164,10 +5182,10 @@ class BusinessTripController extends Controller
                                     "id",
                                     $user->id,
                                 )->first();
-                                $allowance = in_array(
-                                    $employee_data->group_company,
-                                    ["Plantations", "KPN Plantations"],
-                                )
+                                $allowance = in_array(strtolower($employee_data->group_company), [
+                                    "plantations",
+                                    "kpn plantations"
+                                ])
                                     ? "Perdiem"
                                     : "Allowance";
 
@@ -5231,10 +5249,10 @@ class BusinessTripController extends Controller
                                     "id",
                                     $user->id,
                                 )->first();
-                                $allowance = in_array(
-                                    $employee_data->group_company,
-                                    ["Plantations", "KPN Plantations"],
-                                )
+                                $allowance = in_array(strtolower($employee_data->group_company), [
+                                    "plantations",
+                                    "kpn plantations"
+                                ])
                                     ? "Perdiem"
                                     : "Allowance";
 
@@ -5460,10 +5478,10 @@ class BusinessTripController extends Controller
                                     "id",
                                     $user->id,
                                 )->first();
-                                $allowance = in_array(
-                                    $employee_data->group_company,
-                                    ["Plantations", "KPN Plantations"],
-                                )
+                                $allowance = in_array(strtolower($employee_data->group_company), [
+                                    "plantations",
+                                    "kpn plantations"
+                                ])
                                     ? "Perdiem"
                                     : "Allowance";
 
@@ -5528,10 +5546,10 @@ class BusinessTripController extends Controller
                                     "id",
                                     $user->id,
                                 )->first();
-                                $allowance = in_array(
-                                    $employee_data->group_company,
-                                    ["Plantations", "KPN Plantations"],
-                                )
+                                $allowance = in_array(strtolower($employee_data->group_company), [
+                                    "plantations",
+                                    "kpn plantations"
+                                ])
                                     ? "Perdiem"
                                     : "Allowance";
 
@@ -5776,10 +5794,10 @@ class BusinessTripController extends Controller
                                     "id",
                                     $sppd->user_id,
                                 )->first();
-                                $allowance = in_array(
-                                    $employee_data->group_company,
-                                    ["Plantations", "KPN Plantations"],
-                                )
+                                $allowance = in_array(strtolower($employee_data->group_company), [
+                                    "plantations",
+                                    "kpn plantations"
+                                ])
                                     ? "Perdiem"
                                     : "Allowance";
 
@@ -5843,10 +5861,10 @@ class BusinessTripController extends Controller
                                     "id",
                                     $sppd->user_id,
                                 )->first();
-                                $allowance = in_array(
-                                    $employee_data->group_company,
-                                    ["Plantations", "KPN Plantations"],
-                                )
+                                $allowance = in_array(strtolower($employee_data->group_company), [
+                                    "plantations",
+                                    "kpn plantations"
+                                ])
                                     ? "Perdiem"
                                     : "Allowance";
 
@@ -6071,10 +6089,10 @@ class BusinessTripController extends Controller
                                     "id",
                                     $sppd->user_id,
                                 )->first();
-                                $allowance = in_array(
-                                    $employee_data->group_company,
-                                    ["Plantations", "KPN Plantations"],
-                                )
+                                $allowance = in_array(strtolower($employee_data->group_company), [
+                                    "plantations",
+                                    "kpn plantations"
+                                ])
                                     ? "Perdiem"
                                     : "Allowance";
 
@@ -6153,10 +6171,10 @@ class BusinessTripController extends Controller
                                     "id",
                                     $sppd->user_id,
                                 )->first();
-                                $allowance = in_array(
-                                    $employee_data->group_company,
-                                    ["Plantations", "KPN Plantations"],
-                                )
+                                $allowance = in_array(strtolower($employee_data->group_company), [
+                                    "plantations",
+                                    "kpn plantations"
+                                ])
                                     ? "Perdiem"
                                     : "Allowance";
 
@@ -6311,7 +6329,9 @@ class BusinessTripController extends Controller
         $companies = null;
         $locations = null;
 
-        if (strtolower($employee_data->group_company) == "property") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "property"
+        ])) {
             $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
             $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
         } else {
@@ -6353,10 +6373,10 @@ class BusinessTripController extends Controller
 
         // dd($employee_data, $companies, $perdiem);
 
-        if (
-            $employee_data->group_company == "Plantations" ||
-            $employee_data->group_company == "KPN Plantations"
-        ) {
+        if (in_array(strtolower($employee_data->group_company), [
+            "plantations",
+            "kpn plantations"
+        ])) {
             $allowance = "Perdiem";
         } else {
             $allowance = "Allowance";
@@ -6375,7 +6395,9 @@ class BusinessTripController extends Controller
         $holiday = master_holiday::pluck("tanggal_libur")->toArray();
         $transportHubs = TransportHub::where("is_active", true);
 
-        if (strtolower($employee_data->group_company) == "downstream") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "downstream"
+        ])) {
             $transportHubs = $transportHubs->where("group_company", "Downstream");
         }
 
@@ -8215,10 +8237,10 @@ class BusinessTripController extends Controller
         $userId = $n->user_id;
         $employee_data = Employee::where("id", $n->user_id)->first();
 
-        if (
-            $employee_data->group_company == "Plantations" ||
-            $employee_data->group_company == "KPN Plantations"
-        ) {
+        if (in_array(strtolower($employee_data->group_company), [
+            "plantations",
+            "kpn plantations"
+        ])) {
             $allowance = "Perdiem";
         } else {
             $allowance = "Allowance";
@@ -9442,10 +9464,10 @@ class BusinessTripController extends Controller
             ->first();
         $job_level_number = (int) preg_replace("/[^0-9]/", "", $job_level);
 
-        if (
-            $employee_data->group_company == "Plantations" ||
-            $employee_data->group_company == "KPN Plantations"
-        ) {
+        if (in_array(strtolower($employee_data->group_company), [
+            "plantations",
+            "kpn plantations"
+        ])) {
             $allowance = "Perdiem";
         } else {
             $allowance = "Allowance";
@@ -9546,7 +9568,9 @@ class BusinessTripController extends Controller
         $holiday = master_holiday::pluck("tanggal_libur")->toArray();
         $transportHubs = TransportHub::where("is_active", true);
 
-        if (strtolower($employee_data->group_company) == "downstream") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "downstream"
+        ])) {
             $transportHubs = $transportHubs->where("group_company", "Downstream");
         }
 
