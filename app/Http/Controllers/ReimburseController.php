@@ -7,6 +7,7 @@ use App\Models\ca_transaction;
 use App\Models\CAApproval;
 use App\Models\Hotel;
 use Exception;
+use ZipArchive;
 use Illuminate\Http\Request;
 use App\Models\Company;
 use App\Models\Designation;
@@ -17,6 +18,7 @@ use App\Models\Employee;
 use App\Models\MatrixApproval;
 use App\Models\ListPerdiem;
 use App\Models\HealthCoverage;
+use App\Models\TransportHub;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Str;
@@ -45,6 +47,8 @@ use App\Mail\CashAdvancedNotification;
 use App\Mail\HotelNotification;
 use App\Mail\TicketNotification;
 use App\Mail\HomeTripNotification;
+use App\Helpers\Attachment as AttachmentHelper;
+use Illuminate\Support\Facades\Storage;
 
 class ReimburseController extends Controller
 {
@@ -713,7 +717,9 @@ class ReimburseController extends Controller
         $companies = null;
         $locations = null;
 
-        if (strtolower($employee_data->group_company) == "property") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "property"
+        ])) {
             $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
             $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
         } else {
@@ -1260,6 +1266,48 @@ class ReimburseController extends Controller
                 )
                 ->get();
 
+            $data_matrix_approvals_specific_employee = MatrixApproval::where(
+                    "modul",
+                    "like",
+                    "%" . $req->ca_type . "%"
+                )
+                ->where(
+                    "specific_employee_id",
+                    $employee_data->employee_id
+                )
+                ->whereRaw(
+                    '
+            ? BETWEEN
+            CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND
+            CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                    [$total_ca],
+                )
+                ->get();
+
+            $data_matrix_approvals_specific_office_location = MatrixApproval::where(
+                    "modul",
+                    "like",
+                    "%" . $req->ca_type . "%"
+                )
+                ->where(
+                    "group_company",
+                    "like",
+                    "%" . $employee_data->group_company . "%",
+                )
+                ->where(
+                    "specific_office_location",
+                    "like",
+                    "%" . $employee_data->office_area . "%",
+                )
+                ->whereRaw(
+                    '
+            ? BETWEEN
+            CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND
+            CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                    [$total_ca],
+                )
+                ->get();
+
             // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
             $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee_data->group_company . "%")
                 ->where(function ($query) use ($employee_data) {
@@ -1272,8 +1320,16 @@ class ReimburseController extends Controller
                 })
                 ->first();
 
+            if ($data_matrix_approvals_specific_employee->isNotEmpty()) {
+                $used_data_matrix_approvals = $data_matrix_approvals_specific_employee;
+            } else if ($data_matrix_approvals_specific_office_location->isNotEmpty()) {
+                $used_data_matrix_approvals = $data_matrix_approvals_specific_office_location;
+            } else {
+                $used_data_matrix_approvals = $data_matrix_approvals;
+            }
+
             // dd($data_matrix_approvals);
-            foreach ($data_matrix_approvals as $data_matrix_approval) {
+            foreach ($used_data_matrix_approvals as $data_matrix_approval) {
                 if ($data_matrix_approval->employee_id == "cek_L1") {
                     $employee_id = $managerL1;
                 } elseif ($data_matrix_approval->employee_id == "cek_L2") {
@@ -1287,7 +1343,7 @@ class ReimburseController extends Controller
                 }
 
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                if ($data_approval_setting) {
+                if ($data_approval_setting && $data_matrix_approvals_specific_employee->isEmpty()) {
                     if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
                         $employee_id = $data_approval_setting->hcga_employee_id;
                     }
@@ -1420,7 +1476,9 @@ class ReimburseController extends Controller
         $companies = null;
         $locations = null;
 
-        if (strtolower($employee_data->group_company) == "property") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "property"
+        ])) {
             $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
             $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
         } else {
@@ -1858,6 +1916,48 @@ class ReimburseController extends Controller
                 )
                 ->get();
 
+            $data_matrix_approvals_specific_employee = MatrixApproval::where(
+                    "modul",
+                    "like",
+                    "%" . $req->ca_type . "%"
+                )
+                ->where(
+                    "specific_employee_id",
+                    $employee_data->employee_id
+                )
+                ->whereRaw(
+                    '
+            ? BETWEEN
+            CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND
+            CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                    [$total_ca],
+                )
+                ->get();
+
+            $data_matrix_approvals_specific_office_location = MatrixApproval::where(
+                    "modul",
+                    "like",
+                    "%" . $req->ca_type . "%"
+                )
+                ->where(
+                    "group_company",
+                    "like",
+                    "%" . $employee_data->group_company . "%",
+                )
+                ->where(
+                    "specific_office_location",
+                    "like",
+                    "%" . $employee_data->office_area . "%",
+                )
+                ->whereRaw(
+                    '
+            ? BETWEEN
+            CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND
+            CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                    [$total_ca],
+                )
+                ->get();
+
             // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
             $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee_data->group_company . "%")
                 ->where(function ($query) use ($employee_data) {
@@ -1870,8 +1970,16 @@ class ReimburseController extends Controller
                 })
                 ->first();
 
+            if ($data_matrix_approvals_specific_employee->isNotEmpty()) {
+                $used_data_matrix_approvals = $data_matrix_approvals_specific_employee;
+            } else if ($data_matrix_approvals_specific_office_location->isNotEmpty()) {
+                $used_data_matrix_approvals = $data_matrix_approvals_specific_office_location;
+            } else {
+                $used_data_matrix_approvals = $data_matrix_approvals;
+            }
+
             // dd($data_matrix_approvals);
-            foreach ($data_matrix_approvals as $data_matrix_approval) {
+            foreach ($used_data_matrix_approvals as $data_matrix_approval) {
                 if ($data_matrix_approval->employee_id == "cek_L1") {
                     $employee_id = $managerL1;
                 } elseif ($data_matrix_approval->employee_id == "cek_L2") {
@@ -1885,7 +1993,7 @@ class ReimburseController extends Controller
                 }
 
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                if ($data_approval_setting) {
+                if ($data_approval_setting && $data_matrix_approvals_specific_employee->isEmpty()) {
                     if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
                         $employee_id = $data_approval_setting->hcga_employee_id;
                     }
@@ -2071,6 +2179,34 @@ class ReimburseController extends Controller
                 )
                 ->get();
 
+            $data_matrix_approvals_specific_employee = MatrixApproval::where(
+                    "modul",
+                    "like",
+                    "%extendca%"
+                )
+                ->where(
+                    "specific_employee_id",
+                    $employee_data->employee_id
+                )
+                ->get();
+
+            $data_matrix_approvals_specific_office_location = MatrixApproval::where(
+                    "modul",
+                    "like",
+                    "%extendca%"
+                )
+                ->where(
+                    "group_company",
+                    "like",
+                    "%" . $employee_data->group_company . "%",
+                )
+                ->where(
+                    "specific_office_location",
+                    "like",
+                    "%" . $employee_data->office_area . "%",
+                )
+                ->get();
+
             // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
             $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee_data->group_company . "%")
                 ->where(function ($query) use ($employee_data) {
@@ -2083,7 +2219,15 @@ class ReimburseController extends Controller
                 })
                 ->first();
 
-            foreach ($data_matrix_approvals as $data_matrix_approval) {
+            if ($data_matrix_approvals_specific_employee->isNotEmpty()) {
+                $used_data_matrix_approvals = $data_matrix_approvals_specific_employee;
+            } else if ($data_matrix_approvals_specific_office_location->isNotEmpty()) {
+                $used_data_matrix_approvals = $data_matrix_approvals_specific_office_location;
+            } else {
+                $used_data_matrix_approvals = $data_matrix_approvals;
+            }
+
+            foreach ($used_data_matrix_approvals as $data_matrix_approval) {
                 if ($data_matrix_approval->employee_id == "cek_L1") {
                     $employee_id = $managerL1;
                 } elseif ($data_matrix_approval->employee_id == "cek_L2") {
@@ -2097,7 +2241,7 @@ class ReimburseController extends Controller
                 }
 
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                if ($data_approval_setting) {
+                if ($data_approval_setting && $data_matrix_approvals_specific_employee->isEmpty()) {
                     if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
                         $employee_id = $data_approval_setting->hcga_employee_id;
                     }
@@ -2275,10 +2419,10 @@ class ReimburseController extends Controller
             ->whereNull("deleted_at")
             ->orderBy("layer", "asc")
             ->get();
-        if (
-            $employee_data->group_company == "Plantations" ||
-            $employee_data->group_company == "KPN Plantations"
-        ) {
+        if (in_array(strtolower($employee_data->group_company), [
+            "plantations",
+            "kpn plantations"
+        ])) {
             $allowance = "Perdiem";
         } else {
             $allowance = "Allowance";
@@ -2303,6 +2447,152 @@ class ReimburseController extends Controller
             ->set_option("enable_php", true);
 
         return $pdf->stream("Cash Advanced " . $key . ".pdf");
+    }
+
+    function cashadvancedDownloadZip($key)
+    {
+        $userId = Auth::id();
+        $parentLink = "Reimbursement";
+        $link = "Cash Advanced";
+
+        $employee_data = Employee::where("id", $userId)->first();
+        $companies = Company::orderBy("contribution_level")->get();
+        $locations = Location::orderBy("area")->get();
+        $perdiem = ListPerdiem::where("grade", $employee_data->job_level)
+            ->where(
+                "bisnis_unit",
+                "like",
+                "%" . $employee_data->group_company . "%",
+            )
+            ->first();
+        $no_sppds = CATransaction::where("user_id", $userId)
+            ->where("approval_sett", "!=", "Done")
+            ->get();
+        $transactions = CATransaction::with([
+            'employee' => function ($query) {
+                $query->with([
+                    'location',
+                ]);
+            }
+        ])->find($key);
+        $approval = ca_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
+            ->where("ca_id", $key)
+            ->where("approval_status", "!=", "Rejected")
+            ->whereNull("deleted_at")
+            ->orderBy("layer", "asc")
+            ->get();
+
+        $zip = new ZipArchive();
+        $zipFileName = "Cash Advanced" . ($transactions->no_ca ? " - " . $transactions->no_ca : "") . ".zip";
+        $zipFilePath = storage_path("app/public/" . $zipFileName);
+
+        if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+            $pdf = PDF::loadView(
+                "hcis.reimbursements.cashadv.printCashadv",
+                [
+                    "link" => $link,
+                    "parentLink" => $parentLink,
+                    "userId" => $userId,
+                    "companies" => $companies,
+                    "locations" => $locations,
+                    "employee_data" => $employee_data,
+                    "perdiem" => $perdiem,
+                    "no_sppds" => $no_sppds,
+                    "transactions" => $transactions,
+                    "approval" => $approval,
+                ],
+            )->setPaper("a4", "potrait")->set_option("enable_php", true);
+            $pdfContent = $pdf->output();
+            $zip->addFromString(
+                "Cash Advanced " . $key . ".pdf",
+                $pdfContent,
+            );
+
+            $attachmentPaths = AttachmentHelper::resolve_paths($transactions->prove_declare);
+
+            foreach ($attachmentPaths as $attachmentPath) {
+                $zip->addFile($attachmentPath, "lampiran/" . basename($attachmentPath));
+            }
+
+            $zip->close();
+        }
+
+        return response()
+            ->download($zipFilePath)
+            ->deleteFileAfterSend(true);
+    }
+
+    function cashadvancedDeklarasiDownloadZip($key)
+    {
+        $userId = Auth::id();
+        $parentLink = "Reimbursement";
+        $link = "Cash Advanced";
+
+        $employee_data = Employee::where("id", $userId)->first();
+        $companies = Company::orderBy("contribution_level")->get();
+        $locations = Location::orderBy("area")->get();
+        $transactions = CATransaction::with([
+            "companies",
+            'employee' => function ($query) {
+                $query->with([
+                    'location',
+                ]);
+            }
+        ])->find($key);
+        $approval = ca_sett_approval::with(["employee", "adminEmployeeById", "adminEmployeeByEmployeeId"])
+            ->where("ca_id", $key)
+            ->where("approval_status", "<>", "Rejected")
+            ->whereNull("deleted_at")
+            ->orderBy("layer", "asc")
+            ->get();
+        if (
+            $employee_data->group_company == "Plantations" ||
+            $employee_data->group_company == "KPN Plantations"
+        ) {
+            $allowance = "Perdiem";
+        } else {
+            $allowance = "Allowance";
+        }
+
+        $zip = new ZipArchive();
+        $zipFileName = "Cash Advanced Deklarasi" . ($transactions->no_ca ? " - " . $transactions->no_ca : "") . ".zip";
+        $zipFilePath = storage_path("app/public/" . $zipFileName);
+
+        if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+            $pdf = PDF::loadView(
+                "hcis.reimbursements.cashadv.printDeklarasiCashadv",
+                [
+                    "link" => $link,
+                    "parentLink" => $parentLink,
+                    "allowance" => $allowance,
+                    "userId" => $userId,
+                    "companies" => $companies,
+                    "locations" => $locations,
+                    "employee_data" => $employee_data,
+                    "transactions" => $transactions,
+                    "approval" => $approval,
+                ],
+            )
+                ->setPaper("a4", "potrait")
+                ->set_option("enable_php", true);
+            $pdfContent = $pdf->output();
+            $zip->addFromString(
+                "Cash Advanced Deklarasi " . $key . ".pdf",
+                $pdfContent,
+            );
+
+            $attachmentPaths = AttachmentHelper::resolve_paths($transactions->prove_declare);
+
+            foreach ($attachmentPaths as $attachmentPath) {
+                $zip->addFile($attachmentPath, "lampiran/" . basename($attachmentPath));
+            }
+
+            $zip->close();
+        }
+
+        return response()
+            ->download($zipFilePath)
+            ->deleteFileAfterSend(true);
     }
 
     public function cashadvancedDeklarasi($key)
@@ -2749,6 +3039,48 @@ class ReimburseController extends Controller
                 )
                 ->get();
 
+            $data_matrix_approvals_specific_employee = MatrixApproval::where(
+                    "modul",
+                    "like",
+                    "%" . $req->ca_type . "%"
+                )
+                ->where(
+                    "specific_employee_id",
+                    $employee_data->employee_id
+                )
+                ->whereRaw(
+                    '
+            ? BETWEEN
+            CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND
+            CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                    [$total_ca],
+                )
+                ->get();
+
+            $data_matrix_approvals_specific_office_location = MatrixApproval::where(
+                    "modul",
+                    "like",
+                    "%" . $req->ca_type . "%"
+                )
+                ->where(
+                    "group_company",
+                    "like",
+                    "%" . $employee_data->group_company . "%",
+                )
+                ->where(
+                    "specific_office_location",
+                    "like",
+                    "%" . $employee_data->office_area . "%",
+                )
+                ->whereRaw(
+                    '
+            ? BETWEEN
+            CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND
+            CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                    [$total_ca],
+                )
+                ->get();
+
             // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
             $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee_data->group_company . "%")
                 ->where(function ($query) use ($employee_data) {
@@ -2761,9 +3093,17 @@ class ReimburseController extends Controller
                 })
                 ->first();
 
+            if ($data_matrix_approvals_specific_employee->isNotEmpty()) {
+                $used_data_matrix_approvals = $data_matrix_approvals_specific_employee;
+            } else if ($data_matrix_approvals_specific_office_location->isNotEmpty()) {
+                $used_data_matrix_approvals = $data_matrix_approvals_specific_office_location;
+            } else {
+                $used_data_matrix_approvals = $data_matrix_approvals;
+            }
+
             // dd($req->contribution_level_code);
             $nextApproval = null; // Inisialisasi variabel di luar loop
-            foreach ($data_matrix_approvals as $data_matrix_approval) {
+            foreach ($used_data_matrix_approvals as $data_matrix_approval) {
                 // if ($data_matrix_approval->desc == "Dept Head AR & AP") {
                 $employee_id = null;
 
@@ -2780,7 +3120,7 @@ class ReimburseController extends Controller
                 }
 
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                if ($data_approval_setting) {
+                if ($data_approval_setting && $data_matrix_approvals_specific_employee->isEmpty()) {
                     if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
                         $employee_id = $data_approval_setting->hcga_employee_id;
                     }
@@ -2854,7 +3194,9 @@ class ReimburseController extends Controller
         $model->sett_id = $nextApproval->employee_id;
         $model->declaration_at = Carbon::now();
 
-        if (strtolower($employee_data->group_company) == "property") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "property"
+        ])) {
             if (empty($model->no_declaration)) {
                 $model->no_declaration = $this->generateNoDeclaration();
             }
@@ -3012,7 +3354,9 @@ class ReimburseController extends Controller
         $companies = null;
         $locations = null;
 
-        if (strtolower($employee_data->group_company) == "property") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "property"
+        ])) {
             $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
             $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
         } else {
@@ -3523,7 +3867,9 @@ class ReimburseController extends Controller
         $companies = null;
         $locations = null;
 
-        if (strtolower($employee_data->group_company) == "property") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "property"
+        ])) {
             $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
             $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
         } else {
@@ -5043,7 +5389,9 @@ class ReimburseController extends Controller
         $companies = null;
         $locations = null;
 
-        if (strtolower($employee_data->group_company) == "property") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "property"
+        ])) {
             $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
             $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
         } else {
@@ -5069,6 +5417,16 @@ class ReimburseController extends Controller
             ->get();
         // $no_sppds = ca_transaction::where('user_id', $userId)->where('approval_sett', '!=', 'Done')->get();
 
+        $transportHubs = TransportHub::where("is_active", true);
+
+        if (in_array(strtolower($employee_data->group_company), [
+            "downstream"
+        ])) {
+            $transportHubs = $transportHubs->where("group_company", "Downstream");
+        }
+
+        $transportHubs = $transportHubs->pluck("name");
+
         return view("hcis.reimbursements.ticket.formTicket", [
             "link" => $link,
             "parentLink" => $parentLink,
@@ -5079,6 +5437,7 @@ class ReimburseController extends Controller
             "perdiem" => $perdiem,
             "no_sppds" => $no_sppds,
             "employees" => $employees,
+            "transport_hubs" => $transportHubs,
         ]);
     }
     public function ticketSubmit(Request $req)
@@ -5233,6 +5592,8 @@ class ReimburseController extends Controller
             "ket_tkt" => $req->ket_tkt,
             "approval_status" => $statusValue,
             "tkt_only" => "Y",
+            "others_dari_tkt" => $req->others_dari_tkt,
+            "others_ke_tkt" => $req->others_ke_tkt,
         ];
 
         $noKtp = [];
@@ -5285,6 +5646,15 @@ class ReimburseController extends Controller
                 $tiket->approval_status = $statusValue;
                 $tiket->jns_dinas_tkt = $req->jns_dinas_tkt;
                 $tiket->tkt_only = "Y";
+
+                if (!empty($ticketData["others_dari_tkt"][$key])) {
+                    $tiket->dari_tkt = $ticketData["others_dari_tkt"][$key];
+                }
+
+                if (!empty($ticketData["others_ke_tkt"][$key])) {
+                    $tiket->ke_tkt = $ticketData["others_ke_tkt"][$key];
+                }
+
                 // dd($req->all());
                 $tiket->save();
 
@@ -5298,6 +5668,14 @@ class ReimburseController extends Controller
                 $noTktList[] = $tiket->no_tkt;
                 $tglPlgTkt[] = $ticketData["tgl_plg_tkt"][$key];
                 $jamPlgTkt[] = $ticketData["jam_plg_tkt"][$key];
+
+                if (!empty($ticketData["others_dari_tkt"][$key])) {
+                    $dariTkt[] = $ticketData["others_dari_tkt"][$key];
+                }
+
+                if (!empty($ticketData["others_ke_tkt"][$key])) {
+                    $keTkt[] = $ticketData["others_ke_tkt"][$key];
+                }
             }
         }
 
@@ -5632,7 +6010,9 @@ class ReimburseController extends Controller
         $companies = null;
         $locations = null;
 
-        if (strtolower($employee_data->group_company) == "property") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "property"
+        ])) {
             $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
             $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
         } else {
@@ -5689,6 +6069,16 @@ class ReimburseController extends Controller
             ];
         }
 
+        $transportHubs = TransportHub::where("is_active", true);
+
+        if (in_array(strtolower($employee_data->group_company), [
+            "downstream"
+        ])) {
+            $transportHubs = $transportHubs->where("group_company", "Downstream");
+        }
+
+        $transportHubs = $transportHubs->pluck("name");
+
         // Return the view with the necessary data
         return view("hcis.reimbursements.ticket.editTicket", [
             "link" => $link,
@@ -5704,6 +6094,7 @@ class ReimburseController extends Controller
             "ticketData" => $ticketData,
             "employees" => $employees,
             "revisiInfo" => $revisiInfo,
+            "transport_hubs" => $transportHubs,
         ]);
     }
 
@@ -5809,7 +6200,20 @@ class ReimburseController extends Controller
                     "approval_status" => $statusValue,
                     "jns_dinas_tkt" => $req->jns_dinas_tkt,
                     "tkt_only" => "Y",
+                    "others_dari_tkt" => $req->others_dari_tkt[$key] ?? null,
+                    "others_ke_tkt" => $req->others_ke_tkt[$key] ?? null,
                 ];
+
+                if (!empty($ticketData["others_dari_tkt"][$key])) {
+                    $ticketData["dari_tkt"] = $ticketData["others_dari_tkt"];
+                }
+
+                if (!empty($ticketData["others_ke_tkt"][$key])) {
+                    $ticketData["ke_tkt"] = $ticketData["others_ke_tkt"];
+                }
+
+                unset($ticketData["others_dari_tkt"]);
+                unset($ticketData["others_ke_tkt"]);
 
                 // dd($ticketData);
 
@@ -6382,6 +6786,16 @@ class ReimburseController extends Controller
             ];
         }
 
+        $transportHubs = TransportHub::where("is_active", true);
+
+        if (in_array(strtolower($employee_data->group_company), [
+            "downstream"
+        ])) {
+            $transportHubs = $transportHubs->where("group_company", "Downstream");
+        }
+
+        $transportHubs = $transportHubs->pluck("name");
+
         // Return the view with the necessary data
         return view("hcis.reimbursements.ticket.ticketApprovalDetail", [
             "link" => $link,
@@ -6397,6 +6811,7 @@ class ReimburseController extends Controller
             "ticketData" => $ticketData,
             "ticketOwnerEmployee" => $ticketOwnerEmployee,
             "ticketCount" => $ticketCount,
+            "transport_hubs" => $transportHubs
         ]);
     }
 
@@ -7364,6 +7779,80 @@ class ReimburseController extends Controller
         return redirect()->back()->with("success", "Tickets has been deleted");
     }
 
+    public function getAttachmentsAdmin($id) {
+        try {
+            $transaction = CATransaction::where("id", $id)->first();
+            if (!$transaction) {
+                return response()->json([
+                    'ca_attachments' => null
+                ]);
+            }
+
+            $attachmentPaths = AttachmentHelper::resolve_paths($transaction->prove_declare);
+            $caAttachments = [];
+
+            foreach ($attachmentPaths as $attachmentPath) {
+                // Normalize slash
+                $attachmentPath = str_replace('\\', '/', $attachmentPath);
+
+                // Ambil path setelah storage/app/public/
+                $marker = 'storage/app/public/';
+
+                $position = strpos($attachmentPath, $marker);
+
+                if ($position !== false) {
+                    $relativePath = substr(
+                        $attachmentPath,
+                        $position + strlen($marker)
+                    );
+                } else {
+                    $relativePath = $attachmentPath;
+                }
+
+                $caAttachments[] = [
+                    'url' => route('cashadvanced.admin.attachment.view', [
+                        'id' => $transaction->id,
+                        'path' => $relativePath,
+                    ]),
+                    "name" => basename($attachmentPath)
+                ];
+            }
+
+            return response()->json([
+                'ca_attachments' => $caAttachments,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'ca_attachments' => null,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function viewAttachmentAdmin($id, Request $request)
+    {
+        $transaction = CATransaction::findOrFail($id);
+
+        $path = $request->query('path');
+
+        if (!$path) {
+            abort(404);
+        }
+
+        $basePath = realpath(storage_path('app/public'));
+        $filePath = realpath(storage_path('app/public/' . $path));
+
+        if (!$filePath || !str_starts_with($filePath, $basePath . DIRECTORY_SEPARATOR)) {
+            abort(404);
+        }
+
+        if (!file_exists($filePath)) {
+            abort(404);
+        }
+
+        return response()->file($filePath);
+    }
+
     private function getRomanMonth($month)
     {
         $romanMonths = [
@@ -7412,6 +7901,16 @@ class ReimburseController extends Controller
             return [
                 "l1" => "01126010012",
                 "l2" => "-",
+                "l3" => "-",
+                "l4" => "-",
+                "l5" => "-",
+                "l6" => "-",
+                "l7" => "-",
+            ];
+        } else if ($employee->employee_id == "02114020045") {
+            return [
+                "l1" => "01113090005",
+                "l2" => "01123090014",
                 "l3" => "-",
                 "l4" => "-",
                 "l5" => "-",

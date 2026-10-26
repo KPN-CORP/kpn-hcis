@@ -179,54 +179,155 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <div class="col-md-4">
-                                                    <div class="mb-2">
-                                                        <label class="form-label" for="tlp_tkt_<?php echo $i; ?>">Phone
-                                                            Number</label>
-                                                        <input type="number" name="tlp_tkt[]"
-                                                            id="tlp_tkt_<?php echo $i; ?>"
-                                                            class="form-control form-control-sm" maxlength="12"
-                                                            value="{{ isset($ticket['tlp_tkt']) ? str_replace(['+', '\''], '', $ticket['tlp_tkt']) : '' }}"
-                                                            placeholder="ex: 08123123123" required>
+                                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                                                    <div class="col-md-4 mb-2">
+                                                        <label class="form-label">Transportation Type</label>
+                                                        <div class="input-group">
+                                                            <select class="form-select form-select-sm select2" name="jenis_tkt[]" onchange="filterTransportHubByType(this)"
+                                                                required>
+                                                                <option value="">Select Transportation Type</option>
+                                                                <option value="Train"
+                                                                    {{ $ticket && $ticket['jenis_tkt'] == 'Train' ? 'selected' : '' }}>
+                                                                    Train</option>
+                                                                <option value="Airplane"
+                                                                    {{ $ticket && $ticket['jenis_tkt'] == 'Airplane' ? 'selected' : '' }}>
+                                                                    Airplane
+                                                                </option>
+                                                                <option value="Ferry"
+                                                                    {{ $ticket && $ticket['jenis_tkt'] == 'Ferry' ? 'selected' : '' }}>
+                                                                    Ferry</option>
+                                                            </select>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-4 mb-2">
-                                                    <label class="form-label">From</label>
-                                                    <div class="input-group">
-                                                        <input class="form-control form-control-sm" name="dari_tkt[]"
-                                                            type="text" placeholder="ex. Yogyakarta (YIA)"
-                                                            value="{{ $ticket['dari_tkt'] ?? '' }}" required>
+                                                @else
+                                                    <div class="col-md-4">
+                                                        <div class="mb-2">
+                                                            <label class="form-label" for="tlp_tkt_<?php echo $i; ?>">Phone
+                                                                Number</label>
+                                                            <input type="number" name="tlp_tkt[]"
+                                                                id="tlp_tkt_<?php echo $i; ?>"
+                                                                class="form-control form-control-sm" maxlength="12"
+                                                                value="{{ isset($ticket['tlp_tkt']) ? str_replace(['+', '\''], '', $ticket['tlp_tkt']) : '' }}"
+                                                                placeholder="ex: 08123123123" required>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-4 mb-2">
-                                                    <label class="form-label">To</label>
-                                                    <div class="input-group">
-                                                        <input class="form-control form-control-sm" name="ke_tkt[]"
-                                                            type="text" placeholder="ex. Jakarta (CGK)"
-                                                            value="{{ $ticket['ke_tkt'] ?? '' }}" required>
+                                                @endif
+                                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                                                    @php
+                                                        $isOtherFrom = !in_array($ticket['dari_tkt'], $transport_hubs->toArray());
+                                                        $isOtherTo = !in_array($ticket['ke_tkt'], $transport_hubs->toArray());
+                                                    @endphp
+                                                    <div class="col-md-4 mb-2">
+                                                        <label for="dari_tkt" class="form-label">From</label>
+                                                        <select class="form-select form-select-sm select2 select2-transport-hub" name="dari_tkt[]" id="dari_tkt" onchange="DariTiketToggleOthers()" required>
+                                                            <option value="">--- Choose Location ---</option>
+                                                            @foreach ($transport_hubs as $transport_hub)
+                                                                <option value="{{ $transport_hub }}"
+                                                                {{ $transport_hub == $ticket['dari_tkt'] ? 'selected' : '' }}
+                                                                >
+                                                                    {{ $transport_hub }}
+                                                                </option>
+                                                            @endforeach
+                                                            <option value="Others" {{ $isOtherFrom ? 'selected' : '' }}>
+                                                                Others
+                                                            </option>
+                                                        </select>
+                                                        <div class="row">
+                                                            <div class="">
+                                                                <input
+                                                                    type="text"
+                                                                    id="others_dari_tkt"
+                                                                    name="others_dari_tkt[]"
+                                                                    class="form-control form-control-sm mt-2"
+                                                                    placeholder="ex: Yogyakarta (YIA)"
+                                                                    value="{{ $isOtherFrom ? $ticket['dari_tkt'] : '' }}"
+                                                                    style="{{ $isOtherFrom ? '' : 'display:none;' }}"
+                                                                    >
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                    <div class="col-md-4 mb-2">
+                                                        <label for="ke_tkt" class="form-label">To</label>
+                                                        <select class="form-select form-select-sm select2 select2-transport-hub" name="ke_tkt[]" id="ke_tkt" onchange="KeTiketToggleOthers()" required>
+                                                            <option value="">--- Choose Location ---</option>
+                                                            @foreach ($transport_hubs as $transport_hub)
+                                                                <option value="{{ $transport_hub }}"
+                                                                {{ $transport_hub == $ticket['ke_tkt'] ? 'selected' : '' }}
+                                                                >
+                                                                    {{ $transport_hub }}
+                                                                </option>
+                                                            @endforeach
+                                                            <option value="Others" {{ $isOtherTo ? 'selected' : '' }}>
+                                                                Others
+                                                            </option>
+                                                        </select>
+                                                        <div class="row">
+                                                            <div class="">
+                                                                <input
+                                                                    type="text"
+                                                                    id="others_ke_tkt"
+                                                                    name="others_ke_tkt[]"
+                                                                    class="form-control form-control-sm mt-2"
+                                                                    placeholder="ex: Jakarta (CGK)"
+                                                                    value="{{ $isOtherTo ? $ticket['ke_tkt'] : '' }}"
+                                                                    style="{{ $isOtherTo ? '' : 'display:none;' }}"
+                                                                    >
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <div class="col-md-4 mb-2">
+                                                        <label class="form-label">From</label>
+                                                        <div class="input-group">
+                                                            <input class="form-control form-control-sm" name="dari_tkt[]"
+                                                                type="text" placeholder="ex. Yogyakarta (YIA)"
+                                                                value="{{ $ticket['dari_tkt'] ?? '' }}" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 mb-2">
+                                                        <label class="form-label">To</label>
+                                                        <div class="input-group">
+                                                            <input class="form-control form-control-sm" name="ke_tkt[]"
+                                                                type="text" placeholder="ex. Jakarta (CGK)"
+                                                                value="{{ $ticket['ke_tkt'] ?? '' }}" required>
+                                                        </div>
+                                                    </div>
+                                                @endif
                                             </div>
                                             <div class="row">
-                                                <div class="col-md-6 mb-2">
-                                                    <label class="form-label">Transportation Type</label>
-                                                    <div class="input-group">
-                                                        <select class="form-select form-select-sm select2" name="jenis_tkt[]"
-                                                            required>
-                                                            <option value="">Select Transportation Type</option>
-                                                            <option value="Train"
-                                                                {{ $ticket && $ticket['jenis_tkt'] == 'Train' ? 'selected' : '' }}>
-                                                                Train</option>
-                                                            <option value="Airplane"
-                                                                {{ $ticket && $ticket['jenis_tkt'] == 'Airplane' ? 'selected' : '' }}>
-                                                                Airplane
-                                                            </option>
-                                                            <option value="Ferry"
-                                                                {{ $ticket && $ticket['jenis_tkt'] == 'Ferry' ? 'selected' : '' }}>
-                                                                Ferry</option>
-                                                        </select>
+                                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                                                    <div class="col-md-6">
+                                                        <div class="mb-2">
+                                                            <label class="form-label" for="tlp_tkt_<?php echo $i; ?>">Phone
+                                                                Number</label>
+                                                            <input type="number" name="tlp_tkt[]"
+                                                                id="tlp_tkt_<?php echo $i; ?>"
+                                                                class="form-control form-control-sm" maxlength="12"
+                                                                value="{{ isset($ticket['tlp_tkt']) ? str_replace(['+', '\''], '', $ticket['tlp_tkt']) : '' }}"
+                                                                placeholder="ex: 08123123123" required>
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                @else
+                                                    <div class="col-md-6 mb-2">
+                                                        <label class="form-label">Transportation Type</label>
+                                                        <div class="input-group">
+                                                            <select class="form-select form-select-sm select2" name="jenis_tkt[]" onchange="filterTransportHubByType(this)"
+                                                                required>
+                                                                <option value="">Select Transportation Type</option>
+                                                                <option value="Train"
+                                                                    {{ $ticket && $ticket['jenis_tkt'] == 'Train' ? 'selected' : '' }}>
+                                                                    Train</option>
+                                                                <option value="Airplane"
+                                                                    {{ $ticket && $ticket['jenis_tkt'] == 'Airplane' ? 'selected' : '' }}>
+                                                                    Airplane
+                                                                </option>
+                                                                <option value="Ferry"
+                                                                    {{ $ticket && $ticket['jenis_tkt'] == 'Ferry' ? 'selected' : '' }}>
+                                                                    Ferry</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                @endif
                                                 <div class="col-md-6 mb-2">
                                                     <label class="form-label">Ticket Type</label>
                                                     <select class="form-select form-select-sm" name="type_tkt[]" required>
@@ -327,6 +428,7 @@
             </div>
         </div>
     </div>
+    @include('js.hcis.common.transportHub')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.submit-button').forEach(button => {
@@ -526,6 +628,7 @@
                     const addedForm = ticketFormsContainer.lastElementChild;
                     toggleRequiredAttributes(addedForm, true); // Making all fields required by default
                     updateFormNumbers();
+                    initializeTransportSelect2();
                 } else {
                     Swal.fire({
                         title: "Warning!",
@@ -607,37 +710,121 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-4">
-                        <div class="mb-2">
-                            <label class="form-label" for="tlp_tkt_${formNumber}">Phone Number</label>
-                            <input type="number" name="tlp_tkt[]" id="tlp_tkt_${formNumber}" class="form-control form-control-sm" maxlength="12" placeholder="ex: 08123123123">
+                    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label" for="jenis_tkt_${formNumber}">Transportation Type</label>
+                            <div class="input-group">
+                                <select class="form-select form-select-sm" name="jenis_tkt[]" id="jenis_tkt_${formNumber}" onchange="filterTransportHubByType(this)">
+                                    <option value="">Select Transportation Type</option>
+                                    <option value="Train">Train</option>
+                                    <option value="Airplane">Airplane</option>
+                                    <option value="Ferry">Ferry</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4 mb-2">
-                        <label class="form-label">From</label>
-                        <div class="input-group">
-                            <input class="form-control form-control-sm" name="dari_tkt[]" type="text" placeholder="ex. Yogyakarta (YIA)">
+                    @else
+                        <div class="col-md-4">
+                            <div class="mb-2">
+                                <label class="form-label" for="tlp_tkt_${formNumber}">Phone Number</label>
+                                <input type="number" name="tlp_tkt[]" id="tlp_tkt_${formNumber}" class="form-control form-control-sm" maxlength="12" placeholder="ex: 08123123123">
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4 mb-2">
-                        <label class="form-label">To</label>
-                        <div class="input-group">
-                            <input class="form-control form-control-sm" name="ke_tkt[]" type="text" placeholder="ex. Jakarta (CGK)">
+                    @endif
+                    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                        @php
+                            $isOtherFrom = !in_array($ticket['dari_tkt'], $transport_hubs->toArray());
+                            $isOtherTo = !in_array($ticket['ke_tkt'], $transport_hubs->toArray());
+                        @endphp
+                        <div class="col-md-4 mb-2">
+                            <label for="dari_tkt" class="form-label">From</label>
+                            <select class="form-select form-select-sm select2 select2-transport-hub" name="dari_tkt[]" id="dari_tkt" onchange="DariTiketToggleOthers()" required>
+                                <option value="">--- Choose Location ---</option>
+                                @foreach ($transport_hubs as $transport_hub)
+                                    <option value="{{ $transport_hub }}">
+                                        {{ $transport_hub }}
+                                    </option>
+                                @endforeach
+                                <option value="Others" {{ $isOtherFrom ? 'selected' : '' }}>
+                                    Others
+                                </option>
+                            </select>
+                            <div class="row">
+                                <div class="">
+                                    <input
+                                        type="text"
+                                        id="others_dari_tkt"
+                                        name="others_dari_tkt[]"
+                                        class="form-control form-control-sm mt-2"
+                                        placeholder="ex: Yogyakarta (YIA)"
+                                        value="{{ $isOtherFrom ? $ticket['dari_tkt'] : '' }}"
+                                        style="{{ $isOtherFrom ? '' : 'display:none;' }}"
+                                        >
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                        <div class="col-md-4 mb-2">
+                            <label for="ke_tkt" class="form-label">To</label>
+                            <select class="form-select form-select-sm select2 select2-transport-hub" name="ke_tkt[]" id="ke_tkt" onchange="KeTiketToggleOthers()" required>
+                                <option value="">--- Choose Location ---</option>
+                                @foreach ($transport_hubs as $transport_hub)
+                                    <option value="{{ $transport_hub }}">
+                                        {{ $transport_hub }}
+                                    </option>
+                                @endforeach
+                                <option value="Others" {{ $isOtherTo ? 'selected' : '' }}>
+                                    Others
+                                </option>
+                            </select>
+                            <div class="row">
+                                <div class="">
+                                    <input
+                                        type="text"
+                                        id="others_ke_tkt"
+                                        name="others_ke_tkt[]"
+                                        class="form-control form-control-sm mt-2"
+                                        placeholder="ex: Jakarta (CGK)"
+                                        value="{{ $isOtherTo ? $ticket['ke_tkt'] : '' }}"
+                                        style="{{ $isOtherTo ? '' : 'display:none;' }}"
+                                        >
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">From</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-sm" name="dari_tkt[]" type="text" placeholder="ex. Yogyakarta (YIA)">
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">To</label>
+                            <div class="input-group">
+                                <input class="form-control form-control-sm" name="ke_tkt[]" type="text" placeholder="ex. Jakarta (CGK)">
+                            </div>
+                        </div>
+                    @endif
                 </div>
                 <div class="row">
-                    <div class="col-md-6 mb-2">
-                        <label class="form-label" for="jenis_tkt_${formNumber}">Transportation Type</label>
-                        <div class="input-group">
-                            <select class="form-select form-select-sm" name="jenis_tkt[]" id="jenis_tkt_${formNumber}">
-                                <option value="">Select Transportation Type</option>
-                                <option value="Train">Train</option>
-                                <option value="Airplane">Airplane</option>
-                                <option value="Ferry">Ferry</option>
-                            </select>
+                    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                        <div class="col-md-6">
+                            <div class="mb-2">
+                                <label class="form-label" for="tlp_tkt_${formNumber}">Phone Number</label>
+                                <input type="number" name="tlp_tkt[]" id="tlp_tkt_${formNumber}" class="form-control form-control-sm" maxlength="12" placeholder="ex: 08123123123">
+                            </div>
                         </div>
-                    </div>
+                    @else
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label" for="jenis_tkt_${formNumber}">Transportation Type</label>
+                            <div class="input-group">
+                                <select class="form-select form-select-sm" name="jenis_tkt[]" id="jenis_tkt_${formNumber}" onchange="filterTransportHubByType(this)">
+                                    <option value="">Select Transportation Type</option>
+                                    <option value="Train">Train</option>
+                                    <option value="Airplane">Airplane</option>
+                                    <option value="Ferry">Ferry</option>
+                                </select>
+                            </div>
+                        </div>
+                    @endif
                     <div class="col-md-6 mb-2">
                         <label for="type_tkt_${formNumber}" class="form-label">Ticket Type</label>
                         <select class="form-select form-select-sm" name="type_tkt[]">
@@ -690,4 +877,149 @@
             }
         });
     </script>
+
+    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+        <script>
+            $(document).ready(function () {
+                if ($('#dari_tkt').length && $.fn.select2) {
+                    $('#dari_tkt').select2({
+                        width: '100%',
+                        theme: 'bootstrap-5',
+                        matcher: function (params, data) {
+                            if ($.trim(params.term) === '') {
+                                return data;
+                            }
+                            if (data.text === 'Others') {
+                                return data;
+                            }
+                            if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
+                                return data;
+                            }
+                            return null;
+                        }
+                    });
+                }
+
+                if ($('#ke_tkt').length && $.fn.select2) {
+                    $('#ke_tkt').select2({
+                        width: '100%',
+                        theme: 'bootstrap-5',
+                        matcher: function (params, data) {
+                            if ($.trim(params.term) === '') {
+                                return data;
+                            }
+                            if (data.text === 'Others') {
+                                return data;
+                            }
+                            if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
+                                return data;
+                            }
+                            return null;
+                        }
+                    });
+                }
+
+                if ($('#dari_tkt_dalam_kota').length && $.fn.select2) {
+                    $('#dari_tkt_dalam_kota').select2({
+                        width: '100%',
+                        theme: 'bootstrap-5',
+                        matcher: function (params, data) {
+                            if ($.trim(params.term) === '') {
+                                return data;
+                            }
+                            if (data.text === 'Others') {
+                                return data;
+                            }
+                            if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
+                                return data;
+                            }
+                            return null;
+                        }
+                    });
+                }
+
+                if ($('#ke_tkt_dalam_kota').length && $.fn.select2) {
+                    $('#ke_tkt_dalam_kota').select2({
+                        width: '100%',
+                        theme: 'bootstrap-5',
+                        matcher: function (params, data) {
+                            if ($.trim(params.term) === '') {
+                                return data;
+                            }
+                            if (data.text === 'Others') {
+                                return data;
+                            }
+                            if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
+                                return data;
+                            }
+                            return null;
+                        }
+                    });
+                }
+            });
+
+            function DariTiketToggleOthers() {
+                var selectElem = document.getElementById("dari_tkt");
+                var othersSelectElem = document.getElementById("others_dari_tkt");
+
+                if (selectElem.value === "Others") {
+                    othersSelectElem.style.display = "block";
+                } else {
+                    othersSelectElem.style.display = "none";
+                    othersSelectElem.value = "";
+                }
+            }
+
+            function KeTiketToggleOthers() {
+                var selectElem = document.getElementById("ke_tkt");
+                var othersSelectElem = document.getElementById("others_ke_tkt");
+
+                if (selectElem.value === "Others") {
+                    othersSelectElem.style.display = "block";
+                } else {
+                    othersSelectElem.style.display = "none";
+                    othersSelectElem.value = "";
+                }
+            }
+
+            function DariTiketDalamKotaToggleOthers() {
+                var selectElem = document.getElementById("dari_tkt_dalam_kota");
+                var othersSelectElem = document.getElementById("others_dari_tkt_dalam_kota");
+
+                if (selectElem.value === "Others") {
+                    othersSelectElem.style.display = "block";
+                } else {
+                    othersSelectElem.style.display = "none";
+                    othersSelectElem.value = "";
+                }
+            }
+
+            function KeTiketDalamKotaToggleOthers() {
+                var selectElem = document.getElementById("ke_tkt_dalam_kota");
+                var othersSelectElem = document.getElementById("others_ke_tkt_dalam_kota");
+
+                if (selectElem.value === "Others") {
+                    othersSelectElem.style.display = "block";
+                } else {
+                    othersSelectElem.style.display = "none";
+                    othersSelectElem.value = "";
+                }
+            }
+
+            function initializeTransportSelect2(container) {
+                $(".select2-transport-hub").each(function() {
+                    const $select = $(this);
+
+                    if (!$select.data("select2")) {
+                        $select.select2({
+                            theme: "bootstrap-5",
+                            width: "100%",
+                            minimumInputLength: 0,
+                            allowClear: false
+                        });
+                    }
+                });
+            }
+        </script>
+    @endif
 @endsection
