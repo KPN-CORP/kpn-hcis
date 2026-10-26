@@ -122,13 +122,15 @@ class ODataService {
         }
 
         $payload = new ODataMedicalClaimRequestDTO(
-            employee_id: $employeeID
+            employee_code: $employeeID
         );
+
+        $accessToken = $this->getAccessToken();
 
         $httpClient = app(HttpClient::class);
 
-        $httpRes = $httpClient->getJSON($this->apiBaseUrl . "/sap/opu/odata/sap/ZCDS_MED_CLAIM_CDS/ZCDS_MED_CLAIM?" . $payload->toUrlEncode(), [
-            "Authorization" => "Basic " . base64_encode($this->apiUsername . ":" . $this->apiPassword),
+        $httpRes = $httpClient->getJSON($this->apiBaseUrl . "/api/v1/medical-claim?" . $payload->toUrlEncode(), [
+            "Authorization" => $accessToken,
         ]);
         if (!$httpRes["status"]) {
             return [
@@ -139,24 +141,8 @@ class ODataService {
             ];
         }
 
-        // $accessToken = $this->getAccessToken();
-
-        // $httpClient = app(HttpClient::class);
-
-        // $httpRes = $httpClient->getJSON($this->apiBaseUrl . "/api/v1/medical-claim?" . $payload->toUrlEncode(), [
-        //     "Authorization" => $accessToken,
-        // ]);
-        // if (!$httpRes["status"]) {
-        //     return [
-        //         'status' => false,
-        //         'message'  => "failed",
-        //         'data'    => null,
-        //         'error'   => $httpRes["error"],
-        //     ];
-        // }
-
         $resData = ODataMedicalClaimResponseDTO::fromArray($httpRes["data"] ?? []);
-        if (!$resData || !$resData->d || empty($resData->d) || !$resData->d->results || empty($resData->d->results)) {
+        if (!$resData || !$resData->data || empty($resData->data)) {
             return [
                 'status' => false,
                 'message'  => "failed",
@@ -165,7 +151,7 @@ class ODataService {
             ];
         }
 
-        foreach ($resData->d->results as $row) {
+        foreach ($resData->data as $row) {
             if (!$row || !$row->hcis_id || !$row->nik || !$row->paid_date) {
                 continue;
             }
@@ -184,6 +170,56 @@ class ODataService {
 
             $medicalData->save();
         }
+
+        // OLD LOGIC
+
+        // $payload = new ODataMedicalClaimRequestDTO(
+        //     employee_id: $employeeID
+        // );
+
+        // $httpClient = app(HttpClient::class);
+
+        // $httpRes = $httpClient->getJSON($this->apiBaseUrl . "/sap/opu/odata/sap/ZCDS_MED_CLAIM_CDS/ZCDS_MED_CLAIM?" . $payload->toUrlEncode(), [
+        //     "Authorization" => "Basic " . base64_encode($this->apiUsername . ":" . $this->apiPassword),
+        // ]);
+        // if (!$httpRes["status"]) {
+        //     return [
+        //         'status' => false,
+        //         'message'  => "failed",
+        //         'data'    => null,
+        //         'error'   => $httpRes["error"],
+        //     ];
+        // }
+
+        // $resData = ODataMedicalClaimResponseDTO::fromArray($httpRes["data"] ?? []);
+        // if (!$resData || !$resData->d || empty($resData->d) || !$resData->d->results || empty($resData->d->results)) {
+        //     return [
+        //         'status' => false,
+        //         'message'  => "failed",
+        //         'data'    => $resData,
+        //         'error'   => "No data to be processed",
+        //     ];
+        // }
+
+        // foreach ($resData->d->results as $row) {
+        //     if (!$row || !$row->hcis_id || !$row->nik || !$row->paid_date) {
+        //         continue;
+        //     }
+
+        //     if ($row->hcis_id != $medicalData->no_medic || $row->nik != $employeeID) {
+        //         continue;
+        //     }
+
+        //     $paidDate = Carbon::createFromFormat('Ymd', $row->paid_date)
+        //         ->startOfDay()
+        //         ->toDateTimeString();
+
+        //     $medicalData->paid_date = $paidDate;
+        //     $medicalData->doc_status_previous = $medicalData->doc_status;
+        //     $medicalData->doc_status = "Done";
+
+        //     $medicalData->save();
+        // }
 
         return [
             'status' => true,
@@ -204,8 +240,8 @@ class ODataService {
             return "";
         }
 
-        $tokenType = $loginRes["data"]->token_type ?? "Bearer ";
+        $tokenType = $loginRes["data"]->token_type ?? "Bearer";
 
-        return $tokenType . $loginRes["data"]->access_token;
+        return $tokenType . " " . $loginRes["data"]->access_token;
     }
 }
