@@ -333,7 +333,7 @@ class ELogService {
 
     private function getAccessToken() {
         $token = Cache::get($this->apiAccessTokenKey);
-        if ($token) {
+        if ($token && !empty($token)) {
             return $token;
         }
 

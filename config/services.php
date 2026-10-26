@@ -50,6 +50,7 @@ return [
         'api_client_id' => env('ODATA_API_CLIENT_ID'),
         'api_client_secret' => env('ODATA_API_CLIENT_SECRET'),
         'api_access_token_key' => env('ODATA_API_ACCESS_TOKEN_KEY', 'odata_api_access_token'),
+        'api_access_token_type_key' => env('ODATA_API_ACCESS_TOKEN_TYPE_KEY', 'odata_api_access_token_type'),
     ],
 
 ];

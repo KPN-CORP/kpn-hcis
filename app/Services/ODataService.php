@@ -19,6 +19,7 @@ class ODataService {
     protected string $apiClientID;
     protected string $apiClientSecret;
     protected string $apiAccessTokenKey;
+    protected string $apiAccessTokenTypeKey;
 
     public function __construct() {
         $this->apiBaseUrl = config('services.odata.api_base_url');
@@ -27,6 +28,7 @@ class ODataService {
         $this->apiClientID = config('services.odata.api_client_id');
         $this->apiClientSecret = config('services.odata.api_client_secret');
         $this->apiAccessTokenKey = config('services.odata.api_access_token_key');
+        $this->apiAccessTokenTypeKey = config('services.odata.api_access_token_type_key');
     }
 
     public function login() {
@@ -59,14 +61,18 @@ class ODataService {
 
         $ttl = now()->addMinutes(55);
 
-        $expiresIn = $resData->expires_in ?? null;
+        $expiresIn = $resData->expiresIn ?? null;
 
         if (is_numeric($expiresIn) && (int) $expiresIn > 0) {
             $ttl = now()->addSeconds(max(30, (int) $expiresIn - 60));
         }
 
-        if ($resData && $resData->access_token) {
-            Cache::put($this->apiAccessTokenKey, $resData->access_token, $ttl);
+        if ($resData && $resData->accessToken) {
+            Cache::put($this->apiAccessTokenKey, $resData->accessToken, $ttl);
+        }
+
+        if ($resData && $resData->tokenType) {
+            Cache::put($this->apiAccessTokenTypeKey, $resData->tokenType, $ttl);
         }
 
         return [
@@ -129,7 +135,7 @@ class ODataService {
 
         $httpClient = app(HttpClient::class);
 
-        $httpRes = $httpClient->getJSON($this->apiBaseUrl . "/api/v1/medical-claim?" . $payload->toUrlEncode(), [
+        $httpRes = $httpClient->getJSON($this->apiBaseUrl . "/api/v1/medical-claim", $payload, [
             "Authorization" => $accessToken,
         ]);
         if (!$httpRes["status"]) {
@@ -179,7 +185,7 @@ class ODataService {
 
         // $httpClient = app(HttpClient::class);
 
-        // $httpRes = $httpClient->getJSON($this->apiBaseUrl . "/sap/opu/odata/sap/ZCDS_MED_CLAIM_CDS/ZCDS_MED_CLAIM?" . $payload->toUrlEncode(), [
+        // $httpRes = $httpClient->getJSON($this->apiBaseUrl . "/sap/opu/odata/sap/ZCDS_MED_CLAIM_CDS/ZCDS_MED_CLAIM", $payload, [
         //     "Authorization" => "Basic " . base64_encode($this->apiUsername . ":" . $this->apiPassword),
         // ]);
         // if (!$httpRes["status"]) {
@@ -231,8 +237,10 @@ class ODataService {
 
     private function getAccessToken() {
         $token = Cache::get($this->apiAccessTokenKey);
-        if ($token) {
-            return $token;
+        $tokenType = Cache::get($this->apiAccessTokenTypeKey);
+
+        if ($token && !empty($token) && $tokenType && !empty($tokenType)) {
+            return $tokenType . " " . $token;
         }
 
         $loginRes = $this->login();
@@ -240,8 +248,8 @@ class ODataService {
             return "";
         }
 
-        $tokenType = $loginRes["data"]->token_type ?? "Bearer";
+        $tokenType = $loginRes["data"]->tokenType ?? "Bearer";
 
-        return $tokenType . " " . $loginRes["data"]->access_token;
+        return $tokenType . " " . $loginRes["data"]->accessToken;
     }
 }

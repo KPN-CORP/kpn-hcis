@@ -21,8 +21,8 @@ class HttpClient {
                 'payload' => $payload,
             ]);
 
-            $http = Http::connectTimeout(1)
-                ->timeout(1)
+            $http = Http::connectTimeout(10)
+                ->timeout(60)
                 ->acceptJson()
                 ->withHeaders($headers);
 
@@ -89,8 +89,8 @@ class HttpClient {
         ];
     }
 
-    public function getJSON(string $url, array $headers = []): array {
-        $response = $this->request('get', $url, $headers);
+    public function getJSON(string $url, array|object $payload = [], array $headers = []): array {
+        $response = $this->request('get', $url, $headers, $payload);
 
         return $this->formatResponse($response);
     }
