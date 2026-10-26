@@ -1594,7 +1594,7 @@ class MedicalController extends Controller
                         $deductionCost = $companyCoveredAmount;
                     }
 
-                    if ($deductionCost > $medical_plan->balance) {
+                    if (($deductionCost > $medical_plan->balance) || $medical_plan->balance <= 0) {
                         return redirect()
                             ->route("medical.confirmation")
                             ->with("error", "Medical plafond exceded");
