@@ -37,10 +37,22 @@ $(document).ready(function () {
     }
 });
 $(document).ready(function () {
+    // Partial ini ikut di-include di halaman daftar (medicalAdmin,
+    // medicalApproval, medical) yang tidak pernah mendefinisikan
+    // medicalTypeData — hanya halaman form yang melakukannya. Tanpa penjagaan
+    // ini, blok di bawah melempar "medicalTypeData is not defined" dan
+    // menghentikan sisa script di halaman tersebut.
+    // Versi lama:
+    // var typeToNameMap = {};
+    // medicalTypeData.forEach(function (type) {
+    //     typeToNameMap[type.medical_type] = type.name;
+    // });
     var typeToNameMap = {};
-    medicalTypeData.forEach(function (type) {
-        typeToNameMap[type.medical_type] = type.name;
-    });
+    if (typeof medicalTypeData !== "undefined" && Array.isArray(medicalTypeData)) {
+        medicalTypeData.forEach(function (type) {
+            typeToNameMap[type.medical_type] = type.name;
+        });
+    }
 
     $("#medical_type").on("change", function () {
         var selectedTypes = $(this).val();
@@ -101,7 +113,16 @@ const formattedToday = today.toISOString().split("T")[0];
 const formattedTwoWeeksAgo = twoWeeksAgo.toISOString().split("T")[0];
 
 // Set the min attribute for the input to two weeks ago
+// Input #date hanya ada di halaman form medical. Di halaman daftar yang juga
+// meng-include partial ini, getElementById mengembalikan null sehingga
+// setAttribute melempar TypeError dan script sesudahnya tidak jalan.
+// Versi lama:
+// const dateInput = document.getElementById("date");
+// dateInput.setAttribute("min", formattedTwoWeeksAgo);
+// dateInput.setAttribute("max", formattedToday); // Optional: To limit selection to today
 const dateInput = document.getElementById("date");
-dateInput.setAttribute("min", formattedTwoWeeksAgo);
-dateInput.setAttribute("max", formattedToday); // Optional: To limit selection to today
+if (dateInput) {
+    dateInput.setAttribute("min", formattedTwoWeeksAgo);
+    dateInput.setAttribute("max", formattedToday); // Optional: To limit selection to today
+}
 </script>

@@ -215,10 +215,21 @@
             // punya satu kolom ekstra (Employee Name), jadi indeks kolom
             // sesudahnya bergeser satu. medical.detail tetap client-side.
             $isConfirmationView = request()->routeIs('medical.confirmation');
+            // URL dibuat relatif (absolute: false). Di belakang reverse proxy
+            // yang menterminasi TLS, route() absolut bisa keluar sebagai
+            // http:// walau halamannya https:// sehingga ajax-nya diblokir
+            // browser ("mixed active content"). Path relatif selalu mengikuti
+            // scheme halaman saat ini.
+            // Versi lama:
+            // $serverSideUrl = $isConfirmationView
+            //     ? route('medical.confirmation.data')
+            //     : (request()->routeIs('medical-table.admin')
+            //         ? route('medical-table.admin.data')
+            //         : null);
             $serverSideUrl = $isConfirmationView
-                ? route('medical.confirmation.data')
+                ? route('medical.confirmation.data', [], false)
                 : (request()->routeIs('medical-table.admin')
-                    ? route('medical-table.admin.data')
+                    ? route('medical-table.admin.data', [], false)
                     : null);
 
             $mmCount = count($master_medical);
