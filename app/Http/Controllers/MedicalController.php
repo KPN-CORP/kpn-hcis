@@ -1557,7 +1557,7 @@ class MedicalController extends Controller
                 $existingCoverageEmployee = Employee::where("employee_id", $existingCoverage->employee_id)->first();
                 if (!$existingCoverageEmployee) {
                     return redirect()
-                        ->route("medical")
+                        ->route("medical.admin")
                         ->with("error", "Employee data not found");
                 }
 
@@ -1581,6 +1581,28 @@ class MedicalController extends Controller
 
                 if (empty($docReceivedAt)) {
                     $docReceivedAt = Carbon::now();
+                }
+
+                if (in_array(strtolower($existingCoverageEmployee->group_company), [
+                    "downstream",
+                    "plantations",
+                    "kpn plantations"
+                ])) {
+                    $deductionCost = $verif_cost;
+
+                    if ($companyCoveredAmount !== null) {
+                        $deductionCost = $companyCoveredAmount;
+                    }
+
+                    if ($deductionCost > $medical_plan->balance) {
+                        return redirect()
+                            ->route("medical.admin")
+                            ->with("error", "Medical plafond exceded");
+                    }
+
+                    $medical_plan->balance -= $deductionCost;
+
+                    $medical_plan->save();
                 }
 
                 $existingCoverage->update([
@@ -1607,28 +1629,6 @@ class MedicalController extends Controller
                     $existingCoverage->update([
                         "balance_uncoverage" => $balance_diff_formatted,
                     ]);
-                }
-
-                if (in_array(strtolower($existingCoverageEmployee->group_company), [
-                    "downstream",
-                    "plantations",
-                    "kpn plantations"
-                ])) {
-                    $deductionCost = $verif_cost;
-
-                    if ($companyCoveredAmount !== null) {
-                        $deductionCost = $companyCoveredAmount;
-                    }
-
-                    if ($deductionCost > $medical_plan->balance) {
-                        return redirect()
-                            ->route("medical")
-                            ->with("error", "Medical plafond exceded");
-                    }
-
-                    $medical_plan->balance -= $deductionCost;
-
-                    $medical_plan->save();
                 }
             } else {
                 Log::info(
