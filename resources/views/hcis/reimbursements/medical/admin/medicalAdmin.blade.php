@@ -210,7 +210,30 @@
     <script>
         var isConfirmationRoute = @json(request()->routeIs('medical.confirmation'));
         //medical table
-        $("#example").DataTable({
+        @php
+            // Dua route memakai tabel ini secara server-side. Route konfirmasi
+            // punya satu kolom ekstra (Employee Name), jadi indeks kolom
+            // sesudahnya bergeser satu. medical.detail tetap client-side.
+            $isConfirmationView = request()->routeIs('medical.confirmation');
+            $serverSideUrl = $isConfirmationView
+                ? route('medical.confirmation.data')
+                : (request()->routeIs('medical-table.admin')
+                    ? route('medical-table.admin.data')
+                    : null);
+
+            $mmCount = count($master_medical);
+            $mmFirst = $isConfirmationView ? 12 : 11;
+            $mmLast = $mmFirst + $mmCount - 1;
+            $statusIdx = $mmFirst + $mmCount;
+            $actionIdx = $statusIdx + 1;
+
+            // Kolom ber-class text-center, mengikuti <td> di
+            // historyMedicalAdmin.blade.php.
+            $centerIdx = $isConfirmationView ? [1, 2, 5, 6, 11] : [1, 4, 5, 10];
+            $centerIdx[] = $statusIdx;
+            $centerIdx[] = $actionIdx;
+        @endphp
+        var medicalTableOptions = {
             responsive: {
                 details: {
                     type: "column",
@@ -227,7 +250,50 @@
             order: [1, "asc"],
             pageLength: 5,
             lengthMenu: [5, 10, 25, 50],
-        });
+            language: {
+                // Ganti teks "Processing..." dengan titik-titik yang sama
+                // seperti #preloader. Overlay-nya diatur di _preloader.scss.
+                // Pembungkus .dt-loader WAJIB ada: CSS DataTables menata
+                // "> div:last-child > div" jadi titik biru miliknya sendiri,
+                // dan pembungkus ini yang menyerapnya supaya titik kita
+                // (satu level lebih dalam) tidak ikut tertimpa.
+                processing:
+                    '<div class="dt-loader"><div class="bouncing-loader"><div></div><div></div><div></div></div></div>',
+            },
+        };
+
+        @if ($serverSideUrl)
+            // Server-side: halaman tidak lagi merender seluruh baris sekaligus.
+            // Urutan default (kolom 1 "No" asc) tetap mengikuti urutan server,
+            // yaitu latest_created_at desc, sama seperti versi lama.
+            medicalTableOptions.processing = true;
+            medicalTableOptions.serverSide = true;
+            medicalTableOptions.searchDelay = 400;
+            medicalTableOptions.ajax = {
+                url: @json($serverSideUrl),
+                data: function (d) {
+                    // Ikut filter Unit Location yang sedang aktif di halaman.
+                    d.stat = @json(request()->get('stat'));
+                },
+            };
+            medicalTableOptions.columnDefs = [
+                { className: "control", orderable: false, targets: 0 },
+                { orderable: false, targets: [1, {{ $mmFirst - 1 }}, {{ $actionIdx }}] },
+                {
+                    className: "text-center",
+                    targets: [{{ implode(', ', $centerIdx) }}],
+                },
+                @if ($mmCount > 0)
+                    {
+                        className: "text-center",
+                        orderable: false,
+                        targets: [{{ implode(', ', range($mmFirst, $mmLast)) }}],
+                    },
+                @endif
+            ];
+        @endif
+
+        $("#example").DataTable(medicalTableOptions);
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
