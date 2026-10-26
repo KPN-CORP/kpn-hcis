@@ -531,6 +531,23 @@ class MedicalController extends Controller
 
         $statusValue = $request->has("action_draft") ? "Draft" : "Pending";
         $employee_data = Employee::where("id", $userId)->first();
+        if (!$employee_data) {
+            return redirect()
+                ->route("medical")
+                ->with("error", "Employee data not found.");
+        }
+
+        if (empty($employee_data->bank_account_number)) {
+            return redirect()
+                ->route("medical")
+                ->with("error", "Bank account number is empty.");
+        }
+
+        if (empty($employee_data->bank_account_name) && empty($employee_data->bank_account_name_payroll)) {
+            return redirect()
+                ->route("medical")
+                ->with("error", "Bank account name is empty.");
+        }
 
         $docStatusValue = "Document Pending";
 
@@ -635,17 +652,11 @@ class MedicalController extends Controller
                 "elog_medical_type" => "Reimbursement",
                 "elog_vendor" => "SMEDICAL"
             ]);
-
-            // dd($employee_id);
-
-            // $MDCNotificationLayer = Employee::where('employee_id', $employee_id)->pluck('email')->first();
-            // if ($MDCNotificationLayer) {
-            //     // Kirim email ke pengguna transaksi (employee pada layer terakhir)
-            //     Mail::to($MDCNotificationLayer)->send(new MedicalNotification($healthCoverage));
-            // }
         }
 
-        if ($statusValue == "Pending" && strtolower($employee_data->group_company) == "downstream") {
+        if ($statusValue == "Pending" && in_array(strtolower($employee_data->group_company), [
+            "downstream"
+        ])) {
             $plafonds = MasterPlafond::where("group_name", $employee_data->job_level)
                 ->get()
                 ->keyBy("medical_type");
@@ -994,7 +1005,9 @@ class MedicalController extends Controller
                 });
         }
 
-        if ($statusValue == "Pending" && strtolower($employee_data->group_company) == "downstream") {
+        if ($statusValue == "Pending" && in_array(strtolower($employee_data->group_company), [
+            "downstream"
+        ])) {
             $plafonds = MasterPlafond::where("group_name", $employee_data->job_level)
                 ->get()
                 ->keyBy("medical_type");
@@ -1156,7 +1169,9 @@ class MedicalController extends Controller
             $medical_approvals["employee_names"][] = $medical_data->employee_received->fullname;
             $medical_approvals["dates"][] = $medical_data->doc_received_at;
         } else {
-            if (strtolower($employee_data->group_company) == "property") {
+            if (in_array(strtolower($employee_data->group_company), [
+                "property"
+            ])) {
                 $medical_approvals["labels"][] = "Received";
                 $medical_approvals["statuses"][] = "";
                 $medical_approvals["role_names"][] = "HC Officer";
@@ -1178,7 +1193,9 @@ class MedicalController extends Controller
             $medical_approvals["employee_names"][] = $medical_data->employee_verified->fullname;
             $medical_approvals["dates"][] = $medical_data->verif_at;
         } else {
-            if (strtolower($employee_data->group_company) == "property") {
+            if (in_array(strtolower($employee_data->group_company), [
+                "property"
+            ])) {
                 $medical_approvals["labels"][] = "Verified";
                 $medical_approvals["statuses"][] = "";
                 $medical_approvals["role_names"][] = "HC Officer";
@@ -1200,7 +1217,9 @@ class MedicalController extends Controller
             $medical_approvals["employee_names"][] = $medical_data->employee_approved->fullname;
             $medical_approvals["dates"][] = $medical_data->approved_at;
         } else {
-            if (strtolower($employee_data->group_company) == "property") {
+            if (in_array(strtolower($employee_data->group_company), [
+                "property"
+            ])) {
                 $medical_approvals["labels"][] = "Approved";
                 $medical_approvals["statuses"][] = "";
                 $medical_approvals["role_names"][] = "HC Director";
@@ -1219,7 +1238,9 @@ class MedicalController extends Controller
         $medical_formatted_total_current_claim = number_format($medical_total_current_claim, 0, ',', '.');
         $medical_formatted_closing_balance_plafond = number_format($medical_closing_balance_plafond, 0, ',', '.');
 
-        if (strtolower($employee_data->group_company) == "downstream") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "downstream"
+        ])) {
             $medical_formatted_opening_balance_plafond = '';
             $medical_formatted_closing_balance_plafond = '';
         }
@@ -1460,6 +1481,13 @@ class MedicalController extends Controller
                 ->first();
 
             if ($existingCoverage) {
+                $existingCoverageEmployee = Employee::where("employee_id", $existingCoverage->employee_id)->first();
+                if (!$existingCoverageEmployee) {
+                    return redirect()
+                        ->route("medical")
+                        ->with("error", "Employee data not found");
+                }
+
                 $bpjs_cost = isset($bpjs_costs[$medical_type])
                     ? (int) str_replace(".", "", $bpjs_costs[$medical_type])
                     : 0;
@@ -1506,6 +1534,28 @@ class MedicalController extends Controller
                     $existingCoverage->update([
                         "balance_uncoverage" => $balance_diff_formatted,
                     ]);
+                }
+
+                if (in_array(strtolower($existingCoverageEmployee->group_company), [
+                    "downstream",
+                    "plantations",
+                    "kpn plantations"
+                ])) {
+                    $deductionCost = $verif_cost;
+
+                    if ($companyCoveredAmount !== null) {
+                        $deductionCost = $companyCoveredAmount;
+                    }
+
+                    if ($deductionCost > $medical_plan->balance) {
+                        return redirect()
+                            ->route("medical")
+                            ->with("error", "Medical plafond exceded");
+                    }
+
+                    $medical_plan->balance -= $deductionCost;
+
+                    $medical_plan->save();
                 }
             } else {
                 Log::info(
@@ -2122,21 +2172,51 @@ class MedicalController extends Controller
             foreach ($healthCoverages as $coverage) {
                 $medicalType = $coverage->medical_type;
                 $balanceVerif = $coverage->balance_verif;
+                $companyCoveredAmount = $coverage->company_covered_amount;
                 $employeeId = $coverage->employee_id;
                 $date = Carbon::parse($request->date);
                 $period = $date->year;
 
-                // Fetch the health plan for this employee and medical type
+                $employee = Employee::where("employee_id", $employeeId)->first();
+                if (!$employee) {
+                    return redirect()
+                        ->route("medical")
+                        ->with("error", "Employee data not found.");
+                }
+
                 $healthPlan = HealthPlan::where("employee_id", $employeeId)
                     ->where("medical_type", $medicalType)
                     ->where("period", $coverage->period) //$period
                     ->first();
+                if (!$healthPlan) {
+                    return redirect()
+                        ->route("medical")
+                        ->with("error", "Medical Plafond data not found.");
+                }
 
-                if ($healthPlan) {
+                if (in_array(strtolower($employee->group_company), [
+                    "downstream",
+                    "plantations",
+                    "kpn plantations"
+                ])) {
+                    // PLAFOND DEDUCTION HAPPEND ON VERIFY PROCESS
+                    // if ($healthPlan->balance <= 0) {
+                    //     return redirect()
+                    //         ->route("medical")
+                    //         ->with("error", "Medical plafond exceded");
+                    // }
+                    //
+                    // if ($companyCoveredAmount !== null) {
+                    //     $healthPlan->balance -= $companyCoveredAmount;
+                    // } else {
+                    //     $healthPlan->balance -= $balanceVerif;
+                    // }
+                } else {
                     $healthPlan->balance -= $balanceVerif;
+
                     $healthPlan->save();
                 }
-                // Update the medical record to mark it as done and store verification info
+
                 $coverage->update([
                     "status" => $statusValue,
                     "doc_status" => "Reimbursement Approved",
