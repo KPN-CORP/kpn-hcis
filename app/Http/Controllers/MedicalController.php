@@ -1506,7 +1506,7 @@ class MedicalController extends Controller
                 $existingCoverageEmployee = Employee::where("employee_id", $existingCoverage->employee_id)->first();
                 if (!$existingCoverageEmployee) {
                     return redirect()
-                        ->route("medical.admin")
+                        ->route("medical.confirmation")
                         ->with("error", "Employee data not found");
                 }
 
@@ -1545,7 +1545,7 @@ class MedicalController extends Controller
 
                     if ($deductionCost > $medical_plan->balance) {
                         return redirect()
-                            ->route("medical.admin")
+                            ->route("medical.confirmation")
                             ->with("error", "Medical plafond exceded");
                     }
 
