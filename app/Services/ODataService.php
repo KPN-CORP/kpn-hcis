@@ -100,10 +100,11 @@ class ODataService {
         }
         if ($medicalData->paid_date && $medicalData->paid_date != null && !empty($medical->paid_date)) {
             return [
-                'status' => false,
-                'message'  => "failed",
+                'status' => true,
+                'message'  => "success",
                 'data'    => null,
-                'error'   => "Medical paid date data already sync with the OData",
+                'error' => null,
+                // 'error'   => "Medical paid date data already sync with the OData",
             ];
         }
 
@@ -139,21 +140,32 @@ class ODataService {
             "Authorization" => $accessToken,
         ]);
         if (!$httpRes["status"]) {
-            return [
-                'status' => false,
-                'message'  => "failed",
-                'data'    => null,
-                'error'   => $httpRes["error"],
-            ];
+            if ($httpRes["http_status"] == 404) {
+                return [
+                    'status' => true,
+                    'message'  => "success",
+                    'data'    => null,
+                    'error' => null,
+                    // 'error'   => "No data to found",
+                ];
+            } else {
+                return [
+                    'status' => false,
+                    'message'  => "failed",
+                    'data'    => null,
+                    'error'   => $httpRes["error"],
+                ];
+            }
         }
 
         $resData = ODataMedicalClaimResponseDTO::fromArray($httpRes["data"] ?? []);
         if (!$resData || !$resData->data || empty($resData->data)) {
             return [
-                'status' => false,
-                'message'  => "failed",
+                'status' => true,
+                'message'  => "success",
                 'data'    => $resData,
-                'error'   => "No data to be processed",
+                'error' => null,
+                // 'error'   => "No data to be processed",
             ];
         }
 
