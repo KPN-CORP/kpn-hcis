@@ -4374,11 +4374,13 @@ class MedicalController extends Controller
                     );
             }
         } catch (\App\Exceptions\ImportDataInvalidException $e) {
+            Log::error($e);
             // Catch custom exception and redirect back with error message
             return redirect()
                 ->back()
                 ->withErrors(["import_error" => $e->getMessage()]);
         } catch (\Exception $e) {
+            Log::error($e);
             // Catch any other unexpected exceptions and redirect with a generic error message
             return redirect()
                 ->back()
