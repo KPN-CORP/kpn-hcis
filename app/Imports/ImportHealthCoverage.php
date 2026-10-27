@@ -10,6 +10,7 @@ use App\Models\Employee;
 use App\Models\MasterPlafond;
 use App\Models\MedicalHospital;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -21,7 +22,7 @@ use App\Mail\MedicalOverPlafondNotification;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
-class ImportHealthCoverage implements ToModel
+class ImportHealthCoverage implements ToModel, WithMultipleSheets
 {
     private $batchRecords = [];
     private $failedRows = [];
