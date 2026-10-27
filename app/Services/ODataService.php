@@ -184,7 +184,7 @@ class ODataService {
 
             $medicalData->paid_date = $paidDate;
             $medicalData->doc_status_previous = $medicalData->doc_status;
-            $medicalData->doc_status = "Done";
+            $medicalData->doc_status = "Paid";
 
             $medicalData->save();
         }
