@@ -40,6 +40,13 @@ class ImportHealthCoverage implements ToModel
         $this->base64Image = "data:image/png;base64," . base64_encode($imageContent);
     }
 
+    public function sheets(): array
+    {
+        return [
+            0 => $this,
+        ];
+    }
+
     public function generateNoMedic()
     {
         $currentYear = date("y");
