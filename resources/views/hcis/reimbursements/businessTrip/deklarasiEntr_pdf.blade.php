@@ -125,7 +125,10 @@
             <td class="label">Name</td>
             <td class="colon">:</td>
             <td class="value">{{ $transactions->employee->fullname }}
-                @if($transactions->employee->group_company === 'Plantations')
+                @if(in_array(strtolower($transactions->employee->group_company), [
+                    "plantations",
+                    "kpn plantations"
+                ]))
                     ({{ $transactions->employee->job_level }})
                 @endif
             </td>
@@ -232,7 +235,10 @@
             </tr>
             <tr>
                 <td class="label">
-                    @if (in_array($transactions->employee->group_company, ['KPN Plantations', 'Plantations']))
+                    @if (in_array(strtolower($transactions->employee->group_company), [
+                        "plantations",
+                        "kpn plantations"
+                    ]))
                         Perdiem
                     @else
                         Allowance
@@ -269,8 +275,10 @@
                         style="float: right;">{{ number_format(array_sum(array_column($declareCA['detail_perdiem'], 'nominal')), 0, ',', '.') }}</span>
                 </td>
             </tr>
-            @if (isset($detailCA['detail_meals']) &&
-                    !in_array($transactions->employee->group_company, ['KPN Plantations', 'Plantations']))
+            @if (isset($detailCA['detail_meals']) && !in_array(strtolower($transactions->employee->group_company), [
+                "plantations",
+                "kpn plantations"
+            ]))
                 <tr>
                     <td>Meals</td>
                     <td>
@@ -604,7 +612,9 @@
                                 </td>
                             @endforeach
                         </tr>
-                        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                        @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                            "property"
+                        ])))
                             @php
                                 $isApprovedByAdmin = false;
 

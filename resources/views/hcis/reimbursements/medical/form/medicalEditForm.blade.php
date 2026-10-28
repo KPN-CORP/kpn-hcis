@@ -36,7 +36,10 @@
                             enctype="multipart/form-data">
                             @csrf
 
-                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
+                            @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                "downstream",
+                                "property"
+                            ])))
                                 <div class="row">
                                     <div class="col-md-6">
                                         <table width="100%" class="">
@@ -120,7 +123,10 @@
                                     </select>
                                 </div>
 
-                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
+                                @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                    "downstream",
+                                    "property"
+                                ])))
                                     @php
                                         $isOtherHospital = !in_array($medic->hospital_name, $medical_hospitals->toArray());
                                     @endphp
@@ -932,7 +938,10 @@
 
     </script>
 
-    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
+    @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+        "downstream",
+        "property"
+    ])))
         <script>
             $(document).ready(function () {
                 $('#hospital_name').select2({

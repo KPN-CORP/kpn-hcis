@@ -18,7 +18,9 @@
                     <b>TICKET <?php echo $i; ?></b>
                 </div>
                 <div class="row">
-                    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                    @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                        "downstream"
+                    ])))
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Transportation Type</label>
                             <div class="input-group">
@@ -49,7 +51,9 @@
                             </select>
                         </div>
                     @endif
-                    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                    @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                        "downstream"
+                    ])))
                         @php
                             $isOtherFrom = !in_array($ticket['dari_tkt'], $transport_hubs->toArray());
                             $isOtherTo = !in_array($ticket['ke_tkt'], $transport_hubs->toArray());
@@ -130,7 +134,9 @@
                     @endif
                 </div>
                 <div class="row">
-                    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                    @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                        "downstream"
+                    ])))
                         <div class="col-md-6 mb-2">
                             <label class="form-label">Employee Name</label>
                             <select class="form-select form-select-sm select2" id="noktp_tkt_dalam_kota_<?php echo $i; ?>"

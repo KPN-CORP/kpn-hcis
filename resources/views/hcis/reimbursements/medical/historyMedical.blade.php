@@ -18,7 +18,10 @@
                       <th class="text-center">{{ $master_medicals->name }}</th>
                   @endforeach
 
-                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
+                @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                    "downstream",
+                    "property"
+                ])))
                     <th data-priority="2">Progress</th>
                 @else
                     <th data-priority="2">Status</th>
@@ -53,7 +56,10 @@
                           </td>
                       @endforeach
 
-                      @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
+                      @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                            "downstream",
+                            "property"
+                        ])))
                           <td style="align-content: center; text-align: center">
                               @php
                                   $status = $item->status;
@@ -142,7 +148,10 @@
                                   </button>
                               </form>
                           @endif
-                          @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
+                          @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                "downstream",
+                                "property"
+                            ])))
                               @if ($item->is_revise)
                                   <form method="GET" action="/medical/form-update/{{ $item->usage_id }}"
                                       style="display: inline-block;">

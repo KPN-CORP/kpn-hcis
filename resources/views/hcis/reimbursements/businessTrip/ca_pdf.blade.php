@@ -373,11 +373,26 @@
                                         @elseif ($role->role_name == 'Director')
                                             Approval 3
                                         @else
-                                            @if ($role->role_name == 'Dept Head HC GA' && $employee_data->group_company == 'Plantations' && ($employee_data->location && $employee_data->location->location_type == 'Kebun'))
+                                            @if ($role->role_name == 'Dept Head HC GA' && in_array(strtolower($employee_data->group_company), [
+                                                "plantations",
+                                                "kpn plantations"
+                                            ]) && ($employee_data->location && in_array(strtolower($employee_data->location->location_type), [
+                                                "kebun"
+                                            ])))
                                                 HCO Region
-                                            @elseif ($role->role_name == 'HC GA' && $employee_data->group_company == 'Plantations' && ($employee_data->location && $employee_data->location->location_type == 'Kebun'))
+                                            @elseif ($role->role_name == 'HC GA' && in_array(strtolower($employee_data->group_company), [
+                                                "plantations",
+                                                "kpn plantations"
+                                            ]) && ($employee_data->location && in_array(strtolower($employee_data->location->location_type), [
+                                                "kebun"
+                                            ])))
                                                 HCO Region
-                                            @elseif ($role->role_name == 'Dept Head AR & AP' && $employee_data->group_company == 'Plantations' && ($employee_data->location && $employee_data->location->location_type == 'Kebun'))
+                                            @elseif ($role->role_name == 'Dept Head AR & AP' && in_array(strtolower($employee_data->group_company), [
+                                                "plantations",
+                                                "kpn plantations"
+                                            ]) && ($employee_data->location && in_array(strtolower($employee_data->location->location_type), [
+                                                "kebun"
+                                            ])))
                                                 KTU
                                             @else
                                                 {{ $role->role_name }}
@@ -421,7 +436,9 @@
                                     </td>
                                 @endforeach
                             </tr>
-                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                            @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                "property"
+                            ])))
                                 @php
                                     $isApprovedByAdmin = false;
 

@@ -179,7 +179,9 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                                                @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                                    "downstream"
+                                                ])))
                                                     <div class="col-md-4 mb-2">
                                                         <label class="form-label">Transportation Type</label>
                                                         <div class="input-group">
@@ -212,7 +214,9 @@
                                                         </div>
                                                     </div>
                                                 @endif
-                                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                                                @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                                    "downstream"
+                                                ])))
                                                     @php
                                                         $isOtherFrom = !in_array($ticket['dari_tkt'], $transport_hubs->toArray());
                                                         $isOtherTo = !in_array($ticket['ke_tkt'], $transport_hubs->toArray());
@@ -295,7 +299,9 @@
                                                 @endif
                                             </div>
                                             <div class="row">
-                                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                                                @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                                    "downstream"
+                                                ])))
                                                     <div class="col-md-6">
                                                         <div class="mb-2">
                                                             <label class="form-label" for="tlp_tkt_<?php echo $i; ?>">Phone
@@ -710,7 +716,9 @@
                     </div>
                 </div>
                 <div class="row">
-                    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                    @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                        "downstream"
+                    ])))
                         <div class="col-md-4 mb-2">
                             <label class="form-label" for="jenis_tkt_${formNumber}">Transportation Type</label>
                             <div class="input-group">
@@ -730,7 +738,9 @@
                             </div>
                         </div>
                     @endif
-                    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                    @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                        "downstream"
+                    ])))
                         @php
                             $isOtherFrom = !in_array($ticket['dari_tkt'], $transport_hubs->toArray());
                             $isOtherTo = !in_array($ticket['ke_tkt'], $transport_hubs->toArray());
@@ -805,7 +815,9 @@
                     @endif
                 </div>
                 <div class="row">
-                    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                    @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                        "downstream"
+                    ])))
                         <div class="col-md-6">
                             <div class="mb-2">
                                 <label class="form-label" for="tlp_tkt_${formNumber}">Phone Number</label>
@@ -878,7 +890,9 @@
         });
     </script>
 
-    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+    @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+        "downstream"
+    ])))
         <script>
             $(document).ready(function () {
                 if ($('#dari_tkt').length && $.fn.select2) {

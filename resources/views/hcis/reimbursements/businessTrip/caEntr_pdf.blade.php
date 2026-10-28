@@ -320,7 +320,9 @@
                                 </td>
                             @endforeach
                         </tr>
-                        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                        @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                            "property"
+                        ])))
                             @php
                                 $isApprovedByAdmin = false;
 

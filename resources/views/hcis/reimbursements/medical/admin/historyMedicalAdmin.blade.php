@@ -26,7 +26,10 @@
                       <th class="text-center">{{ $master_medicals->name }}</th>
                   @endforeach
 
-                  @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
+                  @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                        "downstream",
+                        "property"
+                    ])))
                       <th data-priority="2" class="text-center">Progress</th>
                   @else
                     <th data-priority="2" class="text-center">Status</th>
@@ -79,7 +82,10 @@
                           </td>
                       @endforeach
 
-                      @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
+                      @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                            "downstream",
+                            "property"
+                        ])))
                           <td style="align-content: center; text-align: center">
                               @php
                                   $status = $item->status;
@@ -158,7 +164,10 @@
                               </button>
                           </form>
                            @endif
-                           @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
+                           @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                "downstream",
+                                "property"
+                            ])))
                                <a href="{{ route('medical.download', $item->usage_id) }}" target="_blank" class="btn btn-outline-info" title="Print"><i class="bi bi-file-earmark-arrow-down"></i></a>
                            @endif
                       </td>

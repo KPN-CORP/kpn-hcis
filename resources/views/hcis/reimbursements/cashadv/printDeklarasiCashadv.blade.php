@@ -252,7 +252,10 @@
                     <span style="float: right;">{{ number_format(array_sum(array_column($declareCA['detail_perdiem'], 'nominal')), 0, ',', '.') }}</span>
                 </td>
             </tr>
-            @if (isset($detailCA['detail_meals']) && !in_array($transactions->employee->group_company, ['KPN Plantations', 'Plantations']))
+            @if (isset($detailCA['detail_meals']) && !in_array(strtolower($transactions->employee->group_company), [
+                "plantations",
+                "kpn plantations"
+            ]))
             <tr>
                 <td>Meals</td>
                 <td>
@@ -511,7 +514,12 @@
                                     @elseif ($role->role_name == 'Director')
                                         Approval 3
                                     @else
-                                        @if ($transactions && $transactions->employee && $transactions->employee->group_company == 'Plantations' && ($transactions->employee->location && $transactions->employee->location->location_type == 'Kebun'))
+                                        @if ($transactions && $transactions->employee && in_array(strtolower($transactions->employee->group_company), [
+                                            "plantations",
+                                            "kpn plantations"
+                                        ]) && ($transactions->employee->location && in_array(strtolower($transactions->employee->location->location_type), [
+                                            "kebun"
+                                        ])))
                                             @if ($role->role_name == 'Dept Head HC GA')
                                                 HCO Region
                                             @elseif ($role->role_name == 'HC GA')
@@ -552,7 +560,9 @@
                                 </td>
                             @endforeach
                         </tr>
-                        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                        @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                            "property"
+                        ])))
                             @php
                                 $isApprovedByAdmin = false;
 

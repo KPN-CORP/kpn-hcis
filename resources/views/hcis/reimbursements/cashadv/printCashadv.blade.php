@@ -430,7 +430,12 @@
                                     @elseif ($role->role_name == 'Director')
                                         Approval 3
                                     @else
-                                        @if ($transactions && $transactions->employee && $transactions->employee->group_company == 'Plantations' && ($transactions->employee->location && $transactions->employee->location->location_type == 'Kebun'))
+                                        @if ($transactions && $transactions->employee && in_array(strtolower($transactions->employee->group_company), [
+                                            "plantations",
+                                            "kpn plantations"
+                                        ]) && ($transactions->employee->location && in_array(strtolower($transactions->employee->location->location_type), [
+                                            "kebun"
+                                        ])))
                                             @if ($role->role_name == 'Dept Head HC GA')
                                                 HCO Region
                                             @elseif ($role->role_name == 'HC GA')
@@ -471,7 +476,9 @@
                                 </td>
                             @endforeach
                         </tr>
-                        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                        @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                            "property"
+                        ])))
                             @php
                                 $isApprovedByAdmin = false;
 
