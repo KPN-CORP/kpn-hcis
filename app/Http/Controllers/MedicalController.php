@@ -2162,6 +2162,39 @@ class MedicalController extends Controller
 
             // Loop through each health coverage record and update accordingly
             foreach ($healthCoverages as $coverage) {
+                $employeeId = $coverage->employee_id;
+                $medicalType = $coverage->medical_type;
+                $period = $coverage->period;
+                $balance = $coverage->balance;
+                $balanceVerif = $coverage->balance_verif;
+                $companyCoveredAmount = $coverage->company_covered_amount;
+                $plafondRefundAmount = 0;
+
+                $employee = Employee::where("employee_id", $employeeId)->first();
+                if (!$employee) {
+                    return redirect()
+                        ->route("medical.approval")
+                        ->with("error", "Employee data not found.");
+                }
+
+                $healthPlan = HealthPlan::where("employee_id", $employeeId)
+                    ->where("medical_type", $medicalType)
+                    ->where("period", $period)
+                    ->first();
+                if (!$healthPlan) {
+                    return redirect()
+                        ->route("medical.approval")
+                        ->with("error", "Medical Plafond data not found.");
+                }
+
+                if ($companyCoveredAmount !== null) {
+                    $plafondRefundAmount = $companyCoveredAmount;
+                } else if ($balanceVerif !== null) {
+                    $plafondRefundAmount = $balanceVerif;
+                } else if ($balance !== null) {
+                    $plafondRefundAmount = $balance;
+                }
+
                 // Update the health coverage record to reflect rejection
                 $coverage->update([
                     "status" => $statusValue,
@@ -2173,6 +2206,16 @@ class MedicalController extends Controller
                     "is_revise" => false,
                     "revise_info" => null,
                 ]);
+
+                if (in_array(strtolower($employee->group_company), [
+                    "downstream",
+                    "plantations",
+                    "kpn plantations"
+                ])) {
+                    $healthPlan->balance += $plafondRefundAmount;
+
+                    $healthPlan->save();
+                }
             }
 
             return redirect()
@@ -2197,22 +2240,22 @@ class MedicalController extends Controller
                 $companyCoveredAmount = $coverage->company_covered_amount;
                 $employeeId = $coverage->employee_id;
                 $date = Carbon::parse($request->date);
-                $period = $date->year;
+                $period = $coverage->period;
 
                 $employee = Employee::where("employee_id", $employeeId)->first();
                 if (!$employee) {
                     return redirect()
-                        ->route("medical")
+                        ->route("medical.approval")
                         ->with("error", "Employee data not found.");
                 }
 
                 $healthPlan = HealthPlan::where("employee_id", $employeeId)
                     ->where("medical_type", $medicalType)
-                    ->where("period", $coverage->period) //$period
+                    ->where("period", $period)
                     ->first();
                 if (!$healthPlan) {
                     return redirect()
-                        ->route("medical")
+                        ->route("medical.approval")
                         ->with("error", "Medical Plafond data not found.");
                 }
 
