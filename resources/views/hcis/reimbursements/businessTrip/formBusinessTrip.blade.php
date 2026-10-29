@@ -727,8 +727,7 @@
                     if (caCheckbox && totalBtPerdiem == 0 && totalBtPenginapan == 0 &&
                         totalBtTransport == 0 && totalBtLainnya == 0) {
 
-                        if ((group_company == 'KPN Plantations' || group_company ==
-                                'Plantations') && jobLevelNumber < 8) {
+                        if ((group_company == 'KPN Plantations' || group_company == 'Plantations') && jobLevelNumber < 8) {
                             // ✅ Case 1: Low-level Plantation users (Exclude Meals)
                             Swal.fire({
                                 title: "Warning!",
@@ -738,8 +737,7 @@
                                 confirmButtonText: "OK",
                             });
                             return;
-                        } else if ((group_company == 'KPN Plantations' || group_company ==
-                                'Plantations') && jobLevelNumber >= 8 && totalBtMeals == 0) {
+                        } else if ((group_company == 'KPN Plantations' || group_company == 'Plantations') && jobLevelNumber >= 8 && totalBtMeals == 0) {
                             // ✅ Case 2: High-level Plantation users (Include Meals)
                             Swal.fire({
                                 title: "Warning!",
@@ -749,8 +747,7 @@
                                 confirmButtonText: "OK",
                             });
                             return;
-                        } else if (group_company !== 'KPN Plantations' && group_company !==
-                            'Plantations' && totalBtMeals == 0) {
+                        } else if (group_company !== 'KPN Plantations' && group_company !== 'Plantations' && totalBtMeals == 0) {
                             // ✅ Case 3: Non-Plantation Users (Include Meals)
                             Swal.fire({
                                 title: "Warning!",
@@ -950,8 +947,7 @@
                     if (caCheckbox && totalBtPerdiem == 0 && totalBtPenginapan == 0 &&
                         totalBtTransport == 0 && totalBtLainnya == 0) {
 
-                        if ((group_company == 'KPN Plantations' || group_company ==
-                                'Plantations') && jobLevelNumber < 8) {
+                        if ((group_company == 'KPN Plantations' || group_company == 'Plantations') && jobLevelNumber < 8) {
                             // ✅ Case 1: Low-level Plantation users (Exclude Meals)
                             Swal.fire({
                                 title: "Warning!",
@@ -961,8 +957,7 @@
                                 confirmButtonText: "OK",
                             });
                             return;
-                        } else if ((group_company == 'KPN Plantations' || group_company ==
-                                'Plantations') && jobLevelNumber >= 8 && totalBtMeals == 0) {
+                        } else if ((group_company == 'KPN Plantations' || group_company == 'Plantations') && jobLevelNumber >= 8 && totalBtMeals == 0) {
                             // ✅ Case 2: High-level Plantation users (Include Meals)
                             Swal.fire({
                                 title: "Warning!",
@@ -972,8 +967,7 @@
                                 confirmButtonText: "OK",
                             });
                             return;
-                        } else if (group_company !== 'KPN Plantations' && group_company !==
-                            'Plantations' && totalBtMeals == 0) {
+                        } else if (group_company !== 'KPN Plantations' && group_company !== 'Plantations' && totalBtMeals == 0) {
                             // ✅ Case 3: Non-Plantation Users (Include Meals)
                             Swal.fire({
                                 title: "Warning!",
@@ -1186,7 +1180,9 @@
         });
     </script>
 
-    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+    @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+        "downstream"
+    ])))
         <script>
             $(document).ready(function () {
                 if ($('#dari_tkt').length && $.fn.select2) {

@@ -271,7 +271,10 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            @if($transactions->employee->group_company != 'Plantations')
+                                            @if(!in_array(strtolower($transactions->employee->group_company), [
+                                                "plantations",
+                                                "kpn plantations"
+                                            ]))
                                             <div class="row mb-3">
 
                                                 <div class="col-md-6">

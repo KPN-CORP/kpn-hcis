@@ -252,7 +252,10 @@
                     <span style="float: right;">{{ number_format(array_sum(array_column($declareCA['detail_perdiem'], 'nominal')), 0, ',', '.') }}</span>
                 </td>
             </tr>
-            @if (isset($detailCA['detail_meals']) && !in_array($transactions->employee->group_company, ['KPN Plantations', 'Plantations']))
+            @if (isset($detailCA['detail_meals']) && !in_array(strtolower($transactions->employee->group_company), [
+                "plantations",
+                "kpn plantations"
+            ]))
             <tr>
                 <td>Meals</td>
                 <td>

@@ -103,7 +103,9 @@
                             <div id="dynamicForms" class="row"></div>
                             <div id="bpjsCoverContainer" class="row"></div>
 
-                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                            @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                "downstream"
+                            ])))
                                 <div id="employeeCoveredAmount" class="row"></div>
                                 <div id="companyCoveredAmount" class="row"></div>
                             @endif
@@ -191,7 +193,10 @@
                             </div>
                             <input type="hidden" name="status" value="Pending" id="status">
 
-                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
+                            @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                "downstream",
+                                "property"
+                            ])))
                                 <br/>
                                 <br/>
 
@@ -229,7 +234,10 @@
                             @endif
 
                             <div class="d-flex justify-content-end mt-4">
-                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
+                                @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                    "downstream",
+                                    "property"
+                                ])))
                                     <button id="revise-button" type="button" class="btn btn-warning rounded-pill revise-button" style="margin-right: 10px"
                                         name="action_submit" value="Revise" data-bs-toggle="modal" data-bs-target="#reviseReasonModal">Revise</button>
                                     <button id="reject-button" type="button" class="btn btn-outline-danger rounded-pill reject-button" style="margin-right: 10px"
@@ -246,7 +254,10 @@
     </div>
 
     <!-- Revise Reason Modal -->
-    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
+    @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+        "downstream",
+        "property"
+    ])))
         <div class="modal fade" id="reviseReasonModal" tabindex="-1" aria-labelledby="reviseReasonModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
@@ -284,7 +295,10 @@
     @endif
 
     <!-- Rejection Reason Modal -->
-    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
+    @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+        "downstream",
+        "property"
+    ])))
         <div class="modal fade" id="rejectReasonModal" tabindex="-1" aria-labelledby="rejectReasonModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
@@ -322,7 +336,9 @@
     @endif
 
     {{-- <script src="{{ asset('/js/medical/medical-edit.js') }}"></script> --}}
-    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+    @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+        "downstream"
+    ])))
         <script>
             function generateEmployeeCoveredAmountForms(selectedTypes, selectedYear) {
                 var containerElem = $("#employeeCoveredAmount");
@@ -570,7 +586,9 @@
         dateInput.setAttribute("min", formattedTwoWeeksAgo);
         dateInput.setAttribute("max", formattedToday); // Optional: To limit selection to today
     </script>
-    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+    @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+        "downstream"
+    ])))
         <script>
             $(document).ready(function () {
                 var medicalClaimAmountTypingTimer;
@@ -892,7 +910,10 @@
         });
     </script>
 
-    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property" || strtolower(auth()->user()->employee->group_company) == "downstream")))
+    @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+        "downstream",
+        "property"
+    ])))
         <script>
             $('#document_received_toggle').change(function () {
                 $(this).prop('disabled', true);
