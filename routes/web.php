@@ -983,6 +983,11 @@ Route::middleware("auth")->group(function () {
             BusinessTripController::class,
             "filterDateAdmin",
         ])->name("businessTrip-filterDate.admin");
+        // Sumber data DataTables server-side untuk halaman Report BT di atas.
+        Route::get("/businessTrip/admin/data", [
+            BusinessTripController::class,
+            "adminData",
+        ])->name("businessTrip.admin.data");
         Route::put("businessTrip/status/confirm/{id}", [
             BusinessTripController::class,
             "updatestatus",

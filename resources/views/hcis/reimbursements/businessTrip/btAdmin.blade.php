@@ -120,6 +120,23 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
+        /* Penataan kotak processing (overlay, posisi titik, menetralkan gaya
+           titik DataTables) sudah ada di _preloader.scss, jadi TIDAK diulang
+           di sini. Yang belum tertangani cuma satu hal:
+
+           _preloader.scss berasumsi markup language.processing kita yang jadi
+           "> div:last-child". Ternyata tidak: DataTables membangun kotaknya
+           dengan .html(language.processing) lalu .append("<div>...4 div...</div>"),
+           jadi anak terakhirnya adalah spinner biru bawaan DataTables, dan
+           .dt-loader kita cuma anak pertama. Spinner itu tetap tampil di
+           samping titik-titik .bouncing-loader kita - dua animasi sekaligus.
+
+           Specificity-nya lewat div.dt-container karena blok style ini
+           dirender di <head> SEBELUM dataTables.bootstrap5.min.css. */
+        div.dt-container div.dt-processing > div:last-child {
+            display: none;
+        }
     </style>
 @endsection
 
@@ -242,7 +259,13 @@
                                 </div>
             </form>{{-- Tutup Form ini buat yg atas biar Filter date sama filter button jalan --}}
             <div class="table-responsive" style="overflow-y: auto">
-                <table class="table table-sm table-hover" id="scheduleTable" width="100%" cellspacing="0">
+                {{-- id-nya sengaja BUKAN "scheduleTable": public/js/script.js
+                     meng-init #scheduleTable sebagai DataTable client-side
+                     (pageLength 50) untuk belasan halaman lain, dan itulah
+                     yang selama ini memegang tabel ini. Sekarang tabelnya
+                     server-side, jadi dipisahkan supaya init global itu tidak
+                     ikut memasang kontrol paging/info-nya sendiri. --}}
+                <table class="table table-sm table-hover" id="btReportTable" width="100%" cellspacing="0">
                     <thead class="thead-light">
                         <tr>
                             <th>No</th>
@@ -263,6 +286,12 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {{-- Baris tabel diisi DataTables server-side dari
+                             businessTrip.admin.data. Versi lama di bawah
+                             merender SELURUH hasil filter sekaligus, lengkap
+                             dengan JSON detail CA/hotel/mess/tiket/taksi per
+                             baris. Disimpan utuh sebagai pembanding.
+
 
                         @foreach ($sppd as $idx => $n)
                             <tr>
@@ -480,6 +509,7 @@
                                 </td>
                             </tr>
                         @endforeach
+                        --}}
                     </tbody>
                 </table>
             </div>
@@ -500,8 +530,14 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
-                @if (isset($n))
-                    <form id="approveForm" action="{{ route('admin.approve', ['id' => $n->id]) }}" method="POST">
+                    {{-- action diisi JavaScript waktu modal dibuka, dari
+                         data-id tombol yang menekannya. Versi lama membungkus
+                         form ini dengan isset($n) dan memakai
+                         route('admin.approve', $n->id): $n adalah sisa loop
+                         baris tabel, jadi id-nya selalu baris terakhir, dan di
+                         halaman tanpa baris form-nya malah tidak ikut dirender
+                         sama sekali. --}}
+                    <form id="approveForm" action="#" method="POST">
                         @csrf
                         @method('PUT')
                         <div class="modal-body">
@@ -597,7 +633,6 @@
                                 data-bs-dismiss="modal">Close</button>
                         </div>
                     </form>
-                @endif
             </div>
         </div>
     </div>
@@ -1016,7 +1051,11 @@
                     }
 
                     // Get and display approval data
-                    const approvals = @json($btApproved);
+                    // Versi lama mencetak seluruh $btApproved hasil filter di
+                    // sini, langsung ke dalam HTML halaman. Sekarang hanya
+                    // approval milik baris yang sedang tampil, dibawa
+                    // response DataTables.
+                    const approvals = (window.btApprovalData || {}).approved || [];
                     const filteredApprovals = approvals.filter(approval => approval.bt_id === btId);
 
                     // Display approval data if containers exist
@@ -1371,8 +1410,13 @@
             }
 
             window.showRejectInfo = function(transactionId) {
-                var btApprovals = {!! json_encode($btApprovals) !!};
-                var employeeName = {!! json_encode($employeeName) !!}; // Add this line
+                // Versi lama mencetak json_encode($btApprovals) dan
+                // json_encode($employeeName) di sini. $employeeName itu
+                // SELURUH isi tabel employees, ikut tercetak di HTML
+                // halaman. Sekarang keduanya datang per halaman bersama
+                // baris tabelnya.
+                var btApprovals = (window.btApprovalData || {}).rejected || {};
+                var employeeName = (window.btApprovalData || {}).employeeNames || {};
 
                 var approval = btApprovals[transactionId];
                 if (approval) {
@@ -1458,7 +1502,9 @@
         }
 
         $(document).ready(function() {
-            $('.btn-detail').click(function() {
+            // Delegated: baris tabel datang dari DataTables sesudah ready,
+            // jadi $('.btn-detail').click() versi lama tidak akan kebagian.
+            $(document).on('click', '.btn-detail', function() {
                 var ca = $(this).data('ca');
                 var tiket = $(this).data('tiket');
                 var hotel = $(this).data('hotel');
@@ -1566,16 +1612,22 @@
             });
         });
 
-        $(document).ready(function() {
-            var table = $('#yourTableId').DataTable({
-                "pageLength": 10 // Set default page length
-            });
-            // Set to 10 entries per page
-            $('#dt-length-0').val(10);
-
-            // Trigger the change event to apply the selected value
-            $('#dt-length-0').trigger('change');
-        });
+        // Init DataTables tabel ini ada di stack "scripts" paling bawah,
+        // bukan di sini. Versi lama memanggil .DataTable() pada
+        // '#yourTableId' yang tidak pernah ada di halaman ini: yang
+        // sebenarnya memegang tabelnya adalah init global #scheduleTable di
+        // public/js/script.js, memaging 50 baris di sisi browser dari seluruh
+        // $sppd yang sudah dirender.
+        // $(document).ready(function() {
+        //     var table = $('#yourTableId').DataTable({
+        //         "pageLength": 10 // Set default page length
+        //     });
+        //     // Set to 10 entries per page
+        //     $('#dt-length-0').val(10);
+        //
+        //     // Trigger the change event to apply the selected value
+        //     $('#dt-length-0').trigger('change');
+        // });
     </script>
 
     <script>
@@ -1709,3 +1761,122 @@
         });
     </script>
 @endsection
+
+{{-- Init DataTables sengaja ditaruh di stack "scripts", bukan di dalam
+     bagian content.
+
+     vertical.blade.php merender @stack('scripts') paling akhir, sesudah
+     @include('script') yang memuat vendor/datatables/dataTables.min.js dan
+     dataTables.bootstrap5.min.js. Integrasi Bootstrap 5 itulah yang
+     menggambar paging/length/info; kalau tabelnya di-init lebih awal (di
+     dalam content, tepat sesudah <script> DataTables dari CDN), renderer
+     yang terpasang masih yang polos dan paginationnya keluar tanpa gaya. --}}
+@push('scripts')
+    <script>
+        // Tabel SPPD: DataTables server-side.
+        //
+        // Selain baris tabel, response businessTrip.admin.data membawa
+        // approval milik SPPD di halaman ini saja. Dulu seluruh BTApproval
+        // dan SELURUH isi tabel employees di-dump ke dalam HTML halaman.
+
+        // Diisi ulang tiap kali DataTables menarik halaman baru.
+        window.btApprovalData = {
+            approved: [],
+            rejected: {},
+            employeeNames: {},
+        };
+
+        var btReportTable = $("#btReportTable").DataTable({
+            // Kotak pencarian bawaan dimatikan: halaman ini sudah punya
+            // #customsearch sendiri di atas tabel.
+            dom: "lrtip",
+            processing: true,
+            serverSide: true,
+            searchDelay: 400,
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            order: [],
+            ajax: {
+                // URL relatif (absolute: false): di belakang reverse proxy
+                // yang menterminasi TLS, route() absolut bisa keluar sebagai
+                // http:// walau halamannya https:// sehingga ajax-nya
+                // diblokir browser ("mixed active content").
+                url: @json(route('businessTrip.admin.data', [], false)),
+                data: function(d) {
+                    // Halaman landing tidak menampilkan baris apa pun sampai
+                    // filter ditekan, sama seperti versi lama.
+                    d.filtered = @json($isFilterApplied ?? false) ? 1 : 0;
+                    d['start-date'] = @json(request()->query('start-date'));
+                    d['end-date'] = @json(request()->query('end-date'));
+                    d.filter = @json(request('filter', 'all'));
+                    // Dipakai tombol Deklarasi untuk kembali ke halaman ini.
+                    d.previous_url = @json(request()->fullUrl());
+                },
+                dataSrc: function(json) {
+                    window.btApprovalData = json.approvals || {
+                        approved: [],
+                        rejected: {},
+                        employeeNames: {},
+                    };
+
+                    return json.data;
+                },
+            },
+            columnDefs: [
+                // No, CA, Hotel, Mess, Ticket, Taxi, Attachment, Approve dan
+                // Action tidak bisa diurutkan di SQL.
+                {
+                    orderable: false,
+                    targets: [0, 6, 7, 8, 9, 10, 12, 13, 14]
+                },
+                {
+                    className: "text-center align-middle",
+                    targets: [0, 6, 7, 8, 9, 10, 12, 13, 14]
+                },
+                {
+                    className: "align-middle",
+                    targets: [2, 3, 4, 5, 11]
+                },
+                {
+                    className: "sticky-col align-middle",
+                    targets: [1]
+                },
+            ],
+            language: {
+                // Titik-titik yang sama seperti #preloader. Penataan kotak
+                // processing-nya (overlay, posisi titik, menetralkan spinner
+                // bawaan DataTables) ada di _preloader.scss.
+                processing: '<div class="dt-loader"><div class="bouncing-loader"><div></div><div></div><div></div></div></div>',
+            },
+        });
+
+        // #customsearch ada di dalam form filter di atas tabel: Enter di sana
+        // akan men-submit form dan memuat ulang halaman, jadi ditahan.
+        $("#customsearch").on("keydown", function(e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+            }
+        });
+
+        $("#customsearch").on("keyup", function() {
+            btReportTable.search($(this).val()).draw();
+        });
+
+        // #preloader (loader.blade.php) memakai .bouncing-loader yang sama
+        // dengan kotak processing tabel, dan app.js baru menyembunyikannya di
+        // window.load + delay 350ms + fade "slow". Ajax halaman pertama jalan
+        // jauh sebelum itu, jadi dua animasi yang identik tampil bersamaan.
+        // Begitu tabelnya dibuat, preloader-nya dimatikan: halamannya sendiri
+        // sudah selesai diparse (blok ini ada di ujung <body>), yang ditunggu
+        // tinggal datanya, dan itu sudah diwakili overlay tabel.
+        //
+        // Ini TIDAK bisa lewat .on("processing.dt"): DataTables menyalakan
+        // processing secara sinkron di dalam .DataTable() di atas, jadi event
+        // pertamanya sudah lewat sebelum listener-nya sempat terpasang.
+        if (typeof hideLoader === "function") {
+            hideLoader();
+        } else {
+            $("#preloader").hide();
+        }
+    </script>
+@endpush
