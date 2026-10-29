@@ -1269,6 +1269,30 @@ Route::middleware("auth")->group(function () {
         "destroy",
     ])->name("logout");
 
+    // Sumber data DataTables server-side untuk halaman Designations.
+    //
+    // WAJIB didaftarkan SEBELUM route "{first}/{second}" di bawah: route itu
+    // menangkap SEMUA URL GET dua segmen, dan HomeController@secondLevel
+    // membalas 404 kalau view "<first>.<second>" tidak ada. Laravel mencocokkan
+    // sesuai urutan pendaftaran, jadi "designations/data" yang didaftarkan di
+    // grup Designations (jauh di bawah) tidak akan pernah kebagian - ajax-nya
+    // dapat 404 dan DataTables memunculkan "Ajax error".
+    //
+    // Endpoint lain tidak kena karena URL-nya tiga segmen atau lebih
+    // (ticket/admin/data, hotel/admin/data, businessTrip/admin/data, dst).
+    Route::middleware(["permission:viewdesignation"])->group(function () {
+        Route::get("/designations/data", [
+            DesignationController::class,
+            "data",
+        ])->name("designations.data");
+        // Sumber data Select2 untuk filter Designation Name. Dua segmen juga,
+        // jadi harus ikut di atas catch-all.
+        Route::get("/designations/names", [
+            DesignationController::class,
+            "designationNames",
+        ])->name("designations.names");
+    });
+
     Route::get("{first}/{second}", [
         HomeController::class,
         "secondLevel",
@@ -1333,6 +1357,11 @@ Route::middleware("auth")->group(function () {
             AdminApprovalSettingController::class,
             "index",
         ])->name("admin_approval_setting");
+        // Sumber data Select2 untuk dropdown HCGA / KTU di halaman di atas.
+        Route::get("/admin/approval/setting/employees", [
+            AdminApprovalSettingController::class,
+            "employees",
+        ])->name("admin_approval_setting_employees");
         Route::post("/admin/approval/setting/create", [
             AdminApprovalSettingController::class,
             "create",
@@ -1394,6 +1423,8 @@ Route::middleware("auth")->group(function () {
             DesignationController::class,
             "index",
         ])->name("designations");
+        // CATATAN: route "designations.data" TIDAK bisa ditaruh di sini.
+        // Lihat komentarnya di atas Route::get("{first}/{second}").
 
         Route::put("/admin/designations/update/dept-head/{id}", [
             DesignationController::class,

@@ -3,7 +3,12 @@
 @section('css')
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+{{-- CSS DataTables 1.13.6 untuk tabel DataTables 2.x: nama kelasnya sudah
+     berbeda (dataTables_* vs dt-*), jadi tidak ada yang kena. Layout sudah
+     memuat vendor/datatables/dataTables.bootstrap5.min.css yang versinya
+     cocok.
 <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+--}}
 <style>
     th {
         color: white !important;
@@ -20,6 +25,14 @@
         /* position: relative; */
         overflow: auto;
         table-layout: fixed;
+    }
+
+    /* table-layout: fixed memaksa 9 kolom muat di lebar container, jadi
+       kolom teksnya tersisa ~40px dan terpotong hampir seluruhnya. Dengan
+       min-width, kolomnya dapat ruang wajar dan .table-responsive di
+       sekelilingnya yang menggeser ke samping di layar sempit. */
+    #approval-setting-table {
+        min-width: 1150px;
     }
 
     .table thead th {
@@ -180,21 +193,20 @@
 
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">HCGA</label>
-                        <select class="form-select form-select-sm select2-single" name="hcga_employee_id" data-placeholder="Select HCGA">
+                        {{-- Diisi Select2 lewat pencarian ke
+                             admin_approval_setting_employees. Versi lama
+                             merender SELURUH tabel employees sebagai <option>
+                             di sini (dan sekali lagi di KTU di bawah), yang
+                             membuat HTML halaman ini ~3,3 MB. --}}
+                        <select class="form-select form-select-sm select2-employee" name="hcga_employee_id" data-placeholder="Select HCGA">
                             <option value=""></option>
-                            @foreach ($hcgaEmployees as $hcgaEmployee)
-                              <option value="{{ $hcgaEmployee->employee_id }}">{{ $hcgaEmployee->fullname.' ('.$hcgaEmployee->group_company.' - '.$hcgaEmployee->company_name.' - '.$hcgaEmployee->employee_id.')' }}</option>
-                            @endforeach
                         </select>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">KTU</label>
-                        <select class="form-select form-select-sm select2-single" name="ktu_employee_id" data-placeholder="Select KTU">
+                        <select class="form-select form-select-sm select2-employee" name="ktu_employee_id" data-placeholder="Select KTU">
                             <option value=""></option>
-                            @foreach ($ktuEmployees as $ktuEmployee)
-                              <option value="{{ $ktuEmployee->employee_id }}">{{ $ktuEmployee->fullname.' ('.$ktuEmployee->group_company.' - '.$ktuEmployee->company_name.' - '.$ktuEmployee->employee_id.')' }}</option>
-                            @endforeach
                         </select>
                     </div>
 
@@ -299,6 +311,8 @@
                                             data-work_areas="{{ $approvalSetting->work_areas }}"
                                             data-hcga_employee_id="{{ $approvalSetting->hcga_employee_id }}"
                                             data-ktu_employee_id="{{ $approvalSetting->ktu_employee_id }}"
+                                            data-hcga_employee_label="{{ $approvalSetting->hcga_employee_label }}"
+                                            data-ktu_employee_label="{{ $approvalSetting->ktu_employee_label }}"
                                         >
                                                 <i class="ri-pencil-line"></i>
                                         </button>
@@ -320,9 +334,21 @@
 @endsection
 
 @push('scripts')
+{{-- jQuery, Bootstrap dan DataTables sudah dimuat layout (head-script.blade
+     dan script.blade), termasuk dataTables.bootstrap5.min.js yang menggambar
+     paging/length/info bergaya Bootstrap.
+
+     Stack ini dirender PALING AKHIR, jadi memuat ulang DataTables dari CDN di
+     sini justru menimpa $.fn.DataTable yang sudah dipatch integrasi Bootstrap
+     5 tadi - renderer-nya hilang dan tabelnya keluar tanpa gaya
+     (wrapper-nya jadi "dt-container" saja, tanpa "dt-bootstrap5").
+     Begitu juga jQuery: memuatnya lagi di sini mengganti instance yang sudah
+     dipakai plugin-plugin sebelumnya.
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
+--}}
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(document).ready(function () {
@@ -337,15 +363,76 @@
             allowClear: true
         });
 
+        // Dropdown HCGA / KTU: isinya dicari di server, 30 baris sekali ambil.
+        $('.select2-employee').select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            allowClear: true,
+            placeholder: function () {
+                return $(this).data('placeholder');
+            },
+            minimumInputLength: 0,
+            ajax: {
+                // URL relatif (absolute: false): di belakang reverse proxy
+                // yang menterminasi TLS, route() absolut bisa keluar sebagai
+                // http:// walau halamannya https:// sehingga ajax-nya
+                // diblokir browser ("mixed active content").
+                url: @json(route('admin_approval_setting_employees', [], false)),
+                dataType: 'json',
+                delay: 300,
+                data: function (params) {
+                    return { q: params.term || '', page: params.page || 1 };
+                },
+                cache: true
+            }
+        });
+
+        // Select2 ber-ajax tidak punya <option> yang sudah ter-render, jadi
+        // .val(id) saja tidak cukup waktu Edit: option-nya dibuat dulu dari
+        // label yang ikut dikirim di data-attribute tombol Edit.
+        function setEmployeeSelection(selector, id, label) {
+            const $select = $(selector);
+
+            $select.find('option').not('[value=""]').remove();
+
+            if (id) {
+                $select.append(new Option(label || id, id, true, true));
+            }
+
+            $select.val(id || null).trigger('change');
+        }
+
         $('#approval-setting-table').DataTable({
-            responsive: true,
+            // responsive: true DIHAPUS. Layout memuat ekstensi
+            // dataTables.responsive 2.4.1 yang dibuat untuk DataTables 1.x;
+            // dipakai pada DataTables 2.x dia melempar
+            // "Cannot read properties of undefined (reading 'responsive')"
+            // dari dalam .DataTable(), dan karena init ini ada di awal
+            // $(document).ready, seluruh handler sesudahnya (Reset, Save,
+            // Edit, Delete) jadi TIDAK pernah terpasang.
+            //
+            // Dulu error ini tidak muncul hanya karena halaman ini memuat
+            // ulang DataTables 2.1.3 dari CDN paling akhir, sehingga ekstensi
+            // responsive-nya tidak terpasang di objek yang dipakai - efek
+            // samping yang sama yang bikin paginationnya tanpa gaya.
+            //
+            // Tabelnya memang tidak butuh ekstensi itu: pemendekan kolom dan
+            // klik-untuk-melebar sudah ditangani CSS .cell-text / tr.expanded
+            // di halaman ini.
             autoWidth: false,
             pageLength: 10,
             lengthMenu: [5, 10, 25, 50],
             searching: true,
+            // Tabelnya table-layout: fixed, jadi tanpa lebar eksplisit semua
+            // kolom dapat jatah yang sama - "No" dan "Action" jadi selebar
+            // kolom teks, dan kolom teksnya kepotong lebih awal dari
+            // seharusnya. Yang sempit dikunci, sisanya berbagi sisa ruang.
             columnDefs: [
                 { orderable: false, targets: -1 },
-                { className: "text-center", width: "80px", targets: 0 },
+                { className: "text-center", width: "56px", targets: 0 },
+                { className: "text-center", width: "92px", targets: -1 },
+                { width: "180px", targets: 1 },
+                { width: "110px", targets: 2 },
             ]
         });
 
@@ -357,7 +444,7 @@
 
         $('#approval-setting-reset').on('click', async function (event) {
             event.preventDefault();
-            $('.select2-single, .select2-multiple').val(null).trigger('change');
+            $('.select2-single, .select2-multiple, .select2-employee').val(null).trigger('change');
             document.getElementById('approval-setting-form').reset();
             $('#approval-setting-submit')
                 .removeClass('btn-warning');
@@ -464,7 +551,7 @@
                     icon: 'success'
                 }).then(() => {
                     form.reset();
-                    $('.select2-single, .select2-multiple').val(null).trigger('change');
+                    $('.select2-single, .select2-multiple, .select2-employee').val(null).trigger('change');
                     location.reload();
                 });
             } catch (error) {
@@ -488,7 +575,7 @@
 
             form.reset();
 
-            $('.select2-single, .select2-multiple').val(null).trigger('change');
+            $('.select2-single, .select2-multiple, .select2-employee').val(null).trigger('change');
 
             $('input[name="approval_name"]').val(btn.data('approval_name'));
             $('select[name="approval_type"]').val(btn.data('approval_type')).trigger('change');
@@ -501,8 +588,16 @@
             $('select[name="contribution_level_codes[]"]').val(contributionLevels ? contributionLevels.split(',') : []).trigger('change');
             $('select[name="work_areas[]"]').val(workAreas ? workAreas.split(',') : []).trigger('change');
 
-            $('select[name="hcga_employee_id"]').val(btn.data('hcga_employee_id')).trigger('change');
-            $('select[name="ktu_employee_id"]').val(btn.data('ktu_employee_id')).trigger('change');
+            setEmployeeSelection(
+                'select[name="hcga_employee_id"]',
+                btn.data('hcga_employee_id'),
+                btn.data('hcga_employee_label')
+            );
+            setEmployeeSelection(
+                'select[name="ktu_employee_id"]',
+                btn.data('ktu_employee_id'),
+                btn.data('ktu_employee_label')
+            );
 
             $('html, body')
                 .animate({ scrollTop: 0 }, 200)
