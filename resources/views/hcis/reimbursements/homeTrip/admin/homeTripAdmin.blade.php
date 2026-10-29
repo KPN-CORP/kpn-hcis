@@ -56,6 +56,23 @@
             padding-right: 10px;
             box-shadow: inset 6px 0 0 #fff;
         }
+
+        /* Penataan kotak processing (overlay, posisi titik, menetralkan gaya
+           titik DataTables) sudah ada di _preloader.scss, jadi TIDAK diulang
+           di sini. Yang belum tertangani cuma satu hal:
+
+           _preloader.scss berasumsi markup language.processing kita yang jadi
+           "> div:last-child". Ternyata tidak: DataTables membangun kotaknya
+           dengan .html(language.processing) lalu .append("<div>...4 div...</div>"),
+           jadi anak terakhirnya adalah spinner biru bawaan DataTables, dan
+           .dt-loader kita cuma anak pertama. Spinner itu tetap tampil di
+           samping titik-titik .bouncing-loader kita - dua animasi sekaligus.
+
+           Specificity-nya lewat div.dt-container karena blok style ini
+           dirender di <head> SEBELUM dataTables.bootstrap5.min.css. */
+        div.dt-container div.dt-processing > div:last-child {
+            display: none;
+        }
     </style>
 @endsection
 
@@ -124,7 +141,15 @@
                             <h3 class="card-title">{{ $link }}</h3>
                         </div>
                         <div class="table-responsive">
-                            <table class="table table-sm dt-responsive nowrap mt-2" id="scheduleTable" width="100%"
+                            {{-- id-nya sengaja BUKAN "scheduleTable":
+                                 public/js/script.js meng-init #scheduleTable
+                                 sebagai DataTable client-side (pageLength 50)
+                                 untuk belasan halaman lain, dan itulah yang
+                                 selama ini memegang tabel ini. Sekarang
+                                 tabelnya server-side, jadi dipisahkan supaya
+                                 init global itu tidak ikut memasang kontrol
+                                 paging/info-nya sendiri. --}}
+                            <table class="table table-sm dt-responsive nowrap mt-2" id="htReportTable" width="100%"
                                 cellspacing="0">
                                 <thead class="thead-light">
                                     <tr class="text-center">
@@ -140,6 +165,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    {{-- Baris tabel diisi DataTables server-side dari
+                                         home-trip.admin.data. Versi lama di bawah
+                                         merender SELURUH karyawan hasil filter
+                                         sekaligus, dan tiap barisnya memicu tiga query
+                                         lagi di controller. Disimpan utuh sebagai
+                                         pembanding.
+
                                     @if (request()->get('stat') == '-')
                                     @else
                                         @foreach ($ht_employee as $ht_employees)
@@ -161,6 +193,7 @@
                                             </tr>
                                         @endforeach
                                     @endif
+                                    --}}
                                 </tbody>
                             </table>
                         </div>
@@ -190,6 +223,76 @@
     {{-- @include('js.hcis.cashAdvanced.adminPage') --}}
 @endsection
 @push('scripts')
+    {{-- Init DataTables ada di stack ini, bukan di dalam bagian content.
+
+         vertical.blade.php merender @stack('scripts') paling akhir, sesudah
+         @include('script') yang memuat vendor/datatables/dataTables.min.js dan
+         dataTables.bootstrap5.min.js. Integrasi Bootstrap 5 itulah yang
+         menggambar paging/length/info; kalau tabelnya di-init lebih awal (di
+         dalam content, tepat sesudah <script> DataTables dari CDN), renderer
+         yang terpasang masih yang polos dan paginationnya keluar tanpa gaya. --}}
+    <script>
+        var htReportTable = $("#htReportTable").DataTable({
+            // Kotak pencarian bawaan dimatikan: penyaringan halaman ini lewat
+            // form Unit Location / Employee Name di atas tabel.
+            dom: "lrtip",
+            processing: true,
+            serverSide: true,
+            searchDelay: 400,
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            order: [],
+            ajax: {
+                // URL relatif (absolute: false): di belakang reverse proxy
+                // yang menterminasi TLS, route() absolut bisa keluar sebagai
+                // http:// walau halamannya https:// sehingga ajax-nya
+                // diblokir browser ("mixed active content").
+                url: @json(route('home-trip.admin.data', [], false)),
+                data: function(d) {
+                    // Ikut filter yang sedang aktif di URL halaman. Tanpa
+                    // filter, endpoint-nya mengembalikan nol baris, sama
+                    // seperti versi lama.
+                    d.stat = @json(request()->get('stat'));
+                    d.customsearch = @json(request()->get('customsearch'));
+                },
+            },
+            columnDefs: [
+                // No, Family Count, Period, Ticket Count dan Detail Plafond
+                // dihitung di luar SQL, jadi tidak bisa diurutkan.
+                {
+                    orderable: false,
+                    targets: [0, 5, 6, 7, 8]
+                },
+                {
+                    className: "text-center align-middle",
+                    targets: "_all"
+                },
+            ],
+            language: {
+                // Titik-titik yang sama seperti #preloader. Penataan kotak
+                // processing-nya ada di _preloader.scss; spinner bawaan
+                // DataTables disembunyikan lewat CSS di blok style halaman.
+                processing: '<div class="dt-loader"><div class="bouncing-loader"><div></div><div></div><div></div></div></div>',
+            },
+        });
+
+        // #preloader (loader.blade.php) memakai .bouncing-loader yang sama
+        // dengan kotak processing tabel, dan app.js baru menyembunyikannya di
+        // window.load + delay 350ms + fade "slow". Ajax halaman pertama jalan
+        // jauh sebelum itu, jadi dua animasi yang identik tampil bersamaan.
+        // Begitu tabelnya dibuat, preloader-nya dimatikan: halamannya sendiri
+        // sudah selesai diparse, yang ditunggu tinggal datanya, dan itu sudah
+        // diwakili overlay tabel.
+        //
+        // Ini TIDAK bisa lewat .on("processing.dt"): DataTables menyalakan
+        // processing secara sinkron di dalam .DataTable() di atas, jadi event
+        // pertamanya sudah lewat sebelum listener-nya sempat terpasang.
+        if (typeof hideLoader === "function") {
+            hideLoader();
+        } else {
+            $("#preloader").hide();
+        }
+    </script>
     <script>
         // Periksa apakah ada pesan sukses
         var successMessage = "{{ session('success') }}";

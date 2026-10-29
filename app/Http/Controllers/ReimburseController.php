@@ -4974,215 +4974,718 @@ class ReimburseController extends Controller
             ->with("success", "Request approved successfully.");
     }
 
+    // ===================================================================
+    // LEGACY - diganti oleh hotelAdmin() + hotelAdminData() di bawah.
+    // Method ini dulu menarik SELURUH isi htl_transactions dua kali (tanpa
+    // filter tanggal), menjalankan satu query HotelApproval untuk setiap
+    // baris tabel itu, mencari nama manager 2-4 query per transaksi, dan
+    // men-dump $employeeName (SELURUH tabel employees) ke JavaScript
+    // halaman. Baris tabel sekarang diambil per halaman lewat
+    // hotelAdminData(). Disimpan utuh sebagai pembanding.
+    // ===================================================================
+//    public function hotelAdmin(Request $request)
+//    {
+//        $parentLink = "Reimbursement";
+//        $link = "Hotel (Admin)";
+//
+//        $startDate = $request->input("start_date");
+//        $endDate = $request->input("end_date");
+//
+//        // Initialize variables
+//        $transactions = collect([]);
+//        $hotels = collect([]);
+//        $hotel = collect([]);
+//        $hotelCounts = collect([]);
+//        $hotelGroups = collect([]);
+//        $hotelApprovals = collect([]);
+//        $approvalHotels = [];
+//        $managerL1Name = "Unknown";
+//        $managerL2Name = "Unknown";
+//        $employeeName = Employee::pluck("fullname", "employee_id");
+//
+//        $permissionLocations = $this->permissionLocations;
+//        $permissionCompanies = $this->permissionCompanies;
+//        $permissionGroupCompanies = $this->permissionGroupCompanies;
+//
+//        // Only process data if filters are applied
+//        $isFilterApplied = $startDate && $endDate;
+//
+//        if ($isFilterApplied) {
+//            // Fetch latest hotel entries grouped by 'no_htl'
+//            $latestHotelIds = Hotel::selectRaw("MAX(id) as id")
+//                ->groupBy("no_htl")
+//                ->pluck("id");
+//
+//            // Fetch the hotel transactions using the latest ids
+//            $transactions = Hotel::whereIn("id", $latestHotelIds)
+//                ->with("employee", "hotelApproval")
+//                ->orderBy("created_at", "desc")
+//                ->where("approval_status", "!=", "Draft")
+//                ->when($startDate && $endDate, function ($query) use (
+//                    $startDate,
+//                    $endDate,
+//                ) {
+//                    $query->whereRaw("DATE(tgl_masuk_htl) BETWEEN ? AND ?", [
+//                        $startDate,
+//                        $endDate,
+//                    ]);
+//                });
+//
+//            // Apply permission filters
+//            if (!empty($permissionLocations)) {
+//                $transactions->whereHas("employee", function ($query) use (
+//                    $permissionLocations,
+//                ) {
+//                    $query->whereIn("work_area_code", $permissionLocations);
+//                });
+//            }
+//
+//            if (!empty($permissionCompanies)) {
+//                $transactions->whereIn(
+//                    "contribution_level_code",
+//                    $permissionCompanies,
+//                );
+//            }
+//
+//            if (!empty($permissionGroupCompanies)) {
+//                $transactions->whereHas("employee", function ($query) use (
+//                    $permissionGroupCompanies,
+//                ) {
+//                    $query->whereIn("group_company", $permissionGroupCompanies);
+//                });
+//            }
+//
+//            $transactions = $transactions
+//                ->select(
+//                    "id",
+//                    "no_htl",
+//                    "nama_htl",
+//                    "lokasi_htl",
+//                    "approval_status",
+//                    "user_id",
+//                    "no_sppd",
+//                    "manager_l1_id",
+//                    "manager_l2_id",
+//                    "booking_code",
+//                    "booking_price",
+//                    "description"
+//                )
+//                ->get();
+//
+//            // Fetch all hotel transactions, removing the user ID filter
+//            $hotels = Hotel::with("employee", "hotelApproval")
+//                ->orderBy("created_at", "desc")
+//                ->get();
+//
+//            $hotel = Hotel::with("employee", "hotelApproval")
+//                ->orderBy("created_at", "desc")
+//                ->get()
+//                ->groupBy("no_htl");
+//
+//            $hotelIds = $hotels->pluck("id");
+//
+//            // Fetch hotel approval details using the hotel IDs
+//            $hotelApprovals = HotelApproval::whereIn("htl_id", $hotelIds)
+//                ->where(function ($query) {
+//                    $query
+//                        ->where("approval_status", "Rejected")
+//                        ->orWhere("approval_status", "Declaration Rejected");
+//                })
+//                ->get()
+//                ->keyBy("htl_id");
+//
+//            // Group transactions by hotel number
+//            $hotelGroups = $hotels->groupBy("no_htl");
+//
+//            foreach ($transactions as $transaction) {
+//                // First check if manager IDs exist in the transaction (hotel db)
+//                if ($transaction->manager_l1_id) {
+//                    // If exists in transaction, get manager name from transaction's manager_l1_id
+//                    $managerL1 = Employee::where(
+//                        "employee_id",
+//                        $transaction->manager_l1_id,
+//                    )->first();
+//                    $transaction->manager_l1_name = $managerL1
+//                        ? $managerL1->fullname
+//                        : "Unknown";
+//                } else {
+//                    // If not exists in transaction, get from requestor's (employee) data
+//                    $requestor = Employee::find($transaction->user_id);
+//                    if ($requestor && $requestor->manager_l1_id) {
+//                        $managerL1 = Employee::where(
+//                            "employee_id",
+//                            $requestor->manager_l1_id,
+//                        )->first();
+//                        $transaction->manager_l1_name = $managerL1
+//                            ? $managerL1->fullname
+//                            : "Unknown";
+//                    } else {
+//                        $transaction->manager_l1_name = "No Manager Assigned";
+//                    }
+//                }
+//
+//                // Same logic for L2 manager
+//                if ($transaction->manager_l2_id) {
+//                    // If exists in transaction, get manager name from transaction's manager_l2_id
+//                    $managerL2 = Employee::where(
+//                        "employee_id",
+//                        $transaction->manager_l2_id,
+//                    )->first();
+//                    $transaction->manager_l2_name = $managerL2
+//                        ? $managerL2->fullname
+//                        : "Unknown";
+//                } else {
+//                    // If not exists in transaction, get from requestor's (employee) data
+//                    $requestor = Employee::find($transaction->user_id);
+//                    if ($requestor && $requestor->manager_l2_id) {
+//                        $managerL2 = Employee::where(
+//                            "employee_id",
+//                            $requestor->manager_l2_id,
+//                        )->first();
+//                        $transaction->manager_l2_name = $managerL2
+//                            ? $managerL2->fullname
+//                            : "Unknown";
+//                    } else {
+//                        $transaction->manager_l2_name = "No Manager Assigned";
+//                    }
+//                }
+//            }
+//
+//            $employeeName = Employee::pluck("fullname", "employee_id");
+//
+//            // Count grouped hotel entries
+//            $hotelCounts = $hotels
+//                ->groupBy("no_htl")
+//                ->mapWithKeys(function ($group, $key) {
+//                    return [$key => ["total" => $group->count()]];
+//                });
+//
+//            // Fetch approval data for each ticket ID
+//            $approvalHotels = [];
+//            foreach ($hotelIds as $hotelId) {
+//                $hotels = HotelApproval::where("htl_id", $hotelId)->get();
+//                foreach ($hotels as $hotelApprove) {
+//                    $approvalHotels[] = [
+//                        "htl_id" => $hotelId,
+//                        "layer" => $hotelApprove->layer,
+//                        "approval_status" => $hotelApprove->approval_status,
+//                        "employee_id" => $hotelApprove->employee->fullname,
+//                        "by_admin" => $hotelApprove->by_admin,
+//                        "approved_at" => $hotelApprove->approved_at,
+//                    ];
+//                }
+//            }
+//        }
+//
+//        return view("hcis.reimbursements.hotel.admin.hotelAdmin", [
+//            "link" => $link,
+//            "parentLink" => $parentLink,
+//            "transactions" => $transactions,
+//            "hotelCounts" => $hotelCounts,
+//            "hotels" => $hotels,
+//            "hotel" => $hotel,
+//            "hotelGroups" => $hotelGroups,
+//            "managerL1Name" => $managerL1Name,
+//            "managerL2Name" => $managerL2Name,
+//            "hotelApprovals" => $hotelApprovals,
+//            "employeeName" => $employeeName,
+//            "approvalHotels" => $approvalHotels,
+//            // 'filter' => $filter,
+//        ]);
+//    }
+
+    /**
+     * Halaman Hotel (Admin).
+     *
+     * Baris tabel tidak lagi dirender di sini: DataTables memintanya per
+     * halaman ke hotelAdminData(). Versi lama ada di atas (legacy).
+     */
     public function hotelAdmin(Request $request)
     {
         $parentLink = "Reimbursement";
         $link = "Hotel (Admin)";
 
+        $isFilterApplied =
+            $request->input("start_date") && $request->input("end_date");
+
+        return view("hcis.reimbursements.hotel.admin.hotelAdmin", [
+            "link" => $link,
+            "parentLink" => $parentLink,
+            "transactions" => collect([]),
+            "hotelCounts" => collect([]),
+            "hotels" => collect([]),
+            "hotel" => collect([]),
+            "hotelGroups" => collect([]),
+            "managerL1Name" => "Unknown",
+            "managerL2Name" => "Unknown",
+            "hotelApprovals" => collect([]),
+            "employeeName" => collect([]),
+            "approvalHotels" => [],
+            "isFilterApplied" => $isFilterApplied,
+        ]);
+    }
+
+    /**
+     * Query dasar daftar Hotel (Admin) - satu baris per no_htl (yang id-nya
+     * paling besar), builder, belum dieksekusi.
+     */
+    private function hotelAdminFilteredQuery(Request $request)
+    {
         $startDate = $request->input("start_date");
         $endDate = $request->input("end_date");
 
-        // Initialize variables
-        $transactions = collect([]);
-        $hotels = collect([]);
-        $hotel = collect([]);
-        $hotelCounts = collect([]);
-        $hotelGroups = collect([]);
-        $hotelApprovals = collect([]);
-        $approvalHotels = [];
-        $managerL1Name = "Unknown";
-        $managerL2Name = "Unknown";
-        $employeeName = Employee::pluck("fullname", "employee_id");
+        $query = Hotel::query()
+            ->with("employee")
+            ->leftJoin(
+                "employees as htl_emp",
+                "htl_emp.id",
+                "=",
+                "htl_transactions.user_id",
+            )
+            ->select("htl_transactions.*")
+            ->whereIn("htl_transactions.id", function ($sub) {
+                $sub->selectRaw("MAX(id)")
+                    ->from("htl_transactions")
+                    ->groupBy("no_htl");
+            })
+            ->where("htl_transactions.approval_status", "!=", "Draft");
+
+        if ($startDate && $endDate) {
+            $query->whereRaw("DATE(htl_transactions.tgl_masuk_htl) BETWEEN ? AND ?", [
+                $startDate,
+                $endDate,
+            ]);
+        }
 
         $permissionLocations = $this->permissionLocations;
         $permissionCompanies = $this->permissionCompanies;
         $permissionGroupCompanies = $this->permissionGroupCompanies;
 
-        // Only process data if filters are applied
-        $isFilterApplied = $startDate && $endDate;
-
-        if ($isFilterApplied) {
-            // Fetch latest hotel entries grouped by 'no_htl'
-            $latestHotelIds = Hotel::selectRaw("MAX(id) as id")
-                ->groupBy("no_htl")
-                ->pluck("id");
-
-            // Fetch the hotel transactions using the latest ids
-            $transactions = Hotel::whereIn("id", $latestHotelIds)
-                ->with("employee", "hotelApproval")
-                ->orderBy("created_at", "desc")
-                ->where("approval_status", "!=", "Draft")
-                ->when($startDate && $endDate, function ($query) use (
-                    $startDate,
-                    $endDate,
-                ) {
-                    $query->whereRaw("DATE(tgl_masuk_htl) BETWEEN ? AND ?", [
-                        $startDate,
-                        $endDate,
-                    ]);
-                });
-
-            // Apply permission filters
-            if (!empty($permissionLocations)) {
-                $transactions->whereHas("employee", function ($query) use (
-                    $permissionLocations,
-                ) {
-                    $query->whereIn("work_area_code", $permissionLocations);
-                });
-            }
-
-            if (!empty($permissionCompanies)) {
-                $transactions->whereIn(
-                    "contribution_level_code",
-                    $permissionCompanies,
-                );
-            }
-
-            if (!empty($permissionGroupCompanies)) {
-                $transactions->whereHas("employee", function ($query) use (
-                    $permissionGroupCompanies,
-                ) {
-                    $query->whereIn("group_company", $permissionGroupCompanies);
-                });
-            }
-
-            $transactions = $transactions
-                ->select(
-                    "id",
-                    "no_htl",
-                    "nama_htl",
-                    "lokasi_htl",
-                    "approval_status",
-                    "user_id",
-                    "no_sppd",
-                    "manager_l1_id",
-                    "manager_l2_id",
-                    "booking_code",
-                    "booking_price",
-                    "description"
-                )
-                ->get();
-
-            // Fetch all hotel transactions, removing the user ID filter
-            $hotels = Hotel::with("employee", "hotelApproval")
-                ->orderBy("created_at", "desc")
-                ->get();
-
-            $hotel = Hotel::with("employee", "hotelApproval")
-                ->orderBy("created_at", "desc")
-                ->get()
-                ->groupBy("no_htl");
-
-            $hotelIds = $hotels->pluck("id");
-
-            // Fetch hotel approval details using the hotel IDs
-            $hotelApprovals = HotelApproval::whereIn("htl_id", $hotelIds)
-                ->where(function ($query) {
-                    $query
-                        ->where("approval_status", "Rejected")
-                        ->orWhere("approval_status", "Declaration Rejected");
-                })
-                ->get()
-                ->keyBy("htl_id");
-
-            // Group transactions by hotel number
-            $hotelGroups = $hotels->groupBy("no_htl");
-
-            foreach ($transactions as $transaction) {
-                // First check if manager IDs exist in the transaction (hotel db)
-                if ($transaction->manager_l1_id) {
-                    // If exists in transaction, get manager name from transaction's manager_l1_id
-                    $managerL1 = Employee::where(
-                        "employee_id",
-                        $transaction->manager_l1_id,
-                    )->first();
-                    $transaction->manager_l1_name = $managerL1
-                        ? $managerL1->fullname
-                        : "Unknown";
-                } else {
-                    // If not exists in transaction, get from requestor's (employee) data
-                    $requestor = Employee::find($transaction->user_id);
-                    if ($requestor && $requestor->manager_l1_id) {
-                        $managerL1 = Employee::where(
-                            "employee_id",
-                            $requestor->manager_l1_id,
-                        )->first();
-                        $transaction->manager_l1_name = $managerL1
-                            ? $managerL1->fullname
-                            : "Unknown";
-                    } else {
-                        $transaction->manager_l1_name = "No Manager Assigned";
-                    }
-                }
-
-                // Same logic for L2 manager
-                if ($transaction->manager_l2_id) {
-                    // If exists in transaction, get manager name from transaction's manager_l2_id
-                    $managerL2 = Employee::where(
-                        "employee_id",
-                        $transaction->manager_l2_id,
-                    )->first();
-                    $transaction->manager_l2_name = $managerL2
-                        ? $managerL2->fullname
-                        : "Unknown";
-                } else {
-                    // If not exists in transaction, get from requestor's (employee) data
-                    $requestor = Employee::find($transaction->user_id);
-                    if ($requestor && $requestor->manager_l2_id) {
-                        $managerL2 = Employee::where(
-                            "employee_id",
-                            $requestor->manager_l2_id,
-                        )->first();
-                        $transaction->manager_l2_name = $managerL2
-                            ? $managerL2->fullname
-                            : "Unknown";
-                    } else {
-                        $transaction->manager_l2_name = "No Manager Assigned";
-                    }
-                }
-            }
-
-            $employeeName = Employee::pluck("fullname", "employee_id");
-
-            // Count grouped hotel entries
-            $hotelCounts = $hotels
-                ->groupBy("no_htl")
-                ->mapWithKeys(function ($group, $key) {
-                    return [$key => ["total" => $group->count()]];
-                });
-
-            // Fetch approval data for each ticket ID
-            $approvalHotels = [];
-            foreach ($hotelIds as $hotelId) {
-                $hotels = HotelApproval::where("htl_id", $hotelId)->get();
-                foreach ($hotels as $hotelApprove) {
-                    $approvalHotels[] = [
-                        "htl_id" => $hotelId,
-                        "layer" => $hotelApprove->layer,
-                        "approval_status" => $hotelApprove->approval_status,
-                        "employee_id" => $hotelApprove->employee->fullname,
-                        "by_admin" => $hotelApprove->by_admin,
-                        "approved_at" => $hotelApprove->approved_at,
-                    ];
-                }
-            }
+        if (!empty($permissionLocations)) {
+            $query->whereHas("employee", function ($q) use (
+                $permissionLocations,
+            ) {
+                $q->whereIn("work_area_code", $permissionLocations);
+            });
         }
 
-        return view("hcis.reimbursements.hotel.admin.hotelAdmin", [
-            "link" => $link,
-            "parentLink" => $parentLink,
-            "transactions" => $transactions,
-            "hotelCounts" => $hotelCounts,
-            "hotels" => $hotels,
-            "hotel" => $hotel,
-            "hotelGroups" => $hotelGroups,
-            "managerL1Name" => $managerL1Name,
-            "managerL2Name" => $managerL2Name,
-            "hotelApprovals" => $hotelApprovals,
-            "employeeName" => $employeeName,
-            "approvalHotels" => $approvalHotels,
-            // 'filter' => $filter,
+        if (!empty($permissionCompanies)) {
+            $query->whereIn(
+                "htl_transactions.contribution_level_code",
+                $permissionCompanies,
+            );
+        }
+
+        if (!empty($permissionGroupCompanies)) {
+            $query->whereHas("employee", function ($q) use (
+                $permissionGroupCompanies,
+            ) {
+                $q->whereIn("group_company", $permissionGroupCompanies);
+            });
+        }
+
+        return $query;
+    }
+
+    /**
+     * Sumber data DataTables server-side untuk halaman Hotel (Admin).
+     *
+     * Versi lama menarik SELURUH isi htl_transactions dua kali (tanpa filter
+     * tanggal sama sekali), lalu menjalankan satu query HotelApproval untuk
+     * setiap baris tabel itu, ditambah SELURUH tabel employees. Di sini
+     * semuanya dibatasi ke baris yang ada di halaman ini.
+     */
+    public function hotelAdminData(Request $request)
+    {
+        $draw = (int) $request->input("draw", 0);
+
+        if (!($request->input("start_date") && $request->input("end_date"))) {
+            return response()->json([
+                "draw" => $draw,
+                "recordsTotal" => 0,
+                "recordsFiltered" => 0,
+                "data" => [],
+                "approvals" => [
+                    "approvals" => [],
+                    "rejected" => (object) [],
+                    "employeeNames" => (object) [],
+                ],
+            ]);
+        }
+
+        $query = $this->hotelAdminFilteredQuery($request);
+
+        $recordsTotal = (clone $query)->count();
+
+        $search = trim((string) $request->input("search.value", ""));
+        if ($search !== "") {
+            $query->where(function ($q) use ($search) {
+                foreach (
+                    [
+                        "htl_transactions.no_sppd",
+                        "htl_transactions.no_htl",
+                        "htl_transactions.nama_htl",
+                        "htl_transactions.lokasi_htl",
+                        "htl_transactions.approval_status",
+                        "htl_emp.fullname",
+                    ]
+                    as $column
+                ) {
+                    $q->orWhere($column, "like", "%" . $search . "%");
+                }
+            });
+        }
+
+        $recordsFiltered =
+            $search === "" ? $recordsTotal : (clone $query)->count();
+
+        // Kolom 0 (No), 6 (Total Hotel), 7 (Details), 9 (Approval) dan
+        // 10 (Actions) tidak bisa diurutkan di SQL.
+        $sortable = [
+            1 => "htl_transactions.no_sppd",
+            2 => "htl_transactions.no_htl",
+            3 => "htl_emp.fullname",
+            4 => "htl_transactions.nama_htl",
+            5 => "htl_transactions.lokasi_htl",
+            8 => "htl_transactions.approval_status",
+        ];
+
+        $orderColumn = (int) $request->input("order.0.column", -1);
+        $orderDir =
+            strtolower($request->input("order.0.dir", "asc")) === "desc"
+                ? "desc"
+                : "asc";
+
+        if (isset($sortable[$orderColumn])) {
+            $query->orderBy($sortable[$orderColumn], $orderDir);
+        } else {
+            // Urutan bawaan versi lama.
+            $query->orderBy("htl_transactions.created_at", "desc");
+        }
+
+        // Tiebreaker wajib: tanpa ini urutan baris dengan nilai sama tidak
+        // stabil antar halaman, sehingga baris bisa terlewat atau dobel.
+        $query->orderBy("htl_transactions.id");
+
+        $start = max(0, (int) $request->input("start", 0));
+        $length = (int) $request->input("length", 10);
+
+        if ($length > 0) {
+            $query->offset($start)->limit($length);
+        }
+
+        $transactions = $query->get();
+        $noHtls = $transactions->pluck("no_htl")->filter()->unique();
+
+        // Versi lama mengelompokkan SELURUH htl_transactions tanpa filter
+        // tanggal untuk kolom Total Hotel dan isi modal Details, jadi di
+        // sini juga tidak disaring tanggal - hanya dibatasi no_htl yang
+        // muncul di halaman ini.
+        $related = Hotel::whereIn("no_htl", $noHtls)
+            ->orderBy("created_at", "desc")
+            ->get()
+            ->groupBy("no_htl");
+
+        $managerNames = $this->reimburseManagerNames($transactions);
+
+        $hotelIds = $related->flatten()->pluck("id");
+
+        $approvals = HotelApproval::with("employee")
+            ->whereIn("htl_id", $hotelIds)
+            ->get();
+
+        $rejected = $approvals
+            ->whereIn("approval_status", ["Rejected", "Declaration Rejected"])
+            ->keyBy("htl_id");
+
+        $employeeNames = Employee::whereIn(
+            "employee_id",
+            $rejected->pluck("employee_id")->filter()->unique(),
+        )->pluck("fullname", "employee_id");
+
+        $data = [];
+        foreach ($transactions as $i => $t) {
+            $group = $related->get($t->no_htl, collect());
+            $l1 = $managerNames["l1"][$t->id] ?? "Unknown";
+            $l2 = $managerNames["l2"][$t->id] ?? "Unknown";
+
+            $data[] = [
+                (string) ($start + $i + 1),
+                e($t->no_sppd),
+                e($t->no_htl),
+                e($t->employee->fullname ?? ""),
+                e($t->nama_htl),
+                e($t->lokasi_htl),
+                $group->count() . " Hotels",
+                $this->reimburseDetailCell(
+                    "hotel",
+                    $this->hotelAdminDetailPayload($group),
+                ),
+                $this->reimburseStatusBadge($t, $rejected, $l1, $l2),
+                '<button type="button" class="btn btn-sm btn-outline-success rounded-pill" data-bs-toggle="modal" data-bs-target="#approvalModal" data-id="' .
+                    e($t->id) .
+                    '" data-no="' .
+                    e($t->no_htl) .
+                    '" data-sppd="' .
+                    e($t->no_sppd) .
+                    '" data-status="' .
+                    e($t->approval_status) .
+                    '" data-manager-l1="' .
+                    e($l1) .
+                    '" data-manager-l2="' .
+                    e($l2) .
+                    '"><i class="bi bi-list-check"></i></button>',
+                $this->hotelAdminActionCell($t),
+            ];
+        }
+
+        return response()->json([
+            "draw" => $draw,
+            "recordsTotal" => $recordsTotal,
+            "recordsFiltered" => $recordsFiltered,
+            "data" => $data,
+            "approvals" => [
+                "approvals" => $approvals
+                    ->map(function ($a) {
+                        return [
+                            "htl_id" => $a->htl_id,
+                            "layer" => $a->layer,
+                            "approval_status" => $a->approval_status,
+                            "employee_id" => $a->employee->fullname ?? null,
+                            "by_admin" => $a->by_admin,
+                            "approved_at" => $a->approved_at,
+                        ];
+                    })
+                    ->values(),
+                "rejected" => $rejected->isEmpty() ? (object) [] : $rejected,
+                "employeeNames" => $employeeNames->isEmpty()
+                    ? (object) []
+                    : $employeeNames,
+            ],
         ]);
+    }
+
+    private function hotelAdminDetailPayload($group)
+    {
+        if (!$group || $group->isEmpty()) {
+            return null;
+        }
+
+        return $group
+            ->map(function ($hotel) {
+                return [
+                    "No. Hotel" => $hotel->no_htl,
+                    "No. SPPD" => $hotel->no_sppd,
+                    "Colleague No. SPPD" => $hotel->no_sppd_htl,
+                    "Unit" => $hotel->unit,
+                    "Hotel Name" => $hotel->nama_htl,
+                    "Location" => $hotel->lokasi_htl,
+                    "Room" => $hotel->jmlkmr_htl,
+                    "Bed" => $hotel->bed_htl,
+                    "Check In" => date(
+                        "d-M-Y",
+                        strtotime($hotel->tgl_masuk_htl),
+                    ),
+                    "Check Out" => date(
+                        "d-M-Y",
+                        strtotime($hotel->tgl_keluar_htl),
+                    ),
+                    "Total Days" => $hotel->total_hari,
+                    "Description" => $hotel->description,
+                ];
+            })
+            ->values();
+    }
+
+    private function hotelAdminActionCell($t): string
+    {
+        return '<button type="button" class="btn btn-sm btn-outline-success rounded-pill" data-bs-toggle="modal" data-bs-target="#bookingModal" data-no-id="' .
+            e($t->id) .
+            '" data-no-htl="' .
+            e($t->no_htl) .
+            '" data-booking-code="' .
+            e($t->booking_code) .
+            '" data-booking-price="' .
+            e($t->booking_price) .
+            '"><i class="bi bi-ticket-perforated"></i></button>' .
+            '<a href="' .
+            e(route("hotel.export", ["id" => $t->id])) .
+            '" class="btn btn-sm btn-outline-info rounded-pill" target="_blank"><i class="bi bi-download"></i></a>' .
+            '<form action="' .
+            e(route("hotel.delete.admin", encrypt($t->id))) .
+            '" method="POST" style="display:inline;" id="deleteForm_' .
+            e($t->no_htl) .
+            '">' .
+            csrf_field() .
+            '<input type="hidden" id="no_sppd_' .
+            e($t->no_htl) .
+            '" value="' .
+            e($t->no_htl) .
+            '">' .
+            '<button class="btn btn-sm rounded-pill btn-outline-danger delete-button" title="Delete" data-id="' .
+            e($t->no_htl) .
+            '"><i class="ri-delete-bin-line"></i></button></form>';
+    }
+
+    // ===================================================================
+    // Helper bersama tabel Ticket (Admin) dan Hotel (Admin). Markup kedua
+    // tabel itu memang kembar, termasuk cara mencari nama manager.
+    // ===================================================================
+
+    /**
+     * Nama manager L1/L2 untuk sekumpulan transaksi, dikembalikan sebagai
+     * ["l1" => [id transaksi => nama], "l2" => [...]].
+     *
+     * Aturannya sama dengan versi lama: pakai manager_l1_id/manager_l2_id di
+     * transaksi kalau ada, kalau tidak ambil dari data karyawan pemohon,
+     * kalau itu pun kosong tulis "No Manager Assigned". Bedanya, versi lama
+     * menjalankan 2-4 query untuk SETIAP baris; di sini cukup dua query
+     * untuk seluruh halaman.
+     */
+    private function reimburseManagerNames($transactions): array
+    {
+        // Pemohon hanya perlu diambil untuk transaksi yang managernya kosong.
+        $needRequestor = $transactions->filter(function ($t) {
+            return !$t->manager_l1_id || !$t->manager_l2_id;
+        });
+
+        $requestors = Employee::whereIn(
+            "id",
+            $needRequestor->pluck("user_id")->filter()->unique(),
+        )
+            ->get()
+            ->keyBy("id");
+
+        $managerIds = collect();
+        foreach ($transactions as $t) {
+            $requestor = $requestors->get($t->user_id);
+
+            $managerIds->push($t->manager_l1_id ?: $requestor?->manager_l1_id);
+            $managerIds->push($t->manager_l2_id ?: $requestor?->manager_l2_id);
+        }
+
+        $names = Employee::whereIn(
+            "employee_id",
+            $managerIds->filter()->unique(),
+        )->pluck("fullname", "employee_id");
+
+        $resolve = function ($directId, $requestorId) use ($names) {
+            if ($directId) {
+                return $names[$directId] ?? "Unknown";
+            }
+
+            if ($requestorId) {
+                return $names[$requestorId] ?? "Unknown";
+            }
+
+            return "No Manager Assigned";
+        };
+
+        $l1 = [];
+        $l2 = [];
+        foreach ($transactions as $t) {
+            $requestor = $requestors->get($t->user_id);
+
+            $l1[$t->id] = $resolve(
+                $t->manager_l1_id,
+                $requestor?->manager_l1_id,
+            );
+            $l2[$t->id] = $resolve(
+                $t->manager_l2_id,
+                $requestor?->manager_l2_id,
+            );
+        }
+
+        return ["l1" => $l1, "l2" => $l2];
+    }
+
+    /**
+     * Link "Details" yang membawa isi modal di data-attribute-nya.
+     */
+    private function reimburseDetailCell(string $key, $payload): string
+    {
+        if (empty($payload)) {
+            return "-";
+        }
+
+        return '<a class="text-info btn-detail" data-toggle="modal" data-target="#detailModal" style="cursor: pointer" data-' .
+            $key .
+            '="' .
+            e(json_encode($payload)) .
+            '"><u>Details</u></a>';
+    }
+
+    /**
+     * Badge status, sama untuk kedua tabel.
+     *
+     * Argumen JavaScript-nya di-json_encode dulu baru di-escape sebagai
+     * atribut HTML, supaya nilai bertanda kutip tidak memutus onclick.
+     */
+    private function reimburseStatusBadge(
+        $t,
+        $rejected,
+        string $managerL1,
+        string $managerL2
+    ): string {
+        $status = $t->approval_status;
+
+        if (
+            in_array($status, ["Approved", "Declaration Approved", "Verified"])
+        ) {
+            $color = "success";
+        } elseif (
+            in_array($status, [
+                "Rejected",
+                "Return/Refund",
+                "Declaration Rejected",
+            ])
+        ) {
+            $color = "danger";
+        } elseif (
+            in_array($status, [
+                "Pending L1",
+                "Pending L2",
+                "Declaration L1",
+                "Declaration L2",
+                "Waiting Submitted",
+            ])
+        ) {
+            $color = "warning";
+        } elseif ($status === "Draft") {
+            $color = "secondary";
+        } elseif (in_array($status, ["Doc Accepted", "Request Revision"])) {
+            $color = "info";
+        } else {
+            $color = "secondary";
+        }
+
+        $isRejected =
+            ($status == "Rejected" || $status == "Declaration Rejected") &&
+            isset($rejected[$t->id]);
+
+        $cursor = $isRejected ? "pointer" : "default";
+        $attrs = "";
+
+        if ($isRejected) {
+            $attrs =
+                ' onclick="showRejectInfo(' .
+                e(json_encode((string) $t->id)) .
+                ')" title="Click to see rejection reason"';
+        } elseif ($status == "Pending L1") {
+            $attrs = ' title="L1 Manager: ' . e($managerL1) . '"';
+        } elseif ($status == "Pending L2") {
+            $attrs = ' title="L2 Manager: ' . e($managerL2) . '"';
+        }
+
+        return '<span class="badge rounded-pill bg-' .
+            $color .
+            '" style="font-size: 12px; padding: 0.5rem 1rem; cursor: ' .
+            $cursor .
+            ';"' .
+            $attrs .
+            ">" .
+            e($status) .
+            "</span>";
     }
 
     public function hotelBookingAdmin(Request $req, $id)
@@ -7497,234 +8000,612 @@ class ReimburseController extends Controller
             ->with("success", "Request approved successfully.");
     }
 
+    // ===================================================================
+    // LEGACY - diganti oleh ticketAdmin() + ticketAdminData() di bawah.
+    // Method ini dulu merender SELURUH tiket hasil filter sekaligus, dan di
+    // luar tabel men-dump $employeeName (SELURUH tabel employees) serta
+    // $approvalTicket ke dalam JavaScript halaman. Nama manager dicari
+    // 2-4 query per baris, dan approval satu query per tiket.
+    // Baris tabel sekarang diambil per halaman lewat ticketAdminData().
+    // Disimpan utuh sebagai pembanding.
+    // ===================================================================
+//    public function ticketAdmin(Request $request)
+//    {
+//        $parentLink = "Reimbursement";
+//        $link = "Ticket (Admin)";
+//
+//        // Check if any filter is applied
+//        $startDate = $request->input("start_date");
+//        $endDate = $request->input("end_date");
+//        $tktType = $request->input("tkt_type");
+//
+//        $permissionLocations = $this->permissionLocations;
+//        $permissionCompanies = $this->permissionCompanies;
+//        $permissionGroupCompanies = $this->permissionGroupCompanies;
+//
+//        // Initialize variables
+//        $transactions = collect([]);
+//        $tickets = collect([]);
+//        $ticket = collect([]);
+//        $ticketCounts = collect([]);
+//        $ticketsGroups = collect([]);
+//        $ticketApprovals = collect([]);
+//        $approvalTickets = [];
+//        $employeeName = Employee::pluck("fullname", "employee_id");
+//
+//        // Only process data if filters are applied
+//        $isFilterApplied = $startDate && $endDate;
+//
+//        if ($isFilterApplied) {
+//            // Fetch latest ticket IDs
+//            $latestTicketIds = Tiket::selectRaw("MAX(id) as id")
+//                ->groupBy("no_tkt")
+//                ->pluck("id");
+//
+//            // Get transactions with the latest ticket IDs
+//            $transactions = Tiket::whereIn("id", $latestTicketIds)
+//                ->where("approval_status", "!=", "Draft")
+//                ->orderBy("created_at", "desc")
+//                ->when($startDate && $endDate, function ($query) use (
+//                    $startDate,
+//                    $endDate,
+//                ) {
+//                    $query->whereRaw("DATE(tgl_brkt_tkt) BETWEEN ? AND ?", [
+//                        $startDate,
+//                        $endDate,
+//                    ]);
+//                })
+//                ->when($tktType, function ($query) use ($tktType) {
+//                    if ($tktType !== "-") {
+//                        $query->where("jns_dinas_tkt", $tktType);
+//                    }
+//                });
+//
+//            // Apply permission filters
+//            if (!empty($permissionLocations)) {
+//                $transactions->whereHas("employee", function ($query) use (
+//                    $permissionLocations,
+//                ) {
+//                    $query->whereIn("work_area_code", $permissionLocations);
+//                });
+//            }
+//
+//            if (!empty($permissionCompanies)) {
+//                $transactions->whereIn(
+//                    "contribution_level_code",
+//                    $permissionCompanies,
+//                );
+//            }
+//
+//            if (!empty($permissionGroupCompanies)) {
+//                $transactions->whereHas("employee", function ($query) use (
+//                    $permissionGroupCompanies,
+//                ) {
+//                    $query->whereIn("group_company", $permissionGroupCompanies);
+//                });
+//            }
+//
+//            $transactions = $transactions
+//                ->select(
+//                    "id",
+//                    "no_tkt",
+//                    "dari_tkt",
+//                    "ke_tkt",
+//                    "approval_status",
+//                    "jns_dinas_tkt",
+//                    "user_id",
+//                    "no_sppd",
+//                    "manager_l1_id",
+//                    "manager_l2_id",
+//                    "booking_code",
+//                    "tkt_price",
+//                )
+//                ->get();
+//
+//            // Get all tickets (only if filters are applied)
+//            $tickets = Tiket::with("businessTrip")->orderBy(
+//                "created_at",
+//                "desc",
+//            );
+//
+//            // Apply the same filters to tickets query
+//            if ($startDate && $endDate) {
+//                $tickets->whereRaw("DATE(tgl_brkt_tkt) BETWEEN ? AND ?", [
+//                    $startDate,
+//                    $endDate,
+//                ]);
+//            }
+//
+//            if ($tktType && $tktType !== "-") {
+//                $tickets->where("jns_dinas_tkt", $tktType);
+//            }
+//
+//            $tickets = $tickets->get();
+//
+//            // Group tickets by 'no_tkt'
+//            $ticket = $tickets->groupBy("no_tkt");
+//
+//            // Get ticket IDs
+//            $tiketIds = $tickets->pluck("id");
+//
+//            // Get ticket approvals
+//            $ticketApprovals = TiketApproval::whereIn("tkt_id", $tiketIds)
+//                ->where(function ($query) {
+//                    $query
+//                        ->where("approval_status", "Rejected")
+//                        ->orWhere("approval_status", "Declaration Rejected");
+//                })
+//                ->get();
+//
+//            // Key ticket approvals by ticket ID
+//            $ticketApprovals = $ticketApprovals->keyBy("tkt_id");
+//            $ticketsGroups = $tickets->groupBy("no_tkt");
+//
+//            // Fetch employee data and manager names for transactions
+//            foreach ($transactions as $transaction) {
+//                // First check if manager IDs exist in the transaction (hotel db)
+//                if ($transaction->manager_l1_id) {
+//                    // If exists in transaction, get manager name from transaction's manager_l1_id
+//                    $managerL1 = Employee::where(
+//                        "employee_id",
+//                        $transaction->manager_l1_id,
+//                    )->first();
+//                    $transaction->manager_l1_name = $managerL1
+//                        ? $managerL1->fullname
+//                        : "Unknown";
+//                } else {
+//                    // If not exists in transaction, get from requestor's (employee) data
+//                    $requestor = Employee::find($transaction->user_id);
+//                    if ($requestor && $requestor->manager_l1_id) {
+//                        $managerL1 = Employee::where(
+//                            "employee_id",
+//                            $requestor->manager_l1_id,
+//                        )->first();
+//                        $transaction->manager_l1_name = $managerL1
+//                            ? $managerL1->fullname
+//                            : "Unknown";
+//                    } else {
+//                        $transaction->manager_l1_name = "No Manager Assigned";
+//                    }
+//                }
+//
+//                // Same logic for L2 manager
+//                if ($transaction->manager_l2_id) {
+//                    // If exists in transaction, get manager name from transaction's manager_l2_id
+//                    $managerL2 = Employee::where(
+//                        "employee_id",
+//                        $transaction->manager_l2_id,
+//                    )->first();
+//                    $transaction->manager_l2_name = $managerL2
+//                        ? $managerL2->fullname
+//                        : "Unknown";
+//                } else {
+//                    // If not exists in transaction, get from requestor's (employee) data
+//                    $requestor = Employee::find($transaction->user_id);
+//                    if ($requestor && $requestor->manager_l2_id) {
+//                        $managerL2 = Employee::where(
+//                            "employee_id",
+//                            $requestor->manager_l2_id,
+//                        )->first();
+//                        $transaction->manager_l2_name = $managerL2
+//                            ? $managerL2->fullname
+//                            : "Unknown";
+//                    } else {
+//                        $transaction->manager_l2_name = "No Manager Assigned";
+//                    }
+//                }
+//            }
+//
+//            // Count tickets grouped by 'no_tkt'
+//            $ticketCounts = $tickets
+//                ->groupBy("no_tkt")
+//                ->mapWithKeys(function ($group, $key) {
+//                    return [$key => ["total" => $group->count()]];
+//                });
+//
+//            // Fetch approval data for each ticket ID
+//            $approvalTickets = [];
+//            foreach ($tiketIds as $tiketId) {
+//                $ticketApprovals = TiketApproval::where(
+//                    "tkt_id",
+//                    $tiketId,
+//                )->get();
+//                foreach ($ticketApprovals as $ticketApprove) {
+//                    $approvalTickets[] = [
+//                        "tkt_id" => $tiketId,
+//                        "layer" => $ticketApprove->layer,
+//                        "approval_status" => $ticketApprove->approval_status,
+//                        "employee_id" => $ticketApprove->employee->fullname,
+//                        "by_admin" => $ticketApprove->by_admin,
+//                        "approved_at" => $ticketApprove->approved_at,
+//                    ];
+//                }
+//            }
+//        }
+//
+//        // Return the view with all the data (empty collections if no filters)
+//        return view("hcis.reimbursements.ticket.admin.ticketAdmin", [
+//            "link" => $link,
+//            "parentLink" => $parentLink,
+//            "transactions" => $transactions,
+//            "ticketCounts" => $ticketCounts,
+//            "tickets" => $tickets,
+//            "ticket" => $ticket,
+//            "ticketsGroups" => $ticketsGroups,
+//            "ticketApprovals" => $ticketApprovals,
+//            "employeeName" => $employeeName,
+//            "approvalTicket" => $approvalTickets,
+//            "isFilterApplied" => $isFilterApplied,
+//        ]);
+//    }
+
+    /**
+     * Halaman Ticket (Admin).
+     *
+     * Baris tabel tidak lagi dirender di sini: DataTables memintanya per
+     * halaman ke ticketAdminData(). Versi lama ada di atas (legacy).
+     */
     public function ticketAdmin(Request $request)
     {
         $parentLink = "Reimbursement";
         $link = "Ticket (Admin)";
 
-        // Check if any filter is applied
+        $isFilterApplied =
+            $request->input("start_date") && $request->input("end_date");
+
+        // Semua koleksi di bawah dulu dipakai @foreach baris tabel dan blok
+        // JavaScript di halaman. Sekarang datanya dikirim per halaman lewat
+        // response DataTables, jadi dikirim kosong.
+        return view("hcis.reimbursements.ticket.admin.ticketAdmin", [
+            "link" => $link,
+            "parentLink" => $parentLink,
+            "transactions" => collect([]),
+            "ticketCounts" => collect([]),
+            "tickets" => collect([]),
+            "ticket" => collect([]),
+            "ticketsGroups" => collect([]),
+            "ticketApprovals" => collect([]),
+            "employeeName" => collect([]),
+            "approvalTicket" => [],
+            "isFilterApplied" => $isFilterApplied,
+        ]);
+    }
+
+    /**
+     * Query dasar daftar Ticket (Admin) - satu baris per no_tkt (yang
+     * id-nya paling besar), builder, belum dieksekusi.
+     *
+     * employees ikut di-join supaya kolom Requestor Name bisa diurutkan dan
+     * dicari di SQL. Nama kolom disebut lengkap karena beberapa nama kolom
+     * ada di kedua tabel.
+     */
+    private function ticketAdminFilteredQuery(Request $request)
+    {
         $startDate = $request->input("start_date");
         $endDate = $request->input("end_date");
         $tktType = $request->input("tkt_type");
+
+        $query = Tiket::query()
+            ->with("employee")
+            ->leftJoin(
+                "employees as tkt_emp",
+                "tkt_emp.id",
+                "=",
+                "tkt_transactions.user_id",
+            )
+            ->select("tkt_transactions.*")
+            // Versi lama mengambil MAX(id) per no_tkt lebih dulu lalu
+            // whereIn dengan seluruh id itu. Di sini tetap sebagai subquery
+            // supaya tidak perlu menarik semuanya ke PHP.
+            ->whereIn("tkt_transactions.id", function ($sub) {
+                $sub->selectRaw("MAX(id)")
+                    ->from("tkt_transactions")
+                    ->groupBy("no_tkt");
+            })
+            ->where("tkt_transactions.approval_status", "!=", "Draft");
+
+        if ($startDate && $endDate) {
+            $query->whereRaw("DATE(tkt_transactions.tgl_brkt_tkt) BETWEEN ? AND ?", [
+                $startDate,
+                $endDate,
+            ]);
+        }
+
+        if ($tktType && $tktType !== "-") {
+            $query->where("tkt_transactions.jns_dinas_tkt", $tktType);
+        }
 
         $permissionLocations = $this->permissionLocations;
         $permissionCompanies = $this->permissionCompanies;
         $permissionGroupCompanies = $this->permissionGroupCompanies;
 
-        // Initialize variables
-        $transactions = collect([]);
-        $tickets = collect([]);
-        $ticket = collect([]);
-        $ticketCounts = collect([]);
-        $ticketsGroups = collect([]);
-        $ticketApprovals = collect([]);
-        $approvalTickets = [];
-        $employeeName = Employee::pluck("fullname", "employee_id");
-
-        // Only process data if filters are applied
-        $isFilterApplied = $startDate && $endDate;
-
-        if ($isFilterApplied) {
-            // Fetch latest ticket IDs
-            $latestTicketIds = Tiket::selectRaw("MAX(id) as id")
-                ->groupBy("no_tkt")
-                ->pluck("id");
-
-            // Get transactions with the latest ticket IDs
-            $transactions = Tiket::whereIn("id", $latestTicketIds)
-                ->where("approval_status", "!=", "Draft")
-                ->orderBy("created_at", "desc")
-                ->when($startDate && $endDate, function ($query) use (
-                    $startDate,
-                    $endDate,
-                ) {
-                    $query->whereRaw("DATE(tgl_brkt_tkt) BETWEEN ? AND ?", [
-                        $startDate,
-                        $endDate,
-                    ]);
-                })
-                ->when($tktType, function ($query) use ($tktType) {
-                    if ($tktType !== "-") {
-                        $query->where("jns_dinas_tkt", $tktType);
-                    }
-                });
-
-            // Apply permission filters
-            if (!empty($permissionLocations)) {
-                $transactions->whereHas("employee", function ($query) use (
-                    $permissionLocations,
-                ) {
-                    $query->whereIn("work_area_code", $permissionLocations);
-                });
-            }
-
-            if (!empty($permissionCompanies)) {
-                $transactions->whereIn(
-                    "contribution_level_code",
-                    $permissionCompanies,
-                );
-            }
-
-            if (!empty($permissionGroupCompanies)) {
-                $transactions->whereHas("employee", function ($query) use (
-                    $permissionGroupCompanies,
-                ) {
-                    $query->whereIn("group_company", $permissionGroupCompanies);
-                });
-            }
-
-            $transactions = $transactions
-                ->select(
-                    "id",
-                    "no_tkt",
-                    "dari_tkt",
-                    "ke_tkt",
-                    "approval_status",
-                    "jns_dinas_tkt",
-                    "user_id",
-                    "no_sppd",
-                    "manager_l1_id",
-                    "manager_l2_id",
-                    "booking_code",
-                    "tkt_price",
-                )
-                ->get();
-
-            // Get all tickets (only if filters are applied)
-            $tickets = Tiket::with("businessTrip")->orderBy(
-                "created_at",
-                "desc",
-            );
-
-            // Apply the same filters to tickets query
-            if ($startDate && $endDate) {
-                $tickets->whereRaw("DATE(tgl_brkt_tkt) BETWEEN ? AND ?", [
-                    $startDate,
-                    $endDate,
-                ]);
-            }
-
-            if ($tktType && $tktType !== "-") {
-                $tickets->where("jns_dinas_tkt", $tktType);
-            }
-
-            $tickets = $tickets->get();
-
-            // Group tickets by 'no_tkt'
-            $ticket = $tickets->groupBy("no_tkt");
-
-            // Get ticket IDs
-            $tiketIds = $tickets->pluck("id");
-
-            // Get ticket approvals
-            $ticketApprovals = TiketApproval::whereIn("tkt_id", $tiketIds)
-                ->where(function ($query) {
-                    $query
-                        ->where("approval_status", "Rejected")
-                        ->orWhere("approval_status", "Declaration Rejected");
-                })
-                ->get();
-
-            // Key ticket approvals by ticket ID
-            $ticketApprovals = $ticketApprovals->keyBy("tkt_id");
-            $ticketsGroups = $tickets->groupBy("no_tkt");
-
-            // Fetch employee data and manager names for transactions
-            foreach ($transactions as $transaction) {
-                // First check if manager IDs exist in the transaction (hotel db)
-                if ($transaction->manager_l1_id) {
-                    // If exists in transaction, get manager name from transaction's manager_l1_id
-                    $managerL1 = Employee::where(
-                        "employee_id",
-                        $transaction->manager_l1_id,
-                    )->first();
-                    $transaction->manager_l1_name = $managerL1
-                        ? $managerL1->fullname
-                        : "Unknown";
-                } else {
-                    // If not exists in transaction, get from requestor's (employee) data
-                    $requestor = Employee::find($transaction->user_id);
-                    if ($requestor && $requestor->manager_l1_id) {
-                        $managerL1 = Employee::where(
-                            "employee_id",
-                            $requestor->manager_l1_id,
-                        )->first();
-                        $transaction->manager_l1_name = $managerL1
-                            ? $managerL1->fullname
-                            : "Unknown";
-                    } else {
-                        $transaction->manager_l1_name = "No Manager Assigned";
-                    }
-                }
-
-                // Same logic for L2 manager
-                if ($transaction->manager_l2_id) {
-                    // If exists in transaction, get manager name from transaction's manager_l2_id
-                    $managerL2 = Employee::where(
-                        "employee_id",
-                        $transaction->manager_l2_id,
-                    )->first();
-                    $transaction->manager_l2_name = $managerL2
-                        ? $managerL2->fullname
-                        : "Unknown";
-                } else {
-                    // If not exists in transaction, get from requestor's (employee) data
-                    $requestor = Employee::find($transaction->user_id);
-                    if ($requestor && $requestor->manager_l2_id) {
-                        $managerL2 = Employee::where(
-                            "employee_id",
-                            $requestor->manager_l2_id,
-                        )->first();
-                        $transaction->manager_l2_name = $managerL2
-                            ? $managerL2->fullname
-                            : "Unknown";
-                    } else {
-                        $transaction->manager_l2_name = "No Manager Assigned";
-                    }
-                }
-            }
-
-            // Count tickets grouped by 'no_tkt'
-            $ticketCounts = $tickets
-                ->groupBy("no_tkt")
-                ->mapWithKeys(function ($group, $key) {
-                    return [$key => ["total" => $group->count()]];
-                });
-
-            // Fetch approval data for each ticket ID
-            $approvalTickets = [];
-            foreach ($tiketIds as $tiketId) {
-                $ticketApprovals = TiketApproval::where(
-                    "tkt_id",
-                    $tiketId,
-                )->get();
-                foreach ($ticketApprovals as $ticketApprove) {
-                    $approvalTickets[] = [
-                        "tkt_id" => $tiketId,
-                        "layer" => $ticketApprove->layer,
-                        "approval_status" => $ticketApprove->approval_status,
-                        "employee_id" => $ticketApprove->employee->fullname,
-                        "by_admin" => $ticketApprove->by_admin,
-                        "approved_at" => $ticketApprove->approved_at,
-                    ];
-                }
-            }
+        if (!empty($permissionLocations)) {
+            $query->whereHas("employee", function ($q) use (
+                $permissionLocations,
+            ) {
+                $q->whereIn("work_area_code", $permissionLocations);
+            });
         }
 
-        // Return the view with all the data (empty collections if no filters)
-        return view("hcis.reimbursements.ticket.admin.ticketAdmin", [
-            "link" => $link,
-            "parentLink" => $parentLink,
-            "transactions" => $transactions,
-            "ticketCounts" => $ticketCounts,
-            "tickets" => $tickets,
-            "ticket" => $ticket,
-            "ticketsGroups" => $ticketsGroups,
-            "ticketApprovals" => $ticketApprovals,
-            "employeeName" => $employeeName,
-            "approvalTicket" => $approvalTickets,
-            "isFilterApplied" => $isFilterApplied,
+        if (!empty($permissionCompanies)) {
+            $query->whereIn(
+                "tkt_transactions.contribution_level_code",
+                $permissionCompanies,
+            );
+        }
+
+        if (!empty($permissionGroupCompanies)) {
+            $query->whereHas("employee", function ($q) use (
+                $permissionGroupCompanies,
+            ) {
+                $q->whereIn("group_company", $permissionGroupCompanies);
+            });
+        }
+
+        return $query;
+    }
+
+    /**
+     * Sumber data DataTables server-side untuk halaman Ticket (Admin).
+     *
+     * Response juga membawa "approvals": approval milik tiket di halaman ini
+     * saja (dipakai modal Approval), yang ditolak (modal Rejection
+     * Information), dan nama karyawan yang dipakai keduanya. Dulu ketiganya
+     * di-dump utuh ke dalam HTML halaman - termasuk SELURUH tabel employees,
+     * dan satu query TiketApproval per tiket yang ada di rentang filter.
+     */
+    public function ticketAdminData(Request $request)
+    {
+        $draw = (int) $request->input("draw", 0);
+
+        $empty = [
+            "draw" => $draw,
+            "recordsTotal" => 0,
+            "recordsFiltered" => 0,
+            "data" => [],
+            "approvals" => [
+                "approvals" => [],
+                "rejected" => (object) [],
+                "employeeNames" => (object) [],
+            ],
+        ];
+
+        // Tanpa rentang tanggal, versi lama tidak menampilkan baris apa pun.
+        if (!($request->input("start_date") && $request->input("end_date"))) {
+            return response()->json($empty);
+        }
+
+        $query = $this->ticketAdminFilteredQuery($request);
+
+        $recordsTotal = (clone $query)->count();
+
+        $search = trim((string) $request->input("search.value", ""));
+        if ($search !== "") {
+            $query->where(function ($q) use ($search) {
+                foreach (
+                    [
+                        "tkt_transactions.no_sppd",
+                        "tkt_transactions.no_tkt",
+                        "tkt_transactions.jns_dinas_tkt",
+                        "tkt_transactions.dari_tkt",
+                        "tkt_transactions.ke_tkt",
+                        "tkt_transactions.approval_status",
+                        "tkt_emp.fullname",
+                    ]
+                    as $column
+                ) {
+                    $q->orWhere($column, "like", "%" . $search . "%");
+                }
+            });
+        }
+
+        $recordsFiltered =
+            $search === "" ? $recordsTotal : (clone $query)->count();
+
+        // Kolom 0 (No), 4 (Total Tickets), 7 (Details), 9 (Approval) dan
+        // 10 (Actions) tidak bisa diurutkan di SQL.
+        $sortable = [
+            1 => "tkt_transactions.no_sppd",
+            2 => "tkt_transactions.no_tkt",
+            3 => "tkt_emp.fullname",
+            5 => "tkt_transactions.jns_dinas_tkt",
+            6 => "tkt_transactions.dari_tkt",
+            8 => "tkt_transactions.approval_status",
+        ];
+
+        $orderColumn = (int) $request->input("order.0.column", -1);
+        $orderDir =
+            strtolower($request->input("order.0.dir", "asc")) === "desc"
+                ? "desc"
+                : "asc";
+
+        if (isset($sortable[$orderColumn])) {
+            $query->orderBy($sortable[$orderColumn], $orderDir);
+        } else {
+            // Urutan bawaan versi lama.
+            $query->orderBy("tkt_transactions.created_at", "desc");
+        }
+
+        // Tiebreaker wajib: tanpa ini urutan baris dengan nilai sama tidak
+        // stabil antar halaman, sehingga baris bisa terlewat atau dobel.
+        $query->orderBy("tkt_transactions.id");
+
+        $start = max(0, (int) $request->input("start", 0));
+        $length = (int) $request->input("length", 10);
+
+        if ($length > 0) {
+            $query->offset($start)->limit($length);
+        }
+
+        $transactions = $query->get();
+        $noTkts = $transactions->pluck("no_tkt")->filter()->unique();
+
+        // Semua tiket yang ber-no_tkt sama dengan baris di halaman ini.
+        // Versi lama menyaringnya dengan rentang tanggal + jenis dinas yang
+        // sama, jadi di sini juga.
+        $startDate = $request->input("start_date");
+        $endDate = $request->input("end_date");
+        $tktType = $request->input("tkt_type");
+
+        $related = Tiket::whereIn("no_tkt", $noTkts)
+            ->whereRaw("DATE(tgl_brkt_tkt) BETWEEN ? AND ?", [
+                $startDate,
+                $endDate,
+            ])
+            ->when($tktType && $tktType !== "-", function ($q) use ($tktType) {
+                $q->where("jns_dinas_tkt", $tktType);
+            })
+            ->orderBy("created_at", "desc")
+            ->get()
+            ->groupBy("no_tkt");
+
+        $managerNames = $this->reimburseManagerNames($transactions);
+
+        $tiketIds = $related->flatten()->pluck("id");
+
+        $approvals = TiketApproval::with("employee")
+            ->whereIn("tkt_id", $tiketIds)
+            ->get();
+
+        $rejected = $approvals
+            ->whereIn("approval_status", ["Rejected", "Declaration Rejected"])
+            ->keyBy("tkt_id");
+
+        $employeeNames = Employee::whereIn(
+            "employee_id",
+            $rejected->pluck("employee_id")->filter()->unique(),
+        )->pluck("fullname", "employee_id");
+
+        $data = [];
+        foreach ($transactions as $i => $t) {
+            $group = $related->get($t->no_tkt, collect());
+            $l1 = $managerNames["l1"][$t->id] ?? "Unknown";
+            $l2 = $managerNames["l2"][$t->id] ?? "Unknown";
+
+            $data[] = [
+                (string) ($start + $i + 1),
+                e($t->no_sppd),
+                e($t->no_tkt),
+                e($t->employee->fullname ?? "-"),
+                $group->count() . " Tickets",
+                e($t->jns_dinas_tkt),
+                e($t->dari_tkt . "/" . $t->ke_tkt),
+                $this->reimburseDetailCell(
+                    "tiket",
+                    $this->ticketAdminDetailPayload($group),
+                ),
+                $this->reimburseStatusBadge($t, $rejected, $l1, $l2),
+                '<button type="button" class="btn btn-sm btn-outline-success rounded-pill" data-bs-toggle="modal" data-bs-target="#approvalModal" data-id="' .
+                    e($t->id) .
+                    '" data-no="' .
+                    e($t->no_tkt) .
+                    '" data-sppd="' .
+                    e($t->no_sppd) .
+                    '" data-status="' .
+                    e($t->approval_status) .
+                    '" data-manager-l1="' .
+                    e($l1) .
+                    '" data-manager-l2="' .
+                    e($l2) .
+                    '"><i class="bi bi-list-check"></i></button>',
+                $this->ticketAdminActionCell($t),
+            ];
+        }
+
+        return response()->json([
+            "draw" => $draw,
+            "recordsTotal" => $recordsTotal,
+            "recordsFiltered" => $recordsFiltered,
+            "data" => $data,
+            "approvals" => [
+                "approvals" => $approvals
+                    ->map(function ($a) {
+                        return [
+                            "tkt_id" => $a->tkt_id,
+                            "layer" => $a->layer,
+                            "approval_status" => $a->approval_status,
+                            "employee_id" => $a->employee->fullname ?? null,
+                            "by_admin" => $a->by_admin,
+                            "approved_at" => $a->approved_at,
+                        ];
+                    })
+                    ->values(),
+                "rejected" => $rejected->isEmpty() ? (object) [] : $rejected,
+                "employeeNames" => $employeeNames->isEmpty()
+                    ? (object) []
+                    : $employeeNames,
+            ],
         ]);
+    }
+
+    private function ticketAdminDetailPayload($group)
+    {
+        if (!$group || $group->isEmpty()) {
+            return null;
+        }
+
+        return $group
+            ->map(function ($ticket) {
+                return [
+                    "No. SPPD" => $ticket->no_sppd,
+                    "No. Ticket" => $ticket->no_tkt,
+                    "Passengers Name" => $ticket->np_tkt,
+                    "Unit" => $ticket->unit,
+                    "Gender" => $ticket->jk_tkt,
+                    "NIK" => $ticket->noktp_tkt,
+                    "Phone No." => $ticket->tlp_tkt,
+                    "Transport Type." => $ticket->jenis_tkt,
+                    "From" => $ticket->dari_tkt,
+                    "To" => $ticket->ke_tkt,
+                    "Information" => $ticket->ket_tkt ?? "No Data",
+                    "Purposes" => $ticket->jns_dinas_tkt,
+                    "Ticket Type" => $ticket->type_tkt,
+                    "Departure Date" => date(
+                        "d-M-Y",
+                        strtotime($ticket->tgl_brkt_tkt),
+                    ),
+                    "Time" => !empty($ticket->jam_brkt_tkt)
+                        ? date("H:i", strtotime($ticket->jam_brkt_tkt))
+                        : "No Data",
+                    "Return Date" => isset($ticket->tgl_plg_tkt)
+                        ? date("d-M-Y", strtotime($ticket->tgl_plg_tkt))
+                        : "No Data",
+                    "Return Time" => !empty($ticket->jam_plg_tkt)
+                        ? date("H:i", strtotime($ticket->jam_plg_tkt))
+                        : "No Data",
+                ];
+            })
+            ->values();
+    }
+
+    private function ticketAdminActionCell($t): string
+    {
+        return '<button type="button" class="btn btn-sm btn-outline-success rounded-pill" data-bs-toggle="modal" data-bs-target="#bookingModal" data-no-id="' .
+            e($t->id) .
+            '" data-no-tkt="' .
+            e($t->no_tkt) .
+            '" data-booking-code="' .
+            e($t->booking_code) .
+            '" data-tkt-price="' .
+            e($t->tkt_price) .
+            '"><i class="bi bi-ticket-perforated"></i></button>' .
+            '<a href="' .
+            e(route("ticket.export", ["id" => $t->id])) .
+            '" class="btn btn-sm btn-outline-info rounded-pill" target="_blank" title="Download PDF"><i class="bi bi-download"></i></a>' .
+            '<form action="' .
+            e(route("ticket.delete.admin", encrypt($t->id))) .
+            '" method="POST" style="display:inline;" id="deleteForm_' .
+            e($t->no_tkt) .
+            '">' .
+            csrf_field() .
+            '<input type="hidden" id="no_sppd_' .
+            e($t->no_tkt) .
+            '" value="' .
+            e($t->no_tkt) .
+            '">' .
+            '<button class="btn btn-sm rounded-pill btn-outline-danger delete-button" title="Delete" data-id="' .
+            e($t->no_tkt) .
+            '"><i class="ri-delete-bin-line"></i></button></form>';
     }
 
     public function ticketBookingAdmin(Request $req, $id)

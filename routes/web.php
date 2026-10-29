@@ -596,6 +596,11 @@ Route::middleware("auth")->group(function () {
             ReimburseController::class,
             "hotelAdmin",
         ])->name("hotel.admin");
+        // Sumber data DataTables server-side untuk halaman Hotel (Admin).
+        Route::get("/hotel/admin/data", [
+            ReimburseController::class,
+            "hotelAdminData",
+        ])->name("hotel.admin.data");
         Route::post("/hotel/admin/booking/{id}", [
             ReimburseController::class,
             "hotelBookingAdmin",
@@ -667,6 +672,11 @@ Route::middleware("auth")->group(function () {
             ReimburseController::class,
             "ticketAdmin",
         ])->name("ticket.admin");
+        // Sumber data DataTables server-side untuk halaman Ticket (Admin).
+        Route::get("/ticket/admin/data", [
+            ReimburseController::class,
+            "ticketAdminData",
+        ])->name("ticket.admin.data");
         Route::post("/ticket/admin/booking/{id}", [
             ReimburseController::class,
             "ticketBookingAdmin",
@@ -1185,6 +1195,11 @@ Route::middleware("auth")->group(function () {
         HomeTripController::class,
         "homeTripAdmin",
     ])->name("home-trip.admin");
+    // Sumber data DataTables server-side untuk halaman Home Trip Admin.
+    Route::get("/home-trip/admin/data", [
+        HomeTripController::class,
+        "homeTripAdminData",
+    ])->name("home-trip.admin.data");
     Route::get("/home-trip/admin/detail/{key}", [
         HomeTripController::class,
         "homeTripAdminDetail",

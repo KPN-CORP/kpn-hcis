@@ -766,78 +766,301 @@ class HomeTripController extends Controller
         return $romanMonths[$month];
     }
 
+    // ===================================================================
+    // LEGACY - diganti oleh homeTripAdmin() + homeTripAdminData() di bawah.
+    // Method ini dulu merender SELURUH karyawan hasil filter sekaligus lewat
+    // foreach di blade, dan untuk tiap karyawan menjalankan tiga query lagi
+    // (jumlah tanggungan, kuota tiket tahun berjalan, periode terakhir).
+    // Baris tabel sekarang diambil per halaman lewat homeTripAdminData()
+    // (DataTables server-side), dan ketiga nilai itu diambil sekali secara
+    // dikelompokkan untuk baris di halaman itu saja.
+    // Disimpan utuh sebagai pembanding.
+    // ===================================================================
+//    public function homeTripAdmin(Request $request)
+//    {
+//        $parentLink = 'Reimbursement';
+//        $link = 'Home Trip';
+//        $employee_id = Auth::user()->employee_id;
+//        $userId = Auth::user()->id;
+//
+//        $userRole = auth()->user()->roles->first();
+//        $roleRestriction = json_decode($userRole->restriction, true);
+//        $restrictedWorkAreas = $roleRestriction['work_area_code'] ?? [];
+//        $restrictedGroupCompanies = $roleRestriction['group_company'] ?? [];
+//
+//        if (!empty($restrictedWorkAreas)) {
+//            $locations = Location::orderBy('area')->whereIn('work_area', $restrictedWorkAreas)->get();
+//        } else {
+//            $locations = Location::orderBy('area')->get();
+//        }
+//
+//        $currentYear = date('Y');
+//
+//        $query = Employee::with(['employee', 'statusReqEmployee', 'statusSettEmployee']);
+//
+//        $ht_employee = collect();
+//        $hasFilter = false;
+//
+//        if (request()->get('stat') == '') {
+//        } else {
+//            if ($request->has('stat') && $request->input('stat') !== '') {
+//                $status = $request->input('stat');
+//                $query->where('work_area_code', $status);
+//                $hasFilter = true;
+//            }
+//        }
+//
+//        if (request()->get('customsearch') == '') {
+//        } else {
+//            if ($request->has('customsearch') && $request->input('customsearch') !== '') {
+//                $customsearch = $request->input('customsearch');
+//                if (!empty($restrictedWorkAreas)) {
+//                    $query->where('fullname', 'LIKE', '%' . $customsearch . '%')
+//                        ->where('work_area_code', $restrictedWorkAreas);
+//                } else {
+//                    $query->where('fullname', 'LIKE', '%' . $customsearch . '%');
+//                }
+//                $hasFilter = true;
+//            }
+//        }
+//
+//        if ($hasFilter) {
+//            $ht_employee = $query->orderBy('created_at', 'desc')->where('homebase', '!=', '')->get();
+//            foreach ($ht_employee as $ht_employees) {
+//                $ht_employees->family_count = Dependents::where('employee_id', $ht_employees->employee_id)->count() + 1;
+//
+//                $ht_employees->ticket_count = HomeTrip::where('employee_id', $ht_employees->employee_id)
+//                    ->where('period', $currentYear)
+//                    ->sum('quota');
+//
+//                $latestPeriod = HomeTrip::where('employee_id', $ht_employees->employee_id)
+//                    ->orderBy('period', 'desc')
+//                    ->value('period');
+//                $ht_employees->latest_period = $latestPeriod ? $latestPeriod : '-';
+//            }
+//        }
+//
+//        return view('hcis.reimbursements.homeTrip.admin.homeTripAdmin', compact(
+//            'link',
+//            'parentLink',
+//            'ht_employee',
+//            'locations',
+//        ));
+//    }
+//
+
+    /**
+     * Halaman Home Trip (Admin).
+     *
+     * Sama seperti sebelumnya: selama filter belum diisi, tabelnya kosong.
+     * Baris tabel tidak lagi dirender di sini, DataTables memintanya per
+     * halaman ke homeTripAdminData(). Versi lama ada di atas (legacy).
+     */
     public function homeTripAdmin(Request $request)
     {
         $parentLink = 'Reimbursement';
         $link = 'Home Trip';
-        $employee_id = Auth::user()->employee_id;
-        $userId = Auth::user()->id;
 
-        $userRole = auth()->user()->roles->first();
-        $roleRestriction = json_decode($userRole->restriction, true);
-        $restrictedWorkAreas = $roleRestriction['work_area_code'] ?? [];
-        $restrictedGroupCompanies = $roleRestriction['group_company'] ?? [];
+        $locations = $this->homeTripAdminLocations();
 
-        if (!empty($restrictedWorkAreas)) {
-            $locations = Location::orderBy('area')->whereIn('work_area', $restrictedWorkAreas)->get();
-        } else {
-            $locations = Location::orderBy('area')->get();
-        }
-
-        $currentYear = date('Y');
-
-        $query = Employee::with(['employee', 'statusReqEmployee', 'statusSettEmployee']);
-
+        // Diisi oleh DataTables server-side.
         $ht_employee = collect();
-        $hasFilter = false;
 
-        if (request()->get('stat') == '') {
-        } else {
-            if ($request->has('stat') && $request->input('stat') !== '') {
-                $status = $request->input('stat');
-                $query->where('work_area_code', $status);
-                $hasFilter = true;
-            }
-        }
-
-        if (request()->get('customsearch') == '') {
-        } else {
-            if ($request->has('customsearch') && $request->input('customsearch') !== '') {
-                $customsearch = $request->input('customsearch');
-                if (!empty($restrictedWorkAreas)) {
-                    $query->where('fullname', 'LIKE', '%' . $customsearch . '%')
-                        ->where('work_area_code', $restrictedWorkAreas);
-                } else {
-                    $query->where('fullname', 'LIKE', '%' . $customsearch . '%');
-                }
-                $hasFilter = true;
-            }
-        }
-
-        if ($hasFilter) {
-            $ht_employee = $query->orderBy('created_at', 'desc')->where('homebase', '!=', '')->get();
-            foreach ($ht_employee as $ht_employees) {
-                $ht_employees->family_count = Dependents::where('employee_id', $ht_employees->employee_id)->count() + 1;
-
-                $ht_employees->ticket_count = HomeTrip::where('employee_id', $ht_employees->employee_id)
-                    ->where('period', $currentYear)
-                    ->sum('quota');
-
-                $latestPeriod = HomeTrip::where('employee_id', $ht_employees->employee_id)
-                    ->orderBy('period', 'desc')
-                    ->value('period');
-                $ht_employees->latest_period = $latestPeriod ? $latestPeriod : '-';
-            }
-        }
+        $isFilterApplied = $this->homeTripAdminFilterApplied($request);
 
         return view('hcis.reimbursements.homeTrip.admin.homeTripAdmin', compact(
             'link',
             'parentLink',
             'ht_employee',
             'locations',
+            'isFilterApplied',
         ));
     }
 
+    /**
+     * Pilihan Unit Location, dibatasi work_area yang boleh dilihat role ini.
+     */
+    private function homeTripAdminLocations()
+    {
+        $userRole = auth()->user()->roles->first();
+        $roleRestriction = json_decode($userRole->restriction, true);
+        $restrictedWorkAreas = $roleRestriction['work_area_code'] ?? [];
+
+        if (!empty($restrictedWorkAreas)) {
+            return Location::orderBy('area')
+                ->whereIn('work_area', $restrictedWorkAreas)
+                ->get();
+        }
+
+        return Location::orderBy('area')->get();
+    }
+
+    /**
+     * Tabel baru menampilkan data kalau Unit Location atau Employee Name
+     * sudah diisi. Dipakai halaman dan endpoint DataTables-nya supaya
+     * keduanya tidak pernah berbeda pendapat soal "sudah difilter atau belum".
+     */
+    private function homeTripAdminFilterApplied(Request $request): bool
+    {
+        $stat = $request->input('stat');
+        $customsearch = $request->input('customsearch');
+
+        // Versi lama: blade menyembunyikan semua baris kalau stat == '-'.
+        if ($stat === '-') {
+            return false;
+        }
+
+        return ($stat !== null && $stat !== '') ||
+            ($customsearch !== null && $customsearch !== '');
+    }
+
+    /**
+     * Query dasar daftar Home Trip Admin (builder, belum dieksekusi).
+     */
+    private function homeTripAdminQuery(Request $request)
+    {
+        $userRole = auth()->user()->roles->first();
+        $roleRestriction = json_decode($userRole->restriction, true);
+        $restrictedWorkAreas = $roleRestriction['work_area_code'] ?? [];
+
+        $query = Employee::query()->where('homebase', '!=', '');
+
+        $stat = $request->input('stat');
+        if ($stat !== null && $stat !== '') {
+            $query->where('work_area_code', $stat);
+        }
+
+        $customsearch = $request->input('customsearch');
+        if ($customsearch !== null && $customsearch !== '') {
+            $query->where('fullname', 'LIKE', '%' . $customsearch . '%');
+
+            // Versi lama menulis where('work_area_code', $restrictedWorkAreas)
+            // dengan $restrictedWorkAreas berupa ARRAY, yang membuat PDO
+            // gagal mem-bind nilainya. Jadi pencarian nama oleh role yang
+            // punya pembatasan work area sebenarnya error, bukan menyaring.
+            // Di sini dipakai whereIn, sesuai maksud aslinya.
+            if (!empty($restrictedWorkAreas)) {
+                $query->whereIn('work_area_code', $restrictedWorkAreas);
+            }
+        }
+
+        return $query;
+    }
+
+    /**
+     * Sumber data DataTables server-side untuk halaman Home Trip (Admin).
+     *
+     * family_count / latest_period / ticket_count dulu dihitung satu query
+     * per baris di dalam foreach (3 query x jumlah karyawan hasil filter).
+     * Sekarang ketiganya diambil sekali secara dikelompokkan, hanya untuk
+     * baris yang ada di halaman ini.
+     */
+    public function homeTripAdminData(Request $request)
+    {
+        $draw = (int) $request->input('draw', 0);
+
+        if (!$this->homeTripAdminFilterApplied($request)) {
+            return response()->json([
+                'draw' => $draw,
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'data' => [],
+            ]);
+        }
+
+        $query = $this->homeTripAdminQuery($request);
+
+        $recordsTotal = (clone $query)->count();
+
+        $search = trim((string) $request->input('search.value', ''));
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                foreach (['ktp', 'employee_id', 'fullname'] as $column) {
+                    $q->orWhere($column, 'LIKE', '%' . $search . '%');
+                }
+            });
+        }
+
+        $recordsFiltered = $search === '' ? $recordsTotal : (clone $query)->count();
+
+        // Kolom 0 (No), 5 (Family Count), 6 (Period), 7 (Ticket Count) dan
+        // 8 (Detail Plafond) dihitung di luar SQL, jadi tidak bisa diurutkan.
+        $sortable = [
+            1 => 'ktp',
+            2 => 'employee_id',
+            3 => 'fullname',
+            4 => 'date_of_joining',
+        ];
+
+        $orderColumn = (int) $request->input('order.0.column', -1);
+        $orderDir = strtolower($request->input('order.0.dir', 'asc')) === 'desc' ? 'desc' : 'asc';
+
+        if (isset($sortable[$orderColumn])) {
+            $query->orderBy($sortable[$orderColumn], $orderDir);
+        } else {
+            // Urutan bawaan versi lama.
+            $query->orderBy('created_at', 'desc');
+        }
+
+        // Tiebreaker wajib: tanpa ini urutan baris dengan nilai sama tidak
+        // stabil antar halaman, sehingga baris bisa terlewat atau dobel.
+        $query->orderBy('id');
+
+        $start = max(0, (int) $request->input('start', 0));
+        $length = (int) $request->input('length', 10);
+
+        if ($length > 0) {
+            $query->offset($start)->limit($length);
+        }
+
+        $employees = $query->get();
+        $employeeIds = $employees->pluck('employee_id')->filter()->unique();
+
+        $currentYear = date('Y');
+
+        $familyCounts = Dependents::whereIn('employee_id', $employeeIds)
+            ->selectRaw('employee_id, COUNT(*) as total')
+            ->groupBy('employee_id')
+            ->pluck('total', 'employee_id');
+
+        $ticketCounts = HomeTrip::whereIn('employee_id', $employeeIds)
+            ->where('period', $currentYear)
+            ->selectRaw('employee_id, SUM(quota) as total')
+            ->groupBy('employee_id')
+            ->pluck('total', 'employee_id');
+
+        $latestPeriods = HomeTrip::whereIn('employee_id', $employeeIds)
+            ->selectRaw('employee_id, MAX(period) as latest')
+            ->groupBy('employee_id')
+            ->pluck('latest', 'employee_id');
+
+        $data = [];
+        foreach ($employees as $i => $employee) {
+            $id = $employee->employee_id;
+
+            $data[] = [
+                (string) ($start + $i + 1),
+                e($employee->ktp),
+                e($id),
+                e($employee->fullname),
+                e($employee->date_of_joining),
+                // Versi lama: jumlah tanggungan + 1 (karyawannya sendiri).
+                (string) (($familyCounts[$id] ?? 0) + 1),
+                e($latestPeriods[$id] ?? '-'),
+                (string) ($ticketCounts[$id] ?? 0),
+                '<a href="' . e(route('home-trip.detail', encrypt($id))) .
+                    '" class="btn btn-outline-warning" title="Edit">' .
+                    '<i class="ri-edit-box-line"></i></a>',
+            ];
+        }
+
+        return response()->json([
+            'draw' => $draw,
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $data,
+        ]);
+    }
     public function homeTripAdminDetail(Request $request, $key)
     {
         $parentLink = 'Reimbursement';

@@ -63,6 +63,21 @@
                 padding-right: 10px;
                 box-shadow: inset 6px 0 0 #fff;
             }
+
+            /* Penataan kotak processing (overlay, posisi titik) sudah ada di
+               _preloader.scss, jadi TIDAK diulang di sini. Yang belum
+               tertangani cuma satu hal: _preloader.scss berasumsi markup
+               language.processing kita yang jadi "> div:last-child". Ternyata
+               tidak - DataTables membangun kotaknya dengan
+               .html(language.processing) lalu .append("<div>...4 div...</div>"),
+               jadi anak terakhirnya adalah spinner biru bawaannya sendiri dan
+               ikut tampil di samping titik .bouncing-loader kita.
+
+               Specificity-nya lewat div.dt-container karena blok style ini
+               dirender di <head> SEBELUM dataTables.bootstrap5.min.css. */
+            div.dt-container div.dt-processing > div:last-child {
+                display: none;
+            }
         </style>
     @endsection
 
@@ -162,6 +177,12 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        {{-- Baris tabel diisi DataTables server-side dari
+                                             hotel.admin.data. Versi lama di bawah merender
+                                             SELURUH hotel hasil filter sekaligus, lengkap
+                                             dengan JSON detail per baris. Disimpan utuh
+                                             sebagai pembanding.
+
                                         @foreach ($transactions as $transaction)
                                             <tr>
                                                 <td style="text-align: center">{{ $loop->index + 1 }}</td>
@@ -263,7 +284,7 @@
                                                         method="POST" style="display:inline;"
                                                         id="deleteForm_{{ $transaction->no_htl }}">
                                                         @csrf
-                                                        {{-- Hidden input to store `no_htl` --}}
+                                                        <!-- Hidden input to store no_htl -->
                                                         <input type="hidden" id="no_sppd_{{ $transaction->no_htl }}"
                                                             value="{{ $transaction->no_htl }}">
                                                         <button
@@ -275,6 +296,7 @@
                                                 </td>
                                             </tr>
                                         @endforeach
+                                        --}}
                                     </tbody>
                                 </table>
                             </div>
@@ -335,8 +357,13 @@
                 }
 
                 window.showRejectInfo = function(transactionId) {
-                    var hotelApprovals = {!! json_encode($hotelApprovals) !!};
-                    var employeeName = {!! json_encode($employeeName) !!}; // Add this line
+                    // Versi lama mencetak json_encode($hotelApprovals) dan
+                    // json_encode($employeeName) di sini. $employeeName itu
+                    // SELURUH isi tabel employees, ikut tercetak di HTML
+                    // halaman. Sekarang keduanya datang per halaman bersama
+                    // baris tabelnya.
+                    var hotelApprovals = (window.htlApprovalData || {}).rejected || {};
+                    var employeeName = (window.htlApprovalData || {}).employeeNames || {};
 
                     var approval = hotelApprovals[transactionId];
                     if (approval) {
@@ -359,24 +386,27 @@
                 });
             });
 
+            // Init DataTables tabel ini pindah ke stack "scripts" di bawah,
+            // supaya jalan sesudah dataTables.bootstrap5.min.js dimuat dan
+            // paginationnya dapat gaya Bootstrap. Versi lama:
+            // $(document).ready(function() {
+            //     var table = $('#defaultTable').DataTable({
+            //         "pageLength": 10 // Set default page length
+            //     });
+            //
+            //     $('#customsearch').on('input', function () {
+            //         table.search(this.value).draw();
+            //     });
+            //
+            //     $('#dt-length-0').val(10);
+            //     $('#dt-length-0').trigger('change');
+            // });
+
             $(document).ready(function() {
-                var table = $('#defaultTable').DataTable({
-                    "pageLength": 10 // Set default page length
-                });
-
-                $('#customsearch').on('input', function () {
-                    table.search(this.value).draw();
-                });
-
-                // Set to 10 entries per page
-                $('#dt-length-0').val(10);
-
-                // Trigger the change event to apply the selected value
-                $('#dt-length-0').trigger('change');
-            });
-
-            $(document).ready(function() {
-                $('.btn-detail').click(function() {
+                // Delegated: baris tabel datang dari DataTables sesudah
+                // ready, jadi $('.btn-detail').click() versi lama tidak akan
+                // kebagian.
+                $(document).on('click', '.btn-detail', function() {
                     var hotel = $(this).data('hotel');
 
                     function createTableHtml(data, title) {
@@ -575,3 +605,94 @@
             updateEndDate();
         </script>
     @endsection
+
+{{-- Init DataTables sengaja ditaruh di stack "scripts", bukan di dalam
+     bagian content.
+
+     vertical.blade.php merender @stack('scripts') paling akhir, sesudah
+     @include('script') yang memuat vendor/datatables/dataTables.min.js dan
+     dataTables.bootstrap5.min.js. Integrasi Bootstrap 5 itulah yang
+     menggambar paging/length/info; kalau tabelnya di-init lebih awal (di
+     dalam content, tepat sesudah <script> DataTables dari CDN), renderer
+     yang terpasang masih yang polos dan paginationnya keluar tanpa gaya. --}}
+@push('scripts')
+    <script>
+        // Diisi ulang tiap kali DataTables menarik halaman baru.
+        window.htlApprovalData = {
+            approvals: [],
+            rejected: {},
+            employeeNames: {},
+        };
+
+        var htlReportTable = $('#defaultTable').DataTable({
+            dom: "lrtip",
+            processing: true,
+            serverSide: true,
+            searchDelay: 400,
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            order: [],
+            ajax: {
+                // URL relatif (absolute: false): di belakang reverse proxy
+                // yang menterminasi TLS, route() absolut bisa keluar sebagai
+                // http:// walau halamannya https:// sehingga ajax-nya
+                // diblokir browser ("mixed active content").
+                url: @json(route('hotel.admin.data', [], false)),
+                data: function(d) {
+                    // Ikut filter yang sedang aktif di URL halaman.
+                    d.start_date = @json(request()->get('start_date'));
+                    d.end_date = @json(request()->get('end_date'));
+                },
+                dataSrc: function(json) {
+                    window.htlApprovalData = json.approvals || {
+                        approvals: [],
+                        rejected: {},
+                        employeeNames: {},
+                    };
+
+                    return json.data;
+                },
+            },
+            columnDefs: [
+                // No, Total Hotel, Details, Approval dan Actions tidak bisa
+                // diurutkan di SQL.
+                {
+                    orderable: false,
+                    targets: [0, 6, 7, 9, 10]
+                },
+                {
+                    className: "text-center align-middle",
+                    targets: [0, 9, 10]
+                },
+                {
+                    className: "align-middle",
+                    targets: [1, 2, 3, 4, 5, 6, 7, 8]
+                },
+            ],
+            language: {
+                // Titik-titik yang sama seperti #preloader. Penataan kotak
+                // processing-nya ada di _preloader.scss; spinner bawaan
+                // DataTables disembunyikan lewat CSS di blok style halaman.
+                processing: '<div class="dt-loader"><div class="bouncing-loader"><div></div><div></div><div></div></div></div>',
+            },
+        });
+
+        $('#customsearch').on('input', function() {
+            htlReportTable.search(this.value).draw();
+        });
+
+        // #preloader (loader.blade.php) memakai .bouncing-loader yang sama
+        // dengan kotak processing tabel, dan app.js baru menyembunyikannya di
+        // window.load + delay 350ms + fade "slow", jadi dua animasi yang
+        // identik tampil bersamaan. Dimatikan begitu tabelnya dibuat.
+        //
+        // Ini TIDAK bisa lewat .on("processing.dt"): DataTables menyalakan
+        // processing secara sinkron di dalam .DataTable() di atas, jadi event
+        // pertamanya sudah lewat sebelum listener-nya sempat terpasang.
+        if (typeof hideLoader === "function") {
+            hideLoader();
+        } else {
+            $("#preloader").hide();
+        }
+    </script>
+@endpush
