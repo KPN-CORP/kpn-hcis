@@ -55,7 +55,9 @@
 
     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-xl-5 g-3">
 
-        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) != "property")))
+        @if (auth()->check() && (auth()->user()->employee && !in_array(strtolower(auth()->user()->employee->group_company), [
+            "property"
+        ])))
             <div class="col">
                 <a href="{{ route('businessTrip.approval') }}" class="text-decoration-none">
                     <div class="menu-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
@@ -135,7 +137,9 @@
         </div> --}}
     </div>
 
-    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) != "property")))
+    @if (auth()->check() && (auth()->user()->employee && !in_array(strtolower(auth()->user()->employee->group_company), [
+        "property"
+    ])))
         @if (auth()->check() && (auth()->user()->can('reportca_hcis') || auth()->user()->can('report_hcis_md')))
             <div class="admin-panel w-100">
 

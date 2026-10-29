@@ -147,7 +147,9 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                                                @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                                    "downstream"
+                                                ])))
                                                     <div class="col-md-4 mb-2">
                                                         <label class="form-label"
                                                             for="jenis_tkt_<?php echo $i; ?>">Transportation
@@ -174,7 +176,9 @@
                                                         </div>
                                                     </div>
                                                 @endif
-                                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                                                @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                                    "downstream"
+                                                ])))
                                                     <div class="col-md-4 mb-2">
                                                         <label for="dari_tkt" class="form-label">From</label>
                                                         <select class="form-select form-select-sm select2 select2-transport-hub" name="dari_tkt[]" id="dari_tkt" onchange="DariTiketToggleOthers()" required>
@@ -231,7 +235,9 @@
                                                 @endif
                                             </div>
                                             <div class="row">
-                                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                                                @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                                    "downstream"
+                                                ])))
                                                     <div class="col-md-6">
                                                         <div class="mb-2">
                                                             <label class="form-label" for="tlp_tkt_<?php echo $i; ?>">Phone
@@ -659,7 +665,9 @@
                             </div>
                         </div>
                         <div class="row">
-                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                            @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                "downstream"
+                            ])))
                                 <div class="col-md-4 mb-2">
                                     <label class="form-label" for="jenis_tkt_${formNumber}">Transportation Type</label>
                                     <div class="input-group">
@@ -679,7 +687,9 @@
                                     </div>
                                 </div>
                             @endif
-                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                            @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                "downstream"
+                            ])))
                                 <div class="col-md-4 mb-2">
                                     <label for="dari_tkt" class="form-label">From</label>
                                     <select class="form-select form-select-sm select2 select2-transport-hub" name="dari_tkt[]" id="dari_tkt" onchange="DariTiketToggleOthers()" required>
@@ -734,7 +744,9 @@
                             @endif
                         </div>
                         <div class="row">
-                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                            @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                "downstream"
+                            ])))
                                 <div class="col-md-6">
                                     <div class="mb-2">
                                         <label class="form-label" for="tlp_tkt_${formNumber}">Phone Number</label>
@@ -807,7 +819,9 @@
         });
     </script>
 
-    @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+    @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+        "downstream"
+    ])))
         <script>
             $(document).ready(function () {
                 if ($('#dari_tkt').length && $.fn.select2) {

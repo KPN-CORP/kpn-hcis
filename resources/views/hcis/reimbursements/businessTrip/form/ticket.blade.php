@@ -11,7 +11,9 @@
                         <b>TICKET <?php echo $i; ?></b>
                     </div>
                     <div class="row">
-                        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                        @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                            "downstream"
+                        ])))
                             <div class="col-md-4 mb-2">
                                 <label class="form-label" for="jenis_tkt_<?php echo $i; ?>">Transportation Type</label>
                                 <div class="input-group">
@@ -38,7 +40,9 @@
                                 </select>
                             </div>
                         @endif
-                        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                        @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                            "downstream"
+                        ])))
                             <div class="col-md-4 mb-2">
                                 <label for="dari_tkt" class="form-label">From</label>
                                 <select class="form-select form-select-sm select2 select2-transport-hub" name="dari_tkt[]" id="dari_tkt" onchange="DariTiketToggleOthers()" required>
@@ -95,7 +99,9 @@
                         @endif
                     </div>
                     <div class="row">
-                        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "downstream")))
+                        @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                            "downstream"
+                        ])))
                             <div class="col-md-6 mb-2">
                                 <label class="form-label">Employee Name</label>
                                 <select class="form-select form-select-sm select2" id="noktp_tkt_<?php echo $i; ?>"

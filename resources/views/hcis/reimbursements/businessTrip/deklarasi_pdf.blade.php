@@ -125,7 +125,10 @@
             <td class="label">Name</td>
             <td class="colon">:</td>
             <td class="value">{{ $transactions->employee->fullname }}
-                @if($transactions->employee->group_company === 'Plantations')
+                @if(in_array(strtolower($transactions->employee->group_company), [
+                    "plantations",
+                    "kpn plantations"
+                ]))
                     ({{ $transactions->employee->job_level }})
                 @endif
             </td>
@@ -228,7 +231,10 @@
                 </tr>
                 <tr>
                     <td class="label">
-                        @if (in_array($transactions->employee->group_company, ['KPN Plantations', 'Plantations']))
+                        @if (in_array(strtolower($transactions->employee->group_company), [
+                            "plantations",
+                            "kpn plantations"
+                        ]))
                             Perdiem
                         @else
                             Allowance
@@ -248,11 +254,10 @@
                     </td>
                 </tr>
 
-                @if (isset($declareCA['detail_meals']) &&
-                        !(
-                            in_array($transactions->employee->group_company, ['KPN Plantations', 'Plantations']) &&
-                            $transactions->employee->job_level < '8A'
-                        )
+                @if (isset($declareCA['detail_meals']) && !(in_array(strtolower($transactions->employee->group_company), [
+                    "plantations",
+                    "kpn plantations"
+                ]) && $transactions->employee->job_level < '8A')
                     )
                     <tr>
                         <td>Meals</td>
@@ -328,7 +333,10 @@
                 </tr>
                 <tr>
                     <td class="label">
-                        @if (in_array($transactions->employee->group_company, ['KPN Plantations', 'Plantations']))
+                        @if (in_array(strtolower($transactions->employee->group_company), [
+                            "plantations",
+                            "kpn plantations"
+                        ]))
                             Perdiem
                         @else
                             Allowance
@@ -365,11 +373,10 @@
                             style="float: right;">{{ number_format(array_sum(array_column($declareCA['detail_perdiem'], 'nominal')), 0, ',', '.') }}</span>
                     </td>
                 </tr>
-                @if (isset($declareCA['detail_meals']) &&
-                        !(
-                            in_array($transactions->employee->group_company, ['KPN Plantations', 'Plantations']) &&
-                            $transactions->employee->job_level < '8A'
-                        )
+                @if (isset($declareCA['detail_meals']) && !(in_array(strtolower($transactions->employee->group_company), [
+                    "plantations",
+                    "kpn plantations"
+                ]) && $transactions->employee->job_level < '8A')
                     )
                     <tr>
                         <td>Meals</td>
