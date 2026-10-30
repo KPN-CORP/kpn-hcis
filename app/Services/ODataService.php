@@ -183,6 +183,7 @@ class ODataService {
                 ->toDateTimeString();
 
             $medicalData->paid_date = $paidDate;
+            $medicalData->paid_amount = $row->amount;
             $medicalData->doc_status_previous = $medicalData->doc_status;
             $medicalData->doc_status = "Paid";
 

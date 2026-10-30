@@ -59,4 +59,20 @@ abstract class BaseDTO {
 
         return new static(...$params);
     }
+
+    protected static function toInt(mixed $value, int $default = 0): int
+    {
+        if (is_int($value))   return $value;
+        if (is_bool($value))  return $default;
+        if (is_float($value)) return is_finite($value) ? (int) round($value) : $default;
+
+        if (!is_string($value)) return $default;
+
+        $clean = str_replace(',', '', trim($value));
+        $clean = preg_replace('/[^0-9.\-+]/', '', $clean);
+
+        if ($clean === '' || !is_numeric($clean)) return $default;
+
+        return (int) round((float) $clean);
+    }
 }

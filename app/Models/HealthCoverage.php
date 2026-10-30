@@ -58,7 +58,10 @@ class HealthCoverage extends Model
         'employee_covered_amount',
         'company_covered_amount',
         'paid_date',
-        'billing_type'
+        'billing_type',
+        'doc_status',
+        'doc_status_previous',
+        'paid_amount'
     ];
 
     public function employee()
