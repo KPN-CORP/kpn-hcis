@@ -10,7 +10,7 @@ class ODataMedicalClaimResponseResultItemDTO extends BaseDTO {
         public readonly string $paid_date,
         public readonly string $hcis_id,
         public readonly string $curr,
-        public readonly string $amount,
+        public readonly int $amount,
     ) {}
 
     public static function fromArray(array $response): static {
@@ -21,7 +21,7 @@ class ODataMedicalClaimResponseResultItemDTO extends BaseDTO {
             paid_date: $response['Paid_date'] ?? '',
             hcis_id: $response['Hcis_Id'] ?? '',
             curr: $response['Curr'] ?? '',
-            amount: $response['Amount'] ?? '',
+            amount: static::toInt($response['Amount'] ?? null),
         );
     }
 }
