@@ -102,6 +102,15 @@
                             <div id="dynamicForms" class="row"></div>
                             <div id="bpjsCoverContainer" class="row"></div>
 
+                            @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                "downstream",
+                                "plantations",
+                                "kpn plantations"
+                            ])))
+                                <div id="employeeCoveredAmountContainer" class="row"></div>
+                                <div id="companyCoveredAmountContainer" class="row"></div>
+                            @endif
+
                             <div class="row mb-2">
                                 <div class="col-md-12 mt-2">
                                     <label for="" class="form-label">Admin Notes</label>
@@ -295,6 +304,145 @@
     </div>
 
     <!--<script src="{{ asset('/js/medical/medical-approval.js') }}"></script>-->
+
+    @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+        "downstream",
+        "plantations",
+        "kpn plantations"
+    ])))
+        <script>
+            $(document).ready(function () {
+                var typeToNameMap = {};
+
+                medicalTypeData.forEach(function (type) {
+                    typeToNameMap[type.medical_type] = type.name;
+                });
+
+                function generateEmployeeCoveredAmountContainer(selectedTypes) {
+                    var container = $("#employeeCoveredAmountContainer");
+
+                    container.empty();
+
+                    if (selectedTypes && selectedTypes.length > 0) {
+                        selectedTypes.forEach(function (type) {
+                            var balanceValue = balanceEmployeeCoveredMapping[type] || "";
+
+                            if (balanceValue == '' || balanceValue == null) {
+                                return;
+                            }
+
+                            var formattedValue = formatCurrency(balanceValue);
+                            var formGroup = `
+                            <div class="col-md-3 mb-3">
+                                <label for="${type}" class="form-label">${type} Employee Covered Amount</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Rp</span>
+                                    <input type="text" class="form-control currency-input" id="${type}" name="medical_costs[${type}]" placeholder="0" value="${formattedValue}" disabled>
+                                </div>
+                            </div>
+                        `;
+                            container.append(formGroup);
+                        });
+
+                        initCurrencyFormatting();
+                    }
+                }
+
+                $("#medical_type").on("change", function () {
+                    var selectedTypes = $(this).val();
+
+                    generateEmployeeCoveredAmountContainer(selectedTypes);
+                });
+
+                function initCurrencyFormatting() {
+                    $(".currency-input")
+                        .off("input")
+                        .on("input", function () {
+                            var value = $(this).val().replace(/\D/g, "");
+                            $(this).val(formatCurrency(value));
+                        });
+                }
+
+                function formatCurrency(value) {
+                    var numericValue = parseInt(value.toString().replace(/\D/g, ""), 10) || 0;
+                    return new Intl.NumberFormat("id-ID").format(numericValue);
+                }
+
+                initCurrencyFormatting();
+
+                var initialSelectedTypes = $("#medical_type").val();
+
+                generateEmployeeCoveredAmountContainer(initialSelectedTypes);
+            });
+        </script>
+
+        <script>
+            $(document).ready(function () {
+                var typeToNameMap = {};
+
+                medicalTypeData.forEach(function (type) {
+                    typeToNameMap[type.medical_type] = type.name;
+                });
+
+                function generateCompanyCoveredAmountContainer(selectedTypes) {
+                    var container = $("#companyCoveredAmountContainer");
+
+                    container.empty();
+
+                    if (selectedTypes && selectedTypes.length > 0) {
+                        selectedTypes.forEach(function (type) {
+                            var balanceValue = balanceCompanyCoveredMapping[type] || "";
+
+                            if (balanceValue == '' || balanceValue == null) {
+                                return;
+                            }
+
+                            var formattedValue = formatCurrency(balanceValue);
+                            var formGroup = `
+                            <div class="col-md-3 mb-3">
+                                <label for="${type}" class="form-label">${type} Company Covered Amount</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">Rp</span>
+                                    <input type="text" class="form-control currency-input" id="${type}" name="medical_costs[${type}]" placeholder="0" value="${formattedValue}" disabled>
+                                </div>
+                            </div>
+                        `;
+                            container.append(formGroup);
+                        });
+
+                        initCurrencyFormatting();
+                    }
+                }
+
+                $("#medical_type").on("change", function () {
+                    var selectedTypes = $(this).val();
+
+                    generateCompanyCoveredAmountContainer(selectedTypes);
+                });
+
+                function initCurrencyFormatting() {
+                    $(".currency-input")
+                        .off("input")
+                        .on("input", function () {
+                            var value = $(this).val().replace(/\D/g, "");
+                            $(this).val(formatCurrency(value));
+                        });
+                }
+
+                function formatCurrency(value) {
+                    var numericValue = parseInt(value.toString().replace(/\D/g, ""), 10) || 0;
+                    return new Intl.NumberFormat("id-ID").format(numericValue);
+                }
+
+                initCurrencyFormatting();
+
+                var initialSelectedTypes = $("#medical_type").val();
+
+                generateCompanyCoveredAmountContainer(initialSelectedTypes);
+            });
+        </script>
+    @endif
+
     <script>
 
         //medical table
@@ -343,7 +491,7 @@
                         var balance = typeToBalanceMap[type]?.[selectedYear] || 0; // Default to 0 if not found
                         var balanceGroup = `
                         <div class="col-md-3 mb-3">
-                            <label for="${type}" class="form-label">${type} Plafond</label>
+                            <label for="${type}" class="form-label">${type} Plafond (After Deduction)</label>
                             <div class="input-group">
                                 <span class="input-group-text">Rp</span>
                                 <input type="text" id="medical_plafond_${type}" class="form-control bg-light" value="${formatCurrency(
@@ -399,7 +547,7 @@
                         var formattedValue = formatCurrency(balanceValue); // Format the initial value
                         var formGroup = `
                         <div class="col-md-3 mb-3">
-                            <label for="${type}" class="form-label">${type}</label>
+                            <label for="${type}" class="form-label">${type} (Verified Amount)</label>
                             <div class="input-group">
                                 <span class="input-group-text">Rp</span>
                                 <input type="text" class="form-control currency-input" id="${type}" name="medical_costs[${type}]" placeholder="0" value="${formattedValue}" disabled>
@@ -545,5 +693,7 @@
         var balanceMapping = @json($balanceMapping);
         var balanceBPJSMapping = @json($balanceBPJSMapping);
         var typeToBalanceMap = @json($balanceData);
+        var balanceEmployeeCoveredMapping = @json($balanceEmployeeCoveredMapping);
+        var balanceCompanyCoveredMapping = @json($balanceCompanyCoveredMapping);
     </script>
 @endsection
