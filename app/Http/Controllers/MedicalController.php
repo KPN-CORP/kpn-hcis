@@ -2160,6 +2160,8 @@ class MedicalController extends Controller
             "balance_bpjs",
             "medical_type",
         );
+        $balanceEmployeeCoveredMapping = $medicGroup->pluck("employee_covered_amount", "medical_type");
+        $balanceCompanyCoveredMapping = $medicGroup->pluck("company_covered_amount", "medical_type");
         $selectedDisease = $medic->disease;
 
         // Fetch related data as before
@@ -2188,6 +2190,8 @@ class MedicalController extends Controller
                 "selectedMedicalTypes",
                 "balanceData",
                 "balanceBPJSMapping",
+                "balanceEmployeeCoveredMapping",
+                "balanceCompanyCoveredMapping"
             ),
         );
     }
