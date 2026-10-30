@@ -23,9 +23,11 @@
                     "property"
                 ])))
                     <th data-priority="2">Progress</th>
+                    <th data-priority="2">Paid Date</th>
                 @else
                     <th data-priority="2">Status</th>
                     <th data-priority="3">Paid Status</th>
+                    <th data-priority="2">Paid Date</th>
                 @endif
 
                   <th data-priority="4">Action</th>
@@ -92,6 +94,7 @@
                                       {{ $status }}
                               </span>
                           </td>
+                          <td class="text-center">{{ $item->formatted_paid_date ?? '-' }}</td>
                       @else
                         <td style="align-content: center; text-align: center">
                             @php
@@ -115,7 +118,24 @@
                                     {{ $item->status }}
                             </span>
                         </td>
-                        <td class="text-center">{{ $item->paid_date ?? '-' }}</td>
+                        @php
+                            $paidStatus = "-";
+
+                            if ($item->paid_date && !empty($item->paid_date)) {
+                                $paidStatus = 'Paid';
+                            }
+
+                            $badgeClass = match ($paidStatus) {
+                                'Paid' => 'bg-success badge rounded-pill',
+                                default => '',
+                            };
+                        @endphp
+                        <td style="align-content: center; text-align: center">
+                            <span class="text-center {{ $badgeClass }}" style="font-size: 12px; padding: 0.5rem 1rem; cursor: pointer;">
+                                {{ $paidStatus ?? '-' }}
+                            </span>
+                        </td>
+                        <td class="text-center">{{ $item->formatted_paid_date ?? '-' }}</td>
                       @endif
 
                       <td class="text-center">
