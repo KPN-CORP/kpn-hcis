@@ -106,7 +106,8 @@ class MedicalController extends Controller
             ),
             "status",
             DB::raw("MAX(created_at) as latest_created_at"),
-            "is_revise"
+            "is_revise",
+            "paid_date"
         )
             ->where("employee_id", $employee_id)
             ->groupBy(
@@ -183,6 +184,11 @@ class MedicalController extends Controller
                 ->value("usage_id");
 
             $item->usage_id = $usageId;
+            $item->formatted_paid_date = "-";
+
+            if ($item->paid_date && !empty($item->paid_date)) {
+                $item->formatted_paid_date = Carbon::parse($item->paid_date)->format('Y-m-d');
+            }
 
             MedicalPaidDateSyncJob::dispatch($usageId);
 
