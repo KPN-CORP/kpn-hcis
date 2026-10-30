@@ -94,11 +94,7 @@
                                       {{ $status }}
                               </span>
                           </td>
-                          <td style="align-content: center; text-align: center">
-                              <span class="badge rounded-pill text-center" style="font-size: 12px; padding: 0.5rem 1rem; cursor: pointer;">
-                                      {{ $item->paid_date }}
-                              </span>
-                          </td>
+                          <td class="text-center">{{ $item->formatted_paid_date ?? '-' }}</td>
                       @else
                         <td style="align-content: center; text-align: center">
                             @php
