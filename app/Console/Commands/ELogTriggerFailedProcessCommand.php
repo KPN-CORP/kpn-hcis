@@ -25,7 +25,9 @@ class ELogTriggerFailedProcessCommand extends Command
             ->where("period", ">=", "2026")
             // TODO: add filter where date greater than today (current release date)
             ->whereNull("deleted_at")
-            ->get();
+            ->get()
+            ->unique("no_medic")
+            ->values();
 
         foreach($coverages as $coverage) {
             if (!$coverage) {

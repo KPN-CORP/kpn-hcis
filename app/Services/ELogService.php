@@ -94,12 +94,74 @@ class ELogService {
             ];
         }
 
+        $noMedic = $medicalData->no_medic ?? "";
+
+        $medicalDataList = HealthCoverageModel::where("no_medic", $noMedic)
+            ->where("status", "Done")
+            ->whereNull("deleted_at")
+            ->get();
+        if ($medicalDataList->isEmpty()) {
+            return [
+                'status' => false,
+                'message'  => "failed",
+                'data'    => null,
+                'error'   => "No medical data list",
+            ];
+        }
+
+        $period = $today->year;
         $bankName = "";
         $namaPemilikRekening = "";
         $costCenterCode = "";
         $employeeID = $medicalData->employee_id;
         $createdName = "";
-        $nonReimbursableAmount = $medicalData->employee_covered_amount ?? $medicalData->balance_uncoverage ?? 0;
+        $plafondType = "";
+        $notes = "";
+        $invoiceCode = "";
+        $extsyscompanycode = "";
+        $invDate = "";
+        $createdBy = "";
+        $vendor = "SMEDICAL";
+        $elogMedicalType = "Reimbursement";
+        $noRekening = "";
+        $firstDept = "HRD";
+        $medicalTypes = [];
+        $isCompanyCoveredAmount = false;
+        $usageAmountTemp = 0;
+        $amount = 0;
+        $nonReimbursableAmount = 0;
+        $companyCoveredAmount = 0;
+        $medicalPlanBalance = 0;
+        $sisaOverPlafond = 0;
+        $coveredAmount = 0;
+
+        foreach ($medicalDataList as $row) {
+            $usageAmount = $row->balance_verif ?? $row->balance ?? 0;
+            $nonReimbursableAmount += $row->employee_covered_amount ?? $row->balance_uncoverage ?? 0;
+            $amount += $usageAmount;
+            $companyCoveredAmount += $row->company_covered_amount ?? 0;
+
+            if ($row->company_covered_amount !== null) {
+                $isCompanyCoveredAmount = true;
+            }
+
+            if ($row->medical_type && !empty($row->medical_type)) {
+                $medicalTypes[] = $row->medical_type;
+            }
+
+            if ($usageAmount > $usageAmountTemp) {
+                $period = $row->period ?? $today->year;
+                $usageAmountTemp = $usageAmount;
+                $plafondType = $row->medical_type ?? "";
+                $notes = $row->coverage_detail ?? "";
+                $invoiceCode = $row->no_invoice ?? "";
+                $extsyscompanycode = $row->contribution_level_code ?? "";
+                $invDate = $row->date ?? "";
+                $createdBy = $row->approved_by ?? $row->verif_by ?? "";
+                $vendor = $row->elog_vendor ?? "SMEDICAL";
+                $elogMedicalType = $row->elog_medical_type ?? "Reimbursement";
+            }
+        }
 
         $employeeData = EmployeeModel::where("employee_id", $employeeID)->first();
         if ($employeeData) {
@@ -108,103 +170,77 @@ class ELogService {
             $namaPemilikRekening = $employeeData->bank_account_name_payroll ?? $employeeData->bank_account_name ?? $namaPemilikRekening;
             $costCenterCode = $employeeData->cost_center_code ?? $costCenterCode;
             $createdName = $employeeData->fullname ?? $createdName;
+            $noRekening = $employeeData->bank_account_number ?? $noRekening;
+
+            if (strtolower($employeeData->group_company) == "downstream") {
+                $firstDept = "HRD-DWS";
+            } else if (strtolower($employeeData->group_company) == "kpn corporation") {
+                $firstDept = "HRD-CORP";
+            }
         }
 
-        $medicalPlan = HealthPlanModel::where("employee_id", $employeeID)
-            ->where("period", $medicalData->period)
-            ->where("medical_type", $medicalData->medical_type)
+        $medicalPlanList = HealthPlanModel::where("employee_id", $employeeID)
+            ->where("period", $period)
+            ->whereIn("medical_type", $medicalTypes)
             ->whereNull("deleted_at")
-            ->first();
+            ->get();
+        if ($medicalPlanList->isEmpty()) {
+            return [
+                'status' => false,
+                'message'  => "failed",
+                'data'    => null,
+                'error'   => "No medical plan list",
+            ];
+        }
+
+        foreach ($medicalPlanList as $row) {
+            $medicalPlanBalance += $row->balance ?? 0;
+        }
+
+        if ($isCompanyCoveredAmount) {
+            $coveredAmount = $companyCoveredAmount;
+        } else if ($medicalPlanBalance <= 0) {
+            $coveredAmount = 0;
+        } else if ($medicalPlanBalance > 0) {
+            if ($amount > $medicalPlanBalance) {
+                $coveredAmount = $medicalPlanBalance;
+            } else if ($amount < $medicalPlanBalance) {
+                $coveredAmount = $amount;
+            } else if ($amount == $medicalPlanBalance) {
+                $coveredAmount = $medicalPlanBalance;
+            }
+        }
+
+        $sisaOverPlafond = -max(0, $amount - $coveredAmount - $nonReimbursableAmount);
 
         $masterSAPBankName = MasterSAPBankNameModel::where("hcis_bank_name", $bankName)->first();
         if ($masterSAPBankName) {
-            $bankName = $masterSAPBankName->sap_bank_name ?? $bankName;
+            $bankName = $masterSAPBankName->sap_bank_name ?? $bankName ?? "";
         }
 
         $payload = new ELogInsertFirstReceiptRequestDTO(
-            extsyscompanycode: $medicalData->contribution_level_code ?? "",
-            invoice_code: $medicalData->no_invoice ?? "",
-            no_po: $medicalData->no_medic ?? "",
-            vendor: "SMEDICAL",
-            amount: 0,
-            sisa_over_plafond: 0,
+            extsyscompanycode: $extsyscompanycode,
+            invoice_code: $invoiceCode,
+            no_po: $noMedic,
+            vendor: $vendor,
+            amount: $amount,
+            sisa_over_plafond: $sisaOverPlafond,
             non_reimbursable_amount: $nonReimbursableAmount * -1,
             nik: $employeeID,
-            no_rekening: "",
-            nama_pemilik_rekening: $namaPemilikRekening ?? "",
-            nama_bank: $bankName ?? "",
-            cost_center: $costCenterCode ?? "",
-            medical_type: "Reimbursement",
-            plafond_type: $medicalData->medical_type ?? "",
-            notes: $medicalData->coverage_detail ?? "",
-            first_dept: "",
+            no_rekening: $noRekening,
+            nama_pemilik_rekening: $namaPemilikRekening,
+            nama_bank: $bankName,
+            cost_center: $costCenterCode,
+            medical_type: $elogMedicalType,
+            plafond_type: $plafondType,
+            notes: $notes,
+            first_dept: $firstDept,
             created_name: $createdName,
-            created_by: "",
-            inv_date: $medicalData->date ?? "",
+            created_by: $createdBy,
+            inv_date: $invDate,
             trans_type: "MEDICAL",
             currency: "IDR"
         );
-
-        if ($medicalData->balance_verif != null) {
-            $payload->amount = $medicalData->balance_verif ?? 0;
-        } else {
-            $payload->amount = $medicalData->balance ?? 0;
-        }
-
-        if ($medicalData->approved_by) {
-            $payload->created_by = $medicalData->approved_by;
-        } else if ($medicalData->verif_by) {
-            $payload->created_by = $medicalData->verif_by;
-        }
-
-        if ($medicalData->elog_vendor) {
-            $payload->vendor = $medicalData->elog_vendor ?? $payload->vendor;
-        }
-
-        if ($medicalData->elog_medical_type) {
-            $payload->medical_type = $medicalData->elog_medical_type ?? $payload->medical_type;
-        }
-
-        if ($employeeData) {
-            if ($employeeData->bank_account_number && !empty($employeeData->bank_account_number)) {
-                $payload->no_rekening = $employeeData->bank_account_number;
-            }
-
-            if (strtolower($employeeData->group_company) == "downstream") {
-                $payload->first_dept = "HRD-DWS";
-            } else if (strtolower($employeeData->group_company) == "kpn corporation") {
-                $payload->first_dept = "HRD-CORP";
-                $payload->first_dept = "HRD";
-            } else {
-                $payload->first_dept = "HRD";
-            }
-        } else {
-            $payload->first_dept = "HRD";
-        }
-
-        if ($medicalPlan) {
-            $coveredAmount = 0;
-
-            if ($medicalData->company_covered_amount !== null) {
-                $coveredAmount = $medicalData->company_covered_amount;
-            } else if ($medicalPlan->balance <= 0) {
-                $coveredAmount = 0;
-            } else if ($medicalPlan->balance > 0) {
-                if ($payload->amount > $medicalPlan->balance) {
-                    $coveredAmount = $medicalPlan->balance;
-                } else if ($payload->amount < $medicalPlan->balance) {
-                    $coveredAmount = $payload->amount;
-                } else if ($payload->amount == $medicalPlan->balance) {
-                    $coveredAmount = $medicalPlan->balance;
-                }
-            }
-
-            $payload->sisa_over_plafond = -max(0,
-                $payload->amount
-                - $coveredAmount
-                - $nonReimbursableAmount
-            );
-        }
 
         $accessToken = $this->getAccessToken();
 
@@ -232,11 +268,13 @@ class ELogService {
             ];
         }
 
-        $medicalData->elog_insert_first_receipt_sync_date = $today;
-        $medicalData->doc_status_previous = $medicalData->doc_status;
-        $medicalData->doc_status = "Processing Payment";
+        foreach ($medicalDataList as $row) {
+            $row->elog_insert_first_receipt_sync_date = $today;
+            $row->doc_status_previous = $row->doc_status;
+            $row->doc_status = "Processing Payment";
 
-        $medicalData->save();
+            $row->save();
+        }
 
         return [
             'status' => true,

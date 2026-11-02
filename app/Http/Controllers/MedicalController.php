@@ -1481,8 +1481,11 @@ class MedicalController extends Controller
                 $medical->no_medic,
             )->get();
 
+            $coverageID = null;
+
             // Loop through each health coverage record and update accordingly
             foreach ($healthCoverages as $coverage) {
+                $coverageID = $coverage->usage_id;
                 $medicalType = $coverage->medical_type;
                 $balanceVerif = $coverage->balance_verif;
                 $employeeId = $coverage->employee_id;
@@ -1505,8 +1508,10 @@ class MedicalController extends Controller
                     "approved_by" => $employee_id,
                     "approved_at" => now(),
                 ]);
+            }
 
-                ELogInsertFirstReceiptJob::dispatch($coverage->usage_id);
+            if ($coverageID && !empty($coverageID)) {
+                ELogInsertFirstReceiptJob::dispatch($coverageID);
             }
 
             return redirect()
