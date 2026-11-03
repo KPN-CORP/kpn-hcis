@@ -440,6 +440,14 @@ Route::middleware("auth")->group(function () {
             ApprovalReimburseController::class,
             "cashadvancedActionExtendAdmin",
         ])->name("approvalExtAdmin.cashadvancedExtApprovedAdmin");
+        Route::get("/cashadvanced/admin/attachment/{id}", [
+            ReimburseController::class,
+            "getAttachmentsAdmin",
+        ])->name("cashadvanced.admin.attachment");
+        Route::get("/cashadvanced/admin/attachment/view/{id}", [
+            ReimburseController::class,
+            "viewAttachmentAdmin",
+        ])->name("cashadvanced.admin.attachment.view");
     });
 
     // Route::get('/cashadvanced/deklarasi/form/{id}', [ReimburseController::class, 'cashadvancedDeklarasi'])->name('cashadvanced.deklarasi');
@@ -464,7 +472,7 @@ Route::middleware("auth")->group(function () {
     ])->name("cashadvanced.declare");
     Route::get("/cashadvanced/deklarasi/download/{id}", [
         ReimburseController::class,
-        "cashadvancedDownloadDeklarasi",
+        "cashadvancedDeklarasiDownload",
     ])->name("cashadvanced.downloadDeclare");
 
     // My Cash Advanced Done
@@ -588,6 +596,11 @@ Route::middleware("auth")->group(function () {
             ReimburseController::class,
             "hotelAdmin",
         ])->name("hotel.admin");
+        // Sumber data DataTables server-side untuk halaman Hotel (Admin).
+        Route::get("/hotel/admin/data", [
+            ReimburseController::class,
+            "hotelAdminData",
+        ])->name("hotel.admin.data");
         Route::post("/hotel/admin/booking/{id}", [
             ReimburseController::class,
             "hotelBookingAdmin",
@@ -659,6 +672,11 @@ Route::middleware("auth")->group(function () {
             ReimburseController::class,
             "ticketAdmin",
         ])->name("ticket.admin");
+        // Sumber data DataTables server-side untuk halaman Ticket (Admin).
+        Route::get("/ticket/admin/data", [
+            ReimburseController::class,
+            "ticketAdminData",
+        ])->name("ticket.admin.data");
         Route::post("/ticket/admin/booking/{id}", [
             ReimburseController::class,
             "ticketBookingAdmin",
@@ -839,10 +857,20 @@ Route::middleware("auth")->group(function () {
             MedicalController::class,
             "medicalReportAdmin",
         ])->name("medical.report");
+        // Sumber data DataTables server-side untuk halaman di atas.
+        Route::get("/medical/report/data", [
+            MedicalController::class,
+            "medicalReportAdminData",
+        ])->name("medical.report.data");
         Route::get("/medical/confirmation", [
             MedicalController::class,
             "medicalAdminConfirmation",
         ])->name("medical.confirmation");
+        // Sumber data DataTables server-side untuk halaman di atas.
+        Route::get("/medical/confirmation/data", [
+            MedicalController::class,
+            "medicalAdminConfirmationData",
+        ])->name("medical.confirmation.data");
         Route::get("/medical/detail/{key}", [
             MedicalController::class,
             "medicalAdminDetail",
@@ -879,6 +907,11 @@ Route::middleware("auth")->group(function () {
             MedicalController::class,
             "medicalAdminTable",
         ])->name("medical-table.admin");
+        // Sumber data DataTables server-side untuk halaman di atas.
+        Route::get("/medical/admin/table/data", [
+            MedicalController::class,
+            "medicalAdminTableData",
+        ])->name("medical-table.admin.data");
         Route::get("/medical/admin/form-update/{id}", [
             MedicalController::class,
             "medicalAdminForm",
@@ -960,6 +993,11 @@ Route::middleware("auth")->group(function () {
             BusinessTripController::class,
             "filterDateAdmin",
         ])->name("businessTrip-filterDate.admin");
+        // Sumber data DataTables server-side untuk halaman Report BT di atas.
+        Route::get("/businessTrip/admin/data", [
+            BusinessTripController::class,
+            "adminData",
+        ])->name("businessTrip.admin.data");
         Route::put("businessTrip/status/confirm/{id}", [
             BusinessTripController::class,
             "updatestatus",
@@ -976,6 +1014,10 @@ Route::middleware("auth")->group(function () {
             BusinessTripController::class,
             "deleteAdmin",
         ])->name("delete.btAdmin");
+        Route::get("/businessTrip/admin/attachment/{id}", [
+            BusinessTripController::class,
+            "getAttachmentsAdmin",
+        ])->name("businessTrip.admin.attachment");
 
         //division
         Route::get("/businessTrip/admin/division", [
@@ -1153,6 +1195,11 @@ Route::middleware("auth")->group(function () {
         HomeTripController::class,
         "homeTripAdmin",
     ])->name("home-trip.admin");
+    // Sumber data DataTables server-side untuk halaman Home Trip Admin.
+    Route::get("/home-trip/admin/data", [
+        HomeTripController::class,
+        "homeTripAdminData",
+    ])->name("home-trip.admin.data");
     Route::get("/home-trip/admin/detail/{key}", [
         HomeTripController::class,
         "homeTripAdminDetail",
@@ -1222,6 +1269,30 @@ Route::middleware("auth")->group(function () {
         "destroy",
     ])->name("logout");
 
+    // Sumber data DataTables server-side untuk halaman Designations.
+    //
+    // WAJIB didaftarkan SEBELUM route "{first}/{second}" di bawah: route itu
+    // menangkap SEMUA URL GET dua segmen, dan HomeController@secondLevel
+    // membalas 404 kalau view "<first>.<second>" tidak ada. Laravel mencocokkan
+    // sesuai urutan pendaftaran, jadi "designations/data" yang didaftarkan di
+    // grup Designations (jauh di bawah) tidak akan pernah kebagian - ajax-nya
+    // dapat 404 dan DataTables memunculkan "Ajax error".
+    //
+    // Endpoint lain tidak kena karena URL-nya tiga segmen atau lebih
+    // (ticket/admin/data, hotel/admin/data, businessTrip/admin/data, dst).
+    Route::middleware(["permission:viewdesignation"])->group(function () {
+        Route::get("/designations/data", [
+            DesignationController::class,
+            "data",
+        ])->name("designations.data");
+        // Sumber data Select2 untuk filter Designation Name. Dua segmen juga,
+        // jadi harus ikut di atas catch-all.
+        Route::get("/designations/names", [
+            DesignationController::class,
+            "designationNames",
+        ])->name("designations.names");
+    });
+
     Route::get("{first}/{second}", [
         HomeController::class,
         "secondLevel",
@@ -1286,6 +1357,11 @@ Route::middleware("auth")->group(function () {
             AdminApprovalSettingController::class,
             "index",
         ])->name("admin_approval_setting");
+        // Sumber data Select2 untuk dropdown HCGA / KTU di halaman di atas.
+        Route::get("/admin/approval/setting/employees", [
+            AdminApprovalSettingController::class,
+            "employees",
+        ])->name("admin_approval_setting_employees");
         Route::post("/admin/approval/setting/create", [
             AdminApprovalSettingController::class,
             "create",
@@ -1347,6 +1423,8 @@ Route::middleware("auth")->group(function () {
             DesignationController::class,
             "index",
         ])->name("designations");
+        // CATATAN: route "designations.data" TIDAK bisa ditaruh di sini.
+        // Lihat komentarnya di atas Route::get("{first}/{second}").
 
         Route::put("/admin/designations/update/dept-head/{id}", [
             DesignationController::class,

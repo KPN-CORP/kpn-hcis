@@ -70,22 +70,38 @@ class ApprovalSettingController extends Controller
                     ->map(fn($val) => $masterLocations[$val] ?: $val)
                     ->implode(', ');
 
+                // Dropdown HCGA/KTU sekarang Select2 ber-ajax, jadi tidak ada
+                // <option> yang sudah ter-render untuk dipilih waktu Edit.
+                // Labelnya ikut dikirim supaya tombol Edit bisa menyuntikkan
+                // option-nya sendiri.
+                $item->hcga_employee_label = $item->hcga_employee
+                    ? $this->approvalSettingEmployeeLabel($item->hcga_employee)
+                    : null;
+                $item->ktu_employee_label = $item->ktu_employee
+                    ? $this->approvalSettingEmployeeLabel($item->ktu_employee)
+                    : null;
+
                 return $item;
             });
 
-        $employees = Employee::select(
-            "employee_id",
-            "fullname",
-            "group_company",
-            "company_name",
-            "contribution_level_code",
-            "designation_name"
-        )
-            ->orderBy("company_name")
-            ->get();
-
-        $hcgaEmployees = $employees;
-        $ktuEmployees = $employees;
+        // Dua dropdown HCGA dan KTU dulu diisi SELURUH tabel employees
+        // (9 ribuan baris) - dua kali, jadi sekitar 18 ribu <option> dan
+        // HTML halaman ~3,3 MB. Sekarang keduanya dibiarkan kosong dan
+        // diisi Select2 lewat pencarian ke employees() di bawah.
+        //
+        // $employees = Employee::select(
+        //     "employee_id",
+        //     "fullname",
+        //     "group_company",
+        //     "company_name",
+        //     "contribution_level_code",
+        //     "designation_name"
+        // )
+        //     ->orderBy("company_name")
+        //     ->get();
+        //
+        // $hcgaEmployees = $employees;
+        // $ktuEmployees = $employees;
 
         return view(
             "pages.admin.approvalSetting",
@@ -96,11 +112,76 @@ class ApprovalSettingController extends Controller
                 "locations",
                 "groupCompanies",
                 "companies",
-                "hcgaEmployees",
-                "ktuEmployees",
                 "approvalSettings",
             ),
         );
+    }
+
+    /**
+     * Sumber data Select2 untuk dropdown HCGA / KTU.
+     *
+     * Dicari dan dipotong di SQL, 30 baris per permintaan, dengan bentuk
+     * respons yang dipakai Select2: {results: [{id, text}], pagination}.
+     */
+    public function employees(Request $request): JsonResponse
+    {
+        $search = trim((string) $request->input("q", ""));
+        $page = max(1, (int) $request->input("page", 1));
+        $perPage = 30;
+
+        $query = Employee::select(
+            "employee_id",
+            "fullname",
+            "group_company",
+            "company_name",
+        )->orderBy("fullname");
+
+        if ($search !== "") {
+            $query->where(function ($q) use ($search) {
+                foreach (
+                    ["fullname", "employee_id", "company_name", "group_company"]
+                    as $column
+                ) {
+                    $q->orWhere($column, "like", "%" . $search . "%");
+                }
+            });
+        }
+
+        $total = (clone $query)->count();
+
+        $employees = $query
+            ->offset(($page - 1) * $perPage)
+            ->limit($perPage)
+            ->get();
+
+        return response()->json([
+            "results" => $employees
+                ->map(function ($employee) {
+                    return [
+                        "id" => $employee->employee_id,
+                        "text" => $this->approvalSettingEmployeeLabel(
+                            $employee,
+                        ),
+                    ];
+                })
+                ->values(),
+            "pagination" => ["more" => $page * $perPage < $total],
+        ]);
+    }
+
+    /**
+     * Label dropdown HCGA / KTU, sama persis dengan versi blade lama.
+     */
+    private function approvalSettingEmployeeLabel($employee): string
+    {
+        return $employee->fullname .
+            " (" .
+            $employee->group_company .
+            " - " .
+            $employee->company_name .
+            " - " .
+            $employee->employee_id .
+            ")";
     }
 
     public function create(Request $request): JsonResponse {

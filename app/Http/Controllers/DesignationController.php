@@ -92,14 +92,195 @@ class DesignationController extends Controller
         }
     }
 
+    /**
+     * Halaman Designations.
+     *
+     * Baris tabel tidak lagi dirender di sini: DataTables memintanya per
+     * halaman ke data(). Versi lama merender SELURUH designation sekaligus
+     * (6,8 ribuan baris) tanpa paging, pencarian, maupun sorting - kotak
+     * "search.." di halaman itu bahkan tidak tersambung ke apa pun.
+     *
+     * // $designations = Designation::all();
+     */
     public function index()
     {
         $parentLink = "Settings";
         $link = $this->link;
 
-        $designations = Designation::all();
+        // Diisi oleh DataTables server-side.
+        $designations = collect();
 
-        return view('pages.designations.adminDesignations', compact('designations', 'parentLink', 'link'));
+        // Filter Business Unit: nilainya diambil dari parent_company_id yang
+        // benar-benar ada di tabel. Jumlahnya sedikit (7), jadi aman dirender
+        // langsung sebagai <option>.
+        $businessUnits = Designation::select('parent_company_id')
+            ->whereNotNull('parent_company_id')
+            ->where('parent_company_id', '!=', '')
+            ->distinct()
+            ->orderBy('parent_company_id')
+            ->pluck('parent_company_id');
+
+        // Designation Name TIDAK ikut dirender: nilai uniknya 3.435, jadi
+        // dropdown-nya dicari lewat designationNames() seperti dropdown
+        // karyawan di halaman Approval Setting.
+
+        return view('pages.designations.adminDesignations', compact('designations', 'parentLink', 'link', 'businessUnits'));
+    }
+
+    /**
+     * Sumber data Select2 untuk filter Designation Name.
+     *
+     * Nilainya unik dan dipotong di SQL, 30 baris per permintaan. Kalau
+     * Business Unit sedang dipilih, daftarnya ikut dipersempit supaya
+     * dua filter itu nyambung.
+     */
+    public function designationNames(Request $request)
+    {
+        $search = trim((string) $request->input('q', ''));
+        $page = max(1, (int) $request->input('page', 1));
+        $perPage = 30;
+
+        $query = Designation::query()
+            ->select('designation_name')
+            ->whereNotNull('designation_name')
+            ->where('designation_name', '!=', '')
+            ->distinct()
+            ->orderBy('designation_name');
+
+        $businessUnit = $request->input('business_unit');
+        if ($businessUnit !== null && $businessUnit !== '') {
+            $query->where('parent_company_id', $businessUnit);
+        }
+
+        if ($search !== '') {
+            $query->where('designation_name', 'LIKE', '%' . $search . '%');
+        }
+
+        $total = (clone $query)->count('designation_name');
+
+        $names = $query
+            ->offset(($page - 1) * $perPage)
+            ->limit($perPage)
+            ->pluck('designation_name');
+
+        return response()->json([
+            'results' => $names
+                ->map(fn($name) => ['id' => $name, 'text' => $name])
+                ->values(),
+            'pagination' => ['more' => $page * $perPage < $total],
+        ]);
+    }
+
+    /**
+     * Sumber data DataTables server-side untuk halaman Designations.
+     */
+    public function data(Request $request)
+    {
+        $draw = (int) $request->input('draw', 0);
+
+        $query = Designation::query();
+
+        // Filter dari dua dropdown di atas tabel.
+        $businessUnit = $request->input('business_unit');
+        if ($businessUnit !== null && $businessUnit !== '') {
+            $query->where('parent_company_id', $businessUnit);
+        }
+
+        $designationName = $request->input('designation_name');
+        if ($designationName !== null && $designationName !== '') {
+            $query->where('designation_name', $designationName);
+        }
+
+        // Dihitung sesudah dropdown filter, sebelum kotak pencarian - sama
+        // seperti endpoint DataTables lain di proyek ini.
+        $recordsTotal = (clone $query)->count();
+
+        $search = trim((string) $request->input('search.value', ''));
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                foreach (['parent_company_id', 'designation_name', 'job_code'] as $column) {
+                    $q->orWhere($column, 'LIKE', '%' . $search . '%');
+                }
+            });
+        }
+
+        $recordsFiltered = $search === '' ? $recordsTotal : (clone $query)->count();
+
+        // Kolom 0 (No) tidak bisa diurutkan di SQL.
+        $sortable = [
+            1 => 'parent_company_id',
+            2 => 'designation_name',
+            3 => 'job_code',
+            4 => 'dept_head_flag',
+            5 => 'director_flag',
+        ];
+
+        $orderColumn = (int) $request->input('order.0.column', -1);
+        $orderDir = strtolower($request->input('order.0.dir', 'asc')) === 'desc' ? 'desc' : 'asc';
+
+        if (isset($sortable[$orderColumn])) {
+            $query->orderBy($sortable[$orderColumn], $orderDir);
+        }
+
+        // Tiebreaker wajib: tanpa ini urutan baris dengan nilai sama tidak
+        // stabil antar halaman, sehingga baris bisa terlewat atau dobel.
+        $query->orderBy('id');
+
+        $start = max(0, (int) $request->input('start', 0));
+        $length = (int) $request->input('length', 10);
+
+        if ($length > 0) {
+            $query->offset($start)->limit($length);
+        }
+
+        $data = [];
+        foreach ($query->get() as $i => $designation) {
+            $data[] = [
+                (string) ($start + $i + 1),
+                e($designation->parent_company_id),
+                e($designation->designation_name),
+                e($designation->job_code),
+                $this->designationFlagCell($designation, 'dept'),
+                $this->designationFlagCell($designation, 'director'),
+            ];
+        }
+
+        return response()->json([
+            'draw' => $draw,
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $data,
+        ]);
+    }
+
+    /**
+     * Tombol toggle True/False untuk dept_head_flag / director_flag.
+     *
+     * Markup-nya mengikuti versi blade, termasuk id form dan input tersembunyi
+     * yang dibaca handler .update-button.
+     */
+    private function designationFlagCell($designation, string $type): string
+    {
+        $isDept = $type === 'dept';
+
+        $flag = $isDept ? $designation->dept_head_flag : $designation->director_flag;
+        $isTrue = $flag === 'T';
+
+        $action = $isDept
+            ? route('designations.update.dept', ['id' => $designation->id])
+            : route('designations.update.director', ['id' => $designation->id]);
+
+        $formId = ($isDept ? 'dept-head-update-form-' : 'director-update-form-') . $designation->id;
+        $inputId = ($isDept ? 'dept-designation-id-' : 'director-designation-id-') . $designation->id;
+
+        return '<form action="' . e($action) . '" method="POST" style="display:inline;" id="' . e($formId) . '">' .
+            csrf_field() .
+            method_field('PUT') .
+            '<input type="hidden" id="' . e($inputId) . '" value="' . e($designation->job_code) . '">' .
+            '<button class="btn btn-sm rounded-pill btn-outline-' . ($isTrue ? 'success' : 'danger') .
+            ' update-button" title="Change Boolean" data-id="' . e($designation->id) . '" type="button">' .
+            ($isTrue ? 'True' : 'False') .
+            '</button></form>';
     }
     public function updateDeptHead(Request $request, $id)
     {

@@ -255,29 +255,37 @@
 @endif
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.delete-button').forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent form from submitting immediately
+    // Delegated di document. Versi lama memasang listener satu per satu di
+    // DOMContentLoaded lewat querySelectorAll('.delete-button'); sekarang
+    // baris tabelnya datang dari DataTables sesudah itu, jadi tombolnya tidak
+    // akan kebagian listener - dan karena <button> di dalam <form> defaultnya
+    // type=submit, formnya langsung terkirim TANPA konfirmasi.
+    document.addEventListener('click', function(event) {
+        const button = event.target.closest('.delete-button');
 
-                const transactionId = button.getAttribute('data-id');
-                const form = document.getElementById(`deleteForm_${transactionId}`);
-                const noSppd = document.getElementById(`no_sppd_${transactionId}`).value;
+        if (!button) {
+            return;
+        }
 
-                Swal.fire({
-                    title: `Do you want to delete this request?\n (${noSppd})`,
-                    text: "You won't be able to revert this!",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#AB2F2B", // Confirm button color
-                    cancelButtonColor: "#CCCCCC", // Cancel button color
-                    confirmButtonText: "Yes, delete it!"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit(); // Only submit the form if the user confirms
-                    }
-                });
-            });
+        event.preventDefault(); // Prevent form from submitting immediately
+
+        const transactionId = button.getAttribute('data-id');
+        const form = document.getElementById(`deleteForm_${transactionId}`);
+        const noSppdInput = document.getElementById(`no_sppd_${transactionId}`);
+        const noSppd = noSppdInput ? noSppdInput.value : transactionId;
+
+        Swal.fire({
+            title: `Do you want to delete this request?\n (${noSppd})`,
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#AB2F2B", // Confirm button color
+            cancelButtonColor: "#CCCCCC", // Cancel button color
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed && form) {
+                form.submit(); // Only submit the form if the user confirms
+            }
         });
     });
 
@@ -391,8 +399,11 @@
                 populateContainer(l1Container, status, 'L1');
                 populateContainer(l2Container, status, 'L2');
 
-                // Ambil data approval dari server (Laravel Blade)
-                const approvals = @json($approvalTicket) || [];
+                // Versi lama mencetak seluruh $approvalTicket di sini,
+                // langsung ke dalam HTML halaman. Sekarang hanya approval
+                // milik tiket yang sedang tampil, dibawa response DataTables
+                // (lihat dataSrc di ticketAdmin.blade.php).
+                const approvals = (window.tktApprovalData || {}).approvals || [];
 
                 // Filter data approval berdasarkan tktId
                 const filteredApprovals = approvals.filter(approval => approval.tkt_id === tktId);

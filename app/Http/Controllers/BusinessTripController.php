@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Exports\BusinessTripExport;
 use App\Exports\UsersExport;
 use App\Models\BTApproval;
@@ -26,6 +27,7 @@ use App\Models\HealthCoverage;
 use App\Models\ApprovalPriority;
 use App\Models\ApprovalSetting;
 use App\Models\master_holiday;
+use App\Models\TransportHub;
 use Carbon\Carbon;
 use Excel;
 use Illuminate\Support\Facades\DB;
@@ -45,6 +47,7 @@ use App\Mail\RefundNotification;
 use App\Models\ca_extend;
 use Illuminate\Support\Facades\Http;
 use App\Helpers\Attachment as AttachmentHelper;
+use Illuminate\Support\Facades\Storage;
 
 class BusinessTripController extends Controller
 {
@@ -357,10 +360,10 @@ class BusinessTripController extends Controller
 
         $isDisabled = $isApproved->count() >= 2;
 
-        if (
-            $employee_data->group_company == "Plantations" ||
-            $employee_data->group_company == "KPN Plantations"
-        ) {
+        if (in_array(strtolower($employee_data->group_company), [
+            "plantations",
+            "kpn plantations"
+        ])) {
             $allowance = "Perdiem";
         } else {
             $allowance = "Allowance";
@@ -491,7 +494,9 @@ class BusinessTripController extends Controller
         $companies = null;
         $locations = null;
 
-        if (strtolower($employee_data->group_company) == "property") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "property"
+        ])) {
             $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
             $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
         } else {
@@ -500,6 +505,15 @@ class BusinessTripController extends Controller
         }
 
         $holiday = master_holiday::pluck("tanggal_libur")->toArray();
+        $transportHubs = TransportHub::where("is_active", true);
+
+        if (in_array(strtolower($employee_data->group_company), [
+            "downstream"
+        ])) {
+            $transportHubs = $transportHubs->where("group_company", "Downstream");
+        }
+
+        $transportHubs = $transportHubs->pluck("name");
 
         return view("hcis.reimbursements.businessTrip.editFormBt", [
             "n" => $n,
@@ -527,6 +541,7 @@ class BusinessTripController extends Controller
             "isDisabled" => $isDisabled,
             "revisiInfo" => $revisiInfo,
             "holiday" => $holiday,
+            "transport_hubs" => $transportHubs,
         ]);
     }
 
@@ -557,10 +572,10 @@ class BusinessTripController extends Controller
         $oldNoSppd = $n->no_sppd;
         $userId = Auth::id();
         $employee = Employee::where("id", $userId)->first();
-        if (
-            $employee->group_company == "Plantations" ||
-            $employee->group_company == "KPN Plantations"
-        ) {
+        if (in_array(strtolower($employee->group_company), [
+            "plantations",
+            "kpn plantations"
+        ])) {
             $allowance = "Perdiem";
         } else {
             $allowance = "Allowance";
@@ -924,6 +939,8 @@ class BusinessTripController extends Controller
                     "jenis_tkt" => $request->jenis_tkt_dalam_kota,
                     "type_tkt" => $request->type_tkt_dalam_kota,
                     "ket_tkt" => $request->ket_tkt_dalam_kota,
+                    "others_dari_tkt" => $request->others_dari_tkt_dalam_kota,
+                    "others_ke_tkt" => $request->others_ke_tkt_dalam_kota,
                 ];
             } else {
                 $ticketFields = [
@@ -937,6 +954,8 @@ class BusinessTripController extends Controller
                     "jenis_tkt" => $request->jenis_tkt,
                     "type_tkt" => $request->type_tkt,
                     "ket_tkt" => $request->ket_tkt,
+                    "others_dari_tkt" => $request->others_dari_tkt,
+                    "others_ke_tkt" => $request->others_ke_tkt,
                 ];
             }
 
@@ -988,6 +1007,14 @@ class BusinessTripController extends Controller
                     $ticketData["np_tkt"] = $employee_data->fullname ?? null;
                     $ticketData["tlp_tkt"] =
                         $employee_data->personal_mobile_number ?? null;
+
+                    if (!empty($ticketFields["others_dari_tkt"][$key])) {
+                        $ticketData["dari_tkt"] = $ticketFields["others_dari_tkt"][$key];
+                    }
+
+                    if (!empty($ticketFields["others_ke_tkt"][$key])) {
+                        $ticketData["ke_tkt"] = $ticketFields["others_ke_tkt"][$key];
+                    }
 
                     if (isset($existingTickets[$value])) {
                         // Update existing ticket
@@ -1358,6 +1385,42 @@ class BusinessTripController extends Controller
                     )
                     ->get();
 
+                $data_matrix_approvals_specific_employee = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "specific_employee_id",
+                        $employee->employee_id
+                    )
+                    ->whereRaw(
+                        '? BETWEEN CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
+                $data_matrix_approvals_specific_office_location = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "group_company",
+                        "like",
+                        "%" . $employee->group_company . "%",
+                    )
+                    ->where(
+                        "specific_office_location",
+                        "like",
+                        "%" . $employee->office_area . "%",
+                    )
+                    ->whereRaw(
+                        '? BETWEEN CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
                     ->where(function ($query) use ($employee) {
@@ -1370,7 +1433,15 @@ class BusinessTripController extends Controller
                     })
                     ->first();
 
-                foreach ($data_matrix_approvals as $data_matrix_approval) {
+                if ($data_matrix_approvals_specific_employee->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_employee;
+                } else if ($data_matrix_approvals_specific_office_location->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_office_location;
+                } else {
+                    $used_data_matrix_approvals = $data_matrix_approvals;
+                }
+
+                foreach ($used_data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
                     } elseif ($data_matrix_approval->employee_id == "cek_L2") {
@@ -1384,7 +1455,7 @@ class BusinessTripController extends Controller
                     }
 
                     // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                    if ($data_approval_setting) {
+                    if ($data_approval_setting && $data_matrix_approvals_specific_employee->isEmpty()) {
                         if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
                             $employee_id = $data_approval_setting->hcga_employee_id;
                         }
@@ -1667,6 +1738,48 @@ class BusinessTripController extends Controller
                     )
                     ->get();
 
+                $data_matrix_approvals_specific_employee = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "specific_employee_id",
+                        $employee->employee_id
+                    )
+                    ->whereRaw(
+                        '
+            ? BETWEEN
+            CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND
+            CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
+                $data_matrix_approvals_specific_office_location = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "group_company",
+                        "like",
+                        "%" . $employee->group_company . "%",
+                    )
+                    ->where(
+                        "specific_office_location",
+                        "like",
+                        "%" . $employee->office_area . "%",
+                    )
+                    ->whereRaw(
+                        '
+            ? BETWEEN
+            CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND
+            CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
                     ->where(function ($query) use ($employee) {
@@ -1679,7 +1792,15 @@ class BusinessTripController extends Controller
                     })
                     ->first();
 
-                foreach ($data_matrix_approvals as $data_matrix_approval) {
+                if ($data_matrix_approvals_specific_employee->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_employee;
+                } else if ($data_matrix_approvals_specific_office_location->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_office_location;
+                } else {
+                    $used_data_matrix_approvals = $data_matrix_approvals;
+                }
+
+                foreach ($used_data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
                     } elseif ($data_matrix_approval->employee_id == "cek_L2") {
@@ -1693,7 +1814,7 @@ class BusinessTripController extends Controller
                     }
 
                     // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                    if ($data_approval_setting) {
+                    if ($data_approval_setting && $data_matrix_approvals_specific_employee->isEmpty()) {
                         if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
                             $employee_id = $data_approval_setting->hcga_employee_id;
                         }
@@ -1912,10 +2033,10 @@ class BusinessTripController extends Controller
         $n = BusinessTrip::find($id);
         $userId = Auth::id();
         $employee_data = Employee::where("id", $userId)->first();
-        if (
-            $employee_data->group_company == "Plantations" ||
-            $employee_data->group_company == "KPN Plantations"
-        ) {
+        if (in_array(strtolower($employee_data->group_company), [
+            "plantations",
+            "kpn plantations"
+        ])) {
             $allowance = "Perdiem";
         } else {
             $allowance = "Allowance";
@@ -2190,7 +2311,9 @@ class BusinessTripController extends Controller
                 $entId = $ent->id = (string) Str::uuid();
                 $ent->no_ca = $this->generateNoCa();
 
-                if (strtolower($employee_data->group_company) == "property") {
+                if (in_array(strtolower($employee_data->group_company), [
+                    "property"
+                ])) {
                     $ent->no_declaration = $noDeclaration;
                 }
 
@@ -2390,7 +2513,9 @@ class BusinessTripController extends Controller
                 $caId = $ca->id = (string) Str::uuid();
                 $ca->no_ca = $this->generateNoCa();
 
-                if (strtolower($employee_data->group_company) == "property") {
+                if (in_array(strtolower($employee_data->group_company), [
+                    "property"
+                ])) {
                     $ca->no_declaration = $noDeclaration;
                 }
 
@@ -2704,7 +2829,9 @@ class BusinessTripController extends Controller
                     $ca->user_id = $userId;
                     $caId = $ca->id;
 
-                    if (strtolower($employee_data->group_company) == "property") {
+                    if (in_array(strtolower($employee_data->group_company), [
+                        "property"
+                    ])) {
                         if (empty($ca->no_declaration)) {
                             $ca->no_declaration = $noDeclaration;
                         }
@@ -2963,7 +3090,9 @@ class BusinessTripController extends Controller
                     $ca->user_id = $userId;
                     $caId = $ca->id;
 
-                    if (strtolower($employee_data->group_company) == "property") {
+                    if (in_array(strtolower($employee_data->group_company), [
+                        "property"
+                    ])) {
                         if (empty($ca->no_declaration)) {
                             $ca->no_declaration = $noDeclaration;
                         }
@@ -3172,7 +3301,9 @@ class BusinessTripController extends Controller
                     $ca->total_cost =
                         -1 * (int) str_replace(".", "", $ca->total_real);
 
-                    if (strtolower($employee_data->group_company) == "property") {
+                    if (in_array(strtolower($employee_data->group_company), [
+                        "property"
+                    ])) {
                         if (empty($ca->no_declaration)) {
                             $ca->no_declaration = $noDeclaration;
                         }
@@ -3390,7 +3521,9 @@ class BusinessTripController extends Controller
                     $ca->total_cost =
                         -1 * (int) str_replace(".", "", $ca->total_real);
 
-                    if (strtolower($employee_data->group_company) == "property") {
+                    if (in_array(strtolower($employee_data->group_company), [
+                        "property"
+                    ])) {
                         if (empty($ca->no_declaration)) {
                             $ca->no_declaration = $noDeclaration;
                         }
@@ -3683,7 +3816,9 @@ class BusinessTripController extends Controller
             }
         }
         // Update the status field in the BusinessTrip record
-        if (strtolower($employee_data->group_company) == "property") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "property"
+        ])) {
             $n->update([
                 "no_declaration" => $noDeclaration,
                 "status" => $statusValue,
@@ -3769,6 +3904,42 @@ class BusinessTripController extends Controller
                     )
                     ->get();
 
+                $data_matrix_approvals_specific_employee = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "specific_employee_id",
+                        $employee->employee_id
+                    )
+                    ->whereRaw(
+                        '? BETWEEN CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
+                $data_matrix_approvals_specific_office_location = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "group_company",
+                        "like",
+                        "%" . $employee->group_company . "%",
+                    )
+                    ->where(
+                        "specific_office_location",
+                        "like",
+                        "%" . $employee->office_area . "%",
+                    )
+                    ->whereRaw(
+                        '? BETWEEN CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
                     ->where(function ($query) use ($employee) {
@@ -3781,7 +3952,15 @@ class BusinessTripController extends Controller
                     })
                     ->first();
 
-                foreach ($data_matrix_approvals as $data_matrix_approval) {
+                if ($data_matrix_approvals_specific_employee->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_employee;
+                } else if ($data_matrix_approvals_specific_office_location->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_office_location;
+                } else {
+                    $used_data_matrix_approvals = $data_matrix_approvals;
+                }
+
+                foreach ($used_data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
                     } elseif ($data_matrix_approval->employee_id == "cek_L2") {
@@ -3795,7 +3974,7 @@ class BusinessTripController extends Controller
                     }
 
                     // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                    if ($data_approval_setting) {
+                    if ($data_approval_setting && $data_matrix_approvals_specific_employee->isEmpty()) {
                         if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
                             $employee_id = $data_approval_setting->hcga_employee_id;
                         }
@@ -3847,6 +4026,42 @@ class BusinessTripController extends Controller
                     )
                     ->get();
 
+                $data_matrix_approvals_specific_employee = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "specific_employee_id",
+                        $employee->employee_id
+                    )
+                    ->whereRaw(
+                        '? BETWEEN CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
+                $data_matrix_approvals_specific_office_location = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "group_company",
+                        "like",
+                        "%" . $employee->group_company . "%",
+                    )
+                    ->where(
+                        "specific_office_location",
+                        "like",
+                        "%" . $employee->office_area . "%",
+                    )
+                    ->whereRaw(
+                        '? BETWEEN CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
                     ->where(function ($query) use ($employee) {
@@ -3859,7 +4074,15 @@ class BusinessTripController extends Controller
                     })
                     ->first();
 
-                foreach ($data_matrix_approvals as $data_matrix_approval) {
+                if ($data_matrix_approvals_specific_employee->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_employee;
+                } else if ($data_matrix_approvals_specific_office_location->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_office_location;
+                } else {
+                    $used_data_matrix_approvals = $data_matrix_approvals;
+                }
+
+                foreach ($used_data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
                     } elseif ($data_matrix_approval->employee_id == "cek_L2") {
@@ -3873,7 +4096,7 @@ class BusinessTripController extends Controller
                     }
 
                     // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                    if ($data_approval_setting) {
+                    if ($data_approval_setting && $data_matrix_approvals_specific_employee->isEmpty()) {
                         if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
                             $employee_id = $data_approval_setting->hcga_employee_id;
                         }
@@ -4243,6 +4466,34 @@ class BusinessTripController extends Controller
                     )
                     ->get();
 
+                $data_matrix_approvals_specific_employee = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%businesstripExtend%"
+                    )
+                    ->where(
+                        "specific_employee_id",
+                        $employee->employee_id
+                    )
+                    ->get();
+
+                $data_matrix_approvals_specific_office_location = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%businesstripExtend%"
+                    )
+                    ->where(
+                        "group_company",
+                        "like",
+                        "%" . $employee->group_company . "%",
+                    )
+                    ->where(
+                        "specific_office_location",
+                        "like",
+                        "%" . $employee->office_area . "%",
+                    )
+                    ->get();
+
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee_data->group_company . "%")
                     ->where(function ($query) use ($employee_data) {
@@ -4255,7 +4506,15 @@ class BusinessTripController extends Controller
                     })
                     ->first();
 
-                foreach ($data_matrix_approvals as $data_matrix_approval) {
+                if ($data_matrix_approvals_specific_employee->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_employee;
+                } else if ($data_matrix_approvals_specific_office_location->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_office_location;
+                } else {
+                    $used_data_matrix_approvals = $data_matrix_approvals;
+                }
+
+                foreach ($used_data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
                     } elseif ($data_matrix_approval->employee_id == "cek_L2") {
@@ -4269,7 +4528,7 @@ class BusinessTripController extends Controller
                     }
 
                     // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                    if ($data_approval_setting) {
+                    if ($data_approval_setting && $data_matrix_approvals_specific_employee->isEmpty()) {
                         if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
                             $employee_id = $data_approval_setting->hcga_employee_id;
                         }
@@ -4375,6 +4634,34 @@ class BusinessTripController extends Controller
                     )
                     ->get();
 
+                $data_matrix_approvals_specific_employee = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%businesstripExtend%"
+                    )
+                    ->where(
+                        "specific_employee_id",
+                        $employee->employee_id
+                    )
+                    ->get();
+
+                $data_matrix_approvals_specific_office_location = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%businesstripExtend%"
+                    )
+                    ->where(
+                        "group_company",
+                        "like",
+                        "%" . $employee->group_company . "%",
+                    )
+                    ->where(
+                        "specific_office_location",
+                        "like",
+                        "%" . $employee->office_area . "%",
+                    )
+                    ->get();
+
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee_data->group_company . "%")
                     ->where(function ($query) use ($employee_data) {
@@ -4387,7 +4674,15 @@ class BusinessTripController extends Controller
                     })
                     ->first();
 
-                foreach ($data_matrix_approvals as $data_matrix_approval) {
+                if ($data_matrix_approvals_specific_employee->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_employee;
+                } else if ($data_matrix_approvals_specific_office_location->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_office_location;
+                } else {
+                    $used_data_matrix_approvals = $data_matrix_approvals;
+                }
+
+                foreach ($used_data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
                     } elseif ($data_matrix_approval->employee_id == "cek_L2") {
@@ -4401,7 +4696,7 @@ class BusinessTripController extends Controller
                     }
 
                     // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                    if ($data_approval_setting) {
+                    if ($data_approval_setting && $data_matrix_approvals_specific_employee->isEmpty()) {
                         if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
                             $employee_id = $data_approval_setting->hcga_employee_id;
                         }
@@ -4887,10 +5182,10 @@ class BusinessTripController extends Controller
                                     "id",
                                     $user->id,
                                 )->first();
-                                $allowance = in_array(
-                                    $employee_data->group_company,
-                                    ["Plantations", "KPN Plantations"],
-                                )
+                                $allowance = in_array(strtolower($employee_data->group_company), [
+                                    "plantations",
+                                    "kpn plantations"
+                                ])
                                     ? "Perdiem"
                                     : "Allowance";
 
@@ -4954,10 +5249,10 @@ class BusinessTripController extends Controller
                                     "id",
                                     $user->id,
                                 )->first();
-                                $allowance = in_array(
-                                    $employee_data->group_company,
-                                    ["Plantations", "KPN Plantations"],
-                                )
+                                $allowance = in_array(strtolower($employee_data->group_company), [
+                                    "plantations",
+                                    "kpn plantations"
+                                ])
                                     ? "Perdiem"
                                     : "Allowance";
 
@@ -5183,10 +5478,10 @@ class BusinessTripController extends Controller
                                     "id",
                                     $user->id,
                                 )->first();
-                                $allowance = in_array(
-                                    $employee_data->group_company,
-                                    ["Plantations", "KPN Plantations"],
-                                )
+                                $allowance = in_array(strtolower($employee_data->group_company), [
+                                    "plantations",
+                                    "kpn plantations"
+                                ])
                                     ? "Perdiem"
                                     : "Allowance";
 
@@ -5251,10 +5546,10 @@ class BusinessTripController extends Controller
                                     "id",
                                     $user->id,
                                 )->first();
-                                $allowance = in_array(
-                                    $employee_data->group_company,
-                                    ["Plantations", "KPN Plantations"],
-                                )
+                                $allowance = in_array(strtolower($employee_data->group_company), [
+                                    "plantations",
+                                    "kpn plantations"
+                                ])
                                     ? "Perdiem"
                                     : "Allowance";
 
@@ -5499,10 +5794,10 @@ class BusinessTripController extends Controller
                                     "id",
                                     $sppd->user_id,
                                 )->first();
-                                $allowance = in_array(
-                                    $employee_data->group_company,
-                                    ["Plantations", "KPN Plantations"],
-                                )
+                                $allowance = in_array(strtolower($employee_data->group_company), [
+                                    "plantations",
+                                    "kpn plantations"
+                                ])
                                     ? "Perdiem"
                                     : "Allowance";
 
@@ -5566,10 +5861,10 @@ class BusinessTripController extends Controller
                                     "id",
                                     $sppd->user_id,
                                 )->first();
-                                $allowance = in_array(
-                                    $employee_data->group_company,
-                                    ["Plantations", "KPN Plantations"],
-                                )
+                                $allowance = in_array(strtolower($employee_data->group_company), [
+                                    "plantations",
+                                    "kpn plantations"
+                                ])
                                     ? "Perdiem"
                                     : "Allowance";
 
@@ -5794,10 +6089,10 @@ class BusinessTripController extends Controller
                                     "id",
                                     $sppd->user_id,
                                 )->first();
-                                $allowance = in_array(
-                                    $employee_data->group_company,
-                                    ["Plantations", "KPN Plantations"],
-                                )
+                                $allowance = in_array(strtolower($employee_data->group_company), [
+                                    "plantations",
+                                    "kpn plantations"
+                                ])
                                     ? "Perdiem"
                                     : "Allowance";
 
@@ -5876,10 +6171,10 @@ class BusinessTripController extends Controller
                                     "id",
                                     $sppd->user_id,
                                 )->first();
-                                $allowance = in_array(
-                                    $employee_data->group_company,
-                                    ["Plantations", "KPN Plantations"],
-                                )
+                                $allowance = in_array(strtolower($employee_data->group_company), [
+                                    "plantations",
+                                    "kpn plantations"
+                                ])
                                     ? "Perdiem"
                                     : "Allowance";
 
@@ -6034,7 +6329,9 @@ class BusinessTripController extends Controller
         $companies = null;
         $locations = null;
 
-        if (strtolower($employee_data->group_company) == "property") {
+        if (in_array(strtolower($employee_data->group_company), [
+            "property"
+        ])) {
             $companies = Company::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("contribution_level")->get();
             $locations = Location::where("company_name", "like", "%" . $employee_data->group_company . "%")->orderBy("area")->get();
         } else {
@@ -6076,10 +6373,10 @@ class BusinessTripController extends Controller
 
         // dd($employee_data, $companies, $perdiem);
 
-        if (
-            $employee_data->group_company == "Plantations" ||
-            $employee_data->group_company == "KPN Plantations"
-        ) {
+        if (in_array(strtolower($employee_data->group_company), [
+            "plantations",
+            "kpn plantations"
+        ])) {
             $allowance = "Perdiem";
         } else {
             $allowance = "Allowance";
@@ -6096,6 +6393,15 @@ class BusinessTripController extends Controller
         }
 
         $holiday = master_holiday::pluck("tanggal_libur")->toArray();
+        $transportHubs = TransportHub::where("is_active", true);
+
+        if (in_array(strtolower($employee_data->group_company), [
+            "downstream"
+        ])) {
+            $transportHubs = $transportHubs->where("group_company", "Downstream");
+        }
+
+        $transportHubs = $transportHubs->pluck("name");
 
         $parentLink = "Business Travel";
         $link = "Business Travel Request";
@@ -6115,6 +6421,7 @@ class BusinessTripController extends Controller
             "group_company" => $employee_data->group_company,
             "isDisabled" => $isDisabled,
             "holiday" => $holiday,
+            "transport_hubs" =>$transportHubs
         ]);
     }
 
@@ -6358,6 +6665,8 @@ class BusinessTripController extends Controller
                     "type_tkt" => $request->type_tkt_dalam_kota,
                     "ket_tkt" => $request->ket_tkt_dalam_kota,
                     "approval_status" => $statusValue,
+                    "others_dari_tkt" => $request->others_dari_tkt_dalam_kota,
+                    "others_ke_tkt" => $request->others_ke_tkt_dalam_kota,
                 ];
             } else {
                 $ticketData = [
@@ -6373,6 +6682,8 @@ class BusinessTripController extends Controller
                     "ket_tkt" => $request->ket_tkt,
                     "approval_status" => $statusValue,
                     "jns_dinas_tkt" => "Dinas",
+                    "others_dari_tkt" => $request->others_dari_tkt,
+                    "others_ke_tkt" => $request->others_ke_tkt,
                 ];
             }
 
@@ -6417,6 +6728,14 @@ class BusinessTripController extends Controller
                     $tiket->manager_l2_id =
                         $isJobLevel->count() == 1 ? "-" : $managerL2;
                     $tiket->jns_dinas_tkt = "Dinas";
+
+                    if (!empty($ticketData["others_dari_tkt"][$key])) {
+                        $tiket->dari_tkt = $ticketData["others_dari_tkt"][$key];
+                    }
+
+                    if (!empty($ticketData["others_ke_tkt"][$key])) {
+                        $tiket->ke_tkt = $ticketData["others_ke_tkt"][$key];
+                    }
 
                     $tiket->save();
                 }
@@ -6721,6 +7040,48 @@ class BusinessTripController extends Controller
                     )
                     ->get();
 
+                $data_matrix_approvals_specific_employee = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "specific_employee_id",
+                        $employee->employee_id
+                    )
+                    ->whereRaw(
+                        '
+                            ? BETWEEN
+                            CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND
+                            CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
+                $data_matrix_approvals_specific_office_location = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "group_company",
+                        "like",
+                        "%" . $employee->group_company . "%",
+                    )
+                    ->where(
+                        "specific_office_location",
+                        "like",
+                        "%" . $employee->office_area . "%",
+                    )
+                    ->whereRaw(
+                        '
+                            ? BETWEEN
+                            CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND
+                            CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
                     ->where(function ($query) use ($employee) {
@@ -6733,7 +7094,15 @@ class BusinessTripController extends Controller
                     })
                     ->first();
 
-                foreach ($data_matrix_approvals as $data_matrix_approval) {
+                if ($data_matrix_approvals_specific_employee->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_employee;
+                } else if ($data_matrix_approvals_specific_office_location->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_office_location;
+                } else {
+                    $used_data_matrix_approvals = $data_matrix_approvals;
+                }
+
+                foreach ($used_data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
                     } elseif ($data_matrix_approval->employee_id == "cek_L2") {
@@ -6747,7 +7116,7 @@ class BusinessTripController extends Controller
                     }
 
                     // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                    if ($data_approval_setting) {
+                    if ($data_approval_setting && $data_matrix_approvals_specific_employee->isEmpty()) {
                         if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
                             $employee_id = $data_approval_setting->hcga_employee_id;
                         }
@@ -7018,6 +7387,48 @@ class BusinessTripController extends Controller
                     )
                     ->get();
 
+                $data_matrix_approvals_specific_employee = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "specific_employee_id",
+                        $employee->employee_id
+                    )
+                    ->whereRaw(
+                        '
+            ? BETWEEN
+            CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND
+            CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
+                $data_matrix_approvals_specific_office_location = MatrixApproval::where(
+                        "modul",
+                        "like",
+                        "%dns%"
+                    )
+                    ->where(
+                        "group_company",
+                        "like",
+                        "%" . $employee->group_company . "%",
+                    )
+                    ->where(
+                        "specific_office_location",
+                        "like",
+                        "%" . $employee->office_area . "%",
+                    )
+                    ->whereRaw(
+                        '
+            ? BETWEEN
+            CAST(SUBSTRING_INDEX(condt, "-", 1) AS UNSIGNED) AND
+            CAST(SUBSTRING_INDEX(condt, "-", -1) AS UNSIGNED)',
+                        [$total_ca],
+                    )
+                    ->get();
+
                 // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
                 $data_approval_setting = ApprovalSetting::where("company_names", "like", "%" . $employee->group_company . "%")
                     ->where(function ($query) use ($employee) {
@@ -7030,7 +7441,15 @@ class BusinessTripController extends Controller
                     })
                     ->first();
 
-                foreach ($data_matrix_approvals as $data_matrix_approval) {
+                if ($data_matrix_approvals_specific_employee->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_employee;
+                } else if ($data_matrix_approvals_specific_office_location->isNotEmpty()) {
+                    $used_data_matrix_approvals = $data_matrix_approvals_specific_office_location;
+                } else {
+                    $used_data_matrix_approvals = $data_matrix_approvals;
+                }
+
+                foreach ($used_data_matrix_approvals as $data_matrix_approval) {
                     if ($data_matrix_approval->employee_id == "cek_L1") {
                         $employee_id = $managerL1;
                     } elseif ($data_matrix_approval->employee_id == "cek_L2") {
@@ -7044,7 +7463,7 @@ class BusinessTripController extends Controller
                     }
 
                     // TODO: MAKE SURE THIS MATCH WITH THE BUSINESS PROCESS
-                    if ($data_approval_setting) {
+                    if ($data_approval_setting && $data_matrix_approvals_specific_employee->isEmpty()) {
                         if ($data_approval_setting->hcga_employee_id && ($data_matrix_approval->desc == "Dept Head HC GA" || $data_matrix_approval->desc == "HC GA")) {
                             $employee_id = $data_approval_setting->hcga_employee_id;
                         }
@@ -7521,157 +7940,383 @@ class BusinessTripController extends Controller
         return $pdf->stream("Data_Perjalanan_Dinas.pdf");
     }
 
+    // ===================================================================
+    // LEGACY - diganti oleh admin() + filterDateAdmin() + adminData() di
+    // bawah. Dua method ini dulu merender SELURUH baris hasil filter
+    // sekaligus lewat @foreach di btAdmin.blade.php: tiap baris ikut
+    // membawa JSON detail CA/hotel/mess/tiket/taksi, dan di luar tabel
+    // $btApproved (seluruh BTApproval) + $employeeName (SELURUH isi tabel
+    // employees) di-dump ke dalam JavaScript halaman. Baris tabel sekarang
+    // diambil per halaman lewat adminData() (DataTables server-side).
+    // Disimpan utuh sebagai pembanding.
+    // ===================================================================
+//    public function admin(Request $request)
+//    {
+//        $user = Auth::user();
+//
+//        // $query = BusinessTrip::whereNotIn("status", [
+//        //     "Draft",
+//        //     "Declaration Draft",
+//        // ])->orderBy("created_at", "desc");
+//
+//        $query = BusinessTrip::orderBy("created_at", "desc");
+//
+//        $filter = $request->input("filter", "all");
+//
+//        if ($filter === "request") {
+//            $query->whereIn("status", [
+//                "Draft",
+//                "Pending L1",
+//                "Pending L2",
+//                "Approved",
+//            ]);
+//        } elseif ($filter === "declaration") {
+//            $query->whereIn("status", [
+//                "Declaration Approved",
+//                "Declaration L1",
+//                "Declaration L2",
+//                "Approved",
+//                "Declaration Draft",
+//            ]);
+//        } elseif ($filter === "done") {
+//            $query->whereIn("status", ["Doc Accepted", "Verified"]);
+//        } elseif ($filter === "return_refund") {
+//            $query->whereIn("status", ["Return/Refund"]);
+//        } elseif ($filter === "rejected") {
+//            $query->whereIn("status", ["Rejected", "Declaration Rejected"]);
+//        }
+//
+//        $permissionLocations = $this->permissionLocations;
+//        $permissionCompanies = $this->permissionCompanies;
+//        $permissionGroupCompanies = $this->permissionGroupCompanies;
+//
+//        if (!empty($permissionLocations)) {
+//            $query->whereHas("employee", function ($query) use (
+//                $permissionLocations,
+//            ) {
+//                $query->whereIn("work_area_code", $permissionLocations);
+//            });
+//        }
+//
+//        if (!empty($permissionCompanies)) {
+//            $query->whereIn("bb_perusahaan", $permissionCompanies);
+//        }
+//
+//        if (!empty($permissionGroupCompanies)) {
+//            $query->whereHas("employee", function ($query) use (
+//                $permissionGroupCompanies,
+//            ) {
+//                $query->whereIn("group_company", $permissionGroupCompanies);
+//            });
+//        }
+//
+//        // $sppd = $query->get();
+//
+//        // // Collect all SPPD numbers from the BusinessTrip instances
+//        // $sppdNos = $sppd->pluck('no_sppd');
+//        // $btIds = $sppd->pluck('id');
+//
+//        // $btApprovals = BTApproval::whereIn('bt_id', $btIds)
+//        //     ->where(function ($query) {
+//        //         $query->where('approval_status', 'Rejected')
+//        //             ->orWhere('approval_status', 'Declaration Rejected');
+//        //     })
+//        //     ->get();
+//
+//        // $btApprovals = $btApprovals->keyBy('bt_id');
+//        // // dd($btApprovals);
+//        // // Log::info('BT Approvals:', $btApprovals->toArray());
+//
+//        // $btApproved = BTApproval::whereIn('bt_id', $btIds)->get();
+//
+//        // // dd($btIds, $btApproved);
+//
+//        // $employeeIds = $sppd->pluck('user_id')->unique();
+//        // $employees = Employee::whereIn('id', $employeeIds)->get()->keyBy('id');
+//        // $employeeName = Employee::pluck('fullname', 'employee_id');
+//
+//        // // Related data
+//        // $caTransactions = ca_transaction::whereIn('no_sppd', $sppdNos)
+//        //     ->whereNull('deleted_at')
+//        //     ->get()
+//        //     ->groupBy('no_sppd');
+//        // $tickets = Tiket::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
+//        // $hotel = Hotel::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
+//        // $mess = Mess::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
+//        // $taksi = Taksi::whereIn('no_sppd', $sppdNos)->get()->keyBy('no_sppd');
+//        // $managerL1Names = Employee::whereIn('employee_id', $sppd->pluck('manager_l1_id'))->pluck('fullname', 'employee_id');
+//        // $managerL2Names = Employee::whereIn('employee_id', $sppd->pluck('manager_l2_id'))->pluck('fullname', 'employee_id');
+//
+//        // Yg di atas di coment semua biar dia harus ngefilter dulu baru muncul data di admin
+//        $sppd = [];
+//        $sppdNos = [];
+//        $btIds = [];
+//        $btApprovals = [];
+//        $btApproved = [];
+//        $employeeIds = [];
+//        $employees = [];
+//        $employeeName = [];
+//        $caTransactions = [];
+//        $tickets = [];
+//        $hotel = [];
+//        $taksi = [];
+//        $mess = [];
+//        $managerL1Names = [];
+//        $managerL2Names = [];
+//
+//        $parentLink = "Reimbursement";
+//        $link = "Business Travel (Admin)";
+//
+//        return view(
+//            "hcis.reimbursements.businessTrip.btAdmin",
+//            compact(
+//                "sppd",
+//                "parentLink",
+//                "link",
+//                "caTransactions",
+//                "tickets",
+//                "hotel",
+//                "taksi",
+//                "managerL1Names",
+//                "managerL2Names",
+//                "filter",
+//                "btApprovals",
+//                "employeeName",
+//                "btApproved",
+//                "mess",
+//            ),
+//        );
+//    }
+//    public function filterDateAdmin(Request $request)
+//    {
+//        session(["previous_url" => request()->fullUrl()]);
+//
+//        // $query = BusinessTrip::whereNotIn("status", [
+//        //     "Draft",
+//        //     "Declaration Draft",
+//        // ])->orderBy("created_at", "desc");
+//
+//        $query = BusinessTrip::orderBy("created_at", "desc");
+//
+//        $filter = $request->input("filter", "all");
+//        $startDate = $request->query("start-date");
+//        $endDate = $request->query("end-date");
+//
+//        if ($filter === "request") {
+//            $query->whereIn("status", [
+//                "Draft",
+//                "Pending L1",
+//                "Pending L2",
+//                "Approved",
+//            ]);
+//        } elseif ($filter === "declaration") {
+//            $query->whereIn("status", [
+//                "Declaration Approved",
+//                "Declaration L1",
+//                "Declaration L2",
+//                "Declaration Draft",
+//            ]);
+//        } elseif ($filter === "done") {
+//            $query->whereIn("status", ["Doc Accepted", "Verified"]);
+//        } elseif ($filter === "return_refund") {
+//            $query->whereIn("status", ["Return/Refund"]);
+//        } elseif ($filter === "rejected") {
+//            $query->whereIn("status", ["Rejected", "Declaration Rejected"]);
+//        }
+//
+//        $permissionLocations = $this->permissionLocations;
+//        $permissionCompanies = $this->permissionCompanies;
+//        $permissionGroupCompanies = $this->permissionGroupCompanies;
+//
+//        if (!empty($permissionLocations)) {
+//            $query->whereHas("employee", function ($query) use (
+//                $permissionLocations,
+//            ) {
+//                $query->whereIn("work_area_code", $permissionLocations);
+//            });
+//        }
+//
+//        if (!empty($permissionCompanies)) {
+//            $query->whereIn("bb_perusahaan", $permissionCompanies);
+//        }
+//
+//        if (!empty($permissionGroupCompanies)) {
+//            $query->whereHas("employee", function ($query) use (
+//                $permissionGroupCompanies,
+//            ) {
+//                $query->whereIn("group_company", $permissionGroupCompanies);
+//            });
+//        }
+//
+//        $sppd = $query->get();
+//
+//        $sppdNos = $sppd->pluck("no_sppd");
+//        $btIds = $sppd->pluck("id");
+//        // Retrieve the start and end dates from the request
+//        $btApprovals = BTApproval::whereIn("bt_id", $btIds)
+//            ->where(function ($query) {
+//                $query
+//                    ->where("approval_status", "Rejected")
+//                    ->orWhere("approval_status", "Declaration Rejected");
+//            })
+//            ->get();
+//
+//        $employeeIds = $sppd->pluck("user_id")->unique();
+//        $employees = Employee::whereIn("id", $employeeIds)->get()->keyBy("id");
+//        $employeeName = Employee::pluck("fullname", "employee_id");
+//
+//        // Fetch related data based on the filtered SPPD numbers
+//        $caTransactions = ca_transaction::whereIn("no_sppd", $sppdNos)
+//            ->whereNull("deleted_at")
+//            ->get()
+//            ->groupBy("no_sppd");
+//        $tickets = Tiket::whereIn("no_sppd", $sppdNos)
+//            ->get()
+//            ->groupBy("no_sppd");
+//        $hotel = Hotel::whereIn("no_sppd", $sppdNos)->get()->groupBy("no_sppd");
+//        $mess = Mess::whereIn("no_sppd", $sppdNos)->get()->groupBy("no_sppd");
+//        $taksi = Taksi::whereIn("no_sppd", $sppdNos)->get()->keyBy("no_sppd");
+//
+//        $managerL1Names = Employee::whereIn(
+//            "employee_id",
+//            $sppd->pluck("manager_l1_id"),
+//        )->pluck("fullname", "employee_id");
+//        $managerL2Names = Employee::whereIn(
+//            "employee_id",
+//            $sppd->pluck("manager_l2_id"),
+//        )->pluck("fullname", "employee_id");
+//
+//        $btApprovals = BTApproval::whereIn("bt_id", $btIds)
+//            ->where(function ($query) {
+//                $query
+//                    ->where("approval_status", "Rejected")
+//                    ->orWhere("approval_status", "Declaration Rejected");
+//            })
+//            ->get();
+//        // Log::info('Ticket Approvals:', $btApprovals->toArray());
+//
+//        $btApprovals = $btApprovals->keyBy("bt_id");
+//        $btApproved = BTApproval::whereIn("bt_id", $btIds)->get();
+//
+//        if ($startDate && $endDate) {
+//            $query->whereBetween("mulai", [$startDate, $endDate]);
+//        }
+//        // dd($startDate, $endDate);
+//        $sppd = $query->orderBy("created_at", "desc")->get();
+//
+//        $extendData = BTApproval::whereIn("bt_id", $sppd->pluck("id"))
+//            ->where("approval_status", "Request Extend")
+//            ->orderBy("created_at", "asc")
+//            ->get(["bt_id", "ext_end_date", "reason_extend"]);
+//
+//        $extendTime = $extendData->keyBy("bt_id")->map(function ($item) {
+//            return [
+//                "ext_end_date" => $item->ext_end_date,
+//                "reason_extend" => $item->reason_extend,
+//            ];
+//        });
+//        // dd($extendTime);
+//
+//        $parentLink = "Reimbursement";
+//        $link = "Business Travel (Admin)";
+//
+//        return view(
+//            "hcis.reimbursements.businessTrip.btAdmin",
+//            compact(
+//                "sppd",
+//                "parentLink",
+//                "link",
+//                "caTransactions",
+//                "tickets",
+//                "hotel",
+//                "taksi",
+//                "managerL1Names",
+//                "managerL2Names",
+//                "filter",
+//                "btApprovals",
+//                "employeeName",
+//                "btApproved",
+//                "extendTime",
+//                "mess",
+//            ),
+//        );
+//    }
+
+    /**
+     * Halaman Report BT (landing).
+     *
+     * Sama seperti sebelumnya: selama filter belum ditekan, tabelnya kosong.
+     * Baris tabel tidak lagi dirender di sini, DataTables memintanya per
+     * halaman ke adminData(). Versi lama ada di atas (legacy).
+     */
     public function admin(Request $request)
     {
-        $user = Auth::user();
-
-        // $query = BusinessTrip::whereNotIn("status", [
-        //     "Draft",
-        //     "Declaration Draft",
-        // ])->orderBy("created_at", "desc");
-
-        $query = BusinessTrip::orderBy("created_at", "desc");
-
-        $filter = $request->input("filter", "all");
-
-        if ($filter === "request") {
-            $query->whereIn("status", [
-                "Draft",
-                "Pending L1",
-                "Pending L2",
-                "Approved",
-            ]);
-        } elseif ($filter === "declaration") {
-            $query->whereIn("status", [
-                "Declaration Approved",
-                "Declaration L1",
-                "Declaration L2",
-                "Approved",
-                "Declaration Draft",
-            ]);
-        } elseif ($filter === "done") {
-            $query->whereIn("status", ["Doc Accepted", "Verified"]);
-        } elseif ($filter === "return_refund") {
-            $query->whereIn("status", ["Return/Refund"]);
-        } elseif ($filter === "rejected") {
-            $query->whereIn("status", ["Rejected", "Declaration Rejected"]);
-        }
-
-        $permissionLocations = $this->permissionLocations;
-        $permissionCompanies = $this->permissionCompanies;
-        $permissionGroupCompanies = $this->permissionGroupCompanies;
-
-        if (!empty($permissionLocations)) {
-            $query->whereHas("employee", function ($query) use (
-                $permissionLocations,
-            ) {
-                $query->whereIn("work_area_code", $permissionLocations);
-            });
-        }
-
-        if (!empty($permissionCompanies)) {
-            $query->whereIn("bb_perusahaan", $permissionCompanies);
-        }
-
-        if (!empty($permissionGroupCompanies)) {
-            $query->whereHas("employee", function ($query) use (
-                $permissionGroupCompanies,
-            ) {
-                $query->whereIn("group_company", $permissionGroupCompanies);
-            });
-        }
-
-        // $sppd = $query->get();
-
-        // // Collect all SPPD numbers from the BusinessTrip instances
-        // $sppdNos = $sppd->pluck('no_sppd');
-        // $btIds = $sppd->pluck('id');
-
-        // $btApprovals = BTApproval::whereIn('bt_id', $btIds)
-        //     ->where(function ($query) {
-        //         $query->where('approval_status', 'Rejected')
-        //             ->orWhere('approval_status', 'Declaration Rejected');
-        //     })
-        //     ->get();
-
-        // $btApprovals = $btApprovals->keyBy('bt_id');
-        // // dd($btApprovals);
-        // // Log::info('BT Approvals:', $btApprovals->toArray());
-
-        // $btApproved = BTApproval::whereIn('bt_id', $btIds)->get();
-
-        // // dd($btIds, $btApproved);
-
-        // $employeeIds = $sppd->pluck('user_id')->unique();
-        // $employees = Employee::whereIn('id', $employeeIds)->get()->keyBy('id');
-        // $employeeName = Employee::pluck('fullname', 'employee_id');
-
-        // // Related data
-        // $caTransactions = ca_transaction::whereIn('no_sppd', $sppdNos)
-        //     ->whereNull('deleted_at')
-        //     ->get()
-        //     ->groupBy('no_sppd');
-        // $tickets = Tiket::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
-        // $hotel = Hotel::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
-        // $mess = Mess::whereIn('no_sppd', $sppdNos)->get()->groupBy('no_sppd');
-        // $taksi = Taksi::whereIn('no_sppd', $sppdNos)->get()->keyBy('no_sppd');
-        // $managerL1Names = Employee::whereIn('employee_id', $sppd->pluck('manager_l1_id'))->pluck('fullname', 'employee_id');
-        // $managerL2Names = Employee::whereIn('employee_id', $sppd->pluck('manager_l2_id'))->pluck('fullname', 'employee_id');
-
-        // Yg di atas di coment semua biar dia harus ngefilter dulu baru muncul data di admin
-        $sppd = [];
-        $sppdNos = [];
-        $btIds = [];
-        $btApprovals = [];
-        $btApproved = [];
-        $employeeIds = [];
-        $employees = [];
-        $employeeName = [];
-        $caTransactions = [];
-        $tickets = [];
-        $hotel = [];
-        $taksi = [];
-        $mess = [];
-        $managerL1Names = [];
-        $managerL2Names = [];
-
-        $parentLink = "Reimbursement";
-        $link = "Business Travel (Admin)";
-
         return view(
             "hcis.reimbursements.businessTrip.btAdmin",
-            compact(
-                "sppd",
-                "parentLink",
-                "link",
-                "caTransactions",
-                "tickets",
-                "hotel",
-                "taksi",
-                "managerL1Names",
-                "managerL2Names",
-                "filter",
-                "btApprovals",
-                "employeeName",
-                "btApproved",
-                "mess",
-            ),
+            $this->btAdminViewData($request, false),
         );
     }
+
+    /**
+     * Halaman Report BT sesudah tombol Find / filter status ditekan.
+     *
+     * Bedanya dengan admin() tinggal satu: tabelnya boleh memuat data.
+     */
     public function filterDateAdmin(Request $request)
     {
         session(["previous_url" => request()->fullUrl()]);
 
-        // $query = BusinessTrip::whereNotIn("status", [
-        //     "Draft",
-        //     "Declaration Draft",
-        // ])->orderBy("created_at", "desc");
+        return view(
+            "hcis.reimbursements.businessTrip.btAdmin",
+            $this->btAdminViewData($request, true),
+        );
+    }
 
-        $query = BusinessTrip::orderBy("created_at", "desc");
+    /**
+     * Variabel view btAdmin.blade.php.
+     *
+     * $sppd sampai $extendTime dulu dipakai @foreach baris tabel dan
+     * sekarang tidak dipakai lagi; tetap dikirim kosong supaya blade dan
+     * @include-nya tidak perlu tahu soal itu.
+     */
+    private function btAdminViewData(
+        Request $request,
+        bool $isFilterApplied
+    ): array {
+        return [
+            "parentLink" => "Reimbursement",
+            "link" => "Business Travel (Admin)",
+            "filter" => $request->input("filter", "all"),
+            "isFilterApplied" => $isFilterApplied,
+            "sppd" => collect(),
+            "caTransactions" => collect(),
+            "tickets" => collect(),
+            "hotel" => collect(),
+            "mess" => collect(),
+            "taksi" => collect(),
+            "managerL1Names" => collect(),
+            "managerL2Names" => collect(),
+            "btApprovals" => collect(),
+            "btApproved" => collect(),
+            "employeeName" => collect(),
+            "extendTime" => collect(),
+        ];
+    }
+
+    /**
+     * Query dasar daftar Report BT (builder, belum dieksekusi).
+     *
+     * Isinya sama dengan filterDateAdmin() versi lama: filter status dari
+     * tombol, pembatasan hak akses, lalu rentang tanggal keberangkatan.
+     * Versi lama memanggil whereBetween("mulai") sesudah $query->get()
+     * yang pertama lalu get() sekali lagi; hasil akhirnya sama dengan
+     * menaruh filternya di sini.
+     */
+    private function btAdminFilteredQuery(Request $request)
+    {
+        $query = BusinessTrip::query();
 
         $filter = $request->input("filter", "all");
-        $startDate = $request->query("start-date");
-        $endDate = $request->query("end-date");
 
         if ($filter === "request") {
             $query->whereIn("status", [
@@ -7700,10 +8345,10 @@ class BusinessTripController extends Controller
         $permissionGroupCompanies = $this->permissionGroupCompanies;
 
         if (!empty($permissionLocations)) {
-            $query->whereHas("employee", function ($query) use (
+            $query->whereHas("employee", function ($q) use (
                 $permissionLocations,
             ) {
-                $query->whereIn("work_area_code", $permissionLocations);
+                $q->whereIn("work_area_code", $permissionLocations);
             });
         }
 
@@ -7712,31 +8357,108 @@ class BusinessTripController extends Controller
         }
 
         if (!empty($permissionGroupCompanies)) {
-            $query->whereHas("employee", function ($query) use (
+            $query->whereHas("employee", function ($q) use (
                 $permissionGroupCompanies,
             ) {
-                $query->whereIn("group_company", $permissionGroupCompanies);
+                $q->whereIn("group_company", $permissionGroupCompanies);
             });
         }
 
-        $sppd = $query->get();
+        $startDate = $request->input("start-date");
+        $endDate = $request->input("end-date");
 
+        if ($startDate && $endDate) {
+            $query->whereBetween("mulai", [$startDate, $endDate]);
+        }
+
+        return $query;
+    }
+
+    /**
+     * Sumber data DataTables server-side untuk halaman Report BT.
+     *
+     * Selain baris tabel, response membawa "approvals": BTApproval milik
+     * SPPD di halaman ini saja (dipakai modal Approval Update), yang
+     * ditolak (modal Rejection Information), dan nama karyawan yang
+     * dipakai kedua modal itu. Dulu ketiganya di-dump utuh ke dalam HTML
+     * halaman, termasuk seluruh isi tabel employees.
+     */
+    public function adminData(Request $request)
+    {
+        $draw = (int) $request->input("draw", 0);
+
+        // Halaman landing (/businessTrip/admin) tidak menampilkan baris apa
+        // pun sampai filter ditekan. Perilaku itu dipertahankan.
+        if (!$request->boolean("filtered")) {
+            return response()->json([
+                "draw" => $draw,
+                "recordsTotal" => 0,
+                "recordsFiltered" => 0,
+                "data" => [],
+                "approvals" => [
+                    "approved" => [],
+                    "rejected" => (object) [],
+                    "employeeNames" => (object) [],
+                ],
+            ]);
+        }
+
+        $query = $this->btAdminFilteredQuery($request);
+
+        $recordsTotal = (clone $query)->count();
+
+        $search = trim((string) $request->input("search.value", ""));
+        if ($search !== "") {
+            $query->where(function ($q) use ($search) {
+                foreach (["no_sppd", "nama", "tujuan", "status"] as $column) {
+                    $q->orWhere($column, "like", "%" . $search . "%");
+                }
+            });
+        }
+
+        $recordsFiltered =
+            $search === "" ? $recordsTotal : (clone $query)->count();
+
+        // Kolom 0 (No), 6-10 (CA/Hotel/Mess/Ticket/Taxi), 12 (Attachment),
+        // 13 (Approve) dan 14 (Action) tidak bisa diurutkan di SQL.
+        $sortable = [
+            1 => "no_sppd",
+            2 => "nama",
+            3 => "tujuan",
+            4 => "mulai",
+            5 => "kembali",
+            11 => "status",
+        ];
+
+        $orderColumn = (int) $request->input("order.0.column", -1);
+        $orderDir =
+            strtolower($request->input("order.0.dir", "asc")) === "desc"
+                ? "desc"
+                : "asc";
+
+        if (isset($sortable[$orderColumn])) {
+            $query->orderBy($sortable[$orderColumn], $orderDir);
+        } else {
+            // Urutan bawaan versi lama.
+            $query->orderBy("created_at", "desc");
+        }
+
+        // Tiebreaker wajib: tanpa ini urutan baris dengan nilai sama tidak
+        // stabil antar halaman, sehingga baris bisa terlewat atau dobel.
+        $query->orderBy("id");
+
+        $start = max(0, (int) $request->input("start", 0));
+        $length = (int) $request->input("length", 10);
+
+        if ($length > 0) {
+            $query->offset($start)->limit($length);
+        }
+
+        $sppd = $query->get();
         $sppdNos = $sppd->pluck("no_sppd");
         $btIds = $sppd->pluck("id");
-        // Retrieve the start and end dates from the request
-        $btApprovals = BTApproval::whereIn("bt_id", $btIds)
-            ->where(function ($query) {
-                $query
-                    ->where("approval_status", "Rejected")
-                    ->orWhere("approval_status", "Declaration Rejected");
-            })
-            ->get();
 
-        $employeeIds = $sppd->pluck("user_id")->unique();
-        $employees = Employee::whereIn("id", $employeeIds)->get()->keyBy("id");
-        $employeeName = Employee::pluck("fullname", "employee_id");
-
-        // Fetch related data based on the filtered SPPD numbers
+        // Semua relasi di bawah hanya diambil untuk baris di halaman ini.
         $caTransactions = ca_transaction::whereIn("no_sppd", $sppdNos)
             ->whereNull("deleted_at")
             ->get()
@@ -7748,69 +8470,457 @@ class BusinessTripController extends Controller
         $mess = Mess::whereIn("no_sppd", $sppdNos)->get()->groupBy("no_sppd");
         $taksi = Taksi::whereIn("no_sppd", $sppdNos)->get()->keyBy("no_sppd");
 
-        $managerL1Names = Employee::whereIn(
-            "employee_id",
-            $sppd->pluck("manager_l1_id"),
-        )->pluck("fullname", "employee_id");
-        $managerL2Names = Employee::whereIn(
-            "employee_id",
-            $sppd->pluck("manager_l2_id"),
-        )->pluck("fullname", "employee_id");
-
-        $btApprovals = BTApproval::whereIn("bt_id", $btIds)
-            ->where(function ($query) {
-                $query
-                    ->where("approval_status", "Rejected")
-                    ->orWhere("approval_status", "Declaration Rejected");
-            })
-            ->get();
-        // Log::info('Ticket Approvals:', $btApprovals->toArray());
-
-        $btApprovals = $btApprovals->keyBy("bt_id");
         $btApproved = BTApproval::whereIn("bt_id", $btIds)->get();
 
-        if ($startDate && $endDate) {
-            $query->whereBetween("mulai", [$startDate, $endDate]);
-        }
-        // dd($startDate, $endDate);
-        $sppd = $query->orderBy("created_at", "desc")->get();
+        $btRejected = $btApproved
+            ->whereIn("approval_status", ["Rejected", "Declaration Rejected"])
+            ->keyBy("bt_id");
 
-        $extendData = BTApproval::whereIn("bt_id", $sppd->pluck("id"))
-            ->where("approval_status", "Request Extend")
-            ->orderBy("created_at", "asc")
-            ->get(["bt_id", "ext_end_date", "reason_extend"]);
+        // Satu query nama karyawan untuk manager L1/L2 di halaman ini
+        // sekaligus yang menolak, sebagai ganti Employee::pluck() atas
+        // seluruh tabel employees.
+        $employeeIds = $sppd
+            ->pluck("manager_l1_id")
+            ->merge($sppd->pluck("manager_l2_id"))
+            ->merge($btRejected->pluck("employee_id"))
+            ->filter()
+            ->unique();
 
-        $extendTime = $extendData->keyBy("bt_id")->map(function ($item) {
-            return [
-                "ext_end_date" => $item->ext_end_date,
-                "reason_extend" => $item->reason_extend,
-            ];
-        });
-        // dd($extendTime);
-
-        $parentLink = "Reimbursement";
-        $link = "Business Travel (Admin)";
-
-        return view(
-            "hcis.reimbursements.businessTrip.btAdmin",
-            compact(
-                "sppd",
-                "parentLink",
-                "link",
-                "caTransactions",
-                "tickets",
-                "hotel",
-                "taksi",
-                "managerL1Names",
-                "managerL2Names",
-                "filter",
-                "btApprovals",
-                "employeeName",
-                "btApproved",
-                "extendTime",
-                "mess",
-            ),
+        $employeeNames = Employee::whereIn("employee_id", $employeeIds)->pluck(
+            "fullname",
+            "employee_id",
         );
+
+        // previous_url dikirim halaman: request()->fullUrl() di sini adalah
+        // URL endpoint ini, bukan URL halaman Report BT-nya.
+        $previousUrl =
+            $request->input("previous_url") ?:
+            route("businessTrip-filterDate.admin");
+
+        $data = [];
+        foreach ($sppd as $i => $n) {
+            $data[] = $this->btAdminRowCells(
+                $n,
+                $start + $i,
+                [
+                    "ca" => $caTransactions->get($n->no_sppd),
+                    "hotel" => $hotel->get($n->no_sppd),
+                    "mess" => $mess->get($n->no_sppd),
+                    "tiket" => $tickets->get($n->no_sppd),
+                    "taksi" => $taksi->get($n->no_sppd),
+                ],
+                $employeeNames,
+                $btRejected,
+                $previousUrl,
+            );
+        }
+
+        return response()->json([
+            "draw" => $draw,
+            "recordsTotal" => $recordsTotal,
+            "recordsFiltered" => $recordsFiltered,
+            "data" => $data,
+            "approvals" => [
+                "approved" => $btApproved->values(),
+                "rejected" => $btRejected->isEmpty()
+                    ? (object) []
+                    : $btRejected,
+                "employeeNames" => $employeeNames->isEmpty()
+                    ? (object) []
+                    : $employeeNames,
+            ],
+        ]);
+    }
+
+    /**
+     * Satu baris Report BT sebagai array sel DataTables (15 kolom).
+     *
+     * Markup-nya mengikuti @foreach di btAdmin.blade.php versi lama,
+     * termasuk kolom Attachment yang ikut masuk lewat merge development.
+     */
+    private function btAdminRowCells(
+        $n,
+        int $rowIndex,
+        array $related,
+        $employeeNames,
+        $btRejected,
+        string $previousUrl
+    ): array {
+        return [
+            (string) ($rowIndex + 1),
+            e($n->no_sppd),
+            e($n->nama),
+            e($n->tujuan),
+            Carbon::parse($n->mulai)->format("d-M-Y"),
+            Carbon::parse($n->kembali)->format("d-M-Y"),
+            $n->ca == "Ya"
+                ? $this->btAdminDetailCell(
+                    "ca",
+                    $this->btAdminCaPayload($related["ca"]),
+                )
+                : "-",
+            $n->hotel == "Ya"
+                ? $this->btAdminDetailCell(
+                    "hotel",
+                    $this->btAdminHotelPayload($related["hotel"]),
+                )
+                : "-",
+            $n->mess == "Ya"
+                ? $this->btAdminDetailCell(
+                    "mess",
+                    $this->btAdminMessPayload($related["mess"]),
+                )
+                : "-",
+            $n->tiket == "Ya"
+                ? $this->btAdminDetailCell(
+                    "tiket",
+                    $this->btAdminTicketPayload($related["tiket"]),
+                )
+                : "-",
+            $n->taksi == "Ya"
+                ? $this->btAdminDetailCell(
+                    "taksi",
+                    $this->btAdminTaksiPayload($related["taksi"]),
+                )
+                : "-",
+            $this->btAdminStatusBadge($n, $employeeNames, $btRejected),
+            $this->btAdminAttachmentCell($n),
+            $this->btAdminApproveCell($n, $employeeNames),
+            $this->btAdminActionCell($n, $previousUrl),
+        ];
+    }
+
+    /**
+     * Link "Details" yang membawa isi modal di data-attribute-nya, persis
+     * seperti versi blade. $payload kosong berarti relasinya memang tidak
+     * ada walaupun kolom ca/hotel/mess/tiket/taksi di SPPD-nya "Ya".
+     */
+    private function btAdminDetailCell(string $key, $payload): string
+    {
+        if (empty($payload)) {
+            return "-";
+        }
+
+        return '<a class="text-info btn-detail" data-toggle="modal" data-target="#detailModal" style="cursor: pointer" data-' .
+            $key .
+            '="' .
+            e(json_encode($payload)) .
+            '"><u>Details</u></a>';
+    }
+
+    private function btAdminCaPayload($transactions)
+    {
+        if (!$transactions) {
+            return null;
+        }
+
+        return $transactions
+            ->map(function ($transaction) {
+                return [
+                    "No. CA" => $transaction->no_ca,
+                    "No. SPPD" => $transaction->no_sppd,
+                    "Type" =>
+                        $transaction->type_ca === "dns"
+                            ? "Business Travel"
+                            : "Entertain",
+                    "Destination" => $transaction->destination,
+                    "CA Total" =>
+                        "Rp " .
+                        number_format($transaction->total_ca, 0, ",", "."),
+                    "Total Real" =>
+                        "Rp " .
+                        number_format($transaction->total_real, 0, ",", "."),
+                    "Total Cost" =>
+                        "Rp " .
+                        number_format($transaction->total_cost, 0, ",", "."),
+                    "Start" => date(
+                        "d-M-Y",
+                        strtotime($transaction->start_date),
+                    ),
+                    "End" => date("d-M-Y", strtotime($transaction->end_date)),
+                ];
+            })
+            ->values();
+    }
+
+    private function btAdminHotelPayload($hotels)
+    {
+        if (!$hotels) {
+            return null;
+        }
+
+        return $hotels
+            ->map(function ($hotel) {
+                return [
+                    "No. Hotel" => $hotel->no_htl,
+                    "No. SPPD" => $hotel->no_sppd,
+                    "Colleague No. SPPD" => $hotel->no_sppd_htl,
+                    "Hotel Name" => $hotel->nama_htl,
+                    "Location" => $hotel->lokasi_htl,
+                    "Room" => $hotel->jmlkmr_htl,
+                    "Bed" => $hotel->bed_htl,
+                    "Check In" => date(
+                        "d-M-Y",
+                        strtotime($hotel->tgl_masuk_htl),
+                    ),
+                    "Check Out" => date(
+                        "d-M-Y",
+                        strtotime($hotel->tgl_keluar_htl),
+                    ),
+                    "Total Days" => $hotel->total_hari,
+                    "Description" => $hotel->description,
+                ];
+            })
+            ->values();
+    }
+
+    private function btAdminMessPayload($messes)
+    {
+        if (!$messes) {
+            return null;
+        }
+
+        return $messes
+            ->map(function ($mess) {
+                return [
+                    "No. Mess" => $mess->no_mess,
+                    "No. SPPD" => $mess->no_sppd,
+                    "Mess Location" => $mess->lokasi_mess,
+                    "Room" => $mess->jmlkmr_mess,
+                    "Check In" => date(
+                        "d-M-Y",
+                        strtotime($mess->tgl_masuk_mess),
+                    ),
+                    "Check Out" => date(
+                        "d-M-Y",
+                        strtotime($mess->tgl_keluar_mess),
+                    ),
+                    "Total Days" => $mess->total_hari_mess,
+                ];
+            })
+            ->values();
+    }
+
+    private function btAdminTicketPayload($tickets)
+    {
+        if (!$tickets) {
+            return null;
+        }
+
+        return $tickets
+            ->map(function ($ticket) {
+                return [
+                    // "No. Ticket" sengaja tidak ikut, sama seperti versi lama.
+                    "No. SPPD" => $ticket->no_sppd,
+                    "Passengers Name" => $ticket->np_tkt,
+                    "Gender" => $ticket->jk_tkt,
+                    "NIK" => $ticket->noktp_tkt,
+                    "Phone No." => $ticket->tlp_tkt,
+                    "From" => $ticket->dari_tkt,
+                    "To" => $ticket->ke_tkt,
+                    "Departure Date" => date(
+                        "d-M-Y",
+                        strtotime($ticket->tgl_brkt_tkt),
+                    ),
+                    "Time" => !empty($ticket->jam_brkt_tkt)
+                        ? date("H:i", strtotime($ticket->jam_brkt_tkt))
+                        : "No Data",
+                    "Return Date" => isset($ticket->tgl_plg_tkt)
+                        ? date("d-M-Y", strtotime($ticket->tgl_plg_tkt))
+                        : "No Data",
+                    "Return Time" => !empty($ticket->jam_plg_tkt)
+                        ? date("H:i", strtotime($ticket->jam_plg_tkt))
+                        : "No Data",
+                ];
+            })
+            ->values();
+    }
+
+    private function btAdminTaksiPayload($taksi)
+    {
+        if (!$taksi) {
+            return null;
+        }
+
+        return [
+            "Total Voucher" => $taksi->no_vt . " Voucher",
+            "No. SPPD" => $taksi->no_sppd,
+            "Nominal" => "Rp " . number_format($taksi->nominal_vt, 0, ",", "."),
+        ];
+    }
+
+    /**
+     * Badge status berikut onclick-nya (showRejectInfo / showManagerInfo).
+     *
+     * Argumen JavaScript-nya di-json_encode dulu baru di-escape sebagai
+     * atribut HTML, supaya nama bertanda kutip tidak memutus onclick.
+     */
+    private function btAdminStatusBadge($n, $employeeNames, $btRejected): string
+    {
+        $status = $n->status;
+
+        if (
+            in_array($status, ["Approved", "Declaration Approved", "Verified"])
+        ) {
+            $color = "success";
+        } elseif (
+            in_array($status, [
+                "Rejected",
+                "Return/Refund",
+                "Declaration Rejected",
+            ])
+        ) {
+            $color = "danger";
+        } elseif (
+            in_array($status, [
+                "Pending L1",
+                "Pending L2",
+                "Declaration L1",
+                "Declaration L2",
+                "Waiting Submitted",
+                "Extend L1",
+                "Extend L2",
+            ])
+        ) {
+            $color = "warning";
+        } elseif (
+            in_array($status, [
+                "Doc Accepted",
+                "Request Revision",
+                "Declaration Revision",
+            ])
+        ) {
+            $color = "info";
+        } else {
+            $color = "secondary";
+        }
+
+        $jsArg = fn($value) => e(json_encode((string) $value));
+
+        $attrs = "";
+
+        if (
+            ($status == "Rejected" || $status == "Declaration Rejected") &&
+            isset($btRejected[$n->id])
+        ) {
+            $attrs =
+                ' onclick="showRejectInfo(' .
+                $jsArg($n->id) .
+                ')" title="Click to see rejection reason"';
+        } elseif ($status == "Pending L1" || $status == "Declaration L1") {
+            $attrs =
+                ' onclick="showManagerInfo(' .
+                $jsArg("L1 Manager") .
+                ", " .
+                $jsArg($employeeNames[$n->manager_l1_id] ?? "Unknown") .
+                ')"';
+        } elseif ($status == "Pending L2" || $status == "Declaration L2") {
+            $attrs =
+                ' onclick="showManagerInfo(' .
+                $jsArg("L2 Manager") .
+                ", " .
+                $jsArg($employeeNames[$n->manager_l2_id] ?? "Unknown") .
+                ')"';
+        }
+
+        return '<span class="badge rounded-pill bg-' .
+            $color .
+            '" style="font-size: 12px; padding: 0.5rem 1rem; cursor: pointer;"' .
+            $attrs .
+            ">" .
+            e($status == "Approved" ? "Request Approved" : $status) .
+            "</span>";
+    }
+
+    /**
+     * Kolom Attachment. Isinya diambil per baris lewat ajax ke
+     * businessTrip.admin.attachment oleh handler delegated di blade, jadi
+     * di sini cukup tombolnya saja.
+     */
+    private function btAdminAttachmentCell($n): string
+    {
+        return '<button type="button" class="btn btn-outline-info btn-view-attachment" data-bs-toggle="modal" data-bs-target="#viewAttachmentModal" data-id="' .
+            e($n->id) .
+            '" title="View Attachment"><i class="bi bi-paperclip"></i></button>';
+    }
+
+    private function btAdminApproveCell($n, $employeeNames): string
+    {
+        if ($n->status == "Draft" || $n->status == "Declaration Draft") {
+            return "";
+        }
+
+        return '<button type="button" class="btn btn-outline-success rounded-pill" data-bs-toggle="modal" data-bs-target="#approvalDecModal" data-id="' .
+            e($n->id) .
+            '" data-sppd="' .
+            e($n->no_sppd) .
+            '" data-status="' .
+            e($n->status) .
+            '" data-manager-l1="' .
+            e($employeeNames[$n->manager_l1_id] ?? "Unknown") .
+            '" data-manager-l2="' .
+            e($employeeNames[$n->manager_l2_id] ?? "Unknown") .
+            '" title="Approval Update"><i class="bi bi-list-check"></i></button>';
+    }
+
+    private function btAdminActionCell($n, string $previousUrl): string
+    {
+        if ($n->status == "Draft" || $n->status == "Declaration Draft") {
+            return "";
+        }
+
+        $id = e($n->id);
+
+        $html =
+            '<form id="deleteForm_' .
+            $id .
+            '" method="POST" action="/businessTrip/admin/delete/' .
+            $id .
+            '" style="display: inline-block;">' .
+            csrf_field() .
+            method_field("DELETE") .
+            '<input type="hidden" id="no_sppd_' .
+            $id .
+            '" value="' .
+            e($n->no_sppd) .
+            '">' .
+            '<button type="button" class="btn btn-outline-danger rounded-pill mb-1 delete-button" data-id="' .
+            $id .
+            '"' .
+            ($n->status === "Diterima" ? " disabled" : "") .
+            '><i class="bi bi-trash-fill"></i></button></form>';
+
+        $html .=
+            '<a href="' .
+            e(
+                route("export.admin", [
+                    "id" => $n->id,
+                    "types" => "sppd,ca,tiket,hotel,taksi,mess",
+                ]),
+            ) .
+            '" class="btn btn-outline-info rounded-pill mb-1"><i class="bi bi-download"></i></a>';
+
+        if (
+            in_array($n->status, [
+                "Doc Accepted",
+                "Declaration Approved",
+                "Approved",
+                "Return/Refund",
+            ])
+        ) {
+            $html .=
+                '<form method="GET" action="' .
+                e(
+                    route("businessTrip.deklarasi.admin", [
+                        "id" => $n->id,
+                        "previous_url" => $previousUrl,
+                    ]),
+                ) .
+                '" style="display: inline-block;">' .
+                '<button type="submit" class="btn btn-outline-success rounded-pill mb-1" data-toggle="tooltip" title="Deklarasi"><i class="bi bi-card-checklist"></i></button></form>';
+        }
+
+        return $html;
     }
     public function deklarasiAdmin($id)
     {
@@ -7818,10 +8928,10 @@ class BusinessTripController extends Controller
         $userId = $n->user_id;
         $employee_data = Employee::where("id", $n->user_id)->first();
 
-        if (
-            $employee_data->group_company == "Plantations" ||
-            $employee_data->group_company == "KPN Plantations"
-        ) {
+        if (in_array(strtolower($employee_data->group_company), [
+            "plantations",
+            "kpn plantations"
+        ])) {
             $allowance = "Perdiem";
         } else {
             $allowance = "Allowance";
@@ -9045,10 +10155,10 @@ class BusinessTripController extends Controller
             ->first();
         $job_level_number = (int) preg_replace("/[^0-9]/", "", $job_level);
 
-        if (
-            $employee_data->group_company == "Plantations" ||
-            $employee_data->group_company == "KPN Plantations"
-        ) {
+        if (in_array(strtolower($employee_data->group_company), [
+            "plantations",
+            "kpn plantations"
+        ])) {
             $allowance = "Perdiem";
         } else {
             $allowance = "Allowance";
@@ -9147,6 +10257,15 @@ class BusinessTripController extends Controller
         // dd($taksi->toArray());
 
         $holiday = master_holiday::pluck("tanggal_libur")->toArray();
+        $transportHubs = TransportHub::where("is_active", true);
+
+        if (in_array(strtolower($employee_data->group_company), [
+            "downstream"
+        ])) {
+            $transportHubs = $transportHubs->where("group_company", "Downstream");
+        }
+
+        $transportHubs = $transportHubs->pluck("name");
 
         $parentLink = "Business Travel Approval";
         $link = "Approval Details";
@@ -9176,6 +10295,7 @@ class BusinessTripController extends Controller
             "job_level_number" => $job_level_number,
             "messData" => $messData,
             "holiday" => $holiday,
+            "transport_hubs" => $transportHubs
         ]);
     }
 
@@ -13405,6 +14525,67 @@ class BusinessTripController extends Controller
         );
     }
 
+    public function getAttachmentsAdmin($id) {
+        try {
+            $transaction = BusinessTrip::where("id", $id)->first();
+            if (!$transaction) {
+                return response()->json([
+                    'ca_attachments' => null
+                ]);
+            }
+
+            $ca_transactions = CATransaction::where("no_sppd", $transaction->no_sppd)->get();
+            if (!$ca_transactions || $ca_transactions->isEmpty()) {
+                return response()->json([
+                    'ca_attachments' => null
+                ]);
+            }
+
+            $caAttachments = [];
+
+            foreach ($ca_transactions as $ca_transaction) {
+                $attachmentPaths = AttachmentHelper::resolve_paths($ca_transaction->prove_declare);
+
+                foreach ($attachmentPaths as $attachmentPath) {
+                    // Normalize slash
+                    $attachmentPath = str_replace('\\', '/', $attachmentPath);
+
+                    // Ambil path setelah storage/app/public/
+                    $marker = 'storage/app/public/';
+
+                    $position = strpos($attachmentPath, $marker);
+
+                    if ($position !== false) {
+                        $relativePath = substr(
+                            $attachmentPath,
+                            $position + strlen($marker)
+                        );
+                    } else {
+                        $relativePath = $attachmentPath;
+                    }
+
+                    $caAttachments[] = [
+                        'url' => route('cashadvanced.admin.attachment.view', [
+                            'id' => $ca_transaction->id,
+                            'path' => $relativePath,
+                        ]),
+                        "name" => basename($attachmentPath),
+                        "no_ca" => $ca_transaction->no_ca,
+                    ];
+                }
+            }
+
+            return response()->json([
+                'ca_attachments' => $caAttachments,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'ca_attachments' => null,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     private function generateNoSppd()
     {
         $currentYear = date("Y");
@@ -13843,6 +15024,16 @@ class BusinessTripController extends Controller
             return [
                 "l1" => "01126010012",
                 "l2" => "-",
+                "l3" => "-",
+                "l4" => "-",
+                "l5" => "-",
+                "l6" => "-",
+                "l7" => "-",
+            ];
+        } else if ($employee->employee_id == "02114020045") {
+            return [
+                "l1" => "01113090005",
+                "l2" => "01123090014",
                 "l3" => "-",
                 "l4" => "-",
                 "l5" => "-",

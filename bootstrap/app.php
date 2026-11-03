@@ -14,7 +14,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // Di stage/production aplikasi berada di belakang reverse proxy
+        // (Cloudflare + web server) yang menterminasi TLS, jadi Laravel
+        // melihat request sebagai http. Akibatnya route()/url() menghasilkan
+        // URL http:// di halaman yang disajikan lewat https, dan browser
+        // memblokirnya sebagai "mixed active content" (mis. ajax DataTables
+        // di /medical/confirmation). Mempercayai header X-Forwarded-*
+        // membuat scheme, host dan port mengikuti request asli dari client.
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,

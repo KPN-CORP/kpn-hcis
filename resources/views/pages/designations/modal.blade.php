@@ -26,38 +26,44 @@
     </script>
 @endif
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.update-button').forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.preventDefault(); // Prevent form from submitting immediately
+    // Delegated di document. Versi lama memasang listener satu per satu di
+    // DOMContentLoaded lewat querySelectorAll('.update-button'); baris tabel
+    // sekarang datang dari DataTables sesudah itu, jadi tombolnya tidak akan
+    // kebagian listener dan toggle True/False-nya tidak berfungsi sama sekali.
+    document.addEventListener('click', function(event) {
+        const button = event.target.closest('.update-button');
 
-                const transactionId = button.getAttribute('data-id');
-                const form = this.closest('form');
-                const formId = form.id;
+        if (!button) {
+            return;
+        }
 
-                let designationId;
-                if (formId.startsWith('dept-head-update-form-')) {
-                    designationId = document.getElementById(
-                        `dept-designation-id-${transactionId}`).value;
-                } else if (formId.startsWith('director-update-form-')) {
-                    designationId = document.getElementById(
-                        `director-designation-id-${transactionId}`).value;
-                }
+        event.preventDefault(); // Prevent form from submitting immediately
 
-                Swal.fire({
-                    title: `Do you want to change this data ?\n (${designationId})`,
-                    text: "You won't be able to revert this!",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#4BB543", // Primary color
-                    cancelButtonColor: "#CCCCC", // Darker shade for cancel button
-                    confirmButtonText: "Yes, Change it!"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();
-                    }
-                });
-            });
+        const transactionId = button.getAttribute('data-id');
+        const form = button.closest('form');
+        const formId = form ? form.id : '';
+
+        let designationId;
+        if (formId.startsWith('dept-head-update-form-')) {
+            designationId = document.getElementById(
+                `dept-designation-id-${transactionId}`)?.value;
+        } else if (formId.startsWith('director-update-form-')) {
+            designationId = document.getElementById(
+                `director-designation-id-${transactionId}`)?.value;
+        }
+
+        Swal.fire({
+            title: `Do you want to change this data ?\n (${designationId})`,
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#4BB543", // Primary color
+            cancelButtonColor: "#CCCCC", // Darker shade for cancel button
+            confirmButtonText: "Yes, Change it!"
+        }).then((result) => {
+            if (result.isConfirmed && form) {
+                form.submit();
+            }
         });
     });
 </script>
