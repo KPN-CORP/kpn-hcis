@@ -2761,6 +2761,8 @@ class MedicalController extends Controller
                 "mdc_transactions.medical_type",
                 "mdc_transactions.balance",
                 "mdc_transactions.status",
+                "mdc_transactions.doc_status",
+                "mdc_transactions.paid_date",
             );
 
         // --- filter transaksi ---
@@ -2856,6 +2858,8 @@ class MedicalController extends Controller
                         "mdc_transactions.disease",
                         "mdc_transactions.medical_type",
                         "mdc_transactions.status",
+                        "mdc_transactions.doc_status",
+                        "mdc_transactions.paid_date",
                     ]
                     as $column
                 ) {
@@ -2961,6 +2965,17 @@ class MedicalController extends Controller
         }
 
         $cells[] = e($row->status);
+
+        $paidStatus = "-";
+        $formattedPaidDate = "-";
+
+        if ($row->paid_date && !empty($row->paid_date)) {
+            $paidStatus = "Paid";
+            $formattedPaidDate = Carbon::parse($row->paid_date)->format('Y-m-d');
+        }
+
+        $cells[] = e($paidStatus);
+        $cells[] = e($formattedPaidDate);
 
         $noMedic = e($row->no_medic);
         $cells[] =
