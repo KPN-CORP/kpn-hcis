@@ -2495,7 +2495,15 @@ class MedicalController extends Controller
             }
         }
 
-        $medicalGroup = $healthCoverageQuery->get()->groupBy("employee_id");
+        $medicalGroup = $healthCoverageQuery->get()
+            ->each(function ($item) {
+                $item->formatted_paid_date = "-";
+
+                if ($item->paid_date && !empty($item->paid_date)) {
+                    $item->formatted_paid_date = Carbon::parse($item->paid_date)->format('Y-m-d');
+                }
+            })
+            ->groupBy("employee_id");
 
         $query = Employee::with([
             "employee",

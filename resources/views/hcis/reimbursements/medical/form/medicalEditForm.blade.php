@@ -38,7 +38,9 @@
 
                             @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
                                 "downstream",
-                                "property"
+                                "property",
+                                "plantations",
+                                "kpn plantations"
                             ])))
                                 <div class="row">
                                     <div class="col-md-6">

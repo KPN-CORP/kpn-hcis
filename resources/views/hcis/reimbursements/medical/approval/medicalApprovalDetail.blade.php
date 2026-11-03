@@ -198,7 +198,9 @@
                         <div class="d-flex justify-content-end mt-4">
                             @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
                                 "downstream",
-                                "property"
+                                "property",
+                                "plantations",
+                                "kpn plantations"
                             ])))
                                 <button id="revise-button" type="button" class="btn btn-warning rounded-pill revise-button" style="margin-right: 10px"
                                     name="action_submit" value="Revise" data-bs-toggle="modal" data-bs-target="#reviseReasonModal">Revise</button>
@@ -229,7 +231,9 @@
     <!-- Revise Reason Modal -->
     @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
         "downstream",
-        "property"
+        "property",
+        "plantations",
+        "kpn plantations"
     ])))
         <div class="modal fade" id="reviseReasonModal" tabindex="-1" aria-labelledby="reviseReasonModalLabel"
             aria-hidden="true">
