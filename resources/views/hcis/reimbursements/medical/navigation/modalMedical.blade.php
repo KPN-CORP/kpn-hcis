@@ -246,6 +246,16 @@
     document.addEventListener('DOMContentLoaded', function () {
         var editPlafond = document.getElementById('editPlafond');
 
+        // Markup modal #editPlafond dibungkus pengecekan role superadmin di
+        // atas, sementara script ini selalu ikut ter-render. Untuk user non
+        // superadmin elemennya tidak ada, jadi addEventListener langsung
+        // melempar "editPlafond is null" dan menghentikan script setelahnya.
+        // Versi lama:
+        // editPlafond.addEventListener('show.bs.modal', function (event) {
+        if (!editPlafond) {
+            return;
+        }
+
         editPlafond.addEventListener('show.bs.modal', function (event) {
             var button = event.relatedTarget;
 

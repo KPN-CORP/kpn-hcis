@@ -509,16 +509,33 @@ $(".select2").select2({
 });
 
 function showLoader() {
-    $("#preloader").show();
+    // Drop the CSS fail-safe class so an AJAX spinner is never auto-hidden.
+    $("#preloader").removeClass("preloader--initial").show();
 }
 
 function hideLoader() {
-    $("#preloader").hide();
+    $("#preloader").removeClass("preloader--initial").hide();
 }
 
-window.onload = function () {
-    hideLoader();
-};
+// Clear the initial overlay as soon as the DOM is usable. This used to wait for
+// window.onload, which only fires after every image, font and third-party
+// script has finished, so the page sat behind the loader for seconds after it
+// was already readable. The timeout is a backstop for a stalled parse; if no JS
+// runs at all, the preloader--initial animation in _preloader.scss clears it.
+(function () {
+    var timer = setTimeout(hideLoader, 3000);
+
+    function done() {
+        clearTimeout(timer);
+        hideLoader();
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", done, { once: true });
+    } else {
+        done();
+    }
+})();
 
 function deleteRole() {
     const submitButton = $(event.target).closest(".btn-outline-danger");

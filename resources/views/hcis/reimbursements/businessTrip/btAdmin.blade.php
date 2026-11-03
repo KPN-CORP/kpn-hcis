@@ -59,6 +59,67 @@
             padding-right: 10px;
             box-shadow: inset 6px 0 0 #fff;
         }
+
+        .attachment-item {
+            position: relative;
+        }
+
+        .attachment-preview {
+            position: relative;
+            display: block;
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: #f8f9fa;
+            cursor: pointer;
+        }
+
+        .attachment-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.2s ease;
+        }
+
+        .attachment-preview:hover img {
+            transform: scale(1.05);
+        }
+
+        .attachment-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0);
+            color: white;
+            transition: background 0.2s ease;
+        }
+
+        .attachment-preview:hover .attachment-overlay {
+            background: rgba(0, 0, 0, 0.45);
+        }
+
+        .attachment-overlay i {
+            font-size: 28px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .attachment-preview:hover .attachment-overlay i {
+            opacity: 1;
+        }
+
+        .attachment-name {
+            margin-top: 6px;
+            font-size: 13px;
+            color: #6c757d;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     </style>
 @endsection
 
@@ -196,6 +257,7 @@
                             <th>Ticket</th>
                             <th>Taxi</th>
                             <th>Status</th>
+                            <th>Attachment</th>
                             <th style="">Approve</th>
                             <th style="width: 270px;">Action</th>
                         </tr>
@@ -204,14 +266,14 @@
 
                         @foreach ($sppd as $idx => $n)
                             <tr>
-                                <td scope="row" style="text-align: center;">
+                                <td class="align-middle" scope="row" style="text-align: center;">
                                     {{ $loop->iteration }}
                                 </td>
-                                <td class="sticky-col">{{ $n->no_sppd }}</td>
-                                <td>{{ $n->nama }}</td>
-                                <td>{{ $n->tujuan }}</td>
-                                <td>{{ \Carbon\Carbon::parse($n->mulai)->format('d-M-Y') }}</td>
-                                <td>{{ \Carbon\Carbon::parse($n->kembali)->format('d-M-Y') }}</td>
+                                <td class="sticky-col align-middle">{{ $n->no_sppd }}</td>
+                                <td class="align-middle">{{ $n->nama }}</td>
+                                <td class="align-middle">{{ $n->tujuan }}</td>
+                                <td class="align-middle">{{ \Carbon\Carbon::parse($n->mulai)->format('d-M-Y') }}</td>
+                                <td class="align-middle">{{ \Carbon\Carbon::parse($n->kembali)->format('d-M-Y') }}</td>
                                 <td style="text-align: center; align-content: center">
                                     @if ($n->ca == 'Ya' && isset($caTransactions[$n->no_sppd]))
                                         <a class="text-info btn-detail" data-toggle="modal" data-target="#detailModal"
@@ -359,7 +421,13 @@
                                         {{ $n->status == 'Approved' ? 'Request Approved' : $n->status }}
                                     </span>
                                 </td>
-
+                                <td class="text-center align-middle">
+                                    <button type="button" class="btn btn-outline-info btn-view-attachment" data-bs-toggle="modal"  data-bs-target="#viewAttachmentModal"
+                                        data-id="{{ $n->id }}"
+                                        title="View Attachment">
+                                            <i class="bi bi-paperclip"></i>
+                                    </button>
+                                </td>
                                 <td style="text-align: center; align-content: center">
                                     @if ($n->status != 'Draft' && $n->status != 'Declaration Draft')
                                         <button type="button" class="btn btn-outline-success rounded-pill"
@@ -694,6 +762,38 @@
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="viewAttachmentModal" tabindex="-1"
+        aria-labelledby="viewAttachmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewAttachmentModalLabel">
+                        Attachment
+                    </h5>
+                    <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="transaction_id" id="transaction_id">
+                    <div class="attachment-section mb-4">
+                        <div id="attachments" class="row g-3">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                        Close
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -1533,5 +1633,79 @@
 
         // Initial call to set dates if there are pre-filled values
         updateEndDate2();
+    </script>
+
+    <script>
+        function renderAttachments(containerId, attachments) {
+            const container = document.getElementById(containerId);
+
+            container.innerHTML = '';
+
+            if (!attachments || attachments.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12">
+                        <div class="text-muted text-center py-4">
+                            <i class="bi bi-image fs-3 d-block mb-2"></i>
+                            No attachment
+                        </div>
+                    </div>
+                `;
+
+                return;
+            }
+
+            attachments.forEach(function (attachment) {
+                const html = `
+                    <div class="col-md-4 col-sm-6 attachment-item">
+                        <a href="${attachment.url}"
+                            target="_blank"
+                            class="attachment-preview"
+                            title="Open ${attachment.name ?? 'attachment'}">
+                            <img src="${attachment.url}"
+                                alt="${attachment.name ?? 'Attachment'}">
+                            <div class="attachment-overlay">
+                                <i class="bi bi-box-arrow-up-right"></i>
+                            </div>
+                        </a>
+                        <div class="attachment-name"
+                            title="${attachment.name ?? ''}">
+                            ${attachment.no_ca ?? ''}
+                            -
+                            ${attachment.name ?? 'Attachment'}
+                        </div>
+                    </div>
+                `;
+
+                container.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        $(document).on('click', '.btn-view-attachment', function () {
+            const transactionId = $(this).data('id');
+
+            $('#transaction_id').val(transactionId);
+
+            $.ajax({
+                url: '/businessTrip/admin/attachment/' + transactionId,
+                type: 'GET',
+
+                success: function (response) {
+                    renderAttachments(
+                        'attachments',
+                        response.ca_attachments
+                    );
+                },
+
+                error: function () {
+                    $('#attachments').html(`
+                        <div class="col-12">
+                            <div class="alert alert-danger">
+                                Failed to load attachments.
+                            </div>
+                        </div>
+                    `);
+                }
+            });
+        });
     </script>
 @endsection

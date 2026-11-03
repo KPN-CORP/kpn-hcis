@@ -90,12 +90,12 @@ class SsoController extends Controller
         $keyLength = strlen($key);
         $dataLength = strlen($data);
         $decrypted = '';
-    
+
         // Loop melalui data dan melakukan XOR dengan key
         for ($i = 0; $i < $dataLength; $i++) {
             $decrypted .= $data[$i] ^ $key[$i % $keyLength];
         }
-    
+
         return $decrypted;
     }
 }
