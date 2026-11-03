@@ -210,21 +210,9 @@
                                         @foreach ($master_medical as $master_medicals)
                                             <th class="text-center">{{ $master_medicals->name }}</th>
                                         @endforeach
-
-                                        @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
-                                            "downstream",
-                                            "property",
-                                            "plantations",
-                                            "kpn plantations"
-                                        ])))
-                                            <th data-priority="2">Progress</th>
-                                            <th data-priority="2">Paid Date</th>
-                                        @else
-                                            <th data-priority="2">Status</th>
-                                            <th data-priority="3">Paid Status</th>
-                                            <th data-priority="3">Paid Date</th>
-                                        @endif
-
+                                        <th data-priority="2">Status</th>
+                                        <th data-priority="3">Paid Status</th>
+                                        <th data-priority="3">Paid Date</th>
                                         <th class="text-center">Action</th>
                                     </tr>
                                 </thead>
@@ -256,68 +244,25 @@
                                                                 @endif
                                                             </td>
                                                         @endforeach
+                                                        <td class="text-center">{{ $medicalRecord->status }}</td>
+                                                        @php
+                                                            $paidStatus = "-";
 
-                                                        @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
-                                                              "downstream",
-                                                              "property",
-                                                              "plantations",
-                                                              "kpn plantations"
-                                                          ])))
-                                                            <td style="align-content: center; text-align: center">
-                                                                @php
-                                                                    $status = $medicalRecord->status;
+                                                            if ($medicalRecord->paid_date && !empty($medicalRecord->paid_date)) {
+                                                                $paidStatus = 'Paid';
+                                                            }
 
-                                                                    if (!empty($medicalRecord->doc_status)) {
-                                                                      $status = $medicalRecord->doc_status;
-                                                                    }
-
-                                                                    $badgeClass = match ($status) {
-                                                                        'Pending' => 'bg-warning',
-                                                                        'Document Pending' => 'bg-warning',
-                                                                        'Document Received' => 'bg-warning',
-                                                                        'Claim Verified' => 'bg-warning',
-                                                                        'Reimbursement Approved' => 'bg-success',
-                                                                        'Processing Payment' => 'bg-success',
-                                                                        'Revise' => 'bg-warning',
-                                                                        'Done' => 'bg-success',
-                                                                        'Paid' => 'bg-success',
-                                                                        'Rejected' => 'bg-danger',
-                                                                        'Draft' => 'bg-secondary',
-                                                                        default => 'bg-light',
-                                                                    };
-
-                                                                    if ($medicalRecord->is_revise) {
-                                                                      $status .= " (Revise)";
-                                                                    }
-                                                                @endphp
-                                                                <span class="badge rounded-pill {{ $badgeClass }} text-center"
-                                                                        style="font-size: 12px; padding: 0.5rem 1rem; cursor: pointer;">
-                                                                        {{ $status }}
-                                                                </span>
-                                                            </td>
-                                                            <td class="text-center">{{ $medicalRecord->formatted_paid_date ?? '-' }}</td>
-                                                        @else
-                                                            <td class="text-center">{{ $medicalRecord->status }}</td>
-                                                          @php
-                                                              $paidStatus = "-";
-
-                                                              if ($medicalRecord->paid_date && !empty($medicalRecord->paid_date)) {
-                                                                  $paidStatus = 'Paid';
-                                                              }
-
-                                                              $badgeClass = match ($paidStatus) {
-                                                                  'Paid' => 'bg-success badge rounded-pill',
-                                                                  default => '',
-                                                              };
-                                                          @endphp
-                                                          <td style="align-content: center; text-align: center">
-                                                              <span class="text-center {{ $badgeClass }}" style="font-size: 12px; padding: 0.5rem 1rem; cursor: pointer;">
-                                                                  {{ $paidStatus ?? '-' }}
-                                                              </span>
-                                                          </td>
-                                                          <td class="text-center">{{ $medicalRecord->formatted_paid_date ?? '-' }}</td>
-                                                        @endif
-
+                                                            $badgeClass = match ($paidStatus) {
+                                                                'Paid' => 'bg-success badge rounded-pill',
+                                                                default => '',
+                                                            };
+                                                        @endphp
+                                                        <td style="align-content: center; text-align: center">
+                                                            <span class="text-center {{ $badgeClass }}" style="font-size: 12px; padding: 0.5rem 1rem; cursor: pointer;">
+                                                                {{ $paidStatus ?? '-' }}
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-center">{{ $medicalRecord->formatted_paid_date ?? '-' }}</td>
                                                         <td class="text-center">
                                                             <form id="deleteForm_{{ $medicalRecord->no_medic }}" method="POST"
                                                                 action="{{ route('medicalReport-admin.delete', $medicalRecord->usage_id) }}" style="display: inline-block;">
