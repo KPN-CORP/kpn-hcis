@@ -20,14 +20,16 @@
 
                 @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
                     "downstream",
-                    "property"
+                    "property",
+                    "plantations",
+                    "kpn plantations"
                 ])))
                     <th data-priority="2">Progress</th>
                     <th data-priority="2">Paid Date</th>
                 @else
                     <th data-priority="2">Status</th>
                     <th data-priority="3">Paid Status</th>
-                    <th data-priority="2">Paid Date</th>
+                    <th data-priority="3">Paid Date</th>
                 @endif
 
                   <th data-priority="4">Action</th>
@@ -60,7 +62,9 @@
 
                       @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
                             "downstream",
-                            "property"
+                            "property",
+                            "plantations",
+                            "kpn plantations"
                         ])))
                           <td style="align-content: center; text-align: center">
                               @php
@@ -170,7 +174,9 @@
                           @endif
                           @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
                                 "downstream",
-                                "property"
+                                "property",
+                                "plantations",
+                                "kpn plantations"
                             ])))
                               @if ($item->is_revise)
                                   <form method="GET" action="/medical/form-update/{{ $item->usage_id }}"
