@@ -329,9 +329,9 @@
 
                     if (selectedTypes && selectedTypes.length > 0) {
                         selectedTypes.forEach(function (type) {
-                            var balanceValue = balanceEmployeeCoveredMapping[type] || "";
+                            var balanceValue = balanceEmployeeCoveredMapping[type];
 
-                            if (balanceValue == '' || balanceValue == null) {
+                            if (balanceValue === '' || balanceValue == null) {
                                 return;
                             }
 
@@ -395,9 +395,9 @@
 
                     if (selectedTypes && selectedTypes.length > 0) {
                         selectedTypes.forEach(function (type) {
-                            var balanceValue = balanceCompanyCoveredMapping[type] || "";
+                            var balanceValue = balanceCompanyCoveredMapping[type];
 
-                            if (balanceValue == '' || balanceValue == null) {
+                            if (balanceValue === '' || balanceValue == null) {
                                 return;
                             }
 
