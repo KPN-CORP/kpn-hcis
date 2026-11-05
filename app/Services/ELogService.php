@@ -137,6 +137,11 @@ class ELogService {
 
         foreach ($medicalDataList as $row) {
             $usageAmount = $row->balance_verif ?? $row->balance ?? 0;
+
+            if ($row->elog_medical_type === "Reimbursement" && $row->company_covered_amount !== null) {
+                $usageAmount = $row->company_covered_amount;
+            }
+
             $nonReimbursableAmount += $row->employee_covered_amount ?? $row->balance_uncoverage ?? 0;
             $amount += $usageAmount;
             $companyCoveredAmount += $row->company_covered_amount ?? 0;
