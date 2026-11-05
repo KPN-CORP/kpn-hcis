@@ -1024,7 +1024,7 @@ class MedicalController extends Controller
                 $medical_balance = $md->balance_verif && !empty($md->balance_verif) ? $md->balance_verif : $md->balance;
                 $medical_plan = $medical_plans[$medical_type];
                 $medical_plafond_balance = $medical_plan[0]->balance;
-                $medical_closing_plafond_balance = $medical_plafond_balance - $medical_balance;
+                $medical_closing_plafond_balance = ($md->plafond_amount_before ?? $medical_plafond_balance) - $medical_balance;
                 $medical_opening_balance_plafond += $md->plafond_amount_before ?? $medical_plafond_balance;
                 $medical_total_current_claim += $medical_balance;
                 $medical_closing_balance_plafond += $medical_closing_plafond_balance;
