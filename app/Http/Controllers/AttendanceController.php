@@ -59,13 +59,20 @@ class AttendanceController extends Controller
         $processedData = [];
 
         foreach ($attdUpdates as $attdUpdate) {
-            $dateformat = Carbon::parse($attdUpdate->date)->format('d-m-Y');
+            $dt = Carbon::parse($attdUpdate->date);
+            $dateformat = $dt->format('d-m-Y');
+            $outTimeDate = $dateformat;
+
+            if ($attdUpdate->shift_out < $attdUpdate->shift_in) {
+                $outTimeDate = $dt->copy()->addDay()->format('d-m-Y');
+            }
+
             $attendanceData = [
                 "employee_no" => $attdUpdate->employee_id,
                 "shift_date" => $dateformat,
                 "in_time_date" => $dateformat,
                 "in_time" => $attdUpdate->shift_in,
-                "out_time_date" => $dateformat,
+                "out_time_date" => $outTimeDate,
                 "out_time" => $attdUpdate->shift_out,
                 "shift_name" => $attdUpdate->shift_name,
                 "policy_name" => $attdUpdate->policy_name,
