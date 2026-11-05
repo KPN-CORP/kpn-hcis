@@ -51,7 +51,8 @@ class HealthCoverage extends Model
         'doc_received_by',
         'doc_received_at',
         'is_revise',
-        'revise_info'
+        'revise_info',
+        'plafond_amount_before'
     ];
 
     public function employee()

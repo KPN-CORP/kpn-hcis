@@ -2024,7 +2024,10 @@ class MedicalController extends Controller
                     ->where("period", $coverage->period) //$period
                     ->first();
 
+                $plafondAmountBefore = null;
+
                 if ($healthPlan) {
+                    $plafondAmountBefore = $healthPlan->balance;
                     $healthPlan->balance -= $balanceVerif;
                     $healthPlan->save();
                 }
@@ -2037,6 +2040,7 @@ class MedicalController extends Controller
                     "approved_at" => now(),
                     "is_revise" => false,
                     "revise_info" => null,
+                    "plafond_amount_before" => $plafondAmountBefore,
                 ]);
             }
 
