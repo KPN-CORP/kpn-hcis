@@ -281,6 +281,10 @@ class ImportHealthCoverage implements ToModel, WithMultipleSheets
                 $healthCoverage->elog_medical_type = $healthCoverage->billing_type;
             }
 
+            if ($healthCoverage->billing_type == "Reimbursement") {
+                $healthCoverage->elog_vendor = "SMEDICAL";
+            }
+
             $this->performCalculations($healthCoverage); // Perhitungan hanya dilakukan di sini
         }
 
