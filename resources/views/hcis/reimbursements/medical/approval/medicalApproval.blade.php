@@ -95,7 +95,12 @@
                                             <th class="text-center">{{ $master_medicals->name }}</th>
                                         @endforeach
 
-                                        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                                        @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                            "downstream",
+                                            "property",
+                                            "plantations",
+                                            "kpn plantations"
+                                        ])))
                                             <th data-priority="1">Progress</th>
                                         @else
                                             <th data-priority="1">Status</th>
@@ -130,7 +135,12 @@
                                                 </td>
                                             @endforeach
 
-                                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                                            @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                                "downstream",
+                                                "property",
+                                                "plantations",
+                                                "kpn plantations"
+                                            ])))
                                                 <td style="align-content: center; text-align: center">
                                                     @php
                                                         $status = $item->status;
@@ -188,7 +198,12 @@
                                                     Act
                                                 </a>
 
-                                                @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                                                @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                                    "downstream",
+                                                    "property",
+                                                    "plantations",
+                                                    "kpn plantations"
+                                                ])))
                                                     <a href="{{ route('medical.download', $item->usage_id) }}" target="_blank" class="btn btn-outline-info" title="Print"><i class="bi bi-file-earmark-arrow-down"></i></a>
                                                 @endif
                                             </td>

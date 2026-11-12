@@ -64,7 +64,9 @@
         <!-- Page Heading -->
         <div class="row">
             <!-- Breadcrumb Navigation -->
-            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+            @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                "property"
+            ])))
                 <div class="col-md-6 mt-3">
                     <div class="page-title-box d-flex align-items-center">
                         <ol class="breadcrumb mb-0" style="display: flex; align-items: center; padding-left: 0;">
@@ -114,12 +116,16 @@
             <div class="col-md-12">
                 <div class="card shadow mb-4">
                     <div class="card-body">
-                        @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                        @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                            "property"
+                        ])))
                             <div class="d-flex justify-content-between align-items-center mb-3" style="margin-bottom: -55px !important">
                         @else
                             <div class="d-flex justify-content-between align-items-center mb-3">
                         @endif
-                            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+                            @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                                "property"
+                            ])))
                                 <h3 class="card-title">&nbsp;</h3>
                             @else
                                 <h3 class="card-title">{{ $link }}</h3>

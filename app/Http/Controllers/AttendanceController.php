@@ -18,7 +18,7 @@ class AttendanceController extends Controller
     public function UpdateBTtoDB()
     {
         Log::info('AttendanceController start');
-        UpdateBTtoDBJob::dispatch()->onQueue('kpn-hcis');
+        UpdateBTtoDBJob::dispatch()->onQueue(config('queue.hcis_queue'));
 
         return response()->json(['message' => 'Job dispatched successfully!']);
     }

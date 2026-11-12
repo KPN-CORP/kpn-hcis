@@ -35,11 +35,9 @@ $(document).ready(() => {
 
         // Bootstrap Components
         function initComponents() {
-            // loader - Preloader
-            $(window).on("load", function () {
-                $("#status").fadeOut();
-                $("#preloader").delay(350).fadeOut("slow");
-            });
+            // Preloader is handled in public/js/script.js on DOMContentLoaded.
+            // It used to be hidden here on window.load with a 350ms delay and a
+            // slow fade, which held the overlay ~1s past an already usable page.
 
             // Popovers
             const popoverTriggerList = document.querySelectorAll(

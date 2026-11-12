@@ -22,7 +22,10 @@
                 <div class="modal-footer">
                     <a href="{{ route('download-template') }}" class="btn btn-primary">Download Template</a>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Import</button>
+                    <button type="submit" class="btn btn-primary" id="importExcelHealtCoverageBtnImport">
+                        <span id="importExcelHealtCoverageBtnText">Import</span>
+                        <span id="importExcelHealtCoverageBtnLoading" class="spinner-border spinner-border-sm ms-1" role="status" aria-hidden="true" style="display: none;"></span>
+                    </button>
                 </div>
             </div>
         </form>
@@ -50,7 +53,7 @@
                 </div>
             </form>
         </div>
-    </div>    
+    </div>
 @endif
 
 {{-- Success --}}
@@ -143,8 +146,8 @@
 
                 if (fileExtension !== "pdf") {
                     Swal.fire({
-                        title: "Unsupported Format!",  
-                        text: "Please upload a file in PDF format!",  
+                        title: "Unsupported Format!",
+                        text: "Please upload a file in PDF format!",
                         icon: "warning",
                         confirmButtonColor: "#9a2a27",
                         confirmButtonText: 'OK',
@@ -155,8 +158,8 @@
 
                 if (fileSizeInMB > 3) {
                     Swal.fire({
-                        title: "File Size Too Large!",  
-                        text: "File size must not exceed 3MB!",  
+                        title: "File Size Too Large!",
+                        text: "File size must not exceed 3MB!",
                         icon: "warning",
                         confirmButtonColor: "#9a2a27",
                         confirmButtonText: 'OK',
@@ -246,6 +249,16 @@
     document.addEventListener('DOMContentLoaded', function () {
         var editPlafond = document.getElementById('editPlafond');
 
+        // Markup modal #editPlafond dibungkus pengecekan role superadmin di
+        // atas, sementara script ini selalu ikut ter-render. Untuk user non
+        // superadmin elemennya tidak ada, jadi addEventListener langsung
+        // melempar "editPlafond is null" dan menghentikan script setelahnya.
+        // Versi lama:
+        // editPlafond.addEventListener('show.bs.modal', function (event) {
+        if (!editPlafond) {
+            return;
+        }
+
         editPlafond.addEventListener('show.bs.modal', function (event) {
             var button = event.relatedTarget;
 
@@ -288,11 +301,11 @@
                                 <div class="input-group-append">
                                     <span class="input-group-text">Rp</span>
                                 </div>
-                                <input 
-                                    class="form-control form-control-sm format-number ${isNegative ? 'text-danger bg-light' : ''}" 
-                                    name="${labelName}" 
-                                    id="${labelName}" 
-                                    type="text" 
+                                <input
+                                    class="form-control form-control-sm format-number ${isNegative ? 'text-danger bg-light' : ''}"
+                                    name="${labelName}"
+                                    id="${labelName}"
+                                    type="text"
                                     value="${formatNumber(value)}"
                                     ${isNegative ? 'readonly' : ''}
                                 >
@@ -319,6 +332,31 @@
             var isNegative = parseFloat(value) < 0;
             var absValue = Math.abs(parseFloat(value) || 0).toString();
             return (isNegative ? '-' : '') + absValue.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector(
+            '#importExcelHealtCoverage form'
+        );
+
+        const btnImport = document.getElementById('importExcelHealtCoverageBtnImport');
+        const importText = document.getElementById('importExcelHealtCoverageBtnText');
+        const importLoading = document.getElementById('importExcelHealtCoverageBtnLoading');
+
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                if (btnImport.disabled) {
+                    e.preventDefault();
+                    return;
+                }
+
+                btnImport.disabled = true;
+                importText.textContent = 'Importing...';
+                importLoading.style.display = 'inline-block';
+            });
         }
     });
 </script>

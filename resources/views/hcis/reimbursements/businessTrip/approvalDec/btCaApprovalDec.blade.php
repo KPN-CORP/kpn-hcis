@@ -17,7 +17,10 @@
     @include('hcis.reimbursements.businessTrip.approvalDec.bussinessTripTable.caPerdiemApprovalDec')
 
     {{-- MEALS TABLE --}}
-    @if (($group_company !== 'KPN Plantations' && $group_company !== 'Plantations') || $job_level_number >= 8)
+    @if (!in_array(strtolower($group_company), [
+        "plantations",
+        "kpn plantations"
+    ]) || $job_level_number >= 8)
         @include('hcis.reimbursements.businessTrip.approvalDec.bussinessTripTable.caMealsApprovalDec')
     @endif
 
