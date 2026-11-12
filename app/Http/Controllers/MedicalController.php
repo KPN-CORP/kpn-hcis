@@ -1589,6 +1589,8 @@ class MedicalController extends Controller
                     $docReceivedAt = Carbon::now();
                 }
 
+                $medicalPlanAmountBefore = $medical_plan->balance;
+
                 if (in_array(strtolower($existingCoverageEmployee->group_company), [
                     "downstream",
                     "plantations",
@@ -1624,7 +1626,8 @@ class MedicalController extends Controller
                     "is_revise" => false,
                     "revise_info" => null,
                     "employee_covered_amount" => $employeeCoveredAmount,
-                    "company_covered_amount" => $companyCoveredAmount
+                    "company_covered_amount" => $companyCoveredAmount,
+                    "plafond_amount_before" => $medicalPlanAmountBefore
                 ]);
                 if ($medical_plan->balance < $verif_cost) {
                     $old_balance_total =
