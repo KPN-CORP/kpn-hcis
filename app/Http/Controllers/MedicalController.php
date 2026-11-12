@@ -2356,8 +2356,7 @@ class MedicalController extends Controller
                     "approved_by" => $employee_id,
                     "approved_at" => now(),
                     "is_revise" => false,
-                    "revise_info" => null,
-                    "plafond_amount_before" => null,
+                    "revise_info" => null
                 ]);
             }
 
