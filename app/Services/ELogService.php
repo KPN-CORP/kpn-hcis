@@ -127,6 +127,7 @@ class ELogService {
         $firstDept = "HRD";
         $medicalTypes = [];
         $isCompanyCoveredAmount = false;
+        $isUsePlafondAmountBefore = false;
         $usageAmountTemp = 0;
         $amount = 0;
         $nonReimbursableAmount = 0;
@@ -145,9 +146,14 @@ class ELogService {
             $nonReimbursableAmount += $row->employee_covered_amount ?? $row->balance_uncoverage ?? 0;
             $amount += $usageAmount;
             $companyCoveredAmount += $row->company_covered_amount ?? 0;
+            $medicalPlanBalance += $row->plafond_amount_before ?? 0;
 
             if ($row->company_covered_amount !== null) {
                 $isCompanyCoveredAmount = true;
+            }
+
+            if ($row->plafond_amount_before !== null) {
+                $isUsePlafondAmountBefore = true;
             }
 
             if ($row->medical_type && !empty($row->medical_type)) {
@@ -198,8 +204,10 @@ class ELogService {
             ];
         }
 
-        foreach ($medicalPlanList as $row) {
-            $medicalPlanBalance += $row->balance ?? 0;
+        if (!$isUsePlafondAmountBefore) {
+            foreach ($medicalPlanList as $row) {
+                $medicalPlanBalance += $row->balance ?? 0;
+            }
         }
 
         if ($isCompanyCoveredAmount) {
