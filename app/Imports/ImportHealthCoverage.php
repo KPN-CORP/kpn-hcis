@@ -343,6 +343,7 @@ class ImportHealthCoverage implements ToModel, WithMultipleSheets
         }
 
         $initialBalance = $healthPlan->balance;
+        $healthCoverage->plafond_amount_before = $initialBalance;
         $healthPlanBalance = $initialBalance - $healthCoverage->balance;
 
         if ($initialBalance >= 0 && $healthCoverage->balance > $initialBalance) {
