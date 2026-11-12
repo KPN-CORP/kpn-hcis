@@ -1146,7 +1146,7 @@ class MedicalController extends Controller
             if ($md && strtolower($medical_type) == strtolower($md->medical_type)) {
                 $medical_balance = $md->balance_verif && !empty($md->balance_verif) ? $md->balance_verif : $md->balance;
                 $medical_plan = $medical_plans[$medical_type];
-                $medical_plafond_balance = $medical_plan[0]->balance;
+                $medical_plafond_balance = $md->plafond_amount_before ?? $medical_plan[0]->balance;
                 $medical_closing_plafond_balance = $medical_plafond_balance - $medical_balance;
                 $medical_opening_balance_plafond += $medical_plafond_balance;
                 $medical_total_current_claim += $medical_balance;
@@ -2354,6 +2354,7 @@ class MedicalController extends Controller
                     "approved_at" => now(),
                     "is_revise" => false,
                     "revise_info" => null,
+                    "plafond_amount_before" => $plafondAmountBefore,
                 ]);
             }
 

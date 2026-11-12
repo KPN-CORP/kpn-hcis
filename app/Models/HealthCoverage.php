@@ -61,7 +61,8 @@ class HealthCoverage extends Model
         'billing_type',
         'doc_status',
         'doc_status_previous',
-        'paid_amount'
+        'paid_amount',
+        'plafond_amount_before'
     ];
 
     public function employee()
