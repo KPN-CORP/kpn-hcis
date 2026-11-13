@@ -303,9 +303,11 @@ class HomeTripController extends Controller
 
         $statusValue = $request->has('action_draft') ? 'Draft' : 'Pending L1';
 
-        $totalQuotaAvailable = HomeTrip::where('employee_id', $employee_id)
+        $totalQuotaExisting = HomeTrip::where('employee_id', $employee_id)
             ->orderBy('period', 'desc')
-            ->sum('quota');
+            ->first();
+
+        $totalQuotaAvailable = $totalQuotaExisting?->quota ?? 0;
 
         $quotaNeeded = 0;
         foreach ($request->type_tkt as $type) {
