@@ -24,6 +24,7 @@ class ELogTriggerFailedProcessCommand extends Command
             ->where("status", "Done")
             ->where("period", ">=", "2026")
             // TODO: add filter where date greater than today (current release date)
+            ->where("created_at", ">", "2026-11-17 00:00:00")
             ->whereNull("deleted_at")
             ->get()
             ->unique("no_medic")
