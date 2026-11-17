@@ -63,7 +63,8 @@ class Employee extends Model
         'old_employee_id_(rehired)',
         'cost_center',
         'cost_center_code',
-        'bank_account_name_payroll'
+        'bank_account_name_payroll',
+        'wrong_cost_center_email_sent_date'
     ];
 
     protected $keyType = 'string';

@@ -9,8 +9,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
-use RuntimeException;
 
+use App\Exceptions\RuntimeExceptionNoStackTrace;
 use App\Services\ELogService;
 
 class ELogInsertFirstReceiptJob implements ShouldQueue
@@ -39,7 +39,7 @@ class ELogInsertFirstReceiptJob implements ShouldQueue
                 'error'       => $result['error'] ?? null,
             ]);
 
-            throw new RuntimeException('ELogInsertFirstReceipt gagal untuk coverage ' . $this->id);
+            throw new RuntimeExceptionNoStackTrace('ELogInsertFirstReceipt gagal untuk coverage ' . $this->id);
         }
 
         Log::info('ELogInsertFirstReceipt sukses', ['coverage' => $this->id]);

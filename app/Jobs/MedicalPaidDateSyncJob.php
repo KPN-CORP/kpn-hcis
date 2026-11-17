@@ -9,8 +9,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
-use RuntimeException;
 
+use App\Exceptions\RuntimeExceptionNoStackTrace;
 use App\Services\ODataService;
 
 class MedicalPaidDateSyncJob implements ShouldQueue
@@ -40,7 +40,7 @@ class MedicalPaidDateSyncJob implements ShouldQueue
                 'result'      => $result,
             ]);
 
-            throw new RuntimeException('❌ MedicalPaidDateSyncJob gagal untuk coverage ' . $this->id);
+            throw new RuntimeExceptionNoStackTrace('❌ MedicalPaidDateSyncJob gagal untuk coverage ' . $this->id);
         }
 
         Log::info('✔️ MedicalPaidDateSyncJob sukses', ['coverage' => $this->id]);
