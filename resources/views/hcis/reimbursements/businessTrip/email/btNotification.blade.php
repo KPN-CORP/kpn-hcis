@@ -112,7 +112,10 @@
                         Rp. {{ number_format($caDetails['total_amount_perdiem'] ?? 0, 0, ',', '.') }}
                     </td>
                 </tr>
-                @if ($group_company !== 'KPN Plantations' && $group_company !== 'Plantations')
+                @if (!in_array(strtolower($group_company), [
+                    "plantations",
+                    "kpn plantations"
+                ]))
                     <tr>
                         <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">Meals</td>
                         <td style="border: 1px solid #ddd; padding: 4px; vertical-align: top;">

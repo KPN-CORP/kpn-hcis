@@ -36,4 +36,21 @@ return [
         'internal_url' => env('OCR_INTERNAL_URL'),
     ],
 
+    'elog' => [
+        'api_base_url' => env('ELOG_API_BASE_URL'),
+        'api_login_username' => env('ELOG_API_LOGIN_USERNAME'),
+        'api_login_password' => env('ELOG_API_LOGIN_PASSWORD'),
+        'api_access_token_key' => env('ELOG_API_ACCESS_TOKEN_KEY', 'elog_api_access_token'),
+    ],
+
+    'odata' => [
+        'api_base_url' => env('ODATA_API_BASE_URL'),
+        'api_username' => env('ODATA_API_USERNAME'),
+        'api_password' => env('ODATA_API_PASSWORD'),
+        'api_client_id' => env('ODATA_API_CLIENT_ID'),
+        'api_client_secret' => env('ODATA_API_CLIENT_SECRET'),
+        'api_access_token_key' => env('ODATA_API_ACCESS_TOKEN_KEY', 'odata_api_access_token'),
+        'api_access_token_type_key' => env('ODATA_API_ACCESS_TOKEN_TYPE_KEY', 'odata_api_access_token_type'),
+    ],
+
 ];

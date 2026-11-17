@@ -32,7 +32,10 @@
                             data-bs-target="#pills-perdiem" type="button" role="tab" aria-controls="pills-perdiem"
                             aria-selected="true">{{ $allowance }}</button>
                     </li>
-                    @if (($group_company !== 'KPN Plantations' && $group_company !== 'Plantations') || $job_level_number >= 8)
+                    @if (!in_array(strtolower($group_company), [
+                        "plantations",
+                        "kpn plantations"
+                    ]) || $job_level_number >= 8)
                         <li class="nav-item" role="presentation" id="meals-tab-li">
                             <button class="nav-link" id="pills-meals-tab" data-bs-toggle="pill"
                                 data-bs-target="#pills-meals" type="button" role="tab" aria-controls="pills-meals"
@@ -61,7 +64,10 @@
                         aria-labelledby="pills-perdiem-tab">
                         @include('hcis.reimbursements.businessTrip.form.cashadvancedForm.caPerdiem')
                     </div>
-                    @if (($group_company !== 'KPN Plantations' && $group_company !== 'Plantations') || $job_level_number >= 8)
+                    @if (!in_array(strtolower($group_company), [
+                        "plantations",
+                        "kpn plantations"
+                    ]) || $job_level_number >= 8)
                         <div class="tab-pane fade" id="pills-meals" role="tabpanel" aria-labelledby="pills-meals-tab">
                             @include('hcis.reimbursements.businessTrip.form.cashadvancedForm.caMeals')
                         </div>
