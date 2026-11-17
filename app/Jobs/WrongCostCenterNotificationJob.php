@@ -41,19 +41,19 @@ class WrongCostCenterNotificationJob implements ShouldQueue
 
         $employee = $employeeModel->where("employee_id", $this->employeeID)->first();
         if (!$employee) {
-            Log::error('WrongCostCenterNotification gagal, employee not found', [
+            Log::error('WrongCostCenterNotificationJob gagal, employee not found', [
                 'employee_id' => $this->employeeID
             ]);
 
-            throw new RuntimeExceptionNoStackTrace('WrongCostCenterNotification gagal, employee not found untuk employee ID ' . $this->employeeID);
+            throw new RuntimeExceptionNoStackTrace('WrongCostCenterNotificationJob gagal, employee not found untuk employee ID ' . $this->employeeID);
         }
         if ($employee->wrong_cost_center_email_sent_date && Carbon::parse($employee->wrong_cost_center_email_sent_date)->gt(now()->subDays(3))) {
-            Log::error('WrongCostCenterNotification gagal, wrong cost center email already sent', [
+            Log::error('WrongCostCenterNotificationJob gagal, wrong cost center email already sent', [
                 'employee_id' => $this->employeeID
             ]);
 
             throw new RuntimeExceptionNoStackTrace(
-                'WrongCostCenterNotification gagal, wrong cost center email already sent untuk employee ID ' . $this->employeeID
+                'WrongCostCenterNotificationJob gagal, wrong cost center email already sent untuk employee ID ' . $this->employeeID
             );
         }
 
@@ -70,7 +70,7 @@ class WrongCostCenterNotificationJob implements ShouldQueue
 
         $employee->save();
 
-        Log::info('WrongCostCenterNotification sukses', ['employee_id' => $this->employeeID]);
+        Log::info('WrongCostCenterNotificationJob sukses', ['employee_id' => $this->employeeID]);
     }
 
     public function failed(Throwable $e): void
