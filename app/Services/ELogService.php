@@ -16,6 +16,7 @@ use App\DTO\ELogLoginResponseDTO;
 use App\DTO\ELogHistoryResponseDTO;
 use App\DTO\ELogLastStatusResponseDTO;
 use App\DTO\ELogLastStatusDetailResponseDTO;
+use App\Jobs\WrongCostCenterNotificationJob;
 
 class ELogService {
     protected string $apiBaseUrl;
@@ -273,6 +274,12 @@ class ELogService {
 
         $resData = ELogInsertFirstReceiptResponseDTO::fromArray($httpRes["data"] ?? []);
         if (!$resData || $resData->status != "success") {
+            $isErrorWrongCostCenter = false;
+
+            if ($isErrorWrongCostCenter) {
+                WrongCostCenterNotificationJob::dispatch($employeeID);
+            }
+
             return [
                 'status' => false,
                 'message'  => "failed",

@@ -61,7 +61,8 @@ class Employee extends Model
         'bank_account_name',
         'cost_center',
         'cost_center_code',
-        'bank_account_name_payroll'
+        'bank_account_name_payroll',
+        'wrong_cost_center_email_sent_date'
     ];
 
     protected $keyType = 'string';
