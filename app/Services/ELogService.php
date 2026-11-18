@@ -274,15 +274,18 @@ class ELogService {
 
         $resData = ELogInsertFirstReceiptResponseDTO::fromArray($httpRes["data"] ?? []);
         if (!$resData || $resData->status != "success") {
-            $isErrorWrongCostCenter = false;
+            $isErrorWrongCostCenter = str_contains(
+                strtolower($resData->message ?? ''),
+                'cost center'
+            );
 
             if ($isErrorWrongCostCenter) {
                 WrongCostCenterNotificationJob::dispatch($employeeID);
             }
 
             return [
-                'status' => false,
-                'message'  => "failed",
+                'status'  => false,
+                'message' => "failed",
                 'data'    => $resData,
                 'error'   => null,
             ];
