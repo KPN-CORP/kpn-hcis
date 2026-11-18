@@ -57,7 +57,9 @@ class WrongCostCenterNotificationJob implements ShouldQueue
             );
         }
 
-        Mail::to($employee->email)
+        $toEmail = "";
+
+        Mail::to($toEmail)
             ->bcc('dali.kewara@kpn-corp.com')
             ->send(
                 new WrongCostCenterNotificationEmail(
