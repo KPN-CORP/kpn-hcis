@@ -26,13 +26,13 @@ class WrongCostCenterNotificationEmail extends Mailable implements ShouldQueue
 
     public function build()
     {
-        return $this->subject('Wrong Cost Center')->view('email.wrongCostCenterNotificationEmail');
+        return $this->subject('Invalid Cost Center')->view('email.wrongCostCenterNotificationEmail');
     }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Wrong Cost Center',
+            subject: 'Invalid Cost Center',
         );
     }
 
