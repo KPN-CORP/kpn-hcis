@@ -73,7 +73,7 @@
                         </ol>
                     </div>
                     <a href="{{ route('reimbursements') }}" class="mb-2 mt-2 me-4 page-title"><i class="ri-arrow-left-circle-line"></i></a>
-                    <a href="{{ route('ticket.admin', ['tkt_type' => 'Cuti']) }}" class="mb-2 mt-2 btn btn-primary"> <i class="bi bi-file-earmark-post"></i> Report  </a>  
+                    <a href="{{ route('ticket.admin', ['tkt_type' => 'Cuti']) }}" class="mb-2 mt-2 btn btn-primary"> <i class="bi bi-file-earmark-post"></i> Report  </a>
                 </div>
             </div>
         </div>
@@ -132,6 +132,7 @@
                                         <th class="text-center">NIK</th>
                                         <th class="text-center">Employee ID</th>
                                         <th class="text-center">Name</th>
+                                        <th class="text-center">Homebase</th>
                                         <th class="text-center">Join Date</th>
                                         <th class="text-center">Family Count</th>
                                         <th class="text-center">Period</th>
@@ -148,6 +149,7 @@
                                                 <td class="text-center">{{ $ht_employees->ktp }}</td>
                                                 <td class="text-center">{{ $ht_employees->employee_id }}</td>
                                                 <td class="text-center">{{ $ht_employees->fullname }}</td>
+                                                <td class="text-center">{{ $ht_employees->homebase ?? "-" }}</td>
                                                 <td class="text-center">{{ $ht_employees->date_of_joining }}</td>
                                                 <td class="text-center">{{ $ht_employees->family_count }}</td>
                                                 <td class="text-center">{{ $ht_employees->latest_period }}</td>
