@@ -2067,7 +2067,7 @@ class ReimburseController extends Controller
                 ->where(
                     "contribution_level_code",
                     "like",
-                    "%" . $req->companyFilter . "%",
+                    "%" . $req->companyFilter ?: $employee_data->contribution_level_code . "%",
                 )
                 ->get();
 
