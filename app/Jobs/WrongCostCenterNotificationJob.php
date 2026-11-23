@@ -57,9 +57,39 @@ class WrongCostCenterNotificationJob implements ShouldQueue
             );
         }
 
-        $toEmail = "";
+        $toEmails = [];
+        $ccEmails = [];
 
-        Mail::to($toEmail)
+        if (in_array(strtolower($employee->group_company), [
+            "plantations",
+            "kpn plantations"
+        ])) {
+            $toEmails = [];
+            $ccEmails = [];
+        } else if (in_array(strtolower($employee->group_company), [
+            "downstream"
+        ])) {
+            $toEmails = [];
+            $ccEmails = [];
+        } else if (in_array(strtolower($employee->group_company), [
+            "cement"
+        ])) {
+            $toEmails = [];
+            $ccEmails = [];
+        } else if (in_array(strtolower($employee->group_company), [
+            "property"
+        ])) {
+            $toEmails = [];
+            $ccEmails = [];
+        } else if (in_array(strtolower($employee->group_company), [
+            "kpn corporation"
+        ])) {
+            $toEmails = [];
+            $ccEmails = [];
+        }
+
+        Mail::to($toEmails)
+            ->cc($ccEmails)
             ->bcc('dali.kewara@kpn-corp.com')
             ->send(
                 new WrongCostCenterNotificationEmail(
