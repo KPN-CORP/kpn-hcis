@@ -57,35 +57,62 @@ class WrongCostCenterNotificationJob implements ShouldQueue
             );
         }
 
-        $toEmails = [];
-        $ccEmails = [];
+        $toEmployeeIDs = [];
+        $ccEmployeeIDs = [];
 
         if (in_array(strtolower($employee->group_company), [
             "plantations",
             "kpn plantations"
         ])) {
-            $toEmails = [];
-            $ccEmails = [];
+            $toEmployeeIDs = [
+                "03124040145",
+                "01121060003"
+            ];
+            $ccEmployeeIDs = [
+                "03124020062",
+                "01113090005"
+            ];
         } else if (in_array(strtolower($employee->group_company), [
             "downstream"
         ])) {
-            $toEmails = [];
-            $ccEmails = [];
+            $toEmployeeIDs = [
+                "04124020045",
+                "04126010079"
+            ];
+            $ccEmployeeIDs = [
+                "01123010017",
+                "04124040293",
+                "01114090009"
+            ];
         } else if (in_array(strtolower($employee->group_company), [
             "cement"
         ])) {
-            $toEmails = [];
-            $ccEmails = [];
+            $toEmployeeIDs = [];
+            $ccEmployeeIDs = [];
         } else if (in_array(strtolower($employee->group_company), [
             "property"
         ])) {
-            $toEmails = [];
-            $ccEmails = [];
+            $toEmployeeIDs = [];
+            $ccEmployeeIDs = [];
         } else if (in_array(strtolower($employee->group_company), [
             "kpn corporation"
         ])) {
-            $toEmails = [];
-            $ccEmails = [];
+            $toEmployeeIDs = [];
+            $ccEmployeeIDs = [];
+        }
+
+        $toEmployees = $employeeModel->whereIn("employee_id", $toEmployeeIDs)->get();
+        $ccEmployees = $employeeModel->whereIn("employee_id", $ccEmployeeIDs)->get();
+
+        $toEmails = [];
+        $ccEmails = [];
+
+        foreach ($toEmployees as $toEmployee) {
+            $toEmails[] = $toEmployee->email;
+        }
+
+        foreach ($ccEmployees as $ccEmployee) {
+            $ccEmails[] = $ccEmployee->email;
         }
 
         Mail::to($toEmails)
