@@ -1057,7 +1057,7 @@ class HomeTripController extends Controller
         ));
     }
 
-    public function plafondAdd(Request $req) {
+    public function homeTripPlafondAdd(Request $req) {
         $now = Carbon::now();
         $currentYear = $now->year;
         $formattedCurrentDate = $now->format('Y-m-d');
@@ -1124,7 +1124,7 @@ class HomeTripController extends Controller
         ], 200);
     }
 
-    public function plafondUpdate(Request $req) {
+    public function homeTripPlafondUpdate(Request $req) {
         $id = $req->id ?: null;
         $actorID = $req->actor_id ?: null;
         $employeeID = $req->employee_id ?: null;
