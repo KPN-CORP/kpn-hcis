@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\date_interval_create_from_string;
 use Illuminate\Support\Facades\Log;
 use App\Models\MatrixApproval;
+use App\Models\HomeTripPlanHistory;
 
 class HomeTripController extends Controller
 {
