@@ -1057,6 +1057,57 @@ class HomeTripController extends Controller
         ));
     }
 
+    public function plafondAdd(Request $request) {
+        $now = Carbon::now();
+        $currentYear = $now->year;
+        $formattedCurrentDate = $now->format('Y-m-d');
+        $actorID = $req->actor_id ?: null;
+        $employeeID = $req->employee_id ?: null;
+        $period = $req->period ?: $currentYear;
+        $quota = $req->quota ?: 0;
+
+        if (!$actorID) {
+            return redirect()->back()->with("error", "Actor ID can't be empty!");
+        }
+        if (!$employeeID) {
+            return redirect()->back()->with("error", "Employee ID can't be empty!");
+        }
+
+        $actor = Employee::where("id", $actorID)->first();
+        if (!$actor) {
+            return redirect()->back()->with("error", "Actor not found!");
+        }
+
+        $employee = Employee::where("employee_id", $actorID)->first();
+        if (!$employee) {
+            return redirect()->back()->with("error", "Employee not found!");
+        }
+
+        $existingHomeTrip = HomeTrip::where('employee_id', $employee->employee_id)
+            ->where('period', $period)
+            ->where('relation_type', 'Employee')
+            ->first();
+        if ($existingHomeTrip) {
+            return redirect()->back()->with("error", "Hometrip plafond for this period (" . $period . ") already exist!");
+        }
+
+        $newHomeTrip = new HomeTrip();
+        $newHomeTrip->id = Str::uuid();
+        $newHomeTrip->employee_id = $employee->employee_id;
+        $newHomeTrip->name = $employee->fullname;
+        $newHomeTrip->relation_type = 'Employee';
+        $newHomeTrip->quota = $quota;
+        $newHomeTrip->last_generate = $formattedCurrentDate;
+        $newHomeTrip->period = $period;
+        $newHomeTrip->created_by = $actorID;
+
+        $newHomeTrip->save();
+    }
+
+    public function plafondUpdate(Request $request) {
+
+    }
+
     private function specialCaseApproval($employee) {
         if (!$employee) {
             return false;
