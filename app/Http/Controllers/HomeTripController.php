@@ -1125,7 +1125,6 @@ class HomeTripController extends Controller
     }
 
     public function plafondUpdate(Request $req) {
-        $now = Carbon::now();
         $id = $req->id ?: null;
         $actorID = $req->actor_id ?: null;
         $employeeID = $req->employee_id ?: null;
@@ -1173,6 +1172,17 @@ class HomeTripController extends Controller
                 "message" => "Employee not found!"
             ], 422);
         }
+
+        if ($existingHomeTripPlan->employee_id != $employee->employee_id) {
+            return response()->json([
+                "status" => false,
+                "message" => "Hometrip employee doesn't match!"
+            ], 422);
+        }
+
+        $existingHomeTripPlan->quota = $quota;
+
+        $existingHomeTripPlan->save();
 
         return response()->json([
             "status" => true,
