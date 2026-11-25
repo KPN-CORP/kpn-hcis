@@ -14349,6 +14349,36 @@ class BusinessTripController extends Controller
                 "l6" => "-",
                 "l7" => "-",
             ];
+        } else if ($employee->employee_id == "01118120004") {
+            return [
+                "l1" => "03125040086",
+                "l2" => "-",
+                "l3" => "-",
+                "l4" => "-",
+                "l5" => "-",
+                "l6" => "-",
+                "l7" => "-",
+            ];
+        } else if ($employee->employee_id == "01110100001") {
+            return [
+                "l1" => "03125040086",
+                "l2" => "-",
+                "l3" => "-",
+                "l4" => "-",
+                "l5" => "-",
+                "l6" => "-",
+                "l7" => "-",
+            ];
+        } else if ($employee->employee_id == "03126010125") {
+            return [
+                "l1" => "03125040086",
+                "l2" => "-",
+                "l3" => "-",
+                "l4" => "-",
+                "l5" => "-",
+                "l6" => "-",
+                "l7" => "-",
+            ];
         }
 
         return false;
