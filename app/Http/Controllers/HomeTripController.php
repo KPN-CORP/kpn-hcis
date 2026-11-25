@@ -1057,7 +1057,7 @@ class HomeTripController extends Controller
         ));
     }
 
-    public function plafondAdd(Request $request) {
+    public function plafondAdd(Request $req) {
         $now = Carbon::now();
         $currentYear = $now->year;
         $formattedCurrentDate = $now->format('Y-m-d');
@@ -1067,28 +1067,43 @@ class HomeTripController extends Controller
         $quota = $req->quota ?: 0;
 
         if (!$actorID) {
-            return redirect()->back()->with("error", "Actor ID can't be empty!");
+            return response()->json([
+                "status" => false,
+                "message" => "Actor ID can't be empty!"
+            ], 400);
         }
         if (!$employeeID) {
-            return redirect()->back()->with("error", "Employee ID can't be empty!");
+            return response()->json([
+                "status" => false,
+                "message" => "Employee ID can't be empty!"
+            ], 400);
         }
 
         $actor = Employee::where("id", $actorID)->first();
         if (!$actor) {
-            return redirect()->back()->with("error", "Actor not found!");
+            return response()->json([
+                "status" => false,
+                "message" => "Actor not found!"
+            ], 422);
         }
 
         $employee = Employee::where("employee_id", $actorID)->first();
         if (!$employee) {
-            return redirect()->back()->with("error", "Employee not found!");
+            return response()->json([
+                "status" => false,
+                "message" => "Employee not found!"
+            ], 422);
         }
 
-        $existingHomeTrip = HomeTrip::where('employee_id', $employee->employee_id)
+        $existingHomeTripPlan = HomeTrip::where('employee_id', $employee->employee_id)
             ->where('period', $period)
             ->where('relation_type', 'Employee')
             ->first();
-        if ($existingHomeTrip) {
-            return redirect()->back()->with("error", "Hometrip plafond for this period (" . $period . ") already exist!");
+        if ($existingHomeTripPlan) {
+            return response()->json([
+                "status" => false,
+                "message" => "Hometrip plafond for this period (" . $period . ") already exist!"
+            ], 422);
         }
 
         $newHomeTrip = new HomeTrip();
@@ -1102,10 +1117,67 @@ class HomeTripController extends Controller
         $newHomeTrip->created_by = $actorID;
 
         $newHomeTrip->save();
+
+        return response()->json([
+            "status" => true,
+            "message" => "Ok"
+        ], 200);
     }
 
-    public function plafondUpdate(Request $request) {
+    public function plafondUpdate(Request $req) {
+        $now = Carbon::now();
+        $id = $req->id ?: null;
+        $actorID = $req->actor_id ?: null;
+        $employeeID = $req->employee_id ?: null;
+        $quota = $req->quota ?: 0;
 
+        if (!$id) {
+            return response()->json([
+                "status" => false,
+                "message" => "ID can't be empty!"
+            ], 400);
+        }
+        if (!$actorID) {
+            return response()->json([
+                "status" => false,
+                "message" => "Actor ID can't be empty!"
+            ], 400);
+        }
+        if (!$employeeID) {
+            return response()->json([
+                "status" => false,
+                "message" => "Employee ID can't be empty!"
+            ], 400);
+        }
+
+        $existingHomeTripPlan = HomeTrip::where('id', $id)->first();
+        if (!$existingHomeTripPlan) {
+            return response()->json([
+                "status" => false,
+                "message" => "Hometrip plafond doesn't exist!"
+            ], 422);
+        }
+
+        $actor = Employee::where("id", $actorID)->first();
+        if (!$actor) {
+            return response()->json([
+                "status" => false,
+                "message" => "Actor not found!"
+            ], 422);
+        }
+
+        $employee = Employee::where("employee_id", $actorID)->first();
+        if (!$employee) {
+            return response()->json([
+                "status" => false,
+                "message" => "Employee not found!"
+            ], 422);
+        }
+
+        return response()->json([
+            "status" => true,
+            "message" => "Ok"
+        ], 200);
     }
 
     private function specialCaseApproval($employee) {
