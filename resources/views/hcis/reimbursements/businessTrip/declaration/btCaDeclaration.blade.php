@@ -9,7 +9,10 @@
                 type="button" role="tab" aria-controls="pills-perdiem"
                 aria-selected="true">{{ $allowance }}</button>
         </li>
-        @if (($group_company !== 'Plantations' || $job_level_number >= 8) && ($n->jns_dinas !== 'dalam kota'))
+        @if ((!in_array(strtolower($group_company), [
+            "plantations",
+            "kpn plantations"
+        ]) || $job_level_number >= 8) && ($n->jns_dinas !== 'dalam kota'))
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="pills-meals-tab" data-bs-toggle="pill" data-bs-target="#pills-meals"
                     type="button" role="tab" aria-controls="pills-meals" aria-selected="false">Meals</button>

@@ -66,7 +66,9 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Breadcrumb Navigation -->
-            @if (auth()->check() && (auth()->user()->employee && (strtolower(auth()->user()->employee->group_company) == "property")))
+            @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+                "property"
+            ])))
                 <div class="col-md-6 mt-3">
                     <div class="page-title-box d-flex align-items-center">
                         <ol class="breadcrumb mb-0" style="display: flex; align-items: center; padding-left: 0;">

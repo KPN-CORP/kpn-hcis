@@ -83,15 +83,15 @@
                         <form action="{{ route('medical.report') }}" method="GET">
                             <div class="container-fluid p-2">
                                 <div class="row align-items-end g-1">
-                                    <div class="col-12 col-md-1">  
-                                        <label class="form-label">Filter From :</label>  
-                                        <input type="date" class="form-control" id="start_date" name="start_date" placeholder="Start Date" value="{{ request()->get('start_date') }}" title="Start Date" onchange="updateEndDate()">  
-                                    </div>  
-                                    
-                                    <div class="col-12 col-md-1">  
-                                        <label class="form-label">Until :</label>  
-                                        <input type="date" class="form-control" id="end_date" name="end_date" placeholder="End Date" value="{{ request()->get('end_date') }}" title="End Date" disabled>  
-                                    </div>  
+                                    <div class="col-12 col-md-1">
+                                        <label class="form-label">Filter From :</label>
+                                        <input type="date" class="form-control" id="start_date" name="start_date" placeholder="Start Date" value="{{ request()->get('start_date') }}" title="Start Date" onchange="updateEndDate()">
+                                    </div>
+
+                                    <div class="col-12 col-md-1">
+                                        <label class="form-label">Until :</label>
+                                        <input type="date" class="form-control" id="end_date" name="end_date" placeholder="End Date" value="{{ request()->get('end_date') }}" title="End Date" disabled>
+                                    </div>
 
                                     <div class="col-12 col-md-2">
                                         <label class="form-label">Status :</label>
@@ -193,7 +193,12 @@
                             </div>
                         </div>
                         <div class="table-responsive">
-                            <table class="table table-sm dt-responsive nowrap" id="scheduleTable" width="100%"
+                            {{-- id-nya sengaja BUKAN "scheduleTable": public/js/script.js
+                                 meng-init #scheduleTable sebagai DataTable client-side
+                                 (pageLength 50) untuk belasan halaman lain. Tabel ini
+                                 server-side, jadi dipisahkan supaya init global itu
+                                 tidak ikut memegangnya. --}}
+                            <table class="table table-sm dt-responsive nowrap" id="medicalReportTable" width="100%"
                                 cellspacing="0">
                                 <thead class="thead-light">
                                     <tr class="text-center">
@@ -210,56 +215,21 @@
                                         @foreach ($master_medical as $master_medicals)
                                             <th class="text-center">{{ $master_medicals->name }}</th>
                                         @endforeach
-                                        <th class="text-center">Status</th>
+                                        <th data-priority="2">Status</th>
+                                        <th data-priority="3">Paid Status</th>
+                                        <th data-priority="3">Paid Date</th>
                                         <th class="text-center">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if (request()->get('stat') !== '-')
-                                        @foreach ($med_employee as $med_employees)
-                                            @if (isset($medicalGroup[$med_employees->employee_id]))
-                                                @foreach ($medicalGroup[$med_employees->employee_id] as $medicalRecord)
-                                                    <tr>
-                                                        <td class="text-center">{{ $loop->iteration }}</td>
-                                                        <td class="text-start">{{ $medicalRecord->created_at }}</td>
-                                                        <td>{{ $medicalRecord->no_medic }}</td>
-                                                        {{-- <td class="text-start">{{ \Carbon\Carbon::parse($medicalRecord->created_at)->format('d-M-y') }}</td> --}}
-                                                        <td>{{ $medicalRecord->no_invoice }}</td>
-                                                        <td>{{ $medicalRecord->hospital_name }}</td>
-                                                        <td>{{ $med_employees->company_name }}</td>
-                                                        <td>{{ $med_employees->fullname }}</td>
-                                                        <td>{{ $medicalRecord->patient_name }}</td>
-                                                        <td>{{ $medicalRecord->disease }}</td>
-                                                        <td>{{ $medicalRecord->medical_type }}</td>
-                                                        @foreach ($master_medical as $master_medical_item)
-                                                            <td class="text-center">
-                                                                @if ($medicalRecord->medical_type == $master_medical_item->name)
-                                                                    {{-- Display balance if the types match --}}
-                                                                    {{ 'Rp. ' . number_format($medicalRecord->balance, 0, ',', '.') }}
-                                                                @else
-                                                                    {{-- Leave the cell empty or show a dash if there's no match --}}
-                                                                    Rp. 0
-                                                                @endif
-                                                            </td>
-                                                        @endforeach
-                                                        <td class="text-center">{{ $medicalRecord->status }}</td>
-                                                        <td class="text-center">
-                                                            <form id="deleteForm_{{ $medicalRecord->no_medic }}" method="POST"
-                                                                action="{{ route('medicalReport-admin.delete', $medicalRecord->usage_id) }}" style="display: inline-block;">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <input type="hidden" id="no_sppd_{{ $medicalRecord->no_medic }}" value="{{ $medicalRecord->no_medic }}">
-                                                                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill delete-button"
-                                                                    data-id="{{ $medicalRecord->no_medic }}">
-                                                                    <i class="bi bi-trash-fill"></i>
-                                                                </button>
-                                                            </form>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            @endif
-                                        @endforeach
-                                    @endif
+                                    {{-- Baris diisi oleh DataTables server-side dari
+                                         medicalReportAdminData(). Sebelumnya dua loop
+                                         bersarang (karyawan x transaksinya) merender
+                                         12.590 baris sekaligus, ~53 MB HTML, dan nomor
+                                         urutnya memakai $loop->iteration milik loop DALAM
+                                         sehingga mengulang dari 1 pada tiap karyawan.
+                                         Nomor urut sekarang dihitung server dari indeks
+                                         global, jadi berlanjut antar halaman. --}}
                                 </tbody>
                             </table>
                         </div>
@@ -289,43 +259,98 @@
     {{-- @include('js.hcis.cashAdvanced.adminPage') --}}
 @endsection
 @push('scripts')
-    <script>  
-        function updateEndDate() {  
-            const startDateInput = document.getElementById('start_date');  
-            const endDateInput = document.getElementById('end_date');  
-            const startDate = new Date(startDateInput.value);  
-        
-            // Set min attribute for end date to the selected start date  
-            if (startDateInput.value) {  
-                const minDate = new Date(startDate);  
-                minDate.setDate(minDate.getDate() + 1); // Disable the start date itself  
-        
-                // Enable end date input  
-                endDateInput.disabled = false;  
-                // Set min and max for end date  
-                endDateInput.min = minDate.toISOString().split('T')[0];  
-        
-                // Set max to 3 months from the start date  
-                const maxDate = new Date(startDate);  
-                maxDate.setMonth(startDate.getMonth() + 3);  
-        
-                // Set max attribute for end date  
-                endDateInput.max = maxDate.toISOString().split('T')[0];  
-        
-                // Optionally reset the end date if it is before the new min date  
-                if (new Date(endDateInput.value) < minDate) {  
-                    endDateInput.value = '';  
-                }  
-            } else {  
-                // Disable end date input if no start date is selected  
-                endDateInput.disabled = true;  
-                endDateInput.value = ''; // Clear the end date input  
-            }  
-        }  
-        
-        // Initial call to set dates if there are pre-filled values  
-        updateEndDate();  
-    </script>  
+    <script>
+        // Tabel ini server-side; init global #scheduleTable di
+        // public/js/script.js tidak memegangnya (id-nya berbeda), termasuk
+        // pencarian lewat #customsearch, jadi keduanya dipasang di sini.
+        @php
+            $mmCount = count($master_medical);
+            $mmFirst = 10;
+            $mmLast = 10 + $mmCount - 1;
+            $statusIdx = 10 + $mmCount;
+            $actionIdx = $statusIdx + 1;
+        @endphp
+        var medicalReportTable = $("#medicalReportTable").DataTable({
+            dom: "lrtip",
+            processing: true,
+            serverSide: true,
+            searchDelay: 400,
+            pageLength: 50,
+            lengthMenu: [10, 25, 50, 100],
+            order: [],
+            ajax: {
+                url: @json(route('medical.report.data')),
+                data: function (d) {
+                    // Ikut filter yang sedang aktif di URL halaman.
+                    d.stat = @json(request()->get('stat'));
+                    d.unit = @json(request()->get('unit'));
+                    d.statusMDC = @json(request()->get('statusMDC'));
+                    d.start_date = @json(request()->get('start_date'));
+                    d.end_date = @json(request()->get('end_date'));
+                    d.customsearch = @json(request()->get('customsearch'));
+                },
+            },
+            columnDefs: [
+                { orderable: false, targets: [0, {{ $actionIdx }}] },
+                {
+                    className: "text-center",
+                    targets: [0, {{ $statusIdx }}, {{ $actionIdx }}],
+                },
+                @if ($mmCount > 0)
+                    {
+                        className: "text-center",
+                        orderable: false,
+                        targets: [{{ implode(', ', range($mmFirst, $mmLast)) }}],
+                    },
+                @endif
+            ],
+            language: {
+                processing:
+                    '<div class="dt-loader"><div class="bouncing-loader"><div></div><div></div><div></div></div></div>',
+            },
+        });
+
+        $("#customsearch").on("keyup", function () {
+            medicalReportTable.search($(this).val()).draw();
+        });
+    </script>
+    <script>
+        function updateEndDate() {
+            const startDateInput = document.getElementById('start_date');
+            const endDateInput = document.getElementById('end_date');
+            const startDate = new Date(startDateInput.value);
+
+            // Set min attribute for end date to the selected start date
+            if (startDateInput.value) {
+                const minDate = new Date(startDate);
+                minDate.setDate(minDate.getDate() + 1); // Disable the start date itself
+
+                // Enable end date input
+                endDateInput.disabled = false;
+                // Set min and max for end date
+                endDateInput.min = minDate.toISOString().split('T')[0];
+
+                // Set max to 3 months from the start date
+                const maxDate = new Date(startDate);
+                maxDate.setMonth(startDate.getMonth() + 3);
+
+                // Set max attribute for end date
+                endDateInput.max = maxDate.toISOString().split('T')[0];
+
+                // Optionally reset the end date if it is before the new min date
+                if (new Date(endDateInput.value) < minDate) {
+                    endDateInput.value = '';
+                }
+            } else {
+                // Disable end date input if no start date is selected
+                endDateInput.disabled = true;
+                endDateInput.value = ''; // Clear the end date input
+            }
+        }
+
+        // Initial call to set dates if there are pre-filled values
+        updateEndDate();
+    </script>
 
     <script>
         // Periksa apakah ada pesan sukses
@@ -402,7 +427,7 @@
             document.body.appendChild(form);
             form.submit();
         }
-        
+
         function redirectToExportPlafond() {
             const route = "{{ route('exportplf.excel') }}";
 
@@ -496,7 +521,7 @@
 
         function updateDateTime() {
             const now = new Date();
-            
+
             // Format time
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');

@@ -609,6 +609,7 @@
     @include('js.hcis.common.businessTrip')
     @include('js.hcis.common.perdiem')
     @include('js.hcis.common.req')
+    @include('js.hcis.common.transportHub')
     @include('js.hcis.editBusinessTrip')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
@@ -841,8 +842,7 @@
                     if (caCheckbox && totalBtPerdiem == 0 && totalBtPenginapan == 0 &&
                         totalBtTransport == 0 && totalBtLainnya == 0) {
 
-                        if ((group_company == 'KPN Plantations' || group_company ==
-                                'Plantations') && jobLevelNumber < 8) {
+                        if ((group_company == 'KPN Plantations' || group_company == 'Plantations') && jobLevelNumber < 8) {
                             // ✅ Case 1: Low-level Plantation users (Exclude Meals)
                             Swal.fire({
                                 title: "Warning!",
@@ -852,8 +852,7 @@
                                 confirmButtonText: "OK",
                             });
                             return;
-                        } else if ((group_company == 'KPN Plantations' || group_company ==
-                                'Plantations') && jobLevelNumber >= 8 && totalBtMeals == 0) {
+                        } else if ((group_company == 'KPN Plantations' || group_company == 'Plantations') && jobLevelNumber >= 8 && totalBtMeals == 0) {
                             // ✅ Case 2: High-level Plantation users (Include Meals)
                             Swal.fire({
                                 title: "Warning!",
@@ -863,8 +862,7 @@
                                 confirmButtonText: "OK",
                             });
                             return;
-                        } else if (group_company !== 'KPN Plantations' && group_company !==
-                            'Plantations' && totalBtMeals == 0) {
+                        } else if (group_company !== 'KPN Plantations' && group_company !== 'Plantations' && totalBtMeals == 0) {
                             // ✅ Case 3: Non-Plantation Users (Include Meals)
                             Swal.fire({
                                 title: "Warning!",
@@ -1068,8 +1066,7 @@
                     if (caCheckbox && totalBtPerdiem == 0 && totalBtPenginapan == 0 &&
                         totalBtTransport == 0 && totalBtLainnya == 0) {
 
-                        if ((group_company == 'KPN Plantations' || group_company ==
-                                'Plantations') && jobLevelNumber < 8) {
+                        if ((group_company == 'KPN Plantations' || group_company == 'Plantations') && jobLevelNumber < 8) {
                             // ✅ Case 1: Low-level Plantation users (Exclude Meals)
                             Swal.fire({
                                 title: "Warning!",
@@ -1079,8 +1076,7 @@
                                 confirmButtonText: "OK",
                             });
                             return;
-                        } else if ((group_company == 'KPN Plantations' || group_company ==
-                                'Plantations') && jobLevelNumber >= 8 && totalBtMeals == 0) {
+                        } else if ((group_company == 'KPN Plantations' || group_company == 'Plantations') && jobLevelNumber >= 8 && totalBtMeals == 0) {
                             // ✅ Case 2: High-level Plantation users (Include Meals)
                             Swal.fire({
                                 title: "Warning!",
@@ -1090,8 +1086,7 @@
                                 confirmButtonText: "OK",
                             });
                             return;
-                        } else if (group_company !== 'KPN Plantations' && group_company !==
-                            'Plantations' && totalBtMeals == 0) {
+                        } else if (group_company !== 'KPN Plantations' && group_company !== 'Plantations' && totalBtMeals == 0) {
                             // ✅ Case 3: Non-Plantation Users (Include Meals)
                             Swal.fire({
                                 title: "Warning!",
@@ -1326,4 +1321,136 @@
         // Run the function on page load
         window.addEventListener('load', updateDeclarationEstimate);
     </script>
+
+    @if (auth()->check() && (auth()->user()->employee && in_array(strtolower(auth()->user()->employee->group_company), [
+        "downstream"
+    ])))
+        <script>
+            $(document).ready(function () {
+                if ($('#dari_tkt').length && $.fn.select2) {
+                    $('#dari_tkt').select2({
+                        width: '100%',
+                        theme: 'bootstrap-5',
+                        matcher: function (params, data) {
+                            if ($.trim(params.term) === '') {
+                                return data;
+                            }
+                            if (data.text === 'Others') {
+                                return data;
+                            }
+                            if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
+                                return data;
+                            }
+                            return null;
+                        }
+                    });
+                }
+
+                if ($('#ke_tkt').length && $.fn.select2) {
+                    $('#ke_tkt').select2({
+                        width: '100%',
+                        theme: 'bootstrap-5',
+                        matcher: function (params, data) {
+                            if ($.trim(params.term) === '') {
+                                return data;
+                            }
+                            if (data.text === 'Others') {
+                                return data;
+                            }
+                            if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
+                                return data;
+                            }
+                            return null;
+                        }
+                    });
+                }
+
+                if ($('#dari_tkt_dalam_kota').length && $.fn.select2) {
+                    $('#dari_tkt_dalam_kota').select2({
+                        width: '100%',
+                        theme: 'bootstrap-5',
+                        matcher: function (params, data) {
+                            if ($.trim(params.term) === '') {
+                                return data;
+                            }
+                            if (data.text === 'Others') {
+                                return data;
+                            }
+                            if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
+                                return data;
+                            }
+                            return null;
+                        }
+                    });
+                }
+
+                if ($('#ke_tkt_dalam_kota').length && $.fn.select2) {
+                    $('#ke_tkt_dalam_kota').select2({
+                        width: '100%',
+                        theme: 'bootstrap-5',
+                        matcher: function (params, data) {
+                            if ($.trim(params.term) === '') {
+                                return data;
+                            }
+                            if (data.text === 'Others') {
+                                return data;
+                            }
+                            if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
+                                return data;
+                            }
+                            return null;
+                        }
+                    });
+                }
+            });
+
+            function DariTiketToggleOthers() {
+                var selectElem = document.getElementById("dari_tkt");
+                var othersSelectElem = document.getElementById("others_dari_tkt");
+
+                if (selectElem.value === "Others") {
+                    othersSelectElem.style.display = "block";
+                } else {
+                    othersSelectElem.style.display = "none";
+                    othersSelectElem.value = "";
+                }
+            }
+
+            function KeTiketToggleOthers() {
+                var selectElem = document.getElementById("ke_tkt");
+                var othersSelectElem = document.getElementById("others_ke_tkt");
+
+                if (selectElem.value === "Others") {
+                    othersSelectElem.style.display = "block";
+                } else {
+                    othersSelectElem.style.display = "none";
+                    othersSelectElem.value = "";
+                }
+            }
+
+            function DariTiketDalamKotaToggleOthers() {
+                var selectElem = document.getElementById("dari_tkt_dalam_kota");
+                var othersSelectElem = document.getElementById("others_dari_tkt_dalam_kota");
+
+                if (selectElem.value === "Others") {
+                    othersSelectElem.style.display = "block";
+                } else {
+                    othersSelectElem.style.display = "none";
+                    othersSelectElem.value = "";
+                }
+            }
+
+            function KeTiketDalamKotaToggleOthers() {
+                var selectElem = document.getElementById("ke_tkt_dalam_kota");
+                var othersSelectElem = document.getElementById("others_ke_tkt_dalam_kota");
+
+                if (selectElem.value === "Others") {
+                    othersSelectElem.style.display = "block";
+                } else {
+                    othersSelectElem.style.display = "none";
+                    othersSelectElem.value = "";
+                }
+            }
+        </script>
+    @endif
 @endsection

@@ -137,21 +137,51 @@ class HomeTripController extends Controller
         foreach ($employees_cast as $employee) {
             $joiningDate = date_create($employee->date_of_joining);
             $monthDay = $joiningDate->format('m-d');
-            $eligibleYear = (int) $joiningDate->format('Y') + 1;
-            $eligibleDateThisYear = $currentYear . '-' . $monthDay;
 
-            if ($eligibleYear <= $currentYear && date('Y-m-d') >= $eligibleDateThisYear) {
-                $dependents = Dependents::where('employee_id', $employee->employee_id)->get();
+            if (in_array(strtolower($employee->group_company), [
+                "downstream"
+            ])) {
+                $eligibleYear = (int) $joiningDate->format('Y') + 1;
+                $eligibleDateThisYear = $currentYear . '-' . $monthDay;
+                $isEligibleThisYear = false;
+
+                if ($eligibleYear <= $currentYear && date('Y-m-d') >= $eligibleDateThisYear) {
+                    $isEligibleThisYear = true;
+                }
+
+                $hasHomeTripThisPeriod = HomeTrip::where('employee_id', $employee->employee_id)
+                    ->where('period', $currentYear)
+                    ->where('relation_type', 'Employee')
+                    ->exists();
+
+                $hasEverHadHomeTrip = HomeTrip::where('employee_id', $employee->employee_id)
+                    ->where('relation_type', 'Employee')
+                    ->exists();
+
+                $isProbation = $employee->employee_type == 'Probation';
+
+                $spouse = Dependents::where('employee_id', $employee->employee_id)
+                    ->where('relation_type', 'Spouse')
+                    ->limit(1)
+                    ->get();
+
+                $children = Dependents::where('employee_id', $employee->employee_id)
+                    ->where('relation_type', 'Child')
+                    ->whereDate('date_of_birth', '>=', now()->subYears(21)->toDateString())
+                    ->orderBy('date_of_birth', 'asc')
+                    ->limit(3)
+                    ->get();
+
+                $dependents = $spouse->merge($children);
+
                 $totalFamilyMembers = $dependents->count() + 1;
 
                 $quota = $totalFamilyMembers * 2;
 
-                $existingHomeTrip = HomeTrip::where('employee_id', $employee->employee_id)
-                    ->where('period', $currentYear)
-                    ->where('relation_type', 'Employee')
-                    ->first();
-
-                if (!$existingHomeTrip) {
+                if (
+                    (!$hasEverHadHomeTrip && !$isProbation) ||
+                    ($isEligibleThisYear && !$hasHomeTripThisPeriod && !$isProbation)
+                ) {
                     $homeTrip = new HomeTrip();
                     $homeTrip->id = Str::uuid();
                     $homeTrip->employee_id = $employee->employee_id;
@@ -164,6 +194,36 @@ class HomeTripController extends Controller
                     $homeTrip->save();
 
                     session()->flash('refresh', true);
+                }
+            } else {
+                $eligibleYear = (int) $joiningDate->format('Y') + 1;
+                $eligibleDateThisYear = $currentYear . '-' . $monthDay;
+
+                if ($eligibleYear <= $currentYear && date('Y-m-d') >= $eligibleDateThisYear) {
+                    $dependents = Dependents::where('employee_id', $employee->employee_id)->get();
+                    $totalFamilyMembers = $dependents->count() + 1;
+
+                    $quota = $totalFamilyMembers * 2;
+
+                    $existingHomeTrip = HomeTrip::where('employee_id', $employee->employee_id)
+                        ->where('period', $currentYear)
+                        ->where('relation_type', 'Employee')
+                        ->first();
+
+                    if (!$existingHomeTrip) {
+                        $homeTrip = new HomeTrip();
+                        $homeTrip->id = Str::uuid();
+                        $homeTrip->employee_id = $employee->employee_id;
+                        $homeTrip->name = $employee->fullname;
+                        $homeTrip->relation_type = 'Employee';
+                        $homeTrip->quota = $quota;
+                        $homeTrip->last_generate = $eligibleDateThisYear;
+                        $homeTrip->period = $currentYear;
+                        $homeTrip->created_by = $userId;
+                        $homeTrip->save();
+
+                        session()->flash('refresh', true);
+                    }
                 }
             }
 
@@ -1086,6 +1146,16 @@ class HomeTripController extends Controller
             return [
                 "l1" => "01126010012",
                 "l2" => "-",
+                "l3" => "-",
+                "l4" => "-",
+                "l5" => "-",
+                "l6" => "-",
+                "l7" => "-",
+            ];
+        } else if ($employee->employee_id == "02114020045") {
+            return [
+                "l1" => "01113090005",
+                "l2" => "01123090014",
                 "l3" => "-",
                 "l4" => "-",
                 "l5" => "-",

@@ -28,7 +28,7 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/hcispanel/kpn-hcis
+    - export DEPLOYPATH=/home/hcispanel/kpn-hcis-stage
 
     # Ensure deployment folder exists
     - mkdir -p $DEPLOYPATH
@@ -38,8 +38,7 @@ deployment:
 
     # Copy all project files except .git
     # - rsync -av --exclude=".git" ./ $DEPLOYPATH
-    # - cp -r app bootstrap config database routes resources artisan composer.json composer.lock package.json package-lock.json yarn.lock $DEPLOYPATH
-    - cp -r app bootstrap config database routes resources $DEPLOYPATH
+    - cp -r app bootstrap config database routes resources artisan composer.json composer.lock package.json package-lock.json yarn.lock $DEPLOYPATH
 
     # Change to deployment directory
     - cd $DEPLOYPATH
@@ -61,4 +60,4 @@ deployment:
     - php artisan view:cache
 
     # Copy public assets to the public_html directory
-    - \cp -rf public/assets public/build public/css public/img public/images public/js public/scss public/vendor /home/hcispanel/public_html/apps
+    - \cp -rf public/assets public/build public/css public/img public/images public/js public/scss public/vendor /home/hcispanel/public_html/travel-dev

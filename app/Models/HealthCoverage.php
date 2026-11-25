@@ -52,6 +52,16 @@ class HealthCoverage extends Model
         'doc_received_at',
         'is_revise',
         'revise_info',
+        'elog_vendor',
+        'elog_medical_type',
+        'elog_insert_first_receipt_sync_date',
+        'employee_covered_amount',
+        'company_covered_amount',
+        'paid_date',
+        'billing_type',
+        'doc_status',
+        'doc_status_previous',
+        'paid_amount',
         'plafond_amount_before'
     ];
 

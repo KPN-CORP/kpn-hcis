@@ -46,7 +46,22 @@
                     confirmButtonText: "Yes, delete it!"
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        form.submit(); // Only submit the form if the user confirms
+                        Swal.fire({
+                            title: 'Processing...',
+                            text: 'Please wait while the request is being deleted.',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            showConfirmButton: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        form.submit();
+
+                        setTimeout(() => {
+                            Swal.close();
+                        }, 1 * 60 * 1000);
                     }
                 });
             });
@@ -73,7 +88,22 @@
                     confirmButtonText: "Yes, Approve it!"
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Processing...',
+                            text: 'Please wait while the request is being approved.',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            showConfirmButton: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
                         form.submit();
+
+                        setTimeout(() => {
+                            Swal.close();
+                        }, 1 * 60 * 1000);
                     }
                 });
             });
