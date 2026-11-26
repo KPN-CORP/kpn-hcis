@@ -95,7 +95,7 @@
             </a>
         </div>
 
-        @if(!empty(trim(Auth::user()->employee->homebase ?? '')) && (preg_match('/^[4-9]/', $jobLevel)))
+        @if(!empty(trim(Auth::user()->employee->homebase ?? '')) && trim(Auth::user()->employee->homebase) !== '-' && (preg_match('/^[4-9]/', $jobLevel)))
         <div class="col">
             <a href="{{ route('home-trip') }}" class="text-decoration-none">
                 <div class="menu-card d-flex flex-column align-items-center justify-content-center p-3 text-center">
