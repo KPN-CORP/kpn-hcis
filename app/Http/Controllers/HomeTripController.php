@@ -1200,29 +1200,34 @@ class HomeTripController extends Controller
             ], 422);
         }
 
-        // $employeeIDBefore = $existingHomeTripPlan->employee_id;
+        $employeeIDBefore = $existingHomeTripPlan->employee_id;
+        $nameBefore = $existingHomeTripPlan->name;
+        $relationTypeBefore = $existingHomeTripPlan->relation_type;
+        $quotaBefore = $existingHomeTripPlan->quota;
+        $periodBefore = $existingHomeTripPlan->period;
+        $lastGenerateBefore = $existingHomeTripPlan->last_generate;
 
         $existingHomeTripPlan->quota = $quota;
 
         $existingHomeTripPlan->save();
 
-        // HomeTripPlanHistory::create([
-        //     'uuid' => Str::uuid(),
-        //     'ht_plan_id' => $existingHomeTripPlan->id,
-        //     'employee_id_before' => $existingHomeTripPlan->employee_id,
-        //     'employee_id_after' => $existingHomeTripPlan->employee_id,
-        //     'name_before' => $employee->fullname,
-        //     'name_after' => $employee->fullname,
-        //     'relation_type_before' => 'Employee',
-        //     'relation_type_after' => 'Employee',
-        //     'quota_before' => $quota,
-        //     'quota_after' => $quota,
-        //     'period_before' => $period,
-        //     'period_after' => $period,
-        //     'last_generate_before' => $formattedCurrentDate,
-        //     'last_generate_after' => $formattedCurrentDate,
-        //     'created_by' => $actorID,
-        // ]);
+        HomeTripPlanHistory::create([
+            'uuid' => Str::uuid(),
+            'ht_plan_id' => $existingHomeTripPlan->id,
+            'employee_id_before' => $employeeIDBefore,
+            'employee_id_after' => $existingHomeTripPlan->employee_id,
+            'name_before' => $nameBefore,
+            'name_after' => $existingHomeTripPlan->name,
+            'relation_type_before' => $relationTypeBefore,
+            'relation_type_after' => $existingHomeTripPlan->relation_type,
+            'quota_before' => $quotaBefore,
+            'quota_after' => $existingHomeTripPlan->quota,
+            'period_before' => $periodBefore,
+            'period_after' => $existingHomeTripPlan->period,
+            'last_generate_before' => $lastGenerateBefore,
+            'last_generate_after' => $existingHomeTripPlan->last_generate,
+            'created_by' => $actorID,
+        ]);
 
         return response()->json([
             "status" => true,
