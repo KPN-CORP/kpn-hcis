@@ -1107,17 +1107,36 @@ class HomeTripController extends Controller
             ], 422);
         }
 
-        $newHomeTrip = new HomeTrip();
-        $newHomeTrip->id = Str::uuid();
-        $newHomeTrip->employee_id = $employee->employee_id;
-        $newHomeTrip->name = $employee->fullname;
-        $newHomeTrip->relation_type = 'Employee';
-        $newHomeTrip->quota = $quota;
-        $newHomeTrip->last_generate = $formattedCurrentDate;
-        $newHomeTrip->period = $period;
-        $newHomeTrip->created_by = $actorID;
+        $hometripPlanID = Str::uuid();
 
-        $newHomeTrip->save();
+        HomeTrip::create([
+            'id ' => $hometripPlanID,
+            'employee_id' => $employee->employee_id,
+            'name' => $employee->fullname,
+            'relation_type' => 'Employee',
+            'quota' => $quota,
+            'last_generate' => $formattedCurrentDate,
+            'period' => $period,
+            'created_by' => $actorID
+        ]);
+
+        HomeTripPlanHistory::create([
+            'uuid' => Str::uuid(),
+            'ht_plan_id' => $hometripPlanID,
+            'employee_id_before' => $employee->employee_id,
+            'employee_id_after' => $employee->employee_id,
+            'name_before' => $employee->fullname,
+            'name_after' => $employee->fullname,
+            'relation_type_before' => 'Employee',
+            'relation_type_after' => 'Employee',
+            'quota_before' => $quota,
+            'quota_after' => $quota,
+            'period_before' => $period,
+            'period_after' => $period,
+            'last_generate_before' => $formattedCurrentDate,
+            'last_generate_after' => $formattedCurrentDate,
+            'created_by' => $actorID,
+        ]);
 
         return response()->json([
             "status" => true,
@@ -1181,9 +1200,29 @@ class HomeTripController extends Controller
             ], 422);
         }
 
+        // $employeeIDBefore = $existingHomeTripPlan->employee_id;
+
         $existingHomeTripPlan->quota = $quota;
 
         $existingHomeTripPlan->save();
+
+        // HomeTripPlanHistory::create([
+        //     'uuid' => Str::uuid(),
+        //     'ht_plan_id' => $existingHomeTripPlan->id,
+        //     'employee_id_before' => $existingHomeTripPlan->employee_id,
+        //     'employee_id_after' => $existingHomeTripPlan->employee_id,
+        //     'name_before' => $employee->fullname,
+        //     'name_after' => $employee->fullname,
+        //     'relation_type_before' => 'Employee',
+        //     'relation_type_after' => 'Employee',
+        //     'quota_before' => $quota,
+        //     'quota_after' => $quota,
+        //     'period_before' => $period,
+        //     'period_after' => $period,
+        //     'last_generate_before' => $formattedCurrentDate,
+        //     'last_generate_after' => $formattedCurrentDate,
+        //     'created_by' => $actorID,
+        // ]);
 
         return response()->json([
             "status" => true,

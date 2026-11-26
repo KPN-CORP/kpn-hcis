@@ -17,8 +17,6 @@ class HomeTripPlanHistory extends Model
 
     protected $fillable = [
         'uuid',
-        'actor_id',
-        'actor_employee_id',
         'ht_plan_id',
         'employee_id_before',
         'employee_id_after',
@@ -33,5 +31,8 @@ class HomeTripPlanHistory extends Model
         'last_generate_before',
         'last_generate_after',
         'created_by',
+        'created_at',
+        'updated_at',
+        'deleted_at',
     ];
 }
