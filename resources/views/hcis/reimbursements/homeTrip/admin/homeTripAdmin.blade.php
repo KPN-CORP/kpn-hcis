@@ -73,7 +73,7 @@
                         </ol>
                     </div>
                     <a href="{{ route('reimbursements') }}" class="mb-2 mt-2 me-4 page-title"><i class="ri-arrow-left-circle-line"></i></a>
-                    <a href="{{ route('ticket.admin', ['tkt_type' => 'Cuti']) }}" class="mb-2 mt-2 btn btn-primary"> <i class="bi bi-file-earmark-post"></i> Report  </a>  
+                    <a href="{{ route('ticket.admin', ['tkt_type' => 'Cuti']) }}" class="mb-2 mt-2 btn btn-primary"> <i class="bi bi-file-earmark-post"></i> Report  </a>
                 </div>
             </div>
         </div>
