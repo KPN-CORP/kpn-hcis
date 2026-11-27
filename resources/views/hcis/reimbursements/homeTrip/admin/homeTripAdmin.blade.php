@@ -74,6 +74,11 @@
                     </div>
                     <a href="{{ route('reimbursements') }}" class="mb-2 mt-2 me-4 page-title"><i class="ri-arrow-left-circle-line"></i></a>
                     <a href="{{ route('ticket.admin', ['tkt_type' => 'Cuti']) }}" class="mb-2 mt-2 btn btn-primary"> <i class="bi bi-file-earmark-post"></i> Report  </a>
+                    <button id="hometrip-add-plafond-button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#hometrip-plafond-add" type="button" title="Add Plafond"
+                        data-admin-id="{{ auth()->user()->employee->id }}"
+                    >
+                        <i class="ri-add-box-line"></i> Add Plafond
+                    </button>
                 </div>
             </div>
         </div>
@@ -151,9 +156,9 @@
                                                 <td class="text-center">{{ $ht_employees->date_of_joining }}</td>
                                                 <td class="text-center">{{ $ht_employees->family_count }}</td>
                                                 <td class="text-center">{{ $ht_employees->latest_period }}</td>
-                                                <td id="hometrip-quota-{{ $index }}" class="text-center">{{ $ht_employees->ticket_count }}</td>
+                                                <td id="hometrip-plafond-{{ $index }}" class="text-center">{{ $ht_employees->ticket_count }}</td>
                                                 <td class="text-center">
-                                                    <button id="hometrip-quota-button-submit-{{ $index }}" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#hometrip-quota-edit" type="button" title="Adjust Plafond"
+                                                    <button id="hometrip-plafond-button-submit-{{ $index }}" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#hometrip-plafond-edit" type="button" title="Adjust Plafond"
                                                         data-index="{{ $index }}"
                                                         data-admin-id="{{ auth()->user()->employee->id }}"
                                                         data-employee-id="{{ $ht_employees->employee_id }}"
@@ -180,40 +185,77 @@
         </div>
     </div>
 
-    <div class="modal fade" id="hometrip-quota-edit" tabindex="-1" aria-labelledby="hometrip-quota-edit" aria-hidden="true">
-        <div class="modal-dialog" style="wid">
-            <form id="hometrip-quota-edit-form" method="POST" action="{{ route('home-trip.admin.update-quota') }}" enctype="multipart/form-data">
+    <div class="modal fade" id="hometrip-plafond-add" tabindex="-1" aria-labelledby="hometrip-plafond-add-title" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="hometrip-plafond-add-form" method="POST" action="{{ route('home-trip.admin.add-plafond') }}">
                 @csrf
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="hometrip-quota-edit-title">Adjust Quota</h5>
+                        <h5 class="modal-title" id="hometrip-plafond-add-title">Add Plafond</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="hometrip-plafond-add-input-admin-id" name="admin_id" value="{{ auth()->user()->employee->id }}">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Period</label>
+                            <select id="hometrip-plafond-add-input-period" name="period" class="form-select" required>
+                                <option value="">Select period...</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Employee</label>
+                            <select id="hometrip-plafond-add-input-employee-id" name="employee_id" class="form-select" disabled required>
+                                <option value="">Select employee...</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12 mb-2">
+                            <label class="form-label">Quota</label>
+                            <input id="hometrip-plafond-add-input-quota" type="number" name="quota" class="form-control" step="1" min="0" disabled required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button id="hometrip-plafond-add-submit" type="submit" class="btn btn-primary" disabled>Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="hometrip-plafond-edit" tabindex="-1" aria-labelledby="hometrip-plafond-edit" aria-hidden="true">
+        <div class="modal-dialog" style="wid">
+            <form id="hometrip-plafond-edit-form" method="POST" action="{{ route('home-trip.admin.update-plafond') }}" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="hometrip-plafond-edit-title">Adjust Plafond</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                            <input id="hometrip-quota-edit-input-data-index" type="hidden" name="hometrip-quota-edit-input-data-index" disabled>
-                            <input id="hometrip-quota-edit-input-admin-id" type="hidden" name="hometrip-quota-edit-input-admin-id" disabled>
+                            <input id="hometrip-plafond-edit-input-data-index" type="hidden" name="hometrip-plafond-edit-input-data-index" disabled>
+                            <input id="hometrip-plafond-edit-input-admin-id" type="hidden" name="hometrip-plafond-edit-input-admin-id" disabled>
                             <div class="col-md-12 mb-2">
-                                <label class="form-label" for="hometrip-quota-edit-input-employee-id">Employee ID</label>
-                                <input id="hometrip-quota-edit-input-employee-id" type="text" name="hometrip-quota-edit-input-employee-id" class="form-control" disabled>
+                                <label class="form-label" for="hometrip-plafond-edit-input-employee-id">Employee ID</label>
+                                <input id="hometrip-plafond-edit-input-employee-id" type="text" name="hometrip-plafond-edit-input-employee-id" class="form-control" disabled>
                             </div>
                             <div class="col-md-12 mb-2">
-                                <label class="form-label" for="hometrip-quota-edit-input-employee-name">Employee Name</label>
-                                <input id="hometrip-quota-edit-input-employee-name" type="text" name="hometrip-quota-edit-input-employee-name" class="form-control" disabled>
+                                <label class="form-label" for="hometrip-plafond-edit-input-employee-name">Employee Name</label>
+                                <input id="hometrip-plafond-edit-input-employee-name" type="text" name="hometrip-plafond-edit-input-employee-name" class="form-control" disabled>
                             </div>
                             <div class="col-md-12 mb-2">
-                                <label class="form-label" for="hometrip-quota-edit-input-period">Period</label>
-                                <input id="hometrip-quota-edit-input-period" type="text" name="hometrip-quota-edit-input-period" class="form-control" disabled>
+                                <label class="form-label" for="hometrip-plafond-edit-input-period">Period</label>
+                                <input id="hometrip-plafond-edit-input-period" type="text" name="hometrip-plafond-edit-input-period" class="form-control" disabled>
                             </div>
                             <div class="col-md-12 mb-2">
-                                <label class="form-label" for="hometrip-quota-edit-input-quota">Quota</label>
-                                <input id="hometrip-quota-edit-input-quota" type="number" name="hometrip-quota-edit-input-quota" class="form-control" step="1" min="0" required>
+                                <label class="form-label" for="hometrip-plafond-edit-input-quota">Quota</label>
+                                <input id="hometrip-plafond-edit-input-quota" type="number" name="hometrip-plafond-edit-input-quota" class="form-control" step="1" min="0" required>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button id="hometrip-quota-edit-submit" type="submit" class="btn btn-primary">Submit</button>
+                        <button id="hometrip-plafond-edit-submit" type="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </div>
             </form>
@@ -320,35 +362,82 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            var modalElem = document.getElementById('hometrip-quota-edit');
+            var modalElem = document.getElementById('hometrip-plafond-add');
+
+            const employeeSelect = $('#hometrip-plafond-add-input-employee-id');
+            const periodSelect = $('#hometrip-plafond-add-input-period');
+            const quotaInput = $('#hometrip-plafond-add-input-quota');
+            const submitButton = $('#hometrip-plafond-add-submit');
+
+            const eligibleEmployeeUrl = "{{ route('home-trip.admin.get-eligible-employees') }}";
+            const eligiblePeriodUrl = "{{ route('home-trip.admin.get-eligible-periods') }}";
+
+            function resetForm() {
+                periodSelect.html('<option value="">Select Period...</option>').prop('disabled', true);
+                employeeSelect.html('<option value="">Select Employee...</option>').prop('disabled', true);
+                quotaInput.val('').prop('disabled', true);
+                submitButton.prop('disabled', true);
+            }
 
             modalElem.addEventListener('show.bs.modal', function (event) {
-                var button = event.relatedTarget;
-                var dataIndex = button.getAttribute('data-index');
-                var dataAdminID = button.getAttribute('data-admin-id');
-                var dataEmployeeID = button.getAttribute('data-employee-id');
-                var dataEmployeeName = button.getAttribute('data-employee-name');
-                var dataPeriod = button.getAttribute('data-period');
-                var dataQuota = button.getAttribute('data-quota');
+                resetForm();
 
-                document.getElementById("hometrip-quota-edit-input-data-index").value = dataIndex;
-                document.getElementById("hometrip-quota-edit-input-admin-id").value = dataAdminID;
-                document.getElementById("hometrip-quota-edit-input-employee-id").value = dataEmployeeID;
-                document.getElementById("hometrip-quota-edit-input-employee-name").value = dataEmployeeName;
-                document.getElementById("hometrip-quota-edit-input-period").value = dataPeriod;
-                document.getElementById("hometrip-quota-edit-input-quota").value = dataQuota;
+                var button = event.relatedTarget;
+                var dataAdminID = button.getAttribute('data-admin-id');
+
+                document.getElementById("hometrip-plafond-add-input-admin-id").value = dataAdminID;
+
+                $.ajax({
+                    url: eligiblePeriodUrl,
+                    type: 'GET',
+                    dataType: 'json',
+
+                    success: function (response) {
+                        periodSelect.empty();
+
+                        if (!response.status || !response.data || response.data.length === 0) {
+                            periodSelect.html('<option value="">No period available</option>');
+
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'No Eligible Period',
+                                text: 'Cannot add plafond because there are no eligible period available.'
+                            });
+
+                            return;
+                        }
+
+                        periodSelect.append('<option value="">Select Period...</option>');
+
+                        $.each(response.data, function (index, period) {
+                            periodSelect.append(`
+                                <option value="${period}">
+                                    ${period}
+                                </option>
+                            `);
+                        });
+
+                        periodSelect.prop('disabled', false);
+                    },
+
+                    error: function () {
+                        periodSelect.html('<option value="">Failed to load period</option>');
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to retrieve period list.'
+                        });
+                    }
+                });
             });
 
-            $('#hometrip-quota-edit-form').on('submit', function (e) {
+            $('#hometrip-plafond-add-form').on('submit', function (e) {
                 e.preventDefault();
 
                 const form = $(this);
-                const submitButton = $('#hometrip-quota-edit-submit');
-                const dataIndex = $('#hometrip-quota-edit-input-data-index').val();
-                const dataAdminID = $('#hometrip-quota-edit-input-admin-id').val();
-                const dataEmployeeID = $('#hometrip-quota-edit-input-employee-id').val();
-                const dataPeriod = $('#hometrip-quota-edit-input-period').val();
-                const dataQuota = $('#hometrip-quota-edit-input-quota').val();
+                const submitButton = $('#hometrip-plafond-add-submit');
+                const dataAdminID = $('#hometrip-plafond-add-input-admin-id').val();
 
                 submitButton.prop('disabled', true).text('Processing...');
 
@@ -366,22 +455,119 @@
 
                     success: function (response) {
                         if (response.status) {
-                            $('#hometrip-quota-edit').modal('hide');
+                            $('#hometrip-plafond-add').modal('hide');
 
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Success!',
-                                text: response.message || 'Quota successfully adjusted.',
+                                text: response.message || 'Plafond successfully added.',
                                 confirmButtonText: 'OK'
                             }).then(() => {
-                                $(`#hometrip-quota-button-submit-${dataIndex}`).attr('data-quota', dataQuota);
-                                document.getElementById("hometrip-quota-" + dataIndex).innerHTML = dataQuota;
+                                //
                             });
                         } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Failed!',
-                                text: response.message || 'Failed to adjust quota.'
+                                text: response.message || 'Failed to add plafond.'
+                            });
+
+                            submitButton.prop('disabled', false).text('Submit');
+                        }
+                    },
+
+                    error: function (xhr) {
+                        let message = 'An error occurred while processing your request.';
+
+                        if (xhr.responseJSON) {
+                            if (xhr.responseJSON.message) {
+                                message = xhr.responseJSON.message;
+                            }
+
+                            if (xhr.responseJSON.errors) {
+                                message = Object.values(xhr.responseJSON.errors).flat().join('\n');
+                            }
+                        }
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: message
+                        });
+                    },
+
+                    complete: function () {
+                        submitButton.prop('disabled', false).text('Submit');
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var modalElem = document.getElementById('hometrip-plafond-edit');
+
+            modalElem.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var dataIndex = button.getAttribute('data-index');
+                var dataAdminID = button.getAttribute('data-admin-id');
+                var dataEmployeeID = button.getAttribute('data-employee-id');
+                var dataEmployeeName = button.getAttribute('data-employee-name');
+                var dataPeriod = button.getAttribute('data-period');
+                var dataQuota = button.getAttribute('data-quota');
+
+                document.getElementById("hometrip-plafond-edit-input-data-index").value = dataIndex;
+                document.getElementById("hometrip-plafond-edit-input-admin-id").value = dataAdminID;
+                document.getElementById("hometrip-plafond-edit-input-employee-id").value = dataEmployeeID;
+                document.getElementById("hometrip-plafond-edit-input-employee-name").value = dataEmployeeName;
+                document.getElementById("hometrip-plafond-edit-input-period").value = dataPeriod;
+                document.getElementById("hometrip-plafond-edit-input-quota").value = dataQuota;
+            });
+
+            $('#hometrip-plafond-edit-form').on('submit', function (e) {
+                e.preventDefault();
+
+                const form = $(this);
+                const submitButton = $('#hometrip-plafond-edit-submit');
+                const dataIndex = $('#hometrip-plafond-edit-input-data-index').val();
+                const dataAdminID = $('#hometrip-plafond-edit-input-admin-id').val();
+                const dataEmployeeID = $('#hometrip-plafond-edit-input-employee-id').val();
+                const dataPeriod = $('#hometrip-plafond-edit-input-period').val();
+                const dataQuota = $('#hometrip-plafond-edit-input-quota').val();
+
+                submitButton.prop('disabled', true).text('Processing...');
+
+                $.ajax({
+                    url: form.attr('action'),
+                    type: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        actor_id: dataAdminID,
+                        employee_id: dataEmployeeID,
+                        period: dataPeriod,
+                        quota: dataQuota
+                    },
+                    dataType: 'json',
+
+                    success: function (response) {
+                        if (response.status) {
+                            $('#hometrip-plafond-edit').modal('hide');
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: response.message || 'Plafond successfully adjusted.',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                $(`#hometrip-plafond-button-submit-${dataIndex}`).attr('data-quota', dataQuota);
+                                document.getElementById("hometrip-plafond-" + dataIndex).innerHTML = dataQuota;
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Failed!',
+                                text: response.message || 'Failed to adjust plafond.'
                             });
 
                             submitButton.prop('disabled', false).text('Submit');

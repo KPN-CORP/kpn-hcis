@@ -1157,14 +1157,22 @@ Route::middleware("auth")->group(function () {
         HomeTripController::class,
         "homeTripAdminDetail",
     ])->name("home-trip.detail");
-    Route::post("/home-trip/admin/add-quota", [
+    Route::get("/home-trip/admin/get-eligible-periods", [
         HomeTripController::class,
-        "homeTripQuotaAdd",
-    ])->name("home-trip.admin.add-quota");
-    Route::post("/home-trip/admin/update-quota", [
+        "homeTripGetEligiblePeriods",
+    ])->name("home-trip.admin.get-eligible-periods");
+    Route::get("/home-trip/admin/get-eligible-employees", [
         HomeTripController::class,
-        "homeTripQuotaUpdate",
-    ])->name("home-trip.admin.update-quota");
+        "homeTripGetEligibleEmployees",
+    ])->name("home-trip.admin.get-eligible-employees");
+    Route::post("/home-trip/admin/add-plafond", [
+        HomeTripController::class,
+        "homeTripPlafondAdd",
+    ])->name("home-trip.admin.add-plafond");
+    Route::post("/home-trip/admin/update-plafond", [
+        HomeTripController::class,
+        "homeTripPlafondUpdate",
+    ])->name("home-trip.admin.update-plafond");
     // });
 
     //Home Trip

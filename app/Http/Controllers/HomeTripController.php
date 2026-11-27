@@ -1058,7 +1058,26 @@ class HomeTripController extends Controller
         ));
     }
 
-    public function homeTripQuotaAdd(Request $req) {
+    public function homeTripGetEligiblePeriods(Request $req) {
+        return response()->json([
+            "status" => true,
+            "message" => "Ok",
+            "data" => [
+                "2025",
+                "2026"
+            ]
+        ], 200);
+    }
+
+    public function homeTripGetEligibleEmployees(Request $req) {
+        return response()->json([
+            "status" => true,
+            "message" => "Ok",
+            "data" => []
+        ], 200);
+    }
+
+    public function homeTripPlafondAdd(Request $req) {
         $now = Carbon::now();
         $currentYear = $now->year;
         $formattedCurrentDate = $now->format('Y-m-d');
@@ -1141,11 +1160,11 @@ class HomeTripController extends Controller
 
         return response()->json([
             "status" => true,
-            "message" => "Quota successfully added"
+            "message" => "Plafond successfully added"
         ], 200);
     }
 
-    public function homeTripQuotaUpdate(Request $req) {
+    public function homeTripPlafondUpdate(Request $req) {
         $now = Carbon::now();
         $currentYear = $now->year;
         $actorID = $req->actor_id ?: null;
@@ -1232,7 +1251,7 @@ class HomeTripController extends Controller
 
         return response()->json([
             "status" => true,
-            "message" => "Quota successfully adjusted"
+            "message" => "Plafond successfully adjusted"
         ], 200);
     }
 
