@@ -142,7 +142,7 @@
                                 <tbody>
                                     @if (request()->get('stat') == '-')
                                     @else
-                                        @foreach ($ht_employee as $ht_employees)
+                                        @foreach ($ht_employee as $index => $ht_employees)
                                             <tr>
                                                 <td class="text-center">{{ $loop->iteration }}</td>
                                                 <td class="text-center">{{ $ht_employees->ktp }}</td>
@@ -151,12 +151,15 @@
                                                 <td class="text-center">{{ $ht_employees->date_of_joining }}</td>
                                                 <td class="text-center">{{ $ht_employees->family_count }}</td>
                                                 <td class="text-center">{{ $ht_employees->latest_period }}</td>
-                                                <td class="text-center">{{ $ht_employees->ticket_count }}</td>
+                                                <td id="hometrip-quota-{{ $index }}" class="text-center">{{ $ht_employees->ticket_count }}</td>
                                                 <td class="text-center">
-                                                    <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#hometrip-plafond-edit" type="button" title="Adjust Plafond"
+                                                    <button id="hometrip-quota-button-submit-{{ $index }}" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#hometrip-quota-edit" type="button" title="Adjust quota"
+                                                        data-index="{{ $index }}"
+                                                        data-admin-id="{{ auth()->user()->employee->id }}"
                                                         data-employee-id="{{ $ht_employees->employee_id }}"
                                                         data-employee-name="{{ $ht_employees->fullname }}"
                                                         data-period="{{ $ht_employees->latest_period }}"
+                                                        data-quota="{{ $ht_employees->ticket_count }}"
                                                     >
                                                         <i class="ri-add-box-line"></i>
                                                     </button>
@@ -177,30 +180,40 @@
         </div>
     </div>
 
-    <div class="modal fade" id="hometrip-plafond-edit" tabindex="-1" aria-labelledby="hometrip-plafond-edit" aria-hidden="true">
+    <div class="modal fade" id="hometrip-quota-edit" tabindex="-1" aria-labelledby="hometrip-quota-edit" aria-hidden="true">
         <div class="modal-dialog" style="wid">
-            <form method="POST" action="" enctype="multipart/form-data">
+            <form id="hometrip-quota-edit-form" method="POST" action="{{ route('home-trip.admin.update-quota') }}" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="hometrip-plafond-edit-title">Adjust Plafon</h5>
+                        <h5 class="modal-title" id="hometrip-quota-edit-title">Adjust Quota</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="row">
+                            <input id="hometrip-quota-edit-input-data-index" type="hidden" name="hometrip-quota-edit-input-data-index" disabled>
+                            <input id="hometrip-quota-edit-input-admin-id" type="hidden" name="hometrip-quota-edit-input-admin-id" disabled>
                             <div class="col-md-12 mb-2">
-                                <label class="form-label" for="hometrip-plafond-edit-input-employee-id">Employee ID</label>
-                                <input id="hometrip-plafond-edit-input-employee-id" type="text" name="hometrip-plafond-edit-input-employee-id" class="form-control" disabled>
+                                <label class="form-label" for="hometrip-quota-edit-input-employee-id">Employee ID</label>
+                                <input id="hometrip-quota-edit-input-employee-id" type="text" name="hometrip-quota-edit-input-employee-id" class="form-control" disabled>
                             </div>
                             <div class="col-md-12 mb-2">
-                                <label class="form-label" for="hometrip-plafond-edit-input-employee-name">Employee Name</label>
-                                <input id="hometrip-plafond-edit-input-employee-name" type="text" name="hometrip-plafond-edit-input-employee-name" class="form-control" disabled>
+                                <label class="form-label" for="hometrip-quota-edit-input-employee-name">Employee Name</label>
+                                <input id="hometrip-quota-edit-input-employee-name" type="text" name="hometrip-quota-edit-input-employee-name" class="form-control" disabled>
+                            </div>
+                            <div class="col-md-12 mb-2">
+                                <label class="form-label" for="hometrip-quota-edit-input-period">Period</label>
+                                <input id="hometrip-quota-edit-input-period" type="text" name="hometrip-quota-edit-input-period" class="form-control" disabled>
+                            </div>
+                            <div class="col-md-12 mb-2">
+                                <label class="form-label" for="hometrip-quota-edit-input-quota">Quota</label>
+                                <input id="hometrip-quota-edit-input-quota" type="number" name="hometrip-quota-edit-input-quota" class="form-control" step="1" min="0" required>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button id="hometrip-quota-edit-submit" type="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </div>
             </form>
@@ -307,18 +320,98 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            var modalElem = document.getElementById('hometrip-plafond-edit');
+            var modalElem = document.getElementById('hometrip-quota-edit');
 
             modalElem.addEventListener('show.bs.modal', function (event) {
                 var button = event.relatedTarget;
+                var dataIndex = button.getAttribute('data-index');
+                var dataAdminID = button.getAttribute('data-admin-id');
                 var dataEmployeeID = button.getAttribute('data-employee-id');
                 var dataEmployeeName = button.getAttribute('data-employee-name');
                 var dataPeriod = button.getAttribute('data-period');
+                var dataQuota = button.getAttribute('data-quota');
 
-                document.getElementById("hometrip-plafond-edit-input-employee-id").value = dataEmployeeID;
-                document.getElementById("hometrip-plafond-edit-input-employee-name").value = dataEmployeeName;
+                document.getElementById("hometrip-quota-edit-input-data-index").value = dataIndex;
+                document.getElementById("hometrip-quota-edit-input-admin-id").value = dataAdminID;
+                document.getElementById("hometrip-quota-edit-input-employee-id").value = dataEmployeeID;
+                document.getElementById("hometrip-quota-edit-input-employee-name").value = dataEmployeeName;
+                document.getElementById("hometrip-quota-edit-input-period").value = dataPeriod;
+                document.getElementById("hometrip-quota-edit-input-quota").value = dataQuota;
+            });
 
-                var form = modalElem.querySelector('form');
+            $('#hometrip-quota-edit-form').on('submit', function (e) {
+                e.preventDefault();
+
+                const form = $(this);
+                const submitButton = $('#hometrip-quota-edit-submit');
+                const dataIndex = $('#hometrip-quota-edit-input-data-index').val();
+                const dataAdminID = $('#hometrip-quota-edit-input-admin-id').val();
+                const dataEmployeeID = $('#hometrip-quota-edit-input-employee-id').val();
+                const dataPeriod = $('#hometrip-quota-edit-input-period').val();
+                const dataQuota = $('#hometrip-quota-edit-input-quota').val();
+
+                submitButton.prop('disabled', true).text('Processing...');
+
+                $.ajax({
+                    url: form.attr('action'),
+                    type: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        actor_id: dataAdminID,
+                        employee_id: dataEmployeeID,
+                        period: dataPeriod,
+                        quota: dataQuota
+                    },
+                    dataType: 'json',
+
+                    success: function (response) {
+                        if (response.status) {
+                            $('#hometrip-quota-edit').modal('hide');
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: response.message || 'Quota successfully adjusted.',
+                                confirmButtonText: 'OK'
+                            }).then(() => {
+                                $(`#hometrip-quota-button-submit-${dataIndex}`).attr('data-quota', dataQuota);
+                                document.getElementById("hometrip-quota-" + dataIndex).innerHTML = dataQuota;
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Failed!',
+                                text: response.message || 'Failed to adjust quota.'
+                            });
+
+                            submitButton.prop('disabled', false).text('Submit');
+                        }
+                    },
+
+                    error: function (xhr) {
+                        let message = 'An error occurred while processing your request.';
+
+                        if (xhr.responseJSON) {
+                            if (xhr.responseJSON.message) {
+                                message = xhr.responseJSON.message;
+                            }
+
+                            if (xhr.responseJSON.errors) {
+                                message = Object.values(xhr.responseJSON.errors).flat().join('\n');
+                            }
+                        }
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: message
+                        });
+                    },
+
+                    complete: function () {
+                        submitButton.prop('disabled', false).text('Submit');
+                    }
+                });
             });
         });
     </script>

@@ -1157,6 +1157,14 @@ Route::middleware("auth")->group(function () {
         HomeTripController::class,
         "homeTripAdminDetail",
     ])->name("home-trip.detail");
+    Route::post("/home-trip/admin/add-quota", [
+        HomeTripController::class,
+        "homeTripQuotaAdd",
+    ])->name("home-trip.admin.add-quota");
+    Route::post("/home-trip/admin/update-quota", [
+        HomeTripController::class,
+        "homeTripQuotaUpdate",
+    ])->name("home-trip.admin.update-quota");
     // });
 
     //Home Trip

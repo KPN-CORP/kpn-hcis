@@ -1058,7 +1058,7 @@ class HomeTripController extends Controller
         ));
     }
 
-    public function homeTripPlafondAdd(Request $req) {
+    public function homeTripQuotaAdd(Request $req) {
         $now = Carbon::now();
         $currentYear = $now->year;
         $formattedCurrentDate = $now->format('Y-m-d');
@@ -1088,7 +1088,7 @@ class HomeTripController extends Controller
             ], 422);
         }
 
-        $employee = Employee::where("employee_id", $actorID)->first();
+        $employee = Employee::where("employee_id", $employeeID)->first();
         if (!$employee) {
             return response()->json([
                 "status" => false,
@@ -1099,6 +1099,7 @@ class HomeTripController extends Controller
         $existingHomeTripPlan = HomeTrip::where('employee_id', $employee->employee_id)
             ->where('period', $period)
             ->where('relation_type', 'Employee')
+            ->whereNull("deleted_at")
             ->first();
         if ($existingHomeTripPlan) {
             return response()->json([
@@ -1140,26 +1141,22 @@ class HomeTripController extends Controller
 
         return response()->json([
             "status" => true,
-            "message" => "Ok"
+            "message" => "Quota successfully added"
         ], 200);
     }
 
-    public function homeTripPlafondUpdate(Request $req) {
-        $id = $req->id ?: null;
+    public function homeTripQuotaUpdate(Request $req) {
+        $now = Carbon::now();
+        $currentYear = $now->year;
         $actorID = $req->actor_id ?: null;
         $employeeID = $req->employee_id ?: null;
+        $period = $req->period ?: $currentYear;
         $quota = $req->quota ?: 0;
 
-        if (!$id) {
-            return response()->json([
-                "status" => false,
-                "message" => "ID can't be empty!"
-            ], 400);
-        }
         if (!$actorID) {
             return response()->json([
                 "status" => false,
-                "message" => "Actor ID can't be empty!"
+                "message" => "Admin ID can't be empty!"
             ], 400);
         }
         if (!$employeeID) {
@@ -1169,27 +1166,31 @@ class HomeTripController extends Controller
             ], 400);
         }
 
-        $existingHomeTripPlan = HomeTrip::where('id', $id)->first();
-        if (!$existingHomeTripPlan) {
-            return response()->json([
-                "status" => false,
-                "message" => "Hometrip plafond doesn't exist!"
-            ], 422);
-        }
-
         $actor = Employee::where("id", $actorID)->first();
         if (!$actor) {
             return response()->json([
                 "status" => false,
-                "message" => "Actor not found!"
+                "message" => "Admin not found!"
             ], 422);
         }
 
-        $employee = Employee::where("employee_id", $actorID)->first();
+        $employee = Employee::where("employee_id", $employeeID)->first();
         if (!$employee) {
             return response()->json([
                 "status" => false,
                 "message" => "Employee not found!"
+            ], 422);
+        }
+
+        $existingHomeTripPlan = HomeTrip::where('employee_id', $employee->employee_id)
+            ->where("period", $period)
+            ->where('relation_type', 'Employee')
+            ->whereNull("deleted_at")
+            ->first();
+        if (!$existingHomeTripPlan) {
+            return response()->json([
+                "status" => false,
+                "message" => "Hometrip plafond doesn't exist!"
             ], 422);
         }
 
@@ -1231,7 +1232,7 @@ class HomeTripController extends Controller
 
         return response()->json([
             "status" => true,
-            "message" => "Ok"
+            "message" => "Quota successfully adjusted"
         ], 200);
     }
 
