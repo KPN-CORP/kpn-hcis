@@ -1427,7 +1427,7 @@
                                 `;
                                 buttonColDec.appendChild(dateTextDec);
                             } else {
-                                dateText.innerHTML = `
+                                dateTextDec.innerHTML = `
                                     <div class="border rounded p-2 mb-2">
                                         <strong>Status:</strong> {{ $approval_sett->approval_status }}<br>
                                         <strong>Approved By :</strong> {{ $approval_sett->employee->fullname ?? 'Employee tidak tersedia.' }}<br>
