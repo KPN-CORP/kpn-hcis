@@ -153,7 +153,7 @@
                                                 <td class="text-center">{{ $ht_employees->latest_period }}</td>
                                                 <td id="hometrip-quota-{{ $index }}" class="text-center">{{ $ht_employees->ticket_count }}</td>
                                                 <td class="text-center">
-                                                    <button id="hometrip-quota-button-submit-{{ $index }}" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#hometrip-quota-edit" type="button" title="Adjust quota"
+                                                    <button id="hometrip-quota-button-submit-{{ $index }}" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#hometrip-quota-edit" type="button" title="Adjust Plafond"
                                                         data-index="{{ $index }}"
                                                         data-admin-id="{{ auth()->user()->employee->id }}"
                                                         data-employee-id="{{ $ht_employees->employee_id }}"
