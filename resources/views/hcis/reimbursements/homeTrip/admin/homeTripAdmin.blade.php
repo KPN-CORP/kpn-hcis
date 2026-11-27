@@ -136,7 +136,7 @@
                                         <th class="text-center">Family Count</th>
                                         <th class="text-center">Period</th>
                                         <th class="text-center">Ticket Count</th>
-                                        <th class="text-center">Detail Plafond</th>
+                                        <th class="text-center">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -153,9 +153,16 @@
                                                 <td class="text-center">{{ $ht_employees->latest_period }}</td>
                                                 <td class="text-center">{{ $ht_employees->ticket_count }}</td>
                                                 <td class="text-center">
+                                                    <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#hometrip-plafond-edit" type="button" title="Adjust Plafond"
+                                                        data-employee-id="{{ $ht_employees->employee_id }}"
+                                                        data-employee-name="{{ $ht_employees->fullname }}"
+                                                        data-period="{{ $ht_employees->latest_period }}"
+                                                    >
+                                                        <i class="ri-add-box-line"></i>
+                                                    </button>
                                                     <a href="{{ route('home-trip.detail', encrypt($ht_employees->employee_id)) }}"
-                                                        class="btn btn-outline-warning" title="Edit">
-                                                        <i class="ri-edit-box-line"></i>
+                                                        class="btn btn-outline-primary" title="View Detail">
+                                                        <i class="ri-eye-line"></i>
                                                     </a>
                                                 </td>
                                             </tr>
@@ -167,6 +174,36 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="hometrip-plafond-edit" tabindex="-1" aria-labelledby="hometrip-plafond-edit" aria-hidden="true">
+        <div class="modal-dialog" style="wid">
+            <form method="POST" action="" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="hometrip-plafond-edit-title">Adjust Plafon</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12 mb-2">
+                                <label class="form-label" for="hometrip-plafond-edit-input-employee-id">Employee ID</label>
+                                <input id="hometrip-plafond-edit-input-employee-id" type="text" name="hometrip-plafond-edit-input-employee-id" class="form-control" disabled>
+                            </div>
+                            <div class="col-md-12 mb-2">
+                                <label class="form-label" for="hometrip-plafond-edit-input-employee-name">Employee Name</label>
+                                <input id="hometrip-plafond-edit-input-employee-name" type="text" name="hometrip-plafond-edit-input-employee-name" class="form-control" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -266,5 +303,23 @@
             });
         }
         //script modal
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var modalElem = document.getElementById('hometrip-plafond-edit');
+
+            modalElem.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var dataEmployeeID = button.getAttribute('data-employee-id');
+                var dataEmployeeName = button.getAttribute('data-employee-name');
+                var dataPeriod = button.getAttribute('data-period');
+
+                document.getElementById("hometrip-plafond-edit-input-employee-id").value = dataEmployeeID;
+                document.getElementById("hometrip-plafond-edit-input-employee-name").value = dataEmployeeName;
+
+                var form = modalElem.querySelector('form');
+            });
+        });
     </script>
 @endpush

@@ -50,7 +50,7 @@
                 </div>
             </form>
         </div>
-    </div>    
+    </div>
 @endif
 
 {{-- Success --}}
@@ -143,8 +143,8 @@
 
                 if (fileExtension !== "pdf") {
                     Swal.fire({
-                        title: "Unsupported Format!",  
-                        text: "Please upload a file in PDF format!",  
+                        title: "Unsupported Format!",
+                        text: "Please upload a file in PDF format!",
                         icon: "warning",
                         confirmButtonColor: "#9a2a27",
                         confirmButtonText: 'OK',
@@ -155,8 +155,8 @@
 
                 if (fileSizeInMB > 3) {
                     Swal.fire({
-                        title: "File Size Too Large!",  
-                        text: "File size must not exceed 3MB!",  
+                        title: "File Size Too Large!",
+                        text: "File size must not exceed 3MB!",
                         icon: "warning",
                         confirmButtonColor: "#9a2a27",
                         confirmButtonText: 'OK',
@@ -288,11 +288,11 @@
                                 <div class="input-group-append">
                                     <span class="input-group-text">Rp</span>
                                 </div>
-                                <input 
-                                    class="form-control form-control-sm format-number ${isNegative ? 'text-danger bg-light' : ''}" 
-                                    name="${labelName}" 
-                                    id="${labelName}" 
-                                    type="text" 
+                                <input
+                                    class="form-control form-control-sm format-number ${isNegative ? 'text-danger bg-light' : ''}"
+                                    name="${labelName}"
+                                    id="${labelName}"
+                                    type="text"
                                     value="${formatNumber(value)}"
                                     ${isNegative ? 'readonly' : ''}
                                 >
